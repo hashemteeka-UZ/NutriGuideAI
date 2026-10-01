@@ -1,13 +1,27 @@
-# PROJECT_CONTEXT.md — v4.7
+# PROJECT_CONTEXT.md — v4.8
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.7 → v4.8
+
+v4.8 records the **pre-Step-C consistency audit** of v4.7 (2026-10-01, report `claude/reviews/consistency_audit_v4_7_2026-10-01.md`, DEV_JOURNAL J-023). All items were approved by the user on 2026-10-01. They are applied before any model or migration exists, so there is no migration cost. Step B is closed (DEV_JOURNAL J-022, Decision #55: SQLAlchemy pinned `>=2.0,<2.1`).
+
+| # | Topic | Resolution (short) | Schema? |
+|---|---|---|---|
+| 56 | Primary-key types were unspecified; SQLAlchemy would default to `SERIAL` | Every surrogate PK is `BIGINT GENERATED ALWAYS AS IDENTITY` (§15.1). Client-generated identifiers (`client_uuid`, `family_id`) stay `UUID`. Phase 2 ETL links rows by natural keys (`external_code`, `code`), never by internal IDs | Yes (types) |
+| 57 | PostgreSQL does not index FK columns automatically; 20+ FK columns had no index, including the hard-filtering path | Rule §15.3: every FK column is indexed unless it is the leading column of the PK, a UNIQUE constraint or an existing composite index; automated metadata test (§19, v4.8) | Yes (indexes) |
+| 58 | `numeric` without precision; SQLAlchemy returns `Decimal`, the optimizer/ML work with `float` | Rule §15.2: measured values are `NUMERIC(12,3)`, mapped with `asdecimal=False` (Python `float`). Exceptions: `servings_multiplier` `NUMERIC(3,2)`; `*_confidence` `NUMERIC(4,3)`; naturally whole quantities stay `INTEGER` | Yes (types) |
+| 59 | `meals.owner_user_id` made CATALOG depend on USER (violates §8), had no workable delete policy, and no Core feature uses user-owned meals | `meals.owner_user_id` and `meals.visibility` **removed**. All catalog meals are system meals. User-authored private meals moved to Documented Future Work (§29) as a separate table that respects the dependency direction | Yes (2 columns removed) |
+| 60 | Implicit details that would force the coding agent to guess | Made explicit: `ON DELETE RESTRICT` on the three `meal_id` history FKs (§15.7); full enum-like column list (§17); types for `meals.servings`, `user_interactions.value`, `foods.data_type`, `meal_ingredients.mapping_confidence`, `ingredient_aliases.confidence/source`, `ingredients.review_status`; `meal_nutrients` NOT NULL + `>= 0`; `meal_ingredients.position >= 1`; language-code CHECK (§15.5); lowercase `users.email`; `refresh_tokens.issued_at` acts as `created_at` (§15.10); composite lookup indexes on `user_targets` and `meal_plans`; stale status text (§20, §24, §25) and `consumption_logs.client_uuid` placement fixed | Yes (constraints/indexes) |
 
 ---
 
@@ -375,6 +389,7 @@ Example: hypertension → `LIMIT` `high_sodium`. Tags are applied at ingredient 
 ## 9.6 `foods`
 `food_id` = internal PK, `fdc_id` = external USDA/FDC identifier (kept separate).
 - `food_id` PK, `fdc_id` UNIQUE where applicable (nullable — the *primary* FDC ID when one exists), `description`, `data_type`, `category_id` FK, `basis_grams`
+- `data_type` — `VARCHAR` nullable — the source's own data-type label (e.g. FDC `foundation_food`), stored for traceability only; no CHECK (v4.8, #60)
 - `external_source` — **NEW in v4.4 (Decision #39)** — `VARCHAR NOT NULL` + CHECK (initial set: `FNDDS_INGREDIENT`, `FNDDS_FOOD`, `FDC`, `TEAM_TEMPLATE`, `MANUAL`) — which source system the row was imported from
 - `external_code` — **NEW in v4.4** — `VARCHAR NOT NULL` — the row's identifier inside that source (e.g. NDB number `1001`, FNDDS food code `99992405`, template ID `ING-0001`)
 - `UNIQUE (external_source, external_code)` — prevents duplicate imports and gives every food a queryable way back to its source, with or without an FDC ID
@@ -422,11 +437,13 @@ Data-entry templates may collect the mandatory nutrients as wide columns; Phase 
 ## 9.10 `ingredients`
 Culinary ingredient concept layer.
 - `ingredient_id` PK, `canonical_name`, `canonical_name_ar`, `default_food_id` FK → `foods`, `review_status`
+- `review_status` — `VARCHAR NOT NULL DEFAULT 'PENDING'` + CHECK (`PENDING`, `APPROVED`, `REJECTED`) (v4.8, #60)
 
 Every ingredient in this table is, by policy, permissible for the app's users — non-permissible ingredients are never ingested (Decision #34, §31.6). There is therefore no permissibility column and no permissibility filter anywhere in the system.
 
 ## 9.11 `ingredient_aliases` — CHANGED in v4.2 (Decision #28)
 - `alias_id` PK, `ingredient_id` FK, `alias_text`, `lang`, `confidence`, `source`
+- `confidence` — `NUMERIC(4,3)` nullable, `CHECK (confidence BETWEEN 0 AND 1)`; `source` — `VARCHAR` nullable, free-text provenance (v4.8, #60)
 - `alias_normalized` — **NEW** — `TEXT NOT NULL`, normalized search form (§15.9), GIN `pg_trgm` index
 - Uniqueness: `(alias_text, lang)`
 
@@ -451,10 +468,9 @@ Source of truth for ingredient-level properties — primarily `tag_group = 'COND
 - `ref_external` — external/source identifier
 - `name` — source-language name; `default_lang`
 - `name_normalized` — **NEW** — normalized search form of `name` (§15.9), GIN `pg_trgm` index
-- `servings`, `total_grams`
+- `servings` — `INTEGER NOT NULL` (v4.8); `total_grams` — `NUMERIC(12,3) NOT NULL`
 - `weight_method` — **NEW** — `VARCHAR NOT NULL` + CHECK (`WEIGHED`, `YIELD_FACTOR`, `SUM_OF_INGREDIENTS`)
-- `owner_user_id` FK → `users`, nullable for system/public meals
-- `visibility` — `PUBLIC` / `PRIVATE`
+- *(`owner_user_id` and `visibility` removed in v4.8 — Decision #59: all catalog meals are system meals; user-authored meals are Future Work, §29)*
 - `cuisine_id` FK → `cuisines`, nullable
 - `source`, `source_license`
 - `quality_tier` — `GOLD` / `SILVER`
@@ -472,13 +488,14 @@ Constraints: `servings > 0`, `total_grams > 0`
 ## 10.2 `meal_ingredients`
 - `meal_id` FK, `position`, `ingredient_id` FK, `food_id` FK (nullable when mapping not yet accepted)
 - `grams` numeric NOT NULL — the weight **as added to the recipe**, in the `state` of the referenced `foods` row (normally `raw`)
-- `text_original` (traceability only), `mapping_confidence`
+- `text_original` (traceability only), `mapping_confidence` — `NUMERIC(4,3)` nullable, `CHECK (mapping_confidence BETWEEN 0 AND 1)` (v4.8)
 - PK: `(meal_id, position)`
-- `CHECK (grams > 0)`
+- `CHECK (grams > 0)`, `CHECK (position >= 1)` (v4.8)
 
 ## 10.3 `meal_nutrients`
 - `meal_id`, `nutrient_id`, `amount_per_serving`, `amount_per_100g`, `computed_at`, `computation_version`
 - PK: `(meal_id, nutrient_id)`
+- `amount_per_serving`, `amount_per_100g`, `computed_at`, `computation_version` — all `NOT NULL`; `CHECK (amount_per_serving >= 0)`, `CHECK (amount_per_100g >= 0)` (v4.8, #60)
 
 Calculation (`calc_v1`):
 ```text
@@ -512,6 +529,7 @@ Holds only additional (non-default) languages. Fallback: `meals.name` + `meals.d
 
 ## 11.1 `users`
 - `user_id` PK, `email` UNIQUE, `hashed_password` (Argon2id — §34), `created_at`, `updated_at`
+- `email` is stored lowercase: the application lowercases on write and `CHECK (email = lower(email))` (name `email_lowercase`) guarantees it, so the same address cannot register twice with different letter case (v4.8, #60)
 
 ## 11.2 `user_profiles` — CHANGED in v4.2 (Decisions #19, #20, #22, #27)
 1:1 with `users`.
@@ -536,6 +554,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 
 ## 11.3 `user_health_conditions`
 - `id` PK, `user_id` FK, `condition_id` FK → `health_conditions`, `severity`, `diagnosed`
+- `severity` — `VARCHAR` nullable + CHECK (`MILD`, `MODERATE`, `SEVERE`); `diagnosed` — `BOOLEAN NOT NULL DEFAULT false` (values made explicit in v4.8, #60; informational only — rules never read `severity`)
 - `UNIQUE (user_id, condition_id)` — **NEW in v4.2**
 
 ## 11.4 `user_allergen_prefs`
@@ -546,6 +565,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 
 ## 11.6 `user_interactions` — CHANGED in v4.2 (Decision #28)
 - `id`, `user_id`, `meal_id`, `event_type`, `value`, `context` JSONB, `created_at`
+- `value` — `SMALLINT` nullable — the rating for `RATE` events: `CHECK (value IS NULL OR value BETWEEN 1 AND 5)` and `CHECK (event_type <> 'RATE' OR value IS NOT NULL)` (v4.8, #60)
 - `event_type` CHECK widened to: `IMPRESSION`, `ACCEPT`, `VIEW`, `SAVE`, `RATE`, `COOK`, `SKIP`, `SWAP_OUT`
   - `IMPRESSION` — the system showed/recommended this meal to the user (needed so the ML layer and its offline evaluation know what was offered, not only what was chosen)
   - `ACCEPT` — the user kept/accepted a recommended meal
@@ -558,6 +578,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `plan_id`, `user_id`, `date_from`, `date_to`, `generated_by`, `algorithm_version`, `target_snapshot` JSONB
 - `target_id` — **NEW in v4.2** — FK → `user_targets` (nullable, SET NULL): which target version the plan was generated against. `target_snapshot` stays as an immutable copy (including the resolved condition limits at generation time).
 - `CHECK (date_to >= date_from)`
+- Index: `(user_id, date_from)` (v4.8, #60)
 
 ## 11.8 `meal_plan_items` — CHANGED in v4.2 (Decision #21)
 - `id`, `plan_id`, `day_index`, `slot`, `meal_id`, `servings_multiplier`, `was_swapped`, `created_at`, `updated_at`
@@ -580,6 +601,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `grams_consumed` — **NEW** — nullable numeric (for foods)
 - `created_at` — `TIMESTAMPTZ NOT NULL` (server receive time)
 - `deleted_at` — **NEW in v4.5 (Decision #43)** — `TIMESTAMPTZ` nullable — **tombstone**: a log is never physically deleted or edited; a correction tombstones the old row and inserts a new one (new `client_uuid`). Adherence, summaries and ML rewards ignore rows with `deleted_at IS NOT NULL`
+- `client_uuid` — **NEW in v4.4 (Decision #37)** — `UUID` nullable — generated on the phone for offline-created logs; idempotent sync (listed here as a column in v4.8; previously under Constraints)
 - `nutrients_snapshot` — **NEW** — `JSONB NOT NULL` — the consumed amounts of the mandatory nutrients, computed at log time with the then-current `computation_version` (so later recomputation of meals never rewrites history; same pattern as `target_snapshot`)
 
 Constraints:
@@ -587,7 +609,7 @@ Constraints:
 - `CHECK (meal_id IS NULL OR (servings_consumed > 0 AND grams_consumed IS NULL))`
 - `CHECK (food_id IS NULL OR (grams_consumed > 0 AND servings_consumed IS NULL))`
 - `CHECK (plan_item_id IS NULL OR meal_id IS NOT NULL)`
-- `client_uuid` — **NEW in v4.4 (Decision #37)** — `UUID` nullable, `UNIQUE` — generated on the phone for offline-created logs; idempotent sync
+- `UNIQUE (client_uuid)`
 - Index: `(user_id, log_date) WHERE deleted_at IS NULL` (partial index — active logs only)
 
 Application rule: when `plan_item_id` is set, `meal_id` must equal that plan item's `meal_id` (a swapped meal is recorded by first updating the plan item, `was_swapped = true`).
@@ -617,6 +639,7 @@ Versioned history of computed daily targets.
 - `was_floor_applied` — BOOLEAN NOT NULL — whether the calorie floor (§30.3) overrode the raw calculation (traceability for the report)
 - `CHECK (valid_to IS NULL OR valid_to > valid_from)`
 - Partial unique index: `UNIQUE (user_id) WHERE valid_to IS NULL` — exactly one current target per user
+- Index: `(user_id, valid_from)` — history lookups (v4.8, #60)
 
 Condition limits are **not** copied here — they are resolved at plan-generation time and frozen in `meal_plans.target_snapshot`.
 
@@ -626,7 +649,7 @@ Server state for refresh-token rotation with reuse detection (§34.2).
 - `user_id` FK → `users` (CASCADE)
 - `token_hash` — `TEXT NOT NULL UNIQUE` — SHA-256 of the token; the raw token is **never** stored
 - `family_id` — `UUID NOT NULL` — all tokens produced by rotating one login session share a family
-- `issued_at` — `TIMESTAMPTZ NOT NULL`
+- `issued_at` — `TIMESTAMPTZ NOT NULL` — also serves as the row's creation time (no separate `created_at`, §15.10)
 - `expires_at` — `TIMESTAMPTZ NOT NULL`, `CHECK (expires_at > issued_at)`
 - `revoked_at` — `TIMESTAMPTZ` nullable
 - `replaced_by_token_id` — FK → `refresh_tokens` (SET NULL), nullable
@@ -673,7 +696,7 @@ health_conditions ──< condition_tag_restrictions >──── dietary_tags
 
 CATALOG
 
-users ───────────────< meals >──── cuisines
+meals >──── cuisines      (no USER reference — v4.8, Decision #59)
                         │
                         ├────< meal_ingredients >──── ingredients
                         │             │
@@ -741,11 +764,27 @@ Internal identity ≠ external source identity. Meals preserve `ref_external`; r
 ## 15.1 Internal IDs vs external IDs
 Never make a source identifier the internal identity. Applies to teammate template IDs (`ING-0001`) too. Stable machine **codes** (`nutrients.code`, `dietary_tags.code`, `health_conditions.code`) are internal, project-owned keys for application rules — distinct from both PKs and source IDs.
 
+**PK type (v4.8, Decision #56):** every surrogate PK is `BIGINT GENERATED ALWAYS AS IDENTITY` (SQLAlchemy: `mapped_column(BigInteger, Identity(always=True), primary_key=True)`); FK columns referencing them are `BIGINT`. Composite PKs of junction tables are made of those FKs. Identifiers generated on the phone (`client_uuid`, `refresh_tokens.family_id`) are `UUID`. Data loading (Phase 2) never supplies internal IDs; it resolves rows by natural keys (`external_source` + `external_code`, `code`).
+
 ## 15.2 Numeric measurements must be numeric
 grams, nutrition amounts, portion weights, servings, weights, targets — always numeric types.
 
+**Precision rule (v4.8, Decision #58):**
+
+| Kind of value | Type |
+|---|---|
+| Measured/computed amounts (grams, nutrient amounts, weights, energy, targets, servings consumed) | `NUMERIC(12,3)` |
+| `meal_plan_items.servings_multiplier` | `NUMERIC(3,2)` |
+| `condition_nutrient_limits.max_per_meal` / `max_per_day` / `min_per_day` | `NUMERIC(12,3)` like other amounts (e.g. sodium `2300` mg; `PERCENT_ENERGY` values are additionally capped at `100` by CHECK) |
+| `*_confidence` columns | `NUMERIC(4,3)`, range 0–1 |
+| Naturally whole quantities (`servings`, `water_goal_ml`, `amount_ml`, `day_index`, `position`, `max_servings_per_week`) | `INTEGER` / `SMALLINT` |
+
+All `Numeric` columns are mapped with `asdecimal=False`, so application code works with Python `float`; the database keeps exact decimal storage, and CHECK constraints compare exact values.
+
 ## 15.3 Constraints protect the dataset
 `NOT NULL`, `FOREIGN KEY`, `UNIQUE`, `CHECK`, appropriate indexes.
+
+**FK index rule (v4.8, Decision #57):** PostgreSQL does not create an index for a foreign key. Every FK column gets an index (`index=True`, named by the §17 convention) **unless** it is the leading column of the table's PK, of a UNIQUE constraint, or of a composite index already declared (leftmost-prefix rule). Example: in `meal_tags` PK `(meal_id, tag_id)` covers `meal_id`, so `tag_id` needs its own index — this is the hard-filtering path (§28.1). An automated test enforces the rule (§19, v4.8).
 
 ## 15.4 Normalize first, denormalize only deliberately
 Intentional derived/snapshot structures and their justification:
@@ -754,6 +793,8 @@ Intentional derived/snapshot structures and their justification:
 
 ## 15.5 Multilingual support belongs in the data model
 `name_en` / `name_ar` for small controlled reference entities; translation tables for scalable content.
+
+**Language codes (v4.8, #60):** `meals.default_lang`, `meal_translations.lang` and `ingredient_aliases.lang` are ISO 639-1 codes: `VARCHAR(2) NOT NULL` + `CHECK (<col> ~ '^[a-z]{2}$')`. The set of languages is not restricted by the schema.
 
 ## 15.6 Do not encode business rules only in application code
 Integrity rules in the DB (CHECK, FK). Health rules live in the DB **as data** (`condition_*` tables); *applying* them is application logic (traceable, testable, no PL/pgSQL).
@@ -775,7 +816,7 @@ Integrity rules in the DB (CHECK, FK). Health rules live in the DB **as data** (
 | `meal_plans` → `meal_plan_items` | `CASCADE` | Fully owned |
 | `meal_plan_items` referenced by `consumption_logs.plan_item_id` | `SET NULL` | Eating history survives plan deletion |
 | `user_targets` referenced by `meal_plans.target_id` | `SET NULL` | Snapshot remains in `target_snapshot` |
-| `meal` referenced by `user_interactions` / `meal_plan_items` / `consumption_logs` | **No hard delete — §15.8** | Preserve user history |
+| `meal` referenced by `user_interactions` / `meal_plan_items` / `consumption_logs` | `RESTRICT` (explicit, v4.8) — and **no hard delete, §15.8** | Preserve user history; RESTRICT is the safety net if a hard delete is ever attempted |
 
 ## 15.8 Meals use soft delete, never hard delete
 `meals.is_active BOOLEAN NOT NULL DEFAULT true`. Inactive meals are excluded from search/recommendation but remain intact for history.
@@ -793,6 +834,8 @@ All timestamps are `TIMESTAMPTZ` (UTC in the database). Columns are assigned by 
 | **Mutable entities** | `created_at` + `updated_at` (both `NOT NULL`, `updated_at` maintained by the ORM on update) | `users`, `user_profiles`, `foods`, `ingredients`, `meals`, `meal_plans`, `meal_plan_items`, `user_health_conditions`, `user_allergen_prefs`, `user_ingredient_prefs`, `condition_nutrient_limits`, `condition_tag_restrictions`, `categories`, `cuisines`, `allergens`, `dietary_tags`, `health_conditions`, `nutrients`, `weight_logs` (client-supplied `updated_at`, §11.10) |
 | **Append-only / versioned** | `created_at` only (rows are never updated, except the documented closing/tombstone column) | `consumption_logs` (+ `deleted_at` tombstone), `water_logs` (+ `deleted_at` tombstone, v4.6), `user_interactions`, `user_targets` (+ `valid_to` closing), `refresh_tokens` (+ `revoked_at`) |
 | **Junction / derived / child detail** | none — covered by the parent's `updated_at`, by `computed_at`, or by `dataset_version` | `food_nutrients`, `portions_food`, `ingredient_aliases`, `ingredient_allergens`, `ingredient_tags`, `meal_ingredients`, `meal_nutrients` (`computed_at`), `meal_allergens`, `meal_tags`, `meal_translations` |
+
+`refresh_tokens.issued_at` serves as that table's creation timestamp; no separate `created_at` is added (v4.8, #60).
 
 `meals.ingested_at` is kept as the provenance timestamp (when the source record entered the system) and is distinct from `created_at`.
 
@@ -819,7 +862,9 @@ app/
 ```
 One shared `Base` (defined with the naming convention below — see "Constraint naming convention"). Alembic must import all model metadata.
 
-**Enum implementation note:** use `sqlalchemy.Enum(..., native_enum=False)` (or `String` + explicit `CheckConstraint`) for **all** enum-like columns — never `native_enum=True`. v4.2 additions covered by this rule: `dietary_tags.tag_group`, `condition_nutrient_limits.limit_basis`, `meal_tags.source`, `meals.weight_method`, `user_profiles.sex`, `user_profiles.activity_level`, `user_profiles.physiological_status`, `weight_logs.source`, `user_targets.reason`, `consumption_logs.slot`, and the widened `user_interactions.event_type`. v4.4 addition: `foods.external_source`.
+**Enum implementation note:** use `sqlalchemy.Enum(..., native_enum=False)` (or `String` + explicit `CheckConstraint`) for **all** enum-like columns — never `native_enum=True`. v4.2 additions covered by this rule: `dietary_tags.tag_group`, `condition_nutrient_limits.limit_basis`, `meal_tags.source`, `meals.weight_method`, `user_profiles.sex`, `user_profiles.activity_level`, `user_profiles.physiological_status`, `weight_logs.source`, `user_targets.reason`, `consumption_logs.slot`, and the widened `user_interactions.event_type`. v4.4 addition: `foods.external_source`. **Complete list made explicit in v4.8 (#60)** — also covered: `meals.quality_tier`, `foods.state`, `nutrients.unit`, `ingredients.review_status`, `condition_tag_restrictions.restriction_type`, `user_profiles.goal_type`, `user_health_conditions.severity`, `user_allergen_prefs.severity`, `user_ingredient_prefs.stance`, `meal_plan_items.slot` (`consumption_logs.slot` uses the same value set). Any new enum-like column follows the same rule.
+
+**Type mapping (v4.8, Decisions #56, #58):** surrogate PK → `mapped_column(BigInteger, Identity(always=True), primary_key=True)`; measured values → `Numeric(12, 3, asdecimal=False)` (exceptions in §15.2); FK columns → `index=True` per §15.3.
 
 **Migration note:** the initial migration must include `CREATE EXTENSION IF NOT EXISTS pg_trgm;` before creating the GIN indexes.
 
@@ -918,6 +963,19 @@ meal_ingredients.grams = -5       → rejected
 - `user_profiles.water_goal_ml = 100` → rejected; `NULL` → accepted
 - `health_conditions.fluid_goal_requires_clinician` defaults to `false`
 
+**New tests (v4.8):**
+- Every FK column is covered by an index (leading column of PK, UNIQUE or an index) — automated check over the SQLAlchemy metadata / `pg_index`
+- Every surrogate PK column is `bigint` with `attidentity = 'a'` (GENERATED ALWAYS) — automated check against `pg_attribute`
+- Inserting an explicit value into an identity PK without `OVERRIDING SYSTEM VALUE` → rejected
+- A `Numeric` column read through the ORM returns a Python `float`
+- `users.email = 'A@x.com'` → rejected (`email_lowercase`)
+- `meal_translations.lang = 'ARA'` → rejected; `'ar'` → accepted
+- `meal_ingredients.position = 0` → rejected
+- `meal_nutrients.amount_per_serving = -1` → rejected
+- `user_interactions` with `event_type = 'RATE'` and `value` NULL → rejected; `value = 6` → rejected
+- Hard-deleting a `meal` referenced by `consumption_logs` → rejected (RESTRICT)
+- `ingredients.review_status` defaults to `'PENDING'`
+
 After testing, roll back or delete temporary test data.
 
 ---
@@ -925,7 +983,7 @@ After testing, roll back or delete temporary test data.
 # 20. Initial Schema Implementation Workflow
 
 **Stage 1 — Environment:** PostgreSQL dev environment (Docker Compose); verify FastAPI/SQLAlchemy connection.
-**Stage 2 — Schema design review:** ✅ done through v4.2.
+**Stage 2 — Schema design review:** ✅ done through v4.8 (pre-Step-C consistency audit).
 **Stage 3 — SQLAlchemy models:** domain models using the shared Base.
 **Stage 4 — Alembic:** initial migration (with `pg_trgm`).
 **Stage 5 — Manual migration review:** PKs, composite PKs, FKs, delete behavior (§15.7), UNIQUE, partial unique index, CHECK, GIN indexes, nullability, JSONB.
@@ -981,18 +1039,20 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **v4.4: offline-first hybrid (#37); curated import scope (#38); `foods.external_source/external_code` (#39); §6.2 corrected (#40); per-value provenance deferred (#41)**
 - **v4.5: professional-practices backlog integrated after impact analysis (#42–#48); sync gap fixed with tombstones (#43)**
 - **v4.7: gout removed from the project (#54)**
+- **Step B done (2026-09-30):** Docker Compose PostgreSQL 16 + test DB profile, env-based settings, ruff/mypy/pre-commit, connection tests; SQLAlchemy pinned `>=2.0,<2.1` (#55)
+- **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.7. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
+**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.8 — **Step C (SQLAlchemy models)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
 
 ---
 
 # 25. Immediate Next Steps
 
-- **Step A — Final schema review:** ✅ done (v3 → v4 → v4.1 → v4.2 → v4.3 → v4.4 → v4.5 → v4.6 → v4.7)
-- **Step B — PostgreSQL environment:** Docker Compose + env-based configuration (§34.1) + code-quality tooling (§34.6) ← **next**
-- **Step C — SQLAlchemy model implementation** (user + Cursor Pro, based on this document)
+- **Step A — Final schema review:** ✅ done (v3 → v4 → v4.1 → v4.2 → v4.3 → v4.4 → v4.5 → v4.6 → v4.7 → v4.8)
+- **Step B — PostgreSQL environment:** Docker Compose + env-based configuration (§34.1) + code-quality tooling (§34.6) ✅ done (2026-09-30)
+- **Step C — SQLAlchemy model implementation** (user + Cursor Pro, based on this document) ← **current**
 - **Step D — Alembic initial migration:** generate and manually review
 - **Step E — Integrity validation:** positive/negative tests (§19)
 - **Step F — Schema freeze**
@@ -1150,8 +1210,9 @@ Each `meal_plan_items` row stores `reason_codes` produced **at plan time** by de
 - Body measurements beyond weight (waist, body-fat %)
 - Gout support (needs a licensed purine-content source + `high_purine` ingredient tagging) — removed from scope in v4.7 (Decision #54)
 - Packaged-product barcode scanning (Open Food Facts — license review needed, §31.5)
+- User-authored private meals (v4.8, Decision #59) — a separate USER-domain table referencing catalog data, so the dependency direction (§8) is kept
 
-None of these require a change to the Phase 1 schema.
+None of these require a change to the existing Phase 1 tables (some would add new tables).
 
 ---
 
