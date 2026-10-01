@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Identity,
+    Index,
     Numeric,
     String,
     func,
@@ -64,3 +65,13 @@ def enum_check(column: str, values: type[StrEnum], *, name: str) -> CheckConstra
 
 def lang_check(column: str, *, name: str) -> CheckConstraint:
     return CheckConstraint(f"{column} ~ '^[a-z]{{2}}$'", name=name)
+
+
+def trigram_index(column: str) -> Index:
+    """GIN pg_trgm index on a *_normalized search column (§15.9)."""
+    return Index(
+        None,
+        column,
+        postgresql_using="gin",
+        postgresql_ops={column: "gin_trgm_ops"},
+    )

@@ -1,5 +1,13 @@
 """Import every model so that Base.metadata is complete (Alembic relies on this)."""
 
+from app.db.models.catalog import (
+    Meal,
+    MealAllergen,
+    MealIngredient,
+    MealNutrient,
+    MealTag,
+    MealTranslation,
+)
 from app.db.models.reference import (
     Allergen,
     Category,
@@ -32,6 +40,12 @@ __all__ = [
     "IngredientAlias",
     "IngredientAllergen",
     "IngredientTag",
+    "Meal",
+    "MealAllergen",
+    "MealIngredient",
+    "MealNutrient",
+    "MealTag",
+    "MealTranslation",
     "Nutrient",
     "PortionFood",
 ]

@@ -6,7 +6,6 @@ from enum import StrEnum
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
-    Index,
     Integer,
     PrimaryKeyConstraint,
     String,
@@ -26,6 +25,7 @@ from app.db.types import (
     fk_column,
     lang_check,
     pk_column,
+    trigram_index,
     updated_at_column,
 )
 
@@ -299,12 +299,7 @@ class IngredientAlias(Base):
         UniqueConstraint("alias_text", "lang"),
         lang_check("lang", name="lang_iso639_1"),
         CheckConstraint("confidence BETWEEN 0 AND 1", name="confidence_range"),
-        Index(
-            None,
-            "alias_normalized",
-            postgresql_using="gin",
-            postgresql_ops={"alias_normalized": "gin_trgm_ops"},
-        ),
+        trigram_index("alias_normalized"),
     )
 
     alias_id: Mapped[int] = pk_column()

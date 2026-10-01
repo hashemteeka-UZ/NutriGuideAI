@@ -13,6 +13,7 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Index,
+    Integer,
     MetaData,
     Numeric,
     PrimaryKeyConstraint,
@@ -29,6 +30,7 @@ from sqlalchemy.exc import OperationalError
 import app.db.models  # noqa: F401  (registers every model on Base.metadata)
 from app.core.config import REPO_ROOT, get_settings
 from app.db.base import Base
+from app.db.models import catalog as cat
 from app.db.models import reference as ref
 
 PG_MAX_IDENTIFIER = 63
@@ -51,14 +53,36 @@ REFERENCE_TABLES = {
     "ingredient_tags",
 }
 
-EXPECTED_TABLES = REFERENCE_TABLES
+CATALOG_TABLES = {
+    "meals",
+    "meal_ingredients",
+    "meal_nutrients",
+    "meal_allergens",
+    "meal_tags",
+    "meal_translations",
+}
 
-# Junction tables and their composite PK (§9.8, §9.12, §9.13).
+EXPECTED_TABLES = REFERENCE_TABLES | CATALOG_TABLES
+
+# §8 dependency direction: tables each domain may reference.
+ALLOWED_FK_TARGETS = {
+    **dict.fromkeys(REFERENCE_TABLES, REFERENCE_TABLES),
+    **dict.fromkeys(CATALOG_TABLES, REFERENCE_TABLES | CATALOG_TABLES),
+}
+
+# Composite PKs (§9.8, §9.12, §9.13, §10.2-§10.6).
 COMPOSITE_PK = {
     "food_nutrients": ("food_id", "nutrient_id"),
     "ingredient_allergens": ("ingredient_id", "allergen_id"),
     "ingredient_tags": ("ingredient_id", "tag_id"),
+    "meal_ingredients": ("meal_id", "position"),
+    "meal_nutrients": ("meal_id", "nutrient_id"),
+    "meal_allergens": ("meal_id", "allergen_id"),
+    "meal_tags": ("meal_id", "tag_id"),
+    "meal_translations": ("meal_id", "lang"),
 }
+# Composite-PK columns that are not foreign keys.
+NON_FK_PK_COLUMNS = {("meal_ingredients", "position"), ("meal_translations", "lang")}
 SURROGATE_PK_TABLES = sorted(EXPECTED_TABLES - COMPOSITE_PK.keys())
 
 # §15.10 audit-column classes.
@@ -73,6 +97,7 @@ MUTABLE_TABLES = {
     "foods",
     "nutrients",
     "ingredients",
+    "meals",
 }
 NO_AUDIT_TABLES = {
     "food_nutrients",
@@ -80,6 +105,11 @@ NO_AUDIT_TABLES = {
     "ingredient_aliases",
     "ingredient_allergens",
     "ingredient_tags",
+    "meal_ingredients",
+    "meal_nutrients",
+    "meal_allergens",
+    "meal_tags",
+    "meal_translations",
 }
 
 # §17 enum-like columns: (table, column) -> allowed values.
@@ -91,7 +121,24 @@ ENUM_COLUMNS: dict[tuple[str, str], type[StrEnum]] = {
     ("foods", "state"): ref.FoodState,
     ("nutrients", "unit"): ref.NutrientUnit,
     ("ingredients", "review_status"): ref.ReviewStatus,
+    ("meals", "weight_method"): cat.WeightMethod,
+    ("meals", "quality_tier"): cat.QualityTier,
+    ("meal_tags", "source"): cat.MealTagSource,
 }
+
+# §15.5 ISO 639-1 language-code columns.
+LANG_COLUMNS = [
+    ("ingredient_aliases", "lang"),
+    ("meals", "default_lang"),
+    ("meal_translations", "lang"),
+]
+
+# §15.9 normalized search columns with a GIN pg_trgm index.
+TRIGRAM_COLUMNS = [
+    ("ingredient_aliases", "alias_normalized"),
+    ("meals", "name_normalized"),
+    ("meal_translations", "name_normalized"),
+]
 
 CONVENTION_PREFIX = {
     PrimaryKeyConstraint: "pk_",
@@ -158,7 +205,8 @@ def test_composite_pk(table_name: str) -> None:
     table = _table(table_name)
     assert tuple(c.name for c in table.primary_key.columns) == COMPOSITE_PK[table_name]
     for col in table.primary_key.columns:
-        assert col.foreign_keys, f"{table_name}.{col.name} should be an FK"
+        is_fk = bool(col.foreign_keys)
+        assert is_fk != ((table_name, col.name) in NON_FK_PK_COLUMNS), f"{table_name}.{col.name}"
         assert col.identity is None
 
 
@@ -270,6 +318,17 @@ EXPECTED_ONDELETE = {
     ("ingredient_allergens", "allergen_id"): "RESTRICT",
     ("ingredient_tags", "ingredient_id"): "CASCADE",
     ("ingredient_tags", "tag_id"): "RESTRICT",
+    ("meals", "cuisine_id"): "RESTRICT",
+    ("meal_ingredients", "meal_id"): "CASCADE",
+    ("meal_ingredients", "ingredient_id"): "RESTRICT",
+    ("meal_ingredients", "food_id"): "SET NULL",
+    ("meal_nutrients", "meal_id"): "CASCADE",
+    ("meal_nutrients", "nutrient_id"): "RESTRICT",
+    ("meal_allergens", "meal_id"): "CASCADE",
+    ("meal_allergens", "allergen_id"): "RESTRICT",
+    ("meal_tags", "meal_id"): "CASCADE",
+    ("meal_tags", "tag_id"): "RESTRICT",
+    ("meal_translations", "meal_id"): "CASCADE",
 }
 
 
@@ -282,10 +341,11 @@ def test_ondelete_policy_matches_expected() -> None:
     assert actual == EXPECTED_ONDELETE
 
 
-@pytest.mark.parametrize("table_name", sorted(REFERENCE_TABLES))
-def test_reference_depends_only_on_reference(table_name: str) -> None:
+@pytest.mark.parametrize("table_name", sorted(EXPECTED_TABLES))
+def test_dependency_direction(table_name: str) -> None:
+    allowed = ALLOWED_FK_TARGETS[table_name]
     for fk in _table(table_name).foreign_keys:
-        assert fk.column.table.name in REFERENCE_TABLES, f"{table_name} -> {fk.target_fullname}"
+        assert fk.column.table.name in allowed, f"{table_name} -> {fk.target_fullname}"
 
 
 def test_foods_identity_constraints() -> None:
@@ -311,13 +371,71 @@ def test_condition_tag_restrictions_checks() -> None:
     )
 
 
-def test_ingredient_aliases_search_index() -> None:
-    aliases = _table("ingredient_aliases")
-    assert ("alias_text", "lang") in _unique_column_sets(aliases)
-    gin = [ix for ix in aliases.indexes if ix.dialect_options["postgresql"]["using"] == "gin"]
+def test_ingredient_aliases_unique_text_per_lang() -> None:
+    assert ("alias_text", "lang") in _unique_column_sets(_table("ingredient_aliases"))
+
+
+@pytest.mark.parametrize(("table_name", "column"), TRIGRAM_COLUMNS)
+def test_trigram_search_index(table_name: str, column: str) -> None:
+    table = _table(table_name)
+    assert table.c[column].nullable is False
+    gin = [ix for ix in table.indexes if ix.dialect_options["postgresql"]["using"] == "gin"]
     assert len(gin) == 1
-    assert [c.name for c in gin[0].columns] == ["alias_normalized"]
-    assert gin[0].dialect_options["postgresql"]["ops"] == {"alias_normalized": "gin_trgm_ops"}
+    assert [c.name for c in gin[0].columns] == [column]
+    assert gin[0].dialect_options["postgresql"]["ops"] == {column: "gin_trgm_ops"}
+
+
+@pytest.mark.parametrize(("table_name", "column"), LANG_COLUMNS)
+def test_language_code_column(table_name: str, column: str) -> None:
+    table = _table(table_name)
+    col_type = table.c[column].type
+    assert isinstance(col_type, String)
+    assert col_type.length == 2
+    assert table.c[column].nullable is False
+    checks = {str(c.sqltext) for c in table.constraints if isinstance(c, CheckConstraint)}
+    assert f"{column} ~ '^[a-z]{{2}}$'" in checks
+
+
+def _checks(table_name: str) -> set[str]:
+    return {
+        str(c.sqltext) for c in _table(table_name).constraints if isinstance(c, CheckConstraint)
+    }
+
+
+def test_meals_columns_and_checks() -> None:
+    meals = _table("meals")
+    assert not {"owner_user_id", "visibility"} & set(meals.columns.keys())
+    assert isinstance(meals.c.servings.type, Integer)
+    assert meals.c.cuisine_id.nullable is True
+    assert meals.c.ref_external.nullable is True
+    assert meals.c.source_license.nullable is False
+    assert ("source", "ref_external") in _unique_column_sets(meals)
+    assert {"servings > 0", "total_grams > 0"} <= _checks("meals")
+
+
+def test_meal_translations_description_is_optional() -> None:
+    assert _table("meal_translations").c.description.nullable is True
+    assert "description" not in _table("meals").columns
+
+
+def test_meal_ingredients_columns_and_checks() -> None:
+    table = _table("meal_ingredients")
+    assert isinstance(table.c.position.type, Integer)
+    assert table.c.food_id.nullable is True
+    assert table.c.ingredient_id.nullable is False
+    assert table.c.text_original.nullable is True
+    assert {
+        "grams > 0",
+        "position >= 1",
+        "mapping_confidence BETWEEN 0 AND 1",
+    } <= _checks("meal_ingredients")
+
+
+def test_meal_nutrients_not_null_and_non_negative() -> None:
+    table = _table("meal_nutrients")
+    for column in ("amount_per_serving", "amount_per_100g", "computed_at", "computation_version"):
+        assert table.c[column].nullable is False, column
+    assert {"amount_per_serving >= 0", "amount_per_100g >= 0"} <= _checks("meal_nutrients")
 
 
 def test_server_defaults() -> None:
@@ -330,6 +448,9 @@ def test_server_defaults() -> None:
     assert default_sql("health_conditions", "is_supported") == "false"
     assert default_sql("health_conditions", "fluid_goal_requires_clinician") == "false"
     assert default_sql("nutrients", "is_mandatory") == "false"
+    assert default_sql("meals", "is_active") == "true"
+    assert default_sql("meals", "is_verified") == "false"
+    assert default_sql("meals", "ingested_at") == "now()"
 
 
 # --- DDL smoke test (db_test, docker compose profile "test") ------------------
