@@ -1,13 +1,25 @@
-# PROJECT_CONTEXT.md — v4.8
+# PROJECT_CONTEXT.md — v4.9
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.8 → v4.9
+
+v4.9 closes **Step C** (SQLAlchemy models, 2026-10-01). The 34 tables were implemented by Cursor in three reviewed passes (C-1 Reference `0024f8a`, C-2 Catalog `2d688dd`, C-3 User `7ea053f`). Each pass surfaced details the document left implicit; the user approved the resolutions below during the passes (DEV_JOURNAL J-024). No table was added or removed.
+
+| # | Topic | Resolution (short) | Schema? |
+|---|---|---|---|
+| 61 | FK delete policy for relationships §15.7 did not list | Default `RESTRICT` for every unlisted FK, **except** `food` → `food_nutrients`, `portions_food` = `CASCADE` (fully owned child data). Full list in §15.7 | Yes (FK actions) |
+| 62 | FK index coverage and long names | Partial (`WHERE`) and GIN indexes do **not** count as FK coverage (§15.3) → plain `user_id` indexes on `consumption_logs`, `water_logs`; `refresh_tokens.replaced_by_token_id` indexed. A convention name longer than 63 characters gets a shorter explicit name (§17), e.g. `uq_condition_nutrient_limits_condition_nutrient_basis` | Yes (indexes, one name) |
+| 63 | Nullability, defaults and small constraints left implicit | `meals.ref_external` nullable + `UNIQUE (source, ref_external)`; `meal_ingredients.text_original` and `meal_translations.description` nullable; defaults `meals.is_verified = false`, `meals.ingested_at = now()`, `meal_plan_items.was_swapped = false`, `user_interactions.context = '{}'` (NOT NULL), `refresh_tokens.issued_at = now()`; `weight_logs.updated_at` has **no** default (device time, §33.4); `condition_tag_restrictions` `max_servings_positive`; `foods.fdc_id` `INTEGER`. Columns not stated as nullable are `NOT NULL` | Yes (constraints/defaults) |
 
 ---
 
@@ -382,6 +394,7 @@ Condition rules expressed as "avoid/limit this kind of food".
 - `tag_id` FK → `dietary_tags` (application/seed QC: tag must have `tag_group = 'CONDITION'`)
 - `restriction_type` — `AVOID` / `LIMIT` (VARCHAR + CHECK)
 - `max_servings_per_week` — **NEW in v4.2** — nullable integer, meaningful only for `LIMIT` (`CHECK (restriction_type = 'LIMIT' OR max_servings_per_week IS NULL)`). Gives `LIMIT` an enforceable meaning for the optimizer (§28, Layer 3).
+- `CHECK (max_servings_per_week IS NULL OR max_servings_per_week > 0)` (name `max_servings_positive`, v4.9, #63). A `LIMIT` row may leave it NULL.
 - `UNIQUE (condition_id, tag_id)`
 
 Example: hypertension → `LIMIT` `high_sodium`. Tags are applied at ingredient level (`ingredient_tags`, §9.13) and propagated to meals (§10.5).
@@ -389,6 +402,7 @@ Example: hypertension → `LIMIT` `high_sodium`. Tags are applied at ingredient 
 ## 9.6 `foods`
 `food_id` = internal PK, `fdc_id` = external USDA/FDC identifier (kept separate).
 - `food_id` PK, `fdc_id` UNIQUE where applicable (nullable — the *primary* FDC ID when one exists), `description`, `data_type`, `category_id` FK, `basis_grams`
+- `fdc_id` — `INTEGER` (v4.9)
 - `data_type` — `VARCHAR` nullable — the source's own data-type label (e.g. FDC `foundation_food`), stored for traceability only; no CHECK (v4.8, #60)
 - `external_source` — **NEW in v4.4 (Decision #39)** — `VARCHAR NOT NULL` + CHECK (initial set: `FNDDS_INGREDIENT`, `FNDDS_FOOD`, `FDC`, `TEAM_TEMPLATE`, `MANUAL`) — which source system the row was imported from
 - `external_code` — **NEW in v4.4** — `VARCHAR NOT NULL` — the row's identifier inside that source (e.g. NDB number `1001`, FNDDS food code `99992405`, template ID `ING-0001`)
@@ -465,7 +479,7 @@ Source of truth for ingredient-level properties — primarily `tag_group = 'COND
 
 ## 10.1 `meals` — CHANGED in v4.2 (Decisions #25, #28)
 - `meal_id` PK
-- `ref_external` — external/source identifier
+- `ref_external` — external/source identifier — nullable (team-authored recipes may have none); `UNIQUE (source, ref_external)` prevents importing the same recipe twice; NULLs are distinct (v4.9, #63)
 - `name` — source-language name; `default_lang`
 - `name_normalized` — **NEW** — normalized search form of `name` (§15.9), GIN `pg_trgm` index
 - `servings` — `INTEGER NOT NULL` (v4.8); `total_grams` — `NUMERIC(12,3) NOT NULL`
@@ -474,9 +488,9 @@ Source of truth for ingredient-level properties — primarily `tag_group = 'COND
 - `cuisine_id` FK → `cuisines`, nullable
 - `source`, `source_license`
 - `quality_tier` — `GOLD` / `SILVER`
-- `is_verified`
+- `is_verified` — `BOOLEAN NOT NULL DEFAULT false` (v4.9)
 - `is_active` — `BOOLEAN NOT NULL DEFAULT true` (soft delete, §15.8)
-- `ingested_at`, `dataset_version`
+- `ingested_at` — `TIMESTAMPTZ NOT NULL DEFAULT now()` (v4.9), `dataset_version`
 
 Constraints: `servings > 0`, `total_grams > 0`
 
@@ -488,7 +502,7 @@ Constraints: `servings > 0`, `total_grams > 0`
 ## 10.2 `meal_ingredients`
 - `meal_id` FK, `position`, `ingredient_id` FK, `food_id` FK (nullable when mapping not yet accepted)
 - `grams` numeric NOT NULL — the weight **as added to the recipe**, in the `state` of the referenced `foods` row (normally `raw`)
-- `text_original` (traceability only), `mapping_confidence` — `NUMERIC(4,3)` nullable, `CHECK (mapping_confidence BETWEEN 0 AND 1)` (v4.8)
+- `text_original` (traceability only, nullable — v4.9), `mapping_confidence` — `NUMERIC(4,3)` nullable, `CHECK (mapping_confidence BETWEEN 0 AND 1)` (v4.8)
 - PK: `(meal_id, position)`
 - `CHECK (grams > 0)`, `CHECK (position >= 1)` (v4.8)
 
@@ -519,6 +533,7 @@ Rules:
 
 ## 10.6 `meal_translations` — CHANGED in v4.2 (Decision #28)
 - `meal_id`, `lang`, `name`, `description` — PK: `(meal_id, lang)`
+- `description` — nullable (v4.9, #63); `meals` has no description column
 - `name_normalized` — **NEW** — normalized search form (§15.9), GIN `pg_trgm` index
 
 Holds only additional (non-default) languages. Fallback: `meals.name` + `meals.default_lang`.
@@ -569,6 +584,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `event_type` CHECK widened to: `IMPRESSION`, `ACCEPT`, `VIEW`, `SAVE`, `RATE`, `COOK`, `SKIP`, `SWAP_OUT`
   - `IMPRESSION` — the system showed/recommended this meal to the user (needed so the ML layer and its offline evaluation know what was offered, not only what was chosen)
   - `ACCEPT` — the user kept/accepted a recommended meal
+- `context` — `JSONB NOT NULL DEFAULT '{}'` (v4.9, #63)
 - `context` convention (documented, not enforced): `{"plan_id":…, "slot":…, "algorithm_version":…, "score":…, "position":…}`
 - `client_uuid` — **NEW in v4.4 (Decision #37)** — `UUID` nullable, `UNIQUE` — generated on the phone when the event is recorded offline; makes sync idempotent (a retried upload never creates a duplicate)
 - Index: `(user_id, created_at)`
@@ -582,6 +598,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 
 ## 11.8 `meal_plan_items` — CHANGED in v4.2 (Decision #21)
 - `id`, `plan_id`, `day_index`, `slot`, `meal_id`, `servings_multiplier`, `was_swapped`, `created_at`, `updated_at`
+- `was_swapped` — `BOOLEAN NOT NULL DEFAULT false` (v4.9)
 - `reason_codes` — **NEW in v4.5 (Decision #46)** — `JSONB NOT NULL DEFAULT '[]'` — list of explanation codes generated at plan time from Layer-1 rules and targets (§28.6); cached with the plan so explanations work offline
 - `slot` CHECK (`BREAKFAST`, `LUNCH`, `DINNER`, `SNACK`); Ramadan mode later widens it (`SUHOOR`, `IFTAR`) — §29
 - `servings_multiplier` — `CHECK (servings_multiplier IN (0.5, 1.0, 1.5, 2.0))` — discrete steps, matching the optimizer's decision variables (§28, Layer 3)
@@ -610,7 +627,7 @@ Constraints:
 - `CHECK (food_id IS NULL OR (grams_consumed > 0 AND servings_consumed IS NULL))`
 - `CHECK (plan_item_id IS NULL OR meal_id IS NOT NULL)`
 - `UNIQUE (client_uuid)`
-- Index: `(user_id, log_date) WHERE deleted_at IS NULL` (partial index — active logs only)
+- Index: `(user_id, log_date) WHERE deleted_at IS NULL` (partial index — active logs only) + plain index `(user_id)` for FK coverage (v4.9, #62)
 
 Application rule: when `plan_item_id` is set, `meal_id` must equal that plan item's `meal_id` (a swapped meal is recorded by first updating the plan item, `was_swapped = true`).
 
@@ -622,6 +639,7 @@ Application rule: when `plan_item_id` is set, `meal_id` must equal that plan ite
 - `source` — CHECK (`MANUAL`) — widened later if device sync is added
 - `created_at`
 - `updated_at` — **NEW in v4.5 (Decision #44)** — `TIMESTAMPTZ NOT NULL` — time of the last edit as recorded on the device (server rejects values in the future beyond a small clock-skew tolerance)
+  - No server default and no ORM `onupdate`: the client must send it; a server-supplied time could wrongly win last-write-wins (v4.9, #63)
 - `UNIQUE (user_id, measured_on)` — one value per day; a same-day entry is an **upsert**, and the row with the newer `updated_at` wins (last-write-wins, §33.4)
 
 Current weight = row with the latest `measured_on`. Onboarding writes the first row. Future body measurements (waist, body-fat %) are Documented Future Work, not a Phase 1 table.
@@ -653,7 +671,8 @@ Server state for refresh-token rotation with reuse detection (§34.2).
 - `expires_at` — `TIMESTAMPTZ NOT NULL`, `CHECK (expires_at > issued_at)`
 - `revoked_at` — `TIMESTAMPTZ` nullable
 - `replaced_by_token_id` — FK → `refresh_tokens` (SET NULL), nullable
-- Index: `(user_id)`, `(family_id)`
+- Index: `(user_id)`, `(family_id)`, `(replaced_by_token_id)` (FK coverage, v4.9)
+- `issued_at` default `now()` (v4.9)
 
 Rule: using a refresh token that was already rotated (reuse) revokes the **whole family** — standard theft detection.
 
@@ -667,7 +686,7 @@ Append-only log of drinking water, same pattern as `consumption_logs` (§11.9).
 - `client_uuid` — `UUID` nullable, `UNIQUE` — idempotent offline sync (§33.4)
 - `created_at` — `TIMESTAMPTZ NOT NULL` (server receive time)
 - `deleted_at` — `TIMESTAMPTZ` nullable — tombstone; corrections = tombstone + new row (same rule as §11.9)
-- Index: `(user_id, log_date) WHERE deleted_at IS NULL` (partial index)
+- Index: `(user_id, log_date) WHERE deleted_at IS NULL` (partial index) + plain index `(user_id)` for FK coverage (v4.9, #62)
 
 Daily water total = `SUM(amount_ml)` of active rows for `(user_id, log_date)` — computed, not stored (§18.11). Water is shown next to adherence but does **not** change the day status of §30.5. Only plain water is logged here; other beverages with energy/nutrients are logged as foods/meals in `consumption_logs`. Reminder settings are **not** stored in the database (Decision #51).
 
@@ -784,7 +803,7 @@ All `Numeric` columns are mapped with `asdecimal=False`, so application code wor
 ## 15.3 Constraints protect the dataset
 `NOT NULL`, `FOREIGN KEY`, `UNIQUE`, `CHECK`, appropriate indexes.
 
-**FK index rule (v4.8, Decision #57):** PostgreSQL does not create an index for a foreign key. Every FK column gets an index (`index=True`, named by the §17 convention) **unless** it is the leading column of the table's PK, of a UNIQUE constraint, or of a composite index already declared (leftmost-prefix rule). Example: in `meal_tags` PK `(meal_id, tag_id)` covers `meal_id`, so `tag_id` needs its own index — this is the hard-filtering path (§28.1). An automated test enforces the rule (§19, v4.8).
+**FK index rule (v4.8, Decision #57):** PostgreSQL does not create an index for a foreign key. Every FK column gets an index (`index=True`, named by the §17 convention) **unless** it is the leading column of the table's PK, of a UNIQUE constraint, or of a composite index already declared (leftmost-prefix rule). Example: in `meal_tags` PK `(meal_id, tag_id)` covers `meal_id`, so `tag_id` needs its own index — this is the hard-filtering path (§28.1). An automated test enforces the rule (§19, v4.8). **Partial and GIN indexes do not count as coverage** (PostgreSQL cannot use them for the lookups behind FK actions) — v4.9, #62.
 
 ## 15.4 Normalize first, denormalize only deliberately
 Intentional derived/snapshot structures and their justification:
@@ -807,6 +826,7 @@ Integrity rules in the DB (CHECK, FK). Health rules live in the DB **as data** (
 | `ingredient` referenced by `meal_ingredients` | `RESTRICT` | Deprecate, don't delete |
 | `ingredient` → `ingredient_allergens`, `ingredient_tags`, `ingredient_aliases` | `CASCADE` | Fully owned child data |
 | `dietary_tags` referenced by `meal_tags`, `ingredient_tags`, `condition_tag_restrictions` | `RESTRICT` | A tag in use by rules/data must not vanish silently |
+| `food` → `food_nutrients`, `portions_food` (NEW v4.9, #61) | `CASCADE` | Fully owned child data |
 | `food` referenced by `ingredients.default_food_id` | `SET NULL` | Ingredient concept survives |
 | `food` referenced by `meal_ingredients.food_id` | `SET NULL` | Uncertain mappings shouldn't break the meal |
 | `food` referenced by `consumption_logs.food_id` | `RESTRICT` | Never corrupt user history |
@@ -817,6 +837,8 @@ Integrity rules in the DB (CHECK, FK). Health rules live in the DB **as data** (
 | `meal_plan_items` referenced by `consumption_logs.plan_item_id` | `SET NULL` | Eating history survives plan deletion |
 | `user_targets` referenced by `meal_plans.target_id` | `SET NULL` | Snapshot remains in `target_snapshot` |
 | `meal` referenced by `user_interactions` / `meal_plan_items` / `consumption_logs` | `RESTRICT` (explicit, v4.8) — and **no hard delete, §15.8** | Preserve user history; RESTRICT is the safety net if a hard delete is ever attempted |
+
+**Default for any FK not listed above (v4.9, #61): `RESTRICT`.** These are: `foods.category_id`, `food_nutrients.nutrient_id`, `condition_nutrient_limits.nutrient_id`, `ingredient_allergens.allergen_id`, `meals.cuisine_id`, `meal_nutrients.nutrient_id`, `meal_allergens.allergen_id`, `user_allergen_prefs.allergen_id`, `user_ingredient_prefs.ingredient_id`. Reference/classification rows in use must not vanish silently.
 
 ## 15.8 Meals use soft delete, never hard delete
 `meals.is_active BOOLEAN NOT NULL DEFAULT true`. Inactive meals are excluded from search/recommendation but remain intact for history.
@@ -880,7 +902,7 @@ NAMING_CONVENTION = {
 class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
 ```
-Every `CheckConstraint` receives an explicit short `name=` (e.g. `grams_positive`, `one_target`), producing names like `ck_meal_ingredients_grams_positive`. Names longer than PostgreSQL's 63-character limit must be shortened manually in the model, never truncated silently. This makes autogenerated migrations deterministic, reviewable and reversible.
+Every `CheckConstraint` receives an explicit short `name=` (e.g. `grams_positive`, `one_target`), producing names like `ck_meal_ingredients_grams_positive`. Names longer than PostgreSQL's 63-character limit must be shortened manually in the model, never truncated silently (the only case so far: `uq_condition_nutrient_limits_condition_nutrient_basis`, v4.9). Text columns are mapped as `String()` and appear as `VARCHAR` (no length) in the DDL — identical to `TEXT` in PostgreSQL. This makes autogenerated migrations deterministic, reviewable and reversible.
 
 ---
 
@@ -983,7 +1005,7 @@ After testing, roll back or delete temporary test data.
 # 20. Initial Schema Implementation Workflow
 
 **Stage 1 — Environment:** PostgreSQL dev environment (Docker Compose); verify FastAPI/SQLAlchemy connection.
-**Stage 2 — Schema design review:** ✅ done through v4.8 (pre-Step-C consistency audit).
+**Stage 2 — Schema design review:** ✅ done through v4.8 (pre-Step-C consistency audit); implementation details settled in v4.9.
 **Stage 3 — SQLAlchemy models:** domain models using the shared Base.
 **Stage 4 — Alembic:** initial migration (with `pg_trgm`).
 **Stage 5 — Manual migration review:** PKs, composite PKs, FKs, delete behavior (§15.7), UNIQUE, partial unique index, CHECK, GIN indexes, nullability, JSONB.
@@ -1040,11 +1062,13 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **v4.5: professional-practices backlog integrated after impact analysis (#42–#48); sync gap fixed with tombstones (#43)**
 - **v4.7: gout removed from the project (#54)**
 - **Step B done (2026-09-30):** Docker Compose PostgreSQL 16 + test DB profile, env-based settings, ruff/mypy/pre-commit, connection tests; SQLAlchemy pinned `>=2.0,<2.1` (#55)
+- **Step C done (2026-10-01):** 34 tables in `backend/app/db/models/` (`reference.py`, `catalog.py`, `user.py`), metadata tests + DDL smoke test on the test DB; commits `0024f8a`, `2d688dd`, `7ea053f`
+- **v4.9: Step C implementation details (#61–#63)**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.8 — **Step C (SQLAlchemy models)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
+**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.9 — **Step D (Alembic initial migration)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
 
 ---
 
@@ -1052,8 +1076,8 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 
 - **Step A — Final schema review:** ✅ done (v3 → v4 → v4.1 → v4.2 → v4.3 → v4.4 → v4.5 → v4.6 → v4.7 → v4.8)
 - **Step B — PostgreSQL environment:** Docker Compose + env-based configuration (§34.1) + code-quality tooling (§34.6) ✅ done (2026-09-30)
-- **Step C — SQLAlchemy model implementation** (user + Cursor Pro, based on this document) ← **current**
-- **Step D — Alembic initial migration:** generate and manually review
+- **Step C — SQLAlchemy model implementation** (user + Cursor Pro, based on this document) ✅ done (2026-10-01)
+- **Step D — Alembic initial migration:** generate and manually review ← **current**
 - **Step E — Integrity validation:** positive/negative tests (§19)
 - **Step F — Schema freeze**
 - **Step F.1 — Vertical slice (NEW in v4.2, Decision #33):** after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
