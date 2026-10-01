@@ -1,7 +1,7 @@
 # NutriGuideAI
 
 Nutrition / meal recommendation project. Architecture and decisions live in
-[`docs/PROJECT_CONTEXT_v4_7.md`](docs/PROJECT_CONTEXT_v4_7.md).
+[`docs/PROJECT_CONTEXT_v4_9.md`](docs/PROJECT_CONTEXT_v4_9.md).
 
 ## Local development
 
@@ -36,5 +36,19 @@ uv run --project backend pre-commit run --all-files
 The optional `db_test` service (throwaway database, no persistent volume) is
 reserved for the integrity tests and is started with
 `docker compose --profile test up -d db_test`.
+
+## Database migrations
+
+Alembic lives in `backend/` and reads the database URL from `DATABASE_URL` in `.env`.
+Run from `backend/`:
+
+```bash
+uv run alembic upgrade head    # create / update the schema
+uv run alembic downgrade base  # WIPES the whole schema (all tables and data)
+uv run alembic check           # fails if the models and migrations differ
+```
+
+Never edit a migration after it is committed; create a new revision instead
+(`uv run alembic revision --autogenerate -m "..."`, then review the file by hand).
 
 Stop the database with `docker compose down` (add `-v` to delete its data volume).

@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "NutriGuideAI backend (FastAPI + SQLAlchemy 2.0 + PostgreSQL)"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "alembic>=1.20.0",
     "fastapi>=0.142.1",
     "psycopg[binary]>=3.1",
     "pydantic-settings>=2.15.0",
@@ -45,13 +46,21 @@ select = [
     "RUF", # ruff-specific
 ]
 
+[tool.ruff.lint.isort]
+# The local alembic/ migration folder would otherwise make ruff treat the package as first-party.
+known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+# Generated migrations keep long CHECK expressions on one line, identical to the model SQL.
+"alembic/versions/*.py" = ["E501"]
+
 [tool.ruff.format]
 quote-style = "double"
 
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["app"]
+files = ["app", "alembic"]
 plugins = ["pydantic.mypy"]
 
 [tool.pydantic-mypy]
