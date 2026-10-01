@@ -9,6 +9,7 @@ from sqlalchemy import (
     BigInteger,
     CheckConstraint,
     Column,
+    DateTime,
     Enum,
     ForeignKey,
     ForeignKeyConstraint,
@@ -17,13 +18,16 @@ from sqlalchemy import (
     MetaData,
     Numeric,
     PrimaryKeyConstraint,
+    SmallInteger,
     String,
     Table,
     UniqueConstraint,
+    Uuid,
     create_engine,
     inspect,
     text,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.exc import OperationalError
 
@@ -32,6 +36,7 @@ from app.core.config import REPO_ROOT, get_settings
 from app.db.base import Base
 from app.db.models import catalog as cat
 from app.db.models import reference as ref
+from app.db.models import user as usr
 
 PG_MAX_IDENTIFIER = 63
 
@@ -62,15 +67,32 @@ CATALOG_TABLES = {
     "meal_translations",
 }
 
-EXPECTED_TABLES = REFERENCE_TABLES | CATALOG_TABLES
+USER_TABLES = {
+    "users",
+    "user_profiles",
+    "user_health_conditions",
+    "user_allergen_prefs",
+    "user_ingredient_prefs",
+    "user_interactions",
+    "meal_plans",
+    "meal_plan_items",
+    "consumption_logs",
+    "weight_logs",
+    "user_targets",
+    "refresh_tokens",
+    "water_logs",
+}
+
+EXPECTED_TABLES = REFERENCE_TABLES | CATALOG_TABLES | USER_TABLES
 
 # §8 dependency direction: tables each domain may reference.
 ALLOWED_FK_TARGETS = {
     **dict.fromkeys(REFERENCE_TABLES, REFERENCE_TABLES),
     **dict.fromkeys(CATALOG_TABLES, REFERENCE_TABLES | CATALOG_TABLES),
+    **dict.fromkeys(USER_TABLES, EXPECTED_TABLES),
 }
 
-# Composite PKs (§9.8, §9.12, §9.13, §10.2-§10.6).
+# Composite PKs (§9.8, §9.12, §9.13, §10.2-§10.6, §11.4, §11.5).
 COMPOSITE_PK = {
     "food_nutrients": ("food_id", "nutrient_id"),
     "ingredient_allergens": ("ingredient_id", "allergen_id"),
@@ -80,10 +102,14 @@ COMPOSITE_PK = {
     "meal_allergens": ("meal_id", "allergen_id"),
     "meal_tags": ("meal_id", "tag_id"),
     "meal_translations": ("meal_id", "lang"),
+    "user_allergen_prefs": ("user_id", "allergen_id"),
+    "user_ingredient_prefs": ("user_id", "ingredient_id"),
 }
 # Composite-PK columns that are not foreign keys.
 NON_FK_PK_COLUMNS = {("meal_ingredients", "position"), ("meal_translations", "lang")}
-SURROGATE_PK_TABLES = sorted(EXPECTED_TABLES - COMPOSITE_PK.keys())
+# Single-column PKs that are also the FK to the parent (1:1, §11.2).
+FK_AS_PK = {"user_profiles": "user_id"}
+SURROGATE_PK_TABLES = sorted(EXPECTED_TABLES - COMPOSITE_PK.keys() - FK_AS_PK.keys())
 
 # §15.10 audit-column classes.
 MUTABLE_TABLES = {
@@ -98,7 +124,26 @@ MUTABLE_TABLES = {
     "nutrients",
     "ingredients",
     "meals",
+    "users",
+    "user_profiles",
+    "user_health_conditions",
+    "user_allergen_prefs",
+    "user_ingredient_prefs",
+    "meal_plans",
+    "meal_plan_items",
+    "weight_logs",
 }
+# weight_logs.updated_at is client-supplied (§11.10), so the ORM must not maintain it.
+CLIENT_UPDATED_AT_TABLES = {"weight_logs"}
+APPEND_ONLY_TABLES = {
+    "consumption_logs",
+    "water_logs",
+    "user_interactions",
+    "user_targets",
+    "refresh_tokens",
+}
+# refresh_tokens.issued_at serves as created_at (§15.10).
+CREATED_AT_COLUMN = {"refresh_tokens": "issued_at"}
 NO_AUDIT_TABLES = {
     "food_nutrients",
     "portions_food",
@@ -124,7 +169,29 @@ ENUM_COLUMNS: dict[tuple[str, str], type[StrEnum]] = {
     ("meals", "weight_method"): cat.WeightMethod,
     ("meals", "quality_tier"): cat.QualityTier,
     ("meal_tags", "source"): cat.MealTagSource,
+    ("user_profiles", "sex"): usr.Sex,
+    ("user_profiles", "activity_level"): usr.ActivityLevel,
+    ("user_profiles", "goal_type"): usr.GoalType,
+    ("user_profiles", "physiological_status"): usr.PhysiologicalStatus,
+    ("user_health_conditions", "severity"): usr.ConditionSeverity,
+    ("user_allergen_prefs", "severity"): usr.AllergenSeverity,
+    ("user_ingredient_prefs", "stance"): usr.IngredientStance,
+    ("user_interactions", "event_type"): usr.InteractionEventType,
+    ("meal_plan_items", "slot"): usr.MealSlot,
+    ("consumption_logs", "slot"): usr.MealSlot,
+    ("weight_logs", "source"): usr.WeightSource,
+    ("user_targets", "reason"): usr.TargetReason,
 }
+
+# §15.2 precision exceptions; every other Numeric column is NUMERIC(12,3).
+NUMERIC_PRECISION_EXCEPTIONS = {
+    ("ingredient_aliases", "confidence"): (4, 3),
+    ("meal_ingredients", "mapping_confidence"): (4, 3),
+    ("meal_plan_items", "servings_multiplier"): (3, 2),
+}
+
+# Client-generated identifiers (§15.1, §33.4).
+CLIENT_UUID_TABLES = ["user_interactions", "consumption_logs", "water_logs"]
 
 # §15.5 ISO 639-1 language-code columns.
 LANG_COLUMNS = [
@@ -210,6 +277,16 @@ def test_composite_pk(table_name: str) -> None:
         assert col.identity is None
 
 
+@pytest.mark.parametrize(("table_name", "column"), sorted(FK_AS_PK.items()))
+def test_fk_as_pk(table_name: str, column: str) -> None:
+    table = _table(table_name)
+    assert [c.name for c in table.primary_key.columns] == [column]
+    col = table.c[column]
+    assert col.foreign_keys
+    assert col.identity is None
+    assert isinstance(col.type, BigInteger)
+
+
 @pytest.mark.parametrize("table_name", sorted(EXPECTED_TABLES))
 def test_fk_columns_are_bigint(table_name: str) -> None:
     for col in _fk_columns(_table(table_name)):
@@ -263,6 +340,15 @@ def test_numeric_columns_return_float(table_name: str) -> None:
 
 
 @pytest.mark.parametrize("table_name", sorted(EXPECTED_TABLES))
+def test_numeric_precision(table_name: str) -> None:
+    for col in _table(table_name).columns:
+        if isinstance(col.type, Numeric):
+            expected = NUMERIC_PRECISION_EXCEPTIONS.get((table_name, col.name), (12, 3))
+            actual = (col.type.precision, col.type.scale)
+            assert actual == expected, f"{table_name}.{col.name}"
+
+
+@pytest.mark.parametrize("table_name", sorted(EXPECTED_TABLES))
 def test_constraint_and_index_names(table_name: str) -> None:
     table = _table(table_name)
     for constraint in table.constraints:
@@ -279,13 +365,32 @@ def test_constraint_and_index_names(table_name: str) -> None:
 
 @pytest.mark.parametrize("table_name", sorted(EXPECTED_TABLES))
 def test_audit_columns_match_table_class(table_name: str) -> None:
-    columns = set(_table(table_name).columns.keys())
+    table = _table(table_name)
+    columns = set(table.columns.keys())
     if table_name in MUTABLE_TABLES:
         assert {"created_at", "updated_at"} <= columns
+        updated_at = table.c.updated_at
+        assert updated_at.nullable is False
+        if table_name in CLIENT_UPDATED_AT_TABLES:
+            assert updated_at.onupdate is None
+            assert updated_at.server_default is None
+        else:
+            assert updated_at.onupdate is not None
+            assert updated_at.server_default is not None
+    elif table_name in APPEND_ONLY_TABLES:
+        assert "updated_at" not in columns
+        created = CREATED_AT_COLUMN.get(table_name, "created_at")
+        assert created in columns
+        if created != "created_at":
+            assert "created_at" not in columns
     elif table_name in NO_AUDIT_TABLES:
         assert not {"created_at", "updated_at"} & columns
     else:
         pytest.fail(f"{table_name} is not assigned to a §15.10 class in this test")
+    for name in ("created_at", "updated_at", CREATED_AT_COLUMN.get(table_name)):
+        if name in columns:
+            col_type = table.c[name].type
+            assert isinstance(col_type, DateTime) and col_type.timezone is True, name
 
 
 @pytest.mark.parametrize(("table_name", "column"), sorted(ENUM_COLUMNS))
@@ -329,6 +434,28 @@ EXPECTED_ONDELETE = {
     ("meal_tags", "meal_id"): "CASCADE",
     ("meal_tags", "tag_id"): "RESTRICT",
     ("meal_translations", "meal_id"): "CASCADE",
+    ("user_profiles", "user_id"): "CASCADE",
+    ("user_health_conditions", "user_id"): "CASCADE",
+    ("user_health_conditions", "condition_id"): "RESTRICT",
+    ("user_allergen_prefs", "user_id"): "CASCADE",
+    ("user_allergen_prefs", "allergen_id"): "RESTRICT",
+    ("user_ingredient_prefs", "user_id"): "CASCADE",
+    ("user_ingredient_prefs", "ingredient_id"): "RESTRICT",
+    ("user_interactions", "user_id"): "CASCADE",
+    ("user_interactions", "meal_id"): "RESTRICT",
+    ("meal_plans", "user_id"): "CASCADE",
+    ("meal_plans", "target_id"): "SET NULL",
+    ("meal_plan_items", "plan_id"): "CASCADE",
+    ("meal_plan_items", "meal_id"): "RESTRICT",
+    ("consumption_logs", "user_id"): "CASCADE",
+    ("consumption_logs", "plan_item_id"): "SET NULL",
+    ("consumption_logs", "meal_id"): "RESTRICT",
+    ("consumption_logs", "food_id"): "RESTRICT",
+    ("weight_logs", "user_id"): "CASCADE",
+    ("user_targets", "user_id"): "CASCADE",
+    ("refresh_tokens", "user_id"): "CASCADE",
+    ("refresh_tokens", "replaced_by_token_id"): "SET NULL",
+    ("water_logs", "user_id"): "CASCADE",
 }
 
 
@@ -451,6 +578,161 @@ def test_server_defaults() -> None:
     assert default_sql("meals", "is_active") == "true"
     assert default_sql("meals", "is_verified") == "false"
     assert default_sql("meals", "ingested_at") == "now()"
+    assert default_sql("user_profiles", "physiological_status") == "NONE"
+    assert default_sql("user_health_conditions", "diagnosed") == "false"
+    assert default_sql("meal_plan_items", "reason_codes") == "[]"
+    assert default_sql("user_interactions", "context") == "{}"
+    assert default_sql("meal_plan_items", "was_swapped") == "false"
+    assert default_sql("refresh_tokens", "issued_at") == "now()"
+
+
+# --- USER domain (§11) ---------------------------------------------------------
+
+
+def _indexes(table_name: str) -> set[tuple[tuple[str, ...], bool, str | None]]:
+    """(columns, unique, partial WHERE) for every index on the table."""
+    result = set()
+    for index in _table(table_name).indexes:
+        where = index.dialect_options["postgresql"]["where"]
+        cols = tuple(c.name for c in index.columns)
+        result.add((cols, bool(index.unique), None if where is None else str(where)))
+    return result
+
+
+def test_users_email_unique_and_lowercase() -> None:
+    assert ("email",) in _unique_column_sets(_table("users"))
+    assert "email = lower(email)" in _checks("users")
+    assert _table("users").c.hashed_password.nullable is False
+
+
+def test_user_profiles_columns_and_checks() -> None:
+    table = _table("user_profiles")
+    for column in ("target_weight_kg", "weekly_rate_kg", "water_goal_ml"):
+        assert table.c[column].nullable is True, column
+    for column in ("sex", "birth_date", "height_cm", "timezone", "physiological_status"):
+        assert table.c[column].nullable is False, column
+    assert isinstance(table.c.water_goal_ml.type, Integer)
+    assert not {"weight_kg", "target_kcal", "targets_computed_at"} & set(table.columns.keys())
+    assert {
+        "height_cm BETWEEN 100 AND 250",
+        "target_weight_kg BETWEEN 30 AND 300",
+        "weekly_rate_kg > 0 AND weekly_rate_kg <= 1.0",
+        "water_goal_ml BETWEEN 500 AND 5000",
+        "sex = 'FEMALE' OR physiological_status = 'NONE'",
+        "goal_type = 'MAINTAIN' OR (target_weight_kg IS NOT NULL AND weekly_rate_kg IS NOT NULL)",
+    } <= _checks("user_profiles")
+    names = {c.name for c in table.constraints if isinstance(c, CheckConstraint)}
+    assert "ck_user_profiles_water_goal_range" in names
+
+
+def test_user_health_conditions_unique_and_optional_severity() -> None:
+    table = _table("user_health_conditions")
+    assert ("user_id", "condition_id") in _unique_column_sets(table)
+    assert table.c.severity.nullable is True
+    assert table.c.diagnosed.nullable is False
+
+
+def test_user_interactions_value_and_index() -> None:
+    table = _table("user_interactions")
+    assert isinstance(table.c.value.type, SmallInteger)
+    assert table.c.value.nullable is True
+    assert {
+        "value IS NULL OR value BETWEEN 1 AND 5",
+        "event_type <> 'RATE' OR value IS NOT NULL",
+    } <= _checks("user_interactions")
+    assert isinstance(table.c.context.type, JSONB)
+    assert table.c.context.nullable is False
+    assert (("user_id", "created_at"), False, None) in _indexes("user_interactions")
+
+
+@pytest.mark.parametrize("table_name", CLIENT_UUID_TABLES)
+def test_client_uuid_is_nullable_unique_uuid(table_name: str) -> None:
+    col = _table(table_name).c.client_uuid
+    assert isinstance(col.type, Uuid)
+    assert col.nullable is True
+    assert ("client_uuid",) in _unique_column_sets(_table(table_name))
+
+
+def test_meal_plans_columns_and_index() -> None:
+    table = _table("meal_plans")
+    assert table.c.target_id.nullable is True
+    assert isinstance(table.c.target_snapshot.type, JSONB)
+    assert "date_to >= date_from" in _checks("meal_plans")
+    assert (("user_id", "date_from"), False, None) in _indexes("meal_plans")
+
+
+def test_meal_plan_items_columns_and_checks() -> None:
+    table = _table("meal_plan_items")
+    assert "was_consumed" not in table.columns
+    multiplier = table.c.servings_multiplier.type
+    assert isinstance(multiplier, Numeric)
+    assert (multiplier.precision, multiplier.scale) == (3, 2)
+    assert isinstance(table.c.reason_codes.type, JSONB)
+    assert table.c.reason_codes.nullable is False
+    assert {
+        "servings_multiplier IN (0.5, 1.0, 1.5, 2.0)",
+        "day_index >= 0",
+    } <= _checks("meal_plan_items")
+
+
+def test_consumption_logs_columns_and_checks() -> None:
+    table = _table("consumption_logs")
+    for column in ("slot", "plan_item_id", "meal_id", "food_id", "deleted_at"):
+        assert table.c[column].nullable is True, column
+    for column in ("consumed_at", "log_date", "nutrients_snapshot"):
+        assert table.c[column].nullable is False, column
+    assert {
+        "(meal_id IS NOT NULL) <> (food_id IS NOT NULL)",
+        "meal_id IS NULL OR (servings_consumed > 0 AND grams_consumed IS NULL)",
+        "food_id IS NULL OR (grams_consumed > 0 AND servings_consumed IS NULL)",
+        "plan_item_id IS NULL OR meal_id IS NOT NULL",
+    } <= _checks("consumption_logs")
+
+
+@pytest.mark.parametrize("table_name", ["consumption_logs", "water_logs"])
+def test_tombstoned_log_indexes(table_name: str) -> None:
+    indexes = _indexes(table_name)
+    assert (("user_id", "log_date"), False, "deleted_at IS NULL") in indexes
+    assert (("user_id",), False, None) in indexes
+
+
+def test_weight_logs_one_per_day() -> None:
+    table = _table("weight_logs")
+    assert ("user_id", "measured_on") in _unique_column_sets(table)
+    assert "weight_kg BETWEEN 20 AND 400" in _checks("weight_logs")
+
+
+def test_user_targets_indexes_and_checks() -> None:
+    indexes = _indexes("user_targets")
+    assert (("user_id",), True, "valid_to IS NULL") in indexes
+    assert (("user_id", "valid_from"), False, None) in indexes
+    assert "valid_to IS NULL OR valid_to > valid_from" in _checks("user_targets")
+    table = _table("user_targets")
+    assert table.c.valid_to.nullable is True
+    assert table.c.was_floor_applied.nullable is False
+
+
+def test_refresh_tokens_columns_and_indexes() -> None:
+    table = _table("refresh_tokens")
+    assert ("token_hash",) in _unique_column_sets(table)
+    assert isinstance(table.c.family_id.type, Uuid)
+    assert table.c.family_id.nullable is False
+    assert table.c.revoked_at.nullable is True
+    assert table.c.replaced_by_token_id.nullable is True
+    (fk,) = table.c.replaced_by_token_id.foreign_keys
+    assert fk.column.table.name == "refresh_tokens"
+    assert "expires_at > issued_at" in _checks("refresh_tokens")
+    indexes = _indexes("refresh_tokens")
+    assert (("user_id",), False, None) in indexes
+    assert (("family_id",), False, None) in indexes
+
+
+def test_water_logs_amount_range() -> None:
+    table = _table("water_logs")
+    assert isinstance(table.c.amount_ml.type, Integer)
+    names = {c.name for c in table.constraints if isinstance(c, CheckConstraint)}
+    assert "ck_water_logs_amount_range" in names
+    assert "amount_ml BETWEEN 1 AND 2000" in _checks("water_logs")
 
 
 # --- DDL smoke test (db_test, docker compose profile "test") ------------------

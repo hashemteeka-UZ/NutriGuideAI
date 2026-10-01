@@ -19,6 +19,8 @@ from sqlalchemy.orm import MappedColumn, mapped_column
 MEASURE = Numeric(12, 3, asdecimal=False)
 # §15.2: *_confidence columns, range 0-1.
 CONFIDENCE = Numeric(4, 3, asdecimal=False)
+# §15.2: meal_plan_items.servings_multiplier, discrete steps.
+SERVINGS_MULTIPLIER = Numeric(3, 2, asdecimal=False)
 # §15.5: ISO 639-1 language code.
 LANG_CODE = String(2)
 
