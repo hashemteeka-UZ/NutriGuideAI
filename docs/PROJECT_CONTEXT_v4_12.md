@@ -1,13 +1,54 @@
-# PROJECT_CONTEXT.md — v4.9
+# PROJECT_CONTEXT.md — v4.12
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.11 → v4.12
+
+v4.12 is the **schema freeze** (Step F, 2026-10-02). A pre-freeze review walked every Core Now feature (§29) and the whole Step F.1 path against the committed schema (`claude/reviews/pre_freeze_review_v4_11_2026-10-02.md`, DEV_JOURNAL J-028). The user approved all recommendations. After this version the initial schema is **frozen** (git tag `schema-v1`); changes follow §20.1.
+
+| # | Topic | Resolution (short) | Schema? |
+|---|---|---|---|
+| 70 | Off-plan logging only accepts catalog meals or `foods`; the import scope (#38) holds only raw recipe ingredients, so ready foods eaten outside the plan (bakery items, sweets, drinks) cannot be logged and adherence looks better than reality | **Import scope widened (Phase 2 data):** add a curated set of ≈100–200 common ready foods from FNDDS (`external_source = 'FNDDS_FOOD'`, complete published nutrient values) for off-plan logging (§31.2). Rejected: a kcal-only "quick add" (breaks missing ≠ zero, needs a schema change) | No |
+| 71 | Nothing stopped two lunches on the same plan day | Partial unique index on `meal_plan_items (plan_id, day_index, slot) WHERE slot <> 'SNACK'` (name `ix_meal_plan_items_plan_id_day_index_slot`); more than one snack per day stays allowed. Migration `0002` (§11.8) | Yes (one index) |
+| 72 | Four application rules left implicit | Current plan for a day = newest plan covering it (§11.7); `deleted_at` is server receive time, enabling delta sync (§33.4); the target for a local day = latest `valid_from` before the end of that day in the user's timezone (§30.5); one `dataset_version` per catalog release (§33.4) | No |
+| 73 | Freeze mechanics | Committed migrations are immutable, enforced by a SHA-256 test in CI; post-freeze change policy (§20.1); tag `schema-v1` | No |
+
+---
+
+## CHANGELOG — v4.10 → v4.11
+
+v4.11 closes **Step E** (integrity validation + CI, 2026-10-02, commit `79329b2`, DEV_JOURNAL J-027). **No new decision and no schema change**: the schema passed every test unchanged. The edits below record how the tests are built and correct one test example.
+
+| Topic | Change | Schema? |
+|---|---|---|
+| §19 v4.8 example `lang = 'ARA'` | `VARCHAR(2)` rejects `'ARA'` for length (SQLSTATE `22001`) before the CHECK runs, so it does not prove `ck_meal_translations_lang_iso639_1`. Corrected: `'AR'` → rejected by the CHECK; `'ar'` → accepted; `'ara'` → rejected by length | No |
+| §19 test infrastructure | New subsection "How the tests are built (Step E)" | No |
+| §34.7 CI | Records the actual workflow (quality gates, second test database, skip = failure) | No |
+| §24 / §25 | Steps D and E done; Step F (schema freeze) is current | No |
+
+---
+
+## CHANGELOG — v4.9 → v4.10
+
+v4.10 settles the gaps found while explaining the target calculation of §30 (2026-10-02, guide `claude/guides/calorie_macro_targets_explained_2026-10-02.md`, DEV_JOURNAL J-026). The user approved #64–#67 and delegated #68–#69 to the assistant ("apply what is suitable and necessary"). **No schema change**: all items are application logic in §30, so Step E (in progress) is not affected. `formula_version` stays `targets_v1`, because §30 has not been implemented yet and no `user_targets` row exists.
+
+| # | Topic | Resolution (short) | Schema? |
+|---|---|---|---|
+| 64 | §30.4 gave protein as a range but stored a "single chosen value" without saying which | Use the **midpoint** of the range: `LOSE` 1.4, `MAINTAIN` 1.0, `GAIN` 1.8 g/kg | No |
+| 65 | Protein per kg of actual weight overestimates for users with obesity | **Protein reference weight**: actual weight if BMI < 30; otherwise adjusted body weight `IBW + 0.4 × (W − IBW)` with `IBW = 25 × (H/100)²` (§30.4) | No |
+| 66 | `ATHLETE` is an activity level, not a goal; the protein rule mixed both | `ATHLETE` uses 1.6–2.0 g/kg (midpoint 1.8) **whatever the goal**; other activity levels use the goal range | No |
+| 67 | Carbohydrate is the remainder and could fall very low (calorie floor + high protein) | Carbohydrate minimum **130 g/day** (RDA, adults). If the remainder is lower: fat down toward 25%, then protein down toward the low end of its range; if still lower, the calorie floor wins and the case is logged (§30.4) | No |
+| 68 | Fiber was only a diabetes minimum; no general fiber target existed | **General fiber target for every user: 14 g per 1000 kcal** of `target_kcal` (DRI). Computed, not stored in `user_targets`; frozen in `meal_plans.target_snapshot`; a **soft** target in the optimizer; not part of the day status (§30.4b). The `DIABETES_T2` condition minimum stays a hard limit | No |
+| 69 | No sodium / sugar / saturated-fat limits for users without a condition | **Not added.** Accepted known limitation (§30.1): such limits stay condition-driven only. Reasons: the dataset has total `sugars`, not added sugars; hard limits for everyone shrink the candidate pool and raise infeasibility; the app is not a medical device | No |
 
 ---
 
@@ -595,6 +636,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `target_id` — **NEW in v4.2** — FK → `user_targets` (nullable, SET NULL): which target version the plan was generated against. `target_snapshot` stays as an immutable copy (including the resolved condition limits at generation time).
 - `CHECK (date_to >= date_from)`
 - Index: `(user_id, date_from)` (v4.8, #60)
+- **Current plan rule (v4.12, #72):** plans are never deleted when a new one is generated for days an older plan already covers. For a given user and day, the **current** plan is the newest one (`created_at`) whose `date_from … date_to` covers that day; older plans stay as history so `consumption_logs.plan_item_id` links are never broken. Plan completion (§30.5) counts only the current plan's items.
 
 ## 11.8 `meal_plan_items` — CHANGED in v4.2 (Decision #21)
 - `id`, `plan_id`, `day_index`, `slot`, `meal_id`, `servings_multiplier`, `was_swapped`, `created_at`, `updated_at`
@@ -603,6 +645,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `slot` CHECK (`BREAKFAST`, `LUNCH`, `DINNER`, `SNACK`); Ramadan mode later widens it (`SUHOOR`, `IFTAR`) — §29
 - `servings_multiplier` — `CHECK (servings_multiplier IN (0.5, 1.0, 1.5, 2.0))` — discrete steps, matching the optimizer's decision variables (§28, Layer 3)
 - `CHECK (day_index >= 0)`
+- Partial unique index `(plan_id, day_index, slot) WHERE slot <> 'SNACK'` (name `ix_meal_plan_items_plan_id_day_index_slot`) — one breakfast, lunch and dinner per plan day; several snacks allowed (v4.12, #71, migration `0002`). The plain `(plan_id)` index stays for FK coverage (§15.3: partial indexes do not count).
 - **Removed:** `was_consumed` — now derived: an item is consumed iff a `consumption_logs` row references it via `plan_item_id` (§11.9).
 
 ## 11.9 `consumption_logs` — CHANGED in v4.2 (Decision #21) — single source of truth for what was eaten
@@ -991,12 +1034,25 @@ meal_ingredients.grams = -5       → rejected
 - Inserting an explicit value into an identity PK without `OVERRIDING SYSTEM VALUE` → rejected
 - A `Numeric` column read through the ORM returns a Python `float`
 - `users.email = 'A@x.com'` → rejected (`email_lowercase`)
-- `meal_translations.lang = 'ARA'` → rejected; `'ar'` → accepted
+- `meal_translations.lang = 'AR'` → rejected (`ck_meal_translations_lang_iso639_1`); `'ar'` → accepted; `'ara'` → rejected by `VARCHAR(2)` length, not by the CHECK (corrected in v4.11)
 - `meal_ingredients.position = 0` → rejected
 - `meal_nutrients.amount_per_serving = -1` → rejected
 - `user_interactions` with `event_type = 'RATE'` and `value` NULL → rejected; `value = 6` → rejected
 - Hard-deleting a `meal` referenced by `consumption_logs` → rejected (RESTRICT)
 - `ingredients.review_status` defaults to `'PENDING'`
+
+**New tests (v4.12):**
+- Two `meal_plan_items` with the same `(plan_id, day_index, slot)` for `BREAKFAST` → rejected; two `SNACK` items on the same plan day → accepted
+- Committed migration files are unchanged: SHA-256 of every file in `alembic/versions/` equals its recorded value (§20.1)
+
+**How the tests are built (Step E, v4.11):**
+- Integrity tests run on a separate database `<POSTGRES_TEST_DB>_integrity`, created and built by `alembic upgrade head` (never `create_all`) once per test session, and dropped at the end. `db_test` itself stays empty for the migration round-trip and the DDL smoke test.
+- Each test runs inside a transaction that is rolled back; negative cases use SAVEPOINTs. No test leaves rows behind.
+- `backend/tests/builders.py` inserts one valid row per table; each negative test changes exactly one value, so a rejection proves that one rule.
+- Every CHECK is tested by a real insert (Alembic's autogenerate comparison does not detect CHECK changes). A registry holds one accepted boundary and one rejected value per CHECK, and the rejection must name the constraint (`diag.constraint_name`). A completeness test compares the registry with `pg_constraint`: a new CHECK without a test fails the suite.
+- FKs (47, with their `ON DELETE` action), UNIQUE (16 + the partial unique index on `user_targets`), NOT NULL, enum-like columns and server defaults are generated from the database catalog, so new ones are covered automatically.
+- Application rules (tombstones excluded from daily totals, soft-deleted meals keep history) are tested as SQL query patterns named `test_query_pattern_*`.
+- Result at closure: 894 tests passed, 0 skipped, locally and in CI.
 
 After testing, roll back or delete temporary test data.
 
@@ -1012,7 +1068,13 @@ After testing, roll back or delete temporary test data.
 **Stage 6 — Clean database creation.**
 **Stage 7 — Integrity tests (§19).**
 **Stage 8 — Schema correction** if something fails.
-**Stage 9 — Freeze:** `INITIAL DATABASE SCHEMA = FROZEN`.
+**Stage 9 — Freeze:** `INITIAL DATABASE SCHEMA = FROZEN` ✅ (v4.12, 2026-10-02): migrations `0001` + `0002`, git tag `schema-v1`.
+
+## 20.1 Post-freeze change policy — NEW in v4.12 (Decision #73)
+- A committed migration is **never edited**. A CI test stores the SHA-256 of every file in `backend/alembic/versions/`; editing one fails CI. A new migration adds its own hash in the same commit.
+- Any schema change after the freeze (including new tables for deferred features such as the chatbot, §29) needs, in this order: a recorded decision with change-impact analysis; a new document version; a DEV_JOURNAL entry; a **new** Alembic revision (`0003`, …); updated integrity tests (the CHECK/UNIQUE/FK registries fail until new constraints are covered); a green CI run.
+- Step F.1 findings that need a schema change reopen the freeze explicitly through the same path, never silently (§25).
+- Seed and reference **data** are not schema: loading them does not reopen the freeze.
 
 ---
 
@@ -1064,11 +1126,15 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **Step B done (2026-09-30):** Docker Compose PostgreSQL 16 + test DB profile, env-based settings, ruff/mypy/pre-commit, connection tests; SQLAlchemy pinned `>=2.0,<2.1` (#55)
 - **Step C done (2026-10-01):** 34 tables in `backend/app/db/models/` (`reference.py`, `catalog.py`, `user.py`), metadata tests + DDL smoke test on the test DB; commits `0024f8a`, `2d688dd`, `7ea053f`
 - **v4.9: Step C implementation details (#61–#63)**
+- **Step D done (2026-10-01):** initial Alembic migration `0001`, round-trip and no-drift tests; commit `fe12089`
+- **Step F done (2026-10-02): schema frozen** — pre-freeze review (#70–#73), migration `0002` (one partial unique index), migration-immutability test, tag `schema-v1`
+- **Step E done (2026-10-02):** integrity tests on a migrated database (all 63 CHECK, 16 UNIQUE + partial unique index, 47 FK actions, NOT NULL, defaults, naming, identity, ORM float, query patterns) and GitHub Actions CI; 894 passed, 0 skipped; commit `79329b2`, first CI run green
+- **v4.10: §30 target-calculation details (#64–#69), no schema change**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.9 — **Step D (Alembic initial migration)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
+**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.12 — the initial schema is **frozen** (tag `schema-v1`); **Step F.1 (vertical slice)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
 
 ---
 
@@ -1077,10 +1143,10 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **Step A — Final schema review:** ✅ done (v3 → v4 → v4.1 → v4.2 → v4.3 → v4.4 → v4.5 → v4.6 → v4.7 → v4.8)
 - **Step B — PostgreSQL environment:** Docker Compose + env-based configuration (§34.1) + code-quality tooling (§34.6) ✅ done (2026-09-30)
 - **Step C — SQLAlchemy model implementation** (user + Cursor Pro, based on this document) ✅ done (2026-10-01)
-- **Step D — Alembic initial migration:** generate and manually review ← **current**
-- **Step E — Integrity validation:** positive/negative tests (§19)
-- **Step F — Schema freeze**
-- **Step F.1 — Vertical slice (NEW in v4.2, Decision #33):** after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
+- **Step D — Alembic initial migration:** generate and manually review ✅ done (2026-10-01)
+- **Step E — Integrity validation:** positive/negative tests (§19) + CI (§34.7) ✅ done (2026-10-02)
+- **Step F — Schema freeze** ✅ done (2026-10-02, tag `schema-v1`; change policy §20.1)
+- **Step F.1 — Vertical slice (NEW in v4.2, Decision #33)** ← **current**: after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
 - **Step G — Dataset engineering:** only after F.1 (starts with the extended `ingredients_master` template and the curated recipe catalog — §31)
 
 ---
@@ -1253,6 +1319,8 @@ The app does **not** generate personalized plans (it may show general informatio
 
 **Known limitation (v4.7, Decision #54):** only the three supported conditions and the recognized-unsupported ones in §9.5 can be declared. Conditions outside that list (e.g. gout) are not recognized; the disclaimer tells users with other medical conditions to consult their clinician before following a plan.
 
+**Known limitation (v4.10, Decision #69):** users without a declared condition get no daily limit for sodium, sugars or saturated fat; these limits come only from `condition_nutrient_limits`. The dataset stores total `sugars`, not added sugars, so the WHO added-sugar guideline cannot be applied honestly. Stated in the thesis limitations.
+
 Every screen presenting targets/plans shows a medical disclaimer: the app is not a medical device and does not replace a clinician.
 
 ## 30.2 Energy
@@ -1266,14 +1334,23 @@ Every screen presenting targets/plans shows a medical disclaimer: the app is not
 - **Calorie floor:** target never below 1200 kcal (women) / 1500 kcal (men); if applied, `user_targets.was_floor_applied = true` and the user is informed that the chosen rate was reduced.
 - Goal reached (current weight within ±1 kg of `target_weight_kg`) → the app proposes switching to `MAINTAIN`.
 
-## 30.4 Macronutrients
-- Protein: `LOSE` 1.2–1.6 g/kg, `MAINTAIN` 1.0 g/kg, `GAIN`/`ATHLETE` 1.6–2.0 g/kg (single chosen value stored in `user_targets`).
+## 30.4 Macronutrients — details settled in v4.10 (Decisions #64–#67)
+- Protein ranges: `LOSE` 1.2–1.6 g/kg, `MAINTAIN` 1.0 g/kg, `GAIN` 1.6–2.0 g/kg. `ATHLETE` activity level uses 1.6–2.0 g/kg **whatever the goal** (#66).
+- Chosen value = **midpoint** of the range (#64): `LOSE` 1.4, `MAINTAIN` 1.0, `GAIN` 1.8, `ATHLETE` 1.8. Stored as grams in `user_targets.target_protein_g`.
+- **Protein reference weight** (#65): `BMI = W / (H/100)²`. If `BMI < 30` → reference = `W`. Otherwise → `IBW = 25 × (H/100)²` and reference = `IBW + 0.4 × (W − IBW)` (adjusted body weight). `protein_g = g_per_kg × reference`.
 - Fat: 25–35% of energy (default 30%).
-- Carbohydrate: remainder of energy.
+- Carbohydrate: remainder of energy, with a **minimum of 130 g/day** (#67). If the remainder is below 130 g, in this order: (1) lower fat toward 25% of energy; (2) lower protein toward the low end of its range (1.2 for `LOSE`, 1.6 for `GAIN`/`ATHLETE`; `MAINTAIN` has no range); (3) if still below 130 g, keep the result (the calorie floor and target take priority) and write an application log entry for the case.
 - Condition limits (§28.2) are applied on top at plan-generation time.
 
+## 30.4b Fiber — NEW in v4.10 (Decision #68)
+- **General target for every user:** `target_fiber_g = round(14 × target_kcal / 1000)` (DRI: 14 g per 1000 kcal).
+- **Not stored** in `user_targets`: it is fully determined by `target_kcal` and `formula_version`. Frozen with the other targets in `meal_plans.target_snapshot` at plan time. (If the report later needs it as a column, it is an additive change before the Step F freeze.)
+- **Soft target:** the optimizer (§28.3) includes fiber in the "deviation from targets" term; it never excludes a meal and never blocks a plan.
+- **Not part of the day status** (§30.5 unchanged); shown on the day screen for information.
+- For `DIABETES_T2`, the condition's `fiber` `min_per_day` (§9.5b) stays a **hard** limit and is resolved by §28.2 as before.
+
 ## 30.5 Daily adherence (computed, not stored)
-For a user and `log_date`: sum `consumption_logs.nutrients_snapshot`, compare with the `user_targets` row valid on that date.
+For a user and `log_date`: sum `consumption_logs.nutrients_snapshot`, compare with the `user_targets` row valid on that date. **Valid on that date (v4.12, #72):** the latest row whose `valid_from` is before the end of that local day in `user_profiles.timezone`, so a target changed mid-day applies to that whole day.
 - Day status `ACHIEVED` if kcal within ±10% of target **and** no resolved condition `max_per_day` exceeded; `PARTIAL` if kcal within ±25%; otherwise `NOT_ACHIEVED`.
 - Plan completion = consumed plan items / total plan items for that day.
 - Streaks and weekly summaries are derived from these daily statuses.
@@ -1300,6 +1377,7 @@ No licensed, gram-based, nutrition-complete dataset of Libyan/Arab meals exists.
 - **Ingredient nutrition:** USDA FoodData Central — **Foundation Foods** and **SR Legacy** (public domain, official API, fits `fdc_id`). FNDDS remains a secondary reference.
 - **Meals:** authored by the team as recipes (ingredients in grams + servings + as-served weight per §10.1); nutrition is **computed** (§10.3), never typed in.
 - **Import scope (Decision #38):** only the ingredients/foods these recipes use (≈300–500 reference foods) are imported from FNDDS/FDC — not whole databases. A small reference layer is easier to review (exclusions, translation, QC) and small enough to ship to the phone (§33).
+- **Off-plan ready foods (v4.12, #70):** in addition, a curated set of ≈100–200 common ready foods from FNDDS (`external_source = 'FNDDS_FOOD'`: breads, pastries, sweets, drinks, common dishes) is imported so users can log what they eat outside the plan. These are complete dishes with published values for every mandatory nutrient; the same quality gates (§31.3) and exclusion policy (§31.6) apply. They are logged through `consumption_logs.food_id` and are not recommended by the planner.
 - **Target size:** 150–300 meals at `quality_tier = GOLD` for the MVP, balanced across slots (breakfast/lunch/dinner/snack) and covering local cuisine. Quality over quantity.
 - **Cross-check references:** published Arab food-composition work (e.g. the Lebanese University report on traditional dishes and Arabic sweets; the Arabic myfood24 food-composition database of 2,016 items, built with a 6-step identify → clean → map → translate → portion → QC method) used to sanity-check computed values — not imported wholesale unless their licenses allow it.
 
@@ -1388,6 +1466,8 @@ Provenance/reference columns (`source_reference`, `external_source`, `external_c
   - `weight_logs`: upsert on `(user_id, measured_on)`; the version with the newer `updated_at` wins (last-write-wins).
   - `water_logs` (v4.6): same as `consumption_logs` — immutable rows + tombstones.
   - `user_interactions`: append-only.
+- **Tombstone time (v4.12, #72):** `deleted_at` on `consumption_logs` and `water_logs` is the **server receive time** of the tombstone, not the device time. Both `created_at` and `deleted_at` are therefore server times, and another device (or a reinstall) can download "changed since the last sync" with `created_at > T OR deleted_at > T`.
+- **Catalog version (v4.12, #72):** every catalog release carries **one** `dataset_version`, written to all active meals by the import pipeline; the device compares that single value to decide whether to replace its snapshot.
 - **Uploads use one batch endpoint** (`POST /sync/batch`, max 500 records per request) with its own rate limit (§34.4); each record is processed idempotently by `client_uuid` and the response reports per-record status (`created` / `duplicate` / `rejected`).
 - **Auth while offline:** the upload queue is kept on the device until the user signs in again if the refresh token has expired; queued records are never discarded (§34.2).
 
@@ -1424,6 +1504,7 @@ Structured JSON logs; every request gets a `request_id` (accepted from `X-Reques
 - Migration round-trip test (`upgrade → downgrade → upgrade`) on an empty database.
 - Naming-convention test (§19, v4.5).
 - GitHub Actions workflow: start PostgreSQL service → `alembic upgrade head` → run `pytest` (all §19 tests) on every push and pull request.
+- As built in Step E (`.github/workflows/ci.yml`): one job with a `postgres:16` service and throwaway CI-only credentials; environment variables replace `.env`; a second database is created for tests. Order: `ruff check` → `ruff format --check` → `mypy` → `alembic upgrade head` on the main CI database → `pytest`. The test database is never migrated before `pytest`, because the round-trip test needs it empty. In CI a skipped database test counts as a failure (`CI=true` in `conftest.py` plus a check of the pytest summary).
 
 ## 34.8 Schema-level standards (P-01, P-04)
 Naming convention: §17. Audit columns: §15.10.
