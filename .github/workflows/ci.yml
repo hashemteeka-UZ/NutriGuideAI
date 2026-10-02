@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: nutriguide_ci
+          POSTGRES_PASSWORD: nutriguide_ci
+          POSTGRES_DB: nutriguide
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nutriguide_ci -d nutriguide"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+psycopg://nutriguide_ci:nutriguide_ci@localhost:5432/nutriguide
+      POSTGRES_TEST_DB: nutriguide_test
+      POSTGRES_TEST_PORT: "5432"
+      APP_ENV: test
+      CI: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Create test database
+        run: |
+          uv run python <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+
+          engine = create_engine(os.environ["DATABASE_URL"], isolation_level="AUTOCOMMIT")
+          with engine.connect() as conn:
+              exists = conn.execute(
+                  text("SELECT 1 FROM pg_database WHERE datname = 'nutriguide_test'")
+              ).scalar()
+              if not exists:
+                  conn.execute(text("CREATE DATABASE nutriguide_test"))
+          engine.dispose()
+          PY
+
+      - name: ruff check
+        run: uv run ruff check .
+
+      - name: ruff format
+        run: uv run ruff format --check .
+
+      - name: mypy
+        run: uv run mypy
+
+      - name: alembic upgrade head
+        run: uv run alembic upgrade head
+
+      - name: pytest
+        run: |
+          set -o pipefail
+          uv run pytest -v | tee pytest-ci.log
+          if grep -qE '[0-9]+ skipped' pytest-ci.log; then
+            echo "Skipped tests are not allowed in CI"
+            exit 1
+          fi

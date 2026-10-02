@@ -34,8 +34,30 @@ uv run --project backend pre-commit run --all-files
 ```
 
 The optional `db_test` service (throwaway database, no persistent volume) is
-reserved for the integrity tests and is started with
+reserved for schema tests and is started with
 `docker compose --profile test up -d db_test`.
+
+## Tests
+
+Integrity tests prove the migrated schema on a real PostgreSQL database (CHECK,
+UNIQUE, FK actions, NOT NULL, server defaults, enum-like columns, identity,
+naming). They create a sibling database `{POSTGRES_TEST_DB}_integrity`, run
+`alembic upgrade head` there, and roll back every test row.
+
+```bash
+# From the repository root: start the throwaway test database
+docker compose --profile test up -d db_test
+
+# From backend/
+cd backend
+uv run pytest
+```
+
+`uv run pytest` also runs connection checks against the dev database
+(`DATABASE_URL`) and migration round-trip tests on empty `db_test`. CI runs
+the same checks on every push and pull request (ruff, format, mypy,
+`alembic upgrade head` on a main database, then pytest on an unmigrated test
+database). Database tests must not skip in CI.
 
 ## Database migrations
 
