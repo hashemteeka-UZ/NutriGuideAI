@@ -668,6 +668,9 @@ def test_meal_plan_items_columns_and_checks() -> None:
         "servings_multiplier IN (0.5, 1.0, 1.5, 2.0)",
         "day_index >= 0",
     } <= _checks("meal_plan_items")
+    indexes = _indexes("meal_plan_items")
+    assert (("plan_id", "day_index", "slot"), True, "slot <> 'SNACK'") in indexes
+    assert (("plan_id",), False, None) in indexes
 
 
 def test_consumption_logs_columns_and_checks() -> None:

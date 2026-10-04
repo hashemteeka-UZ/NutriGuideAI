@@ -150,6 +150,35 @@ def test_two_open_user_targets_for_same_user_rejected(integrity_conn: Connection
     )
 
 
+def test_two_breakfasts_same_plan_day_rejected(integrity_conn: Connection) -> None:
+    plan_id = make_meal_plan(integrity_conn)
+    make_meal_plan_item(integrity_conn, plan_id=plan_id, day_index=0, slot="BREAKFAST")
+    assert_rejects(
+        integrity_conn,
+        "ix_meal_plan_items_plan_id_day_index_slot",
+        lambda: make_meal_plan_item(integrity_conn, plan_id=plan_id, day_index=0, slot="BREAKFAST"),
+    )
+
+
+def test_two_snacks_same_plan_day_accepted(integrity_conn: Connection) -> None:
+    plan_id = make_meal_plan(integrity_conn)
+    make_meal_plan_item(integrity_conn, plan_id=plan_id, day_index=0, slot="SNACK")
+    make_meal_plan_item(integrity_conn, plan_id=plan_id, day_index=0, slot="SNACK")
+
+
+def test_same_slot_on_different_plan_day_accepted(integrity_conn: Connection) -> None:
+    plan_id = make_meal_plan(integrity_conn)
+    make_meal_plan_item(integrity_conn, plan_id=plan_id, day_index=0, slot="BREAKFAST")
+    make_meal_plan_item(integrity_conn, plan_id=plan_id, day_index=1, slot="BREAKFAST")
+
+
+def test_same_slot_and_day_in_different_plan_accepted(integrity_conn: Connection) -> None:
+    user_id = make_user(integrity_conn)
+    for _ in range(2):
+        plan_id = make_meal_plan(integrity_conn, user_id=user_id)
+        make_meal_plan_item(integrity_conn, plan_id=plan_id, day_index=0, slot="BREAKFAST")
+
+
 def test_two_weight_logs_same_user_and_day_rejected(integrity_conn: Connection) -> None:
     user_id = make_user(integrity_conn)
     day = date(2026, 4, 1)

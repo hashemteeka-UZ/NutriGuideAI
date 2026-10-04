@@ -270,6 +270,14 @@ class MealPlanItem(Base):
             f"servings_multiplier IN ({', '.join(map(str, SERVINGS_MULTIPLIER_STEPS))})",
             name="servings_multiplier_step",
         ),
+        Index(
+            None,
+            "plan_id",
+            "day_index",
+            "slot",
+            unique=True,
+            postgresql_where=text(f"slot <> '{MealSlot.SNACK.value}'"),
+        ),
     )
 
     id: Mapped[int] = pk_column()

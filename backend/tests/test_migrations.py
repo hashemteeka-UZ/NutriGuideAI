@@ -29,6 +29,7 @@ GIN_TRGM_INDEXES = {
     "ix_meals_name_normalized",
     "ix_meal_translations_name_normalized",
 }
+MEAL_PLAN_SLOT_INDEX = "ix_meal_plan_items_plan_id_day_index_slot"
 
 
 def _alembic_config(conn: Connection) -> Config:
@@ -57,6 +58,15 @@ def _extensions(engine: Engine) -> set[str]:
         return set(conn.execute(text("SELECT extname FROM pg_extension")).scalars())
 
 
+def _index_names(engine: Engine) -> set[str]:
+    with engine.connect() as conn:
+        return set(
+            conn.execute(
+                text("SELECT indexname FROM pg_indexes WHERE schemaname = 'public'")
+            ).scalars()
+        )
+
+
 def _current_revision(engine: Engine) -> str | None:
     with engine.connect() as conn:
         return MigrationContext.configure(conn).get_current_revision()
@@ -78,10 +88,21 @@ def migration_db(test_db_engine: Engine) -> Iterator[Engine]:
 
 
 def test_round_trip_upgrade_downgrade_upgrade(migration_db: Engine) -> None:
-    head = ScriptDirectory.from_config(Config(ALEMBIC_INI)).get_current_head()
+    script = ScriptDirectory.from_config(Config(ALEMBIC_INI))
+    head = script.get_current_head()
+    revisions = [rev.revision for rev in reversed(list(script.walk_revisions()))]
+    assert revisions[:2] == ["0001", "0002"]
+    assert revisions[-1] == head
 
-    _upgrade(migration_db)
-    assert _current_revision(migration_db) == head
+    for revision in revisions:
+        _upgrade(migration_db, revision)
+        assert _current_revision(migration_db) == revision
+    assert MEAL_PLAN_SLOT_INDEX in _index_names(migration_db)
+
+    for revision in reversed(revisions[:-1]):
+        _downgrade(migration_db, revision)
+        assert _current_revision(migration_db) == revision
+    assert MEAL_PLAN_SLOT_INDEX not in _index_names(migration_db)
 
     _downgrade(migration_db)
     assert _current_revision(migration_db) is None

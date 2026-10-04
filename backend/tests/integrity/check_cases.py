@@ -15,6 +15,7 @@ from tests.builders import (
     make_food,
     make_health_condition,
     make_meal,
+    make_meal_plan,
     make_meal_plan_item,
     make_nutrient,
     make_user,
@@ -374,4 +375,40 @@ UNIQUE_CASES: dict[str, UniqueCase] = {
     ),
 }
 
-PARTIAL_UNIQUE_INDEX = "ix_user_targets_user_id"
+
+@dataclass(frozen=True)
+class PartialUniqueCase:
+    table: str
+    # Rows matching the index WHERE clause: the second identical row is rejected.
+    duplicate: Overrides
+    # Same key, but rows excluded by the WHERE clause: two identical rows are accepted.
+    outside_predicate: Overrides
+
+
+def _user_open_target(conn: Connection) -> dict[str, Any]:
+    return {"user_id": make_user(conn), "valid_to": None}
+
+
+def _user_closed_target(conn: Connection) -> dict[str, Any]:
+    return {
+        "user_id": make_user(conn),
+        "valid_from": datetime(2026, 1, 1, tzinfo=UTC),
+        "valid_to": datetime(2026, 2, 1, tzinfo=UTC),
+    }
+
+
+def _plan_day_slot(slot: str) -> Callable[[Connection], dict[str, Any]]:
+    def build(conn: Connection) -> dict[str, Any]:
+        return {"plan_id": make_meal_plan(conn), "day_index": 0, "slot": slot}
+
+    return build
+
+
+PARTIAL_UNIQUE_CASES: dict[str, PartialUniqueCase] = {
+    "ix_user_targets_user_id": PartialUniqueCase(
+        "user_targets", _user_open_target, _user_closed_target
+    ),
+    "ix_meal_plan_items_plan_id_day_index_slot": PartialUniqueCase(
+        "meal_plan_items", _plan_day_slot("BREAKFAST"), _plan_day_slot("SNACK")
+    ),
+}

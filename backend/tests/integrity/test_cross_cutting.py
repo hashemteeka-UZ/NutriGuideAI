@@ -17,14 +17,13 @@ from tests.builders import (
     insert_values,
     make_food,
     make_user,
-    make_user_target,
     values_for,
 )
 from tests.integrity.check_cases import (
     CHECK_CASES,
     ENUM_INVALID,
     ENUM_ROW_EXTRAS,
-    PARTIAL_UNIQUE_INDEX,
+    PARTIAL_UNIQUE_CASES,
     UNIQUE_CASES,
     resolve,
 )
@@ -102,7 +101,7 @@ def test_check_constraint_rejects_invalid(integrity_conn: Connection, name: str)
 
 def test_unique_registry_covers_every_pg_unique(integrity_conn: Connection) -> None:
     assert pg_unique_names(integrity_conn) == set(UNIQUE_CASES)
-    assert pg_partial_unique_index_names(integrity_conn) == {PARTIAL_UNIQUE_INDEX}
+    assert pg_partial_unique_index_names(integrity_conn) == set(PARTIAL_UNIQUE_CASES)
 
 
 @pytest.mark.parametrize("name", sorted(UNIQUE_CASES))
@@ -129,32 +128,26 @@ def test_unique_two_nulls_accepted(integrity_conn: Connection, name: str) -> Non
     maker(case.table)(integrity_conn, **equal, **nulls)
 
 
-def test_user_targets_partial_unique_index_rejects_two_open_rows(
-    integrity_conn: Connection,
-) -> None:
-    user_id = make_user(integrity_conn)
-    make_user_target(integrity_conn, user_id=user_id, valid_to=None)
+@pytest.mark.parametrize("name", sorted(PARTIAL_UNIQUE_CASES))
+def test_partial_unique_index_duplicate_rejected(integrity_conn: Connection, name: str) -> None:
+    case = PARTIAL_UNIQUE_CASES[name]
+    duplicate = resolve(case.duplicate, integrity_conn)
+    maker(case.table)(integrity_conn, **duplicate)
     assert_rejects(
         integrity_conn,
-        PARTIAL_UNIQUE_INDEX,
-        lambda: make_user_target(integrity_conn, user_id=user_id, valid_to=None),
+        name,
+        lambda: maker(case.table)(integrity_conn, **duplicate),
     )
 
 
-def test_user_targets_two_closed_rows_same_user_accepted(integrity_conn: Connection) -> None:
-    user_id = make_user(integrity_conn)
-    make_user_target(
-        integrity_conn,
-        user_id=user_id,
-        valid_from=datetime(2026, 1, 1, tzinfo=UTC),
-        valid_to=datetime(2026, 2, 1, tzinfo=UTC),
-    )
-    make_user_target(
-        integrity_conn,
-        user_id=user_id,
-        valid_from=datetime(2026, 3, 1, tzinfo=UTC),
-        valid_to=datetime(2026, 4, 1, tzinfo=UTC),
-    )
+@pytest.mark.parametrize("name", sorted(PARTIAL_UNIQUE_CASES))
+def test_partial_unique_index_rows_outside_predicate_accepted(
+    integrity_conn: Connection, name: str
+) -> None:
+    case = PARTIAL_UNIQUE_CASES[name]
+    excluded = resolve(case.outside_predicate, integrity_conn)
+    maker(case.table)(integrity_conn, **excluded)
+    maker(case.table)(integrity_conn, **excluded)
 
 
 def test_fk_catalog_matches_expected_ondelete(integrity_conn: Connection) -> None:

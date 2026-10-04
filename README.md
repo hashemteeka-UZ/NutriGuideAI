@@ -1,7 +1,7 @@
 # NutriGuideAI
 
 Nutrition / meal recommendation project. Architecture and decisions live in
-[`docs/PROJECT_CONTEXT_v4_9.md`](docs/PROJECT_CONTEXT_v4_9.md).
+[`docs/PROJECT_CONTEXT_v4_13.md`](docs/PROJECT_CONTEXT_v4_13.md).
 
 ## Local development
 
@@ -72,5 +72,7 @@ uv run alembic check           # fails if the models and migrations differ
 
 Never edit a migration after it is committed; create a new revision instead
 (`uv run alembic revision --autogenerate -m "..."`, then review the file by hand).
+
+The schema is frozen at tag `schema-v1`: any change needs a new revision and a recorded decision (PROJECT_CONTEXT §20.1), and `tests/test_migration_files.py` fails if a committed migration is edited.
 
 Stop the database with `docker compose down` (add `-v` to delete its data volume).

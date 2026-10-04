@@ -1,13 +1,26 @@
-# PROJECT_CONTEXT.md — v4.12
+# PROJECT_CONTEXT.md — v4.13
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.12 → v4.13
+
+v4.13 records the **implementation of the freeze** (Step F, 2026-10-04, DEV_JOURNAL J-029). **No new decision and no schema change** beyond what v4.12 decided. Corrections found while implementing:
+
+| Topic | Change | Schema? |
+|---|---|---|
+| Step F dates | v4.12 marked the freeze as 2026-10-02 in advance; it was implemented on 2026-10-04 (migration `0002`, tag `schema-v1`). §20, §24, §25 corrected; §24 order fixed | No |
+| Partial unique indexes | There are now **two** (`ix_user_targets_user_id`, `ix_meal_plan_items_plan_id_day_index_slot`). §16 and §19 updated; the integrity suite reads them from `pg_index` and a completeness test fails if a new one has no case | No |
+| Test count | 903 tests, 0 skipped (§19) | No |
+| Line endings | `.gitattributes` marks `backend/alembic/versions/*.py` as `-text`, so a Windows checkout with `core.autocrlf` cannot change the bytes the migration-hash test checks (§20.1) | No |
 
 ---
 
@@ -908,7 +921,7 @@ All timestamps are `TIMESTAMPTZ` (UTC in the database). Columns are assigned by 
 
 # 16. PostgreSQL Decision
 
-PostgreSQL over SQLite: relational integrity, FK/UNIQUE/CHECK enforcement, partial unique indexes (used by `user_targets`), JSONB (snapshots), transactions, concurrency, mature indexing, extensions (`pg_trgm` now; `pgvector` later — §28, §32). Local dev via Docker Compose.
+PostgreSQL over SQLite: relational integrity, FK/UNIQUE/CHECK enforcement, partial unique indexes (used by `user_targets` and `meal_plan_items`), JSONB (snapshots), transactions, concurrency, mature indexing, extensions (`pg_trgm` now; `pgvector` later — §28, §32). Local dev via Docker Compose.
 
 ---
 
@@ -1050,9 +1063,9 @@ meal_ingredients.grams = -5       → rejected
 - Each test runs inside a transaction that is rolled back; negative cases use SAVEPOINTs. No test leaves rows behind.
 - `backend/tests/builders.py` inserts one valid row per table; each negative test changes exactly one value, so a rejection proves that one rule.
 - Every CHECK is tested by a real insert (Alembic's autogenerate comparison does not detect CHECK changes). A registry holds one accepted boundary and one rejected value per CHECK, and the rejection must name the constraint (`diag.constraint_name`). A completeness test compares the registry with `pg_constraint`: a new CHECK without a test fails the suite.
-- FKs (47, with their `ON DELETE` action), UNIQUE (16 + the partial unique index on `user_targets`), NOT NULL, enum-like columns and server defaults are generated from the database catalog, so new ones are covered automatically.
+- FKs (47, with their `ON DELETE` action), UNIQUE (16) and the partial unique indexes (2 since v4.13: `user_targets`, `meal_plan_items`; read from `pg_index`, with a completeness test), NOT NULL, enum-like columns and server defaults are generated from the database catalog, so new ones are covered automatically.
 - Application rules (tombstones excluded from daily totals, soft-deleted meals keep history) are tested as SQL query patterns named `test_query_pattern_*`.
-- Result at closure: 894 tests passed, 0 skipped, locally and in CI.
+- Result at Step E closure: 894 tests passed, 0 skipped, locally and in CI. At Step F (v4.13): 903 passed, 0 skipped.
 
 After testing, roll back or delete temporary test data.
 
@@ -1068,12 +1081,13 @@ After testing, roll back or delete temporary test data.
 **Stage 6 — Clean database creation.**
 **Stage 7 — Integrity tests (§19).**
 **Stage 8 — Schema correction** if something fails.
-**Stage 9 — Freeze:** `INITIAL DATABASE SCHEMA = FROZEN` ✅ (v4.12, 2026-10-02): migrations `0001` + `0002`, git tag `schema-v1`.
+**Stage 9 — Freeze:** `INITIAL DATABASE SCHEMA = FROZEN` ✅ (decided in v4.12, implemented 2026-10-04): migrations `0001` + `0002`, git tag `schema-v1`.
 
 ## 20.1 Post-freeze change policy — NEW in v4.12 (Decision #73)
 - A committed migration is **never edited**. A CI test stores the SHA-256 of every file in `backend/alembic/versions/`; editing one fails CI. A new migration adds its own hash in the same commit.
 - Any schema change after the freeze (including new tables for deferred features such as the chatbot, §29) needs, in this order: a recorded decision with change-impact analysis; a new document version; a DEV_JOURNAL entry; a **new** Alembic revision (`0003`, …); updated integrity tests (the CHECK/UNIQUE/FK registries fail until new constraints are covered); a green CI run.
 - Step F.1 findings that need a schema change reopen the freeze explicitly through the same path, never silently (§25).
+- `.gitattributes` keeps migration files byte-exact on every platform (`backend/alembic/versions/*.py -text`), so the hash test only fails on a real edit (v4.13).
 - Seed and reference **data** are not schema: loading them does not reopen the freeze.
 
 ---
@@ -1127,8 +1141,8 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **Step C done (2026-10-01):** 34 tables in `backend/app/db/models/` (`reference.py`, `catalog.py`, `user.py`), metadata tests + DDL smoke test on the test DB; commits `0024f8a`, `2d688dd`, `7ea053f`
 - **v4.9: Step C implementation details (#61–#63)**
 - **Step D done (2026-10-01):** initial Alembic migration `0001`, round-trip and no-drift tests; commit `fe12089`
-- **Step F done (2026-10-02): schema frozen** — pre-freeze review (#70–#73), migration `0002` (one partial unique index), migration-immutability test, tag `schema-v1`
 - **Step E done (2026-10-02):** integrity tests on a migrated database (all 63 CHECK, 16 UNIQUE + partial unique index, 47 FK actions, NOT NULL, defaults, naming, identity, ORM float, query patterns) and GitHub Actions CI; 894 passed, 0 skipped; commit `79329b2`, first CI run green
+- **Step F done (2026-10-04): schema frozen** — pre-freeze review (#70–#73), migration `0002` (one partial unique index), migration-immutability test, tag `schema-v1`
 - **v4.10: §30 target-calculation details (#64–#69), no schema change**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
@@ -1145,7 +1159,7 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **Step C — SQLAlchemy model implementation** (user + Cursor Pro, based on this document) ✅ done (2026-10-01)
 - **Step D — Alembic initial migration:** generate and manually review ✅ done (2026-10-01)
 - **Step E — Integrity validation:** positive/negative tests (§19) + CI (§34.7) ✅ done (2026-10-02)
-- **Step F — Schema freeze** ✅ done (2026-10-02, tag `schema-v1`; change policy §20.1)
+- **Step F — Schema freeze** ✅ done (2026-10-04, tag `schema-v1`; change policy §20.1)
 - **Step F.1 — Vertical slice (NEW in v4.2, Decision #33)** ← **current**: after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
 - **Step G — Dataset engineering:** only after F.1 (starts with the extended `ingredients_master` template and the curated recipe catalog — §31)
 
