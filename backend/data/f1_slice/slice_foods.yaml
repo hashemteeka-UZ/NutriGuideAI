@@ -1,0 +1,444 @@
+# Step F.1 slice foods: USDA FDC SR Legacy (public domain), selected by NDB number.
+# Nutrient values are NOT in this file: they come from the official SR Legacy CSV release via fdc_sr_legacy_subset.csv.
+# One ingredient per food in F.1 (ingredients.default_food_id = this food).
+source: USDA FoodData Central, SR Legacy (April 2018)
+foods:
+- ndb_number: 01019
+  sr_description: Cheese, feta
+  ingredient_en: Feta cheese
+  ingredient_ar: جبن فيتا
+  state: as_purchased
+  allergens:
+  - Milk
+  ingredient_tags: []
+- ndb_number: 01082
+  sr_description: Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D
+  ingredient_en: Low-fat milk (1%)
+  ingredient_ar: حليب قليل الدسم
+  state: as_purchased
+  allergens:
+  - Milk
+  ingredient_tags: []
+- ndb_number: '01123'
+  sr_description: Egg, whole, raw, fresh
+  ingredient_en: Egg
+  ingredient_ar: بيض
+  state: raw
+  allergens:
+  - Egg
+  ingredient_tags: []
+- ndb_number: '01145'
+  sr_description: Butter, without salt
+  ingredient_en: Unsalted butter
+  ingredient_ar: زبدة غير مملحة
+  state: as_purchased
+  allergens:
+  - Milk
+  ingredient_tags: []
+- ndb_number: '01256'
+  sr_description: Yogurt, Greek, plain, nonfat
+  ingredient_en: Greek yogurt, nonfat
+  ingredient_ar: زبادي يوناني خالي الدسم
+  state: as_purchased
+  allergens:
+  - Milk
+  ingredient_tags: []
+- ndb_number: '02010'
+  sr_description: Spices, cinnamon, ground
+  ingredient_en: Cinnamon
+  ingredient_ar: قرفة
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '02014'
+  sr_description: Spices, cumin seed
+  ingredient_en: Cumin
+  ingredient_ar: كمون
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 02028
+  sr_description: Spices, paprika
+  ingredient_en: Paprika
+  ingredient_ar: فلفل أحمر حلو مطحون
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '02043'
+  sr_description: Spices, turmeric, ground
+  ingredient_en: Turmeric
+  ingredient_ar: كركم
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '02047'
+  sr_description: Salt, table
+  ingredient_en: Salt
+  ingredient_ar: ملح
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '04053'
+  sr_description: Oil, olive, salad or cooking
+  ingredient_en: Olive oil
+  ingredient_ar: زيت زيتون
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '05062'
+  sr_description: Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw
+  ingredient_en: Chicken breast, skinless
+  ingredient_ar: صدر دجاج بدون جلد
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 05096
+  sr_description: Chicken, broilers or fryers, dark meat, thigh, meat only, raw
+  ingredient_en: Chicken thigh, skinless
+  ingredient_ar: ورك دجاج بدون جلد
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 08120
+  sr_description: Cereals, oats, regular and quick, not fortified, dry
+  ingredient_en: Rolled oats
+  ingredient_ar: شوفان
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09003
+  sr_description: Apples, raw, with skin
+  ingredient_en: Apple
+  ingredient_ar: تفاح
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09040
+  sr_description: Bananas, raw
+  ingredient_en: Banana
+  ingredient_ar: موز
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09087
+  sr_description: Dates, deglet noor
+  ingredient_en: Dates
+  ingredient_ar: تمر
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09132
+  sr_description: Grapes, red or green (European type, such as Thompson seedless), raw
+  ingredient_en: Grapes
+  ingredient_ar: عنب
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09152
+  sr_description: Lemon juice, raw
+  ingredient_en: Lemon juice
+  ingredient_ar: عصير ليمون
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09193
+  sr_description: Olives, ripe, canned (small-extra large)
+  ingredient_en: Black olives
+  ingredient_ar: زيتون أسود
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09200
+  sr_description: Oranges, raw, all commercial varieties
+  ingredient_en: Orange
+  ingredient_ar: برتقال
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09316
+  sr_description: Strawberries, raw
+  ingredient_en: Strawberries
+  ingredient_ar: فراولة
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: 09326
+  sr_description: Watermelon, raw
+  ingredient_en: Watermelon
+  ingredient_ar: بطيخ
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11124'
+  sr_description: Carrots, raw
+  ingredient_en: Carrot
+  ingredient_ar: جزر
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11205'
+  sr_description: Cucumber, with peel, raw
+  ingredient_en: Cucumber
+  ingredient_ar: خيار
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11215'
+  sr_description: Garlic, raw
+  ingredient_en: Garlic
+  ingredient_ar: ثوم
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11251'
+  sr_description: Lettuce, cos or romaine, raw
+  ingredient_en: Romaine lettuce
+  ingredient_ar: خس
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11278'
+  sr_description: Okra, raw
+  ingredient_en: Okra
+  ingredient_ar: بامية
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11282'
+  sr_description: Onions, raw
+  ingredient_en: Onion
+  ingredient_ar: بصل
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11297'
+  sr_description: Parsley, fresh
+  ingredient_en: Parsley
+  ingredient_ar: بقدونس
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11304'
+  sr_description: Peas, green, raw
+  ingredient_en: Green peas
+  ingredient_ar: بازلاء
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11333'
+  sr_description: Peppers, sweet, green, raw
+  ingredient_en: Green bell pepper
+  ingredient_ar: فلفل أخضر حلو
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11352'
+  sr_description: Potatoes, flesh and skin, raw
+  ingredient_en: Potato
+  ingredient_ar: بطاطا
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11422'
+  sr_description: Pumpkin, raw
+  ingredient_en: Pumpkin
+  ingredient_ar: قرع
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11529'
+  sr_description: Tomatoes, red, ripe, raw, year round average
+  ingredient_en: Tomato
+  ingredient_ar: طماطم
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11531'
+  sr_description: Tomatoes, red, ripe, canned, packed in tomato juice
+  ingredient_en: Canned tomatoes
+  ingredient_ar: طماطم معلبة
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11546'
+  sr_description: Tomato products, canned, paste, without salt added
+  ingredient_en: Tomato paste, no added salt
+  ingredient_ar: معجون طماطم بدون ملح مضاف
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11670'
+  sr_description: Peppers, hot chili, green, raw
+  ingredient_en: Green chili pepper
+  ingredient_ar: فلفل حار أخضر
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '12061'
+  sr_description: Nuts, almonds
+  ingredient_en: Almonds
+  ingredient_ar: لوز
+  state: raw
+  allergens:
+  - Tree nuts
+  ingredient_tags: []
+- ndb_number: '12155'
+  sr_description: Nuts, walnuts, english
+  ingredient_en: Walnuts
+  ingredient_ar: جوز
+  state: raw
+  allergens:
+  - Tree nuts
+  ingredient_tags: []
+- ndb_number: '12166'
+  sr_description: Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)
+  ingredient_en: Tahini
+  ingredient_ar: طحينة
+  state: as_purchased
+  allergens:
+  - Sesame
+  ingredient_tags: []
+- ndb_number: '14555'
+  sr_description: Water, bottled, generic
+  ingredient_en: Water
+  ingredient_ar: ماء
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '15121'
+  sr_description: Fish, tuna, light, canned in water, drained solids
+  ingredient_en: Canned tuna in water, drained
+  ingredient_ar: تونة معلبة بالماء مصفاة
+  state: as_purchased
+  allergens:
+  - Fish
+  ingredient_tags: []
+- ndb_number: '15261'
+  sr_description: Fish, tilapia, raw
+  ingredient_en: Tilapia fillet
+  ingredient_ar: فيليه سمك البلطي
+  state: raw
+  allergens:
+  - Fish
+  ingredient_tags: []
+- ndb_number: '16051'
+  sr_description: Beans, white, mature seeds, canned
+  ingredient_en: Canned white beans
+  ingredient_ar: فاصوليا بيضاء معلبة
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '16052'
+  sr_description: Broadbeans (fava beans), mature seeds, raw
+  ingredient_en: Dried fava beans
+  ingredient_ar: فول مجفف
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '16069'
+  sr_description: Lentils, raw
+  ingredient_en: Lentils
+  ingredient_ar: عدس
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '16358'
+  sr_description: Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids
+  ingredient_en: Canned chickpeas, drained
+  ingredient_ar: حمص معلب مصفى
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '16398'
+  sr_description: Peanut butter, smooth style, without salt
+  ingredient_en: Peanut butter, unsalted
+  ingredient_ar: زبدة الفول السوداني بدون ملح
+  state: as_purchased
+  allergens:
+  - Peanut
+  ingredient_tags: []
+- ndb_number: '17039'
+  sr_description: Lamb, domestic, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4" fat, choice, raw
+  ingredient_en: Lamb shoulder, lean
+  ingredient_ar: كتف ضأن صافٍ
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '18042'
+  sr_description: Bread, pita, whole-wheat
+  ingredient_en: Whole-wheat pita bread
+  ingredient_ar: خبز عربي أسمر
+  state: as_purchased
+  allergens:
+  - Gluten
+  ingredient_tags: []
+- ndb_number: '18075'
+  sr_description: Bread, whole-wheat, commercially prepared
+  ingredient_en: Whole-wheat bread
+  ingredient_ar: خبز أسمر
+  state: as_purchased
+  allergens:
+  - Gluten
+  ingredient_tags: []
+- ndb_number: '19296'
+  sr_description: Honey
+  ingredient_en: Honey
+  ingredient_ar: عسل
+  state: as_purchased
+  allergens: []
+  ingredient_tags:
+  - added_sugar
+- ndb_number: '20012'
+  sr_description: Bulgur, dry
+  ingredient_en: Bulgur
+  ingredient_ar: برغل
+  state: raw
+  allergens:
+  - Gluten
+  ingredient_tags: []
+- ndb_number: '20029'
+  sr_description: Couscous, cooked
+  ingredient_en: Couscous, cooked
+  ingredient_ar: كسكسي مطبوخ
+  state: cooked
+  allergens:
+  - Gluten
+  ingredient_tags: []
+- ndb_number: '20044'
+  sr_description: Rice, white, long-grain, regular, raw, enriched
+  ingredient_en: White rice
+  ingredient_ar: أرز أبيض
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '20081'
+  sr_description: Wheat flour, white, all-purpose, enriched, bleached
+  ingredient_en: White wheat flour
+  ingredient_ar: دقيق قمح أبيض
+  state: raw
+  allergens:
+  - Gluten
+  ingredient_tags: []
+- ndb_number: '20120'
+  sr_description: Pasta, dry, enriched
+  ingredient_en: Pasta
+  ingredient_ar: معكرونة
+  state: raw
+  allergens:
+  - Gluten
+  ingredient_tags: []
+- ndb_number: '20130'
+  sr_description: Barley flour or meal
+  ingredient_en: Barley flour
+  ingredient_ar: دقيق شعير
+  state: raw
+  allergens:
+  - Gluten
+  ingredient_tags: []
+- ndb_number: '23562'
+  sr_description: Beef, ground, 90% lean meat / 10% fat, raw
+  ingredient_en: Ground beef, 90% lean
+  ingredient_ar: لحم بقر مفروم 90% صافٍ
+  state: raw
+  allergens: []
+  ingredient_tags: []

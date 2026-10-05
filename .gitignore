@@ -13,6 +13,9 @@ __pycache__/
 .coverage
 htmlcov/
 
+# Raw source downloads (official releases; provenance in data/f1_slice/fdc_source_manifest.yaml)
+backend/data/raw/
+
 # Editors / OS
 .idea/
 .vscode/

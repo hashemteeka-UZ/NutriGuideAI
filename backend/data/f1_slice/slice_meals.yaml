@@ -1,0 +1,653 @@
+# Step F.1 slice meals (30). Drafted by an LLM assistant (§31.4): source = llm_draft_reviewed.
+# A team member must review every recipe and write their name in reviewed_by; is_verified = (reviewed_by is set).
+# label_ar is for human reviewers only; the loader ignores it.
+# Grams are as added to the recipe, in the state of the referenced food. Nutrients are computed (calc_v1), never typed.
+# total_grams = sum(grams) x yield_factor for YIELD_FACTOR; sum(grams) for SUM_OF_INGREDIENTS (no-cook dishes only).
+dataset_version: f1_slice_v0
+source: llm_draft_reviewed
+source_license: Team-authored recipes, project internal use
+quality_tier: SILVER
+default_lang: ar
+meals:
+- ref_external: F1-B01
+  name_ar: شكشوكة ليبية مع خبز أسمر
+  name_en: Libyan shakshouka with whole-wheat pita
+  cuisine: LIBYAN
+  servings: 2
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - breakfast_suitable
+  - dinner_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '01123', grams: 200, label_ar: بيض}
+  - {ndb_number: '11529', grams: 400, label_ar: طماطم}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '11333', grams: 100, label_ar: فلفل أخضر حلو}
+  - {ndb_number: '04053', grams: 15, label_ar: زيت زيتون}
+  - {ndb_number: '11215', grams: 10, label_ar: ثوم}
+  - {ndb_number: 02028, grams: 3, label_ar: فلفل أحمر حلو مطحون}
+  - {ndb_number: '02014', grams: 2, label_ar: كمون}
+  - {ndb_number: '02047', grams: 3, label_ar: ملح}
+  - {ndb_number: '18042', grams: 120, label_ar: خبز عربي أسمر}
+- ref_external: F1-B02
+  name_ar: فول مدمس بزيت الزيتون والليمون
+  name_en: Ful medames with olive oil and lemon
+  cuisine: LEVANTINE
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.9
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - breakfast_suitable
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '16052', grams: 250, label_ar: فول مجفف}
+  - {ndb_number: '14555', grams: 750, label_ar: ماء}
+  - {ndb_number: '04053', grams: 30, label_ar: زيت زيتون}
+  - {ndb_number: 09152, grams: 40, label_ar: عصير ليمون}
+  - {ndb_number: '11215', grams: 10, label_ar: ثوم}
+  - {ndb_number: '02014', grams: 3, label_ar: كمون}
+  - {ndb_number: '02047', grams: 4, label_ar: ملح}
+  - {ndb_number: '11529', grams: 150, label_ar: طماطم}
+  - {ndb_number: '11297', grams: 20, label_ar: بقدونس}
+- ref_external: F1-B03
+  name_ar: عصيدة الشوفان بالحليب والتمر
+  name_en: Oat porridge with milk and dates
+  cuisine: GENERAL
+  servings: 1
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.95
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - breakfast_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: 08120, grams: 50, label_ar: شوفان}
+  - {ndb_number: 01082, grams: 200, label_ar: حليب قليل الدسم}
+  - {ndb_number: 09087, grams: 25, label_ar: تمر}
+  - {ndb_number: '02010', grams: 1, label_ar: قرفة}
+- ref_external: F1-B04
+  name_ar: زبادي يوناني بالخيار وزيت الزيتون مع خبز أسمر
+  name_en: Greek yogurt with cucumber, olive oil and whole-wheat pita
+  cuisine: LEVANTINE
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - breakfast_suitable
+  - snack_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '01256', grams: 170, label_ar: زبادي يوناني خالي الدسم}
+  - {ndb_number: '11205', grams: 80, label_ar: خيار}
+  - {ndb_number: '04053', grams: 7, label_ar: زيت زيتون}
+  - {ndb_number: '11297', grams: 5, label_ar: بقدونس}
+  - {ndb_number: '02047', grams: 1, label_ar: ملح}
+  - {ndb_number: '18042', grams: 60, label_ar: خبز عربي أسمر}
+- ref_external: F1-B05
+  name_ar: جبن فيتا وزيتون وخضار مع خبز أسمر
+  name_en: Feta, olives and vegetables with whole-wheat bread
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - breakfast_suitable
+  - dinner_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: 01019, grams: 40, label_ar: جبن فيتا}
+  - {ndb_number: 09193, grams: 30, label_ar: زيتون أسود}
+  - {ndb_number: '11529', grams: 100, label_ar: طماطم}
+  - {ndb_number: '11205', grams: 80, label_ar: خيار}
+  - {ndb_number: '18075', grams: 60, label_ar: خبز أسمر}
+- ref_external: F1-B06
+  name_ar: بيض مسلوق مع طماطم وخبز أسمر
+  name_en: Boiled eggs with tomato and whole-wheat bread
+  cuisine: GENERAL
+  servings: 1
+  weight_method: YIELD_FACTOR
+  yield_factor: 1.0
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - breakfast_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '01123', grams: 100, label_ar: بيض}
+  - {ndb_number: '11529', grams: 100, label_ar: طماطم}
+  - {ndb_number: '18075', grams: 60, label_ar: خبز أسمر}
+  - {ndb_number: '02047', grams: 1, label_ar: ملح}
+- ref_external: F1-B07
+  name_ar: عصيدة ليبية بالزبدة والعسل
+  name_en: Asida with butter and honey
+  cuisine: LIBYAN
+  servings: 3
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.9
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - breakfast_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '20081', grams: 150, label_ar: دقيق قمح أبيض}
+  - {ndb_number: '14555', grams: 450, label_ar: ماء}
+  - {ndb_number: '01145', grams: 30, label_ar: زبدة غير مملحة}
+  - {ndb_number: '19296', grams: 60, label_ar: عسل}
+- ref_external: F1-B08
+  name_ar: زبدة الفول السوداني والموز على خبز أسمر
+  name_en: Peanut butter and banana on whole-wheat toast
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - breakfast_suitable
+  - snack_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '18075', grams: 60, label_ar: خبز أسمر}
+  - {ndb_number: '16398', grams: 20, label_ar: زبدة الفول السوداني بدون ملح}
+  - {ndb_number: 09040, grams: 100, label_ar: موز}
+- ref_external: F1-L01
+  name_ar: كسكسي ليبي باللحم والخضار
+  name_en: Libyan couscous with lamb and vegetables
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '20029', grams: 600, label_ar: كسكسي مطبوخ}
+  - {ndb_number: '17039', grams: 300, label_ar: كتف ضأن صافٍ}
+  - {ndb_number: '16358', grams: 150, label_ar: حمص معلب مصفى}
+  - {ndb_number: '11282', grams: 150, label_ar: بصل}
+  - {ndb_number: '11422', grams: 300, label_ar: قرع}
+  - {ndb_number: '11124', grams: 200, label_ar: جزر}
+  - {ndb_number: '11352', grams: 200, label_ar: بطاطا}
+  - {ndb_number: '11546', grams: 30, label_ar: معجون طماطم بدون ملح مضاف}
+  - {ndb_number: '04053', grams: 30, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 6, label_ar: ملح}
+  - {ndb_number: '02043', grams: 2, label_ar: كركم}
+  - {ndb_number: 02028, grams: 3, label_ar: فلفل أحمر حلو مطحون}
+  - {ndb_number: '14555', grams: 600, label_ar: ماء}
+- ref_external: F1-L02
+  name_ar: مبكبكة
+  name_en: Mbakbaka (pasta in spicy tomato sauce with lamb)
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.8
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '20120', grams: 400, label_ar: معكرونة}
+  - {ndb_number: '17039', grams: 300, label_ar: كتف ضأن صافٍ}
+  - {ndb_number: '11282', grams: 150, label_ar: بصل}
+  - {ndb_number: '11546', grams: 60, label_ar: معجون طماطم بدون ملح مضاف}
+  - {ndb_number: '11215', grams: 10, label_ar: ثوم}
+  - {ndb_number: '11670', grams: 20, label_ar: فلفل حار أخضر}
+  - {ndb_number: '16358', grams: 100, label_ar: حمص معلب مصفى}
+  - {ndb_number: '04053', grams: 30, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 6, label_ar: ملح}
+  - {ndb_number: 02028, grams: 3, label_ar: فلفل أحمر حلو مطحون}
+  - {ndb_number: '14555', grams: 1200, label_ar: ماء}
+- ref_external: F1-L03
+  name_ar: بازين باللحم والبطاطا والبيض
+  name_en: Bazeen with lamb, potatoes and eggs
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '20130', grams: 400, label_ar: دقيق شعير}
+  - {ndb_number: '14555', grams: 600, label_ar: ماء}
+  - {ndb_number: '17039', grams: 400, label_ar: كتف ضأن صافٍ}
+  - {ndb_number: '11352', grams: 300, label_ar: بطاطا}
+  - {ndb_number: '01123', grams: 200, label_ar: بيض}
+  - {ndb_number: '11546', grams: 60, label_ar: معجون طماطم بدون ملح مضاف}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '04053', grams: 30, label_ar: زيت زيتون}
+  - {ndb_number: '11670', grams: 20, label_ar: فلفل حار أخضر}
+  - {ndb_number: '02047', grams: 8, label_ar: ملح}
+- ref_external: F1-L04
+  name_ar: دجاج بالأرز المبهر والخضار
+  name_en: Chicken with spiced rice and vegetables
+  cuisine: GENERAL
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '20044', grams: 300, label_ar: أرز أبيض}
+  - {ndb_number: 05096, grams: 500, label_ar: ورك دجاج بدون جلد}
+  - {ndb_number: '11282', grams: 150, label_ar: بصل}
+  - {ndb_number: '11124', grams: 100, label_ar: جزر}
+  - {ndb_number: '11304', grams: 100, label_ar: بازلاء}
+  - {ndb_number: '04053', grams: 30, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 6, label_ar: ملح}
+  - {ndb_number: '02014', grams: 3, label_ar: كمون}
+  - {ndb_number: '02043', grams: 2, label_ar: كركم}
+  - {ndb_number: '14555', grams: 700, label_ar: ماء}
+- ref_external: F1-L05
+  name_ar: فاصوليا بيضاء باللحم
+  name_en: White bean stew with lamb (fasolia)
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '16051', grams: 500, label_ar: فاصوليا بيضاء معلبة}
+  - {ndb_number: '17039', grams: 250, label_ar: كتف ضأن صافٍ}
+  - {ndb_number: '11546', grams: 50, label_ar: معجون طماطم بدون ملح مضاف}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '04053', grams: 20, label_ar: زيت زيتون}
+  - {ndb_number: '11215', grams: 10, label_ar: ثوم}
+  - {ndb_number: '02047', grams: 4, label_ar: ملح}
+  - {ndb_number: '14555', grams: 400, label_ar: ماء}
+- ref_external: F1-L06
+  name_ar: بامية باللحم
+  name_en: Okra stew with lamb (bamia)
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '11278', grams: 500, label_ar: بامية}
+  - {ndb_number: '17039', grams: 300, label_ar: كتف ضأن صافٍ}
+  - {ndb_number: '11531', grams: 400, label_ar: طماطم معلبة}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '11215', grams: 10, label_ar: ثوم}
+  - {ndb_number: '04053', grams: 25, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 5, label_ar: ملح}
+  - {ndb_number: '14555', grams: 300, label_ar: ماء}
+- ref_external: F1-L07
+  name_ar: سمك بالفرن مع البطاطا والطماطم
+  name_en: Baked fish with potatoes and tomatoes
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.8
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '15261', grams: 600, label_ar: فيليه سمك البلطي}
+  - {ndb_number: '11352', grams: 500, label_ar: بطاطا}
+  - {ndb_number: '11529', grams: 300, label_ar: طماطم}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '11333', grams: 100, label_ar: فلفل أخضر حلو}
+  - {ndb_number: '04053', grams: 40, label_ar: زيت زيتون}
+  - {ndb_number: '11215', grams: 10, label_ar: ثوم}
+  - {ndb_number: 09152, grams: 30, label_ar: عصير ليمون}
+  - {ndb_number: '02014', grams: 2, label_ar: كمون}
+  - {ndb_number: '02047', grams: 5, label_ar: ملح}
+- ref_external: F1-L08
+  name_ar: رشتة بالحمص والدجاج
+  name_en: Rishta (homemade noodles with chickpeas and chicken)
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.8
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '20081', grams: 300, label_ar: دقيق قمح أبيض}
+  - {ndb_number: '14555', grams: 1150, label_ar: ماء}
+  - {ndb_number: 05096, grams: 300, label_ar: ورك دجاج بدون جلد}
+  - {ndb_number: '16358', grams: 200, label_ar: حمص معلب مصفى}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '11546', grams: 40, label_ar: معجون طماطم بدون ملح مضاف}
+  - {ndb_number: '04053', grams: 25, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 6, label_ar: ملح}
+  - {ndb_number: '02043', grams: 2, label_ar: كركم}
+- ref_external: F1-D01
+  name_ar: شربة ليبية
+  name_en: Libyan soup with lamb and orzo (sharba)
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '17039', grams: 200, label_ar: كتف ضأن صافٍ}
+  - {ndb_number: '20120', grams: 120, label_ar: معكرونة}
+  - {ndb_number: '16358', grams: 100, label_ar: حمص معلب مصفى}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '11546', grams: 50, label_ar: معجون طماطم بدون ملح مضاف}
+  - {ndb_number: '11297', grams: 20, label_ar: بقدونس}
+  - {ndb_number: '04053', grams: 20, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 6, label_ar: ملح}
+  - {ndb_number: '02043', grams: 2, label_ar: كركم}
+  - {ndb_number: '14555', grams: 1500, label_ar: ماء}
+- ref_external: F1-D02
+  name_ar: شوربة عدس
+  name_en: Lentil soup
+  cuisine: LEVANTINE
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '16069', grams: 250, label_ar: عدس}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '11124', grams: 100, label_ar: جزر}
+  - {ndb_number: '11352', grams: 150, label_ar: بطاطا}
+  - {ndb_number: '04053', grams: 20, label_ar: زيت زيتون}
+  - {ndb_number: '02014', grams: 3, label_ar: كمون}
+  - {ndb_number: '02047', grams: 5, label_ar: ملح}
+  - {ndb_number: 09152, grams: 20, label_ar: عصير ليمون}
+  - {ndb_number: '14555', grams: 1200, label_ar: ماء}
+- ref_external: F1-D03
+  name_ar: سلطة تونة ليبية بالبطاطا والبيض
+  name_en: Libyan tuna salad with potatoes and eggs
+  cuisine: LIBYAN
+  servings: 2
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.98
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '15121', grams: 150, label_ar: تونة معلبة بالماء مصفاة}
+  - {ndb_number: '11352', grams: 200, label_ar: بطاطا}
+  - {ndb_number: '01123', grams: 100, label_ar: بيض}
+  - {ndb_number: 09193, grams: 30, label_ar: زيتون أسود}
+  - {ndb_number: '11529', grams: 150, label_ar: طماطم}
+  - {ndb_number: '11282', grams: 40, label_ar: بصل}
+  - {ndb_number: '04053', grams: 15, label_ar: زيت زيتون}
+  - {ndb_number: 09152, grams: 20, label_ar: عصير ليمون}
+  - {ndb_number: '02047', grams: 2, label_ar: ملح}
+- ref_external: F1-D04
+  name_ar: صدر دجاج مشوي مع سلطة وخبز أسمر
+  name_en: Grilled chicken breast with salad and whole-wheat pita
+  cuisine: GENERAL
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '05062', grams: 500, label_ar: صدر دجاج بدون جلد}
+  - {ndb_number: '04053', grams: 30, label_ar: زيت زيتون}
+  - {ndb_number: '11215', grams: 10, label_ar: ثوم}
+  - {ndb_number: 09152, grams: 30, label_ar: عصير ليمون}
+  - {ndb_number: '02047', grams: 4, label_ar: ملح}
+  - {ndb_number: '11251', grams: 200, label_ar: خس}
+  - {ndb_number: '11529', grams: 200, label_ar: طماطم}
+  - {ndb_number: '11205', grams: 200, label_ar: خيار}
+  - {ndb_number: '18042', grams: 240, label_ar: خبز عربي أسمر}
+- ref_external: F1-D05
+  name_ar: مجدرة بالبرغل
+  name_en: Mujaddara (lentils and bulgur with onions)
+  cuisine: LEVANTINE
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '16069', grams: 200, label_ar: عدس}
+  - {ndb_number: '20012', grams: 200, label_ar: برغل}
+  - {ndb_number: '11282', grams: 300, label_ar: بصل}
+  - {ndb_number: '04053', grams: 40, label_ar: زيت زيتون}
+  - {ndb_number: '02014', grams: 3, label_ar: كمون}
+  - {ndb_number: '02047', grams: 5, label_ar: ملح}
+  - {ndb_number: '14555', grams: 900, label_ar: ماء}
+- ref_external: F1-D06
+  name_ar: فلفل محشي باللحم والأرز
+  name_en: Stuffed peppers with beef and rice
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags: []
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '23562', grams: 300, label_ar: لحم بقر مفروم 90% صافٍ}
+  - {ndb_number: '20044', grams: 150, label_ar: أرز أبيض}
+  - {ndb_number: '11333', grams: 600, label_ar: فلفل أخضر حلو}
+  - {ndb_number: '11546', grams: 40, label_ar: معجون طماطم بدون ملح مضاف}
+  - {ndb_number: '11282', grams: 100, label_ar: بصل}
+  - {ndb_number: '11297', grams: 20, label_ar: بقدونس}
+  - {ndb_number: '04053', grams: 20, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 5, label_ar: ملح}
+  - {ndb_number: '14555', grams: 400, label_ar: ماء}
+- ref_external: F1-D07
+  name_ar: تبولة
+  name_en: Tabbouleh
+  cuisine: LEVANTINE
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - lunch_suitable
+  - dinner_suitable
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '20012', grams: 100, label_ar: برغل}
+  - {ndb_number: '14555', grams: 150, label_ar: ماء}
+  - {ndb_number: '11297', grams: 200, label_ar: بقدونس}
+  - {ndb_number: '11529', grams: 300, label_ar: طماطم}
+  - {ndb_number: '11205', grams: 200, label_ar: خيار}
+  - {ndb_number: '11282', grams: 60, label_ar: بصل}
+  - {ndb_number: 09152, grams: 60, label_ar: عصير ليمون}
+  - {ndb_number: '04053', grams: 50, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 4, label_ar: ملح}
+- ref_external: F1-S01
+  name_ar: تمر مع لوز
+  name_en: Dates with almonds
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - snack_suitable
+  - nuts_seeds_snack
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: 09087, grams: 50, label_ar: تمر}
+  - {ndb_number: '12061', grams: 20, label_ar: لوز}
+- ref_external: F1-S02
+  name_ar: زبادي يوناني بالعسل والجوز
+  name_en: Greek yogurt with honey and walnuts
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - snack_suitable
+  - breakfast_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '01256', grams: 170, label_ar: زبادي يوناني خالي الدسم}
+  - {ndb_number: '19296', grams: 15, label_ar: عسل}
+  - {ndb_number: '12155', grams: 15, label_ar: جوز}
+- ref_external: F1-S03
+  name_ar: سلطة فواكه طازجة
+  name_en: Fresh fruit salad
+  cuisine: GENERAL
+  servings: 2
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - snack_suitable
+  - breakfast_suitable
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: 09003, grams: 100, label_ar: تفاح}
+  - {ndb_number: 09200, grams: 100, label_ar: برتقال}
+  - {ndb_number: 09040, grams: 100, label_ar: موز}
+  - {ndb_number: 09316, grams: 100, label_ar: فراولة}
+  - {ndb_number: 09132, grams: 100, label_ar: عنب}
+- ref_external: F1-S04
+  name_ar: حمص بالطحينة مع أصابع الجزر والخيار
+  name_en: Hummus with carrot and cucumber sticks
+  cuisine: LEVANTINE
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - snack_suitable
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '16358', grams: 300, label_ar: حمص معلب مصفى}
+  - {ndb_number: '12166', grams: 60, label_ar: طحينة}
+  - {ndb_number: 09152, grams: 40, label_ar: عصير ليمون}
+  - {ndb_number: '11215', grams: 5, label_ar: ثوم}
+  - {ndb_number: '04053', grams: 20, label_ar: زيت زيتون}
+  - {ndb_number: '02047', grams: 3, label_ar: ملح}
+  - {ndb_number: '11124', grams: 200, label_ar: جزر}
+  - {ndb_number: '11205', grams: 200, label_ar: خيار}
+- ref_external: F1-S05
+  name_ar: كوب حليب مع تمر
+  name_en: Glass of milk with dates
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - snack_suitable
+  - beverage
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: 01082, grams: 250, label_ar: حليب قليل الدسم}
+  - {ndb_number: 09087, grams: 30, label_ar: تمر}
+- ref_external: F1-S06
+  name_ar: حمص محمص بالبهارات
+  name_en: Roasted spiced chickpeas
+  cuisine: GENERAL
+  servings: 3
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.6
+  yield_factor_source: team estimate pending weighing (Step G replaces with WEIGHED)
+  occasion_tags:
+  - snack_suitable
+  - nuts_seeds_snack
+  dietary_tags:
+  - vegan
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: '16358', grams: 300, label_ar: حمص معلب مصفى}
+  - {ndb_number: '04053', grams: 15, label_ar: زيت زيتون}
+  - {ndb_number: '02014', grams: 2, label_ar: كمون}
+  - {ndb_number: 02028, grams: 2, label_ar: فلفل أحمر حلو مطحون}
+  - {ndb_number: '02047', grams: 3, label_ar: ملح}
+- ref_external: F1-S07
+  name_ar: بطيخ مع جبن فيتا
+  name_en: Watermelon with feta
+  cuisine: LEVANTINE
+  servings: 2
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  occasion_tags:
+  - snack_suitable
+  dietary_tags:
+  - vegetarian
+  reviewed_by: null
+  ingredients:
+  - {ndb_number: 09326, grams: 300, label_ar: بطيخ}
+  - {ndb_number: 01019, grams: 40, label_ar: جبن فيتا}
