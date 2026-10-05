@@ -66,7 +66,7 @@ def test_real_files_load_without_gate_failures(session: Session) -> None:
     assert counts["meal_translations"] == 30
     assert counts["meal_ingredients"] == sum(len(m.ingredients) for m in FILES.meals.meals)
     assert {name: c.inserted for name, c in report.tables.items()} == counts
-    assert report.unverified_meals == 30
+    assert report.unverified_meals == 0
 
 
 def test_every_food_has_the_nine_mandatory_nutrients(session: Session) -> None:
@@ -107,14 +107,39 @@ def test_spot_check_lamb_17039_fdc_id_and_sodium(session: Session) -> None:
     assert sodium == sodium_csv
 
 
-def test_meal_f1_b01_total_grams_and_unverified_meals(session: Session) -> None:
+def test_meal_f1_b01_total_grams(session: Session) -> None:
     load_f1_slice(session, DEFAULT_DATA_DIR)
     b01 = session.execute(select(Meal).where(Meal.ref_external == "F1-B01")).scalar_one()
     assert b01.total_grams == 810.05
     assert b01.default_lang == "ar"
-    assert all(m.reviewed_by is None for m in FILES.meals.meals)
-    verified = session.execute(select(func.count()).select_from(Meal).where(Meal.is_verified))
-    assert verified.scalar_one() == 0
+
+
+def _verified_by_ref(session: Session) -> dict[str | None, bool]:
+    return dict(session.execute(select(Meal.ref_external, Meal.is_verified)).tuples().all())
+
+
+def test_is_verified_follows_reviewed_by(session: Session) -> None:
+    load_f1_slice(session, DEFAULT_DATA_DIR)
+    expected = {m.ref_external: m.reviewed_by is not None for m in FILES.meals.meals}
+    assert _verified_by_ref(session) == expected
+    assert len(expected) == 30
+    assert all(expected.values())
+
+
+def test_meal_without_reviewer_loads_unverified(session: Session, tmp_path: Path) -> None:
+    data_dir = _copy_data_dir(tmp_path)
+    _replace_once(data_dir / SLICE_MEALS_FILE, "  reviewed_by: Hashem\n", "  reviewed_by: null\n")
+    report = load_f1_slice(session, data_dir)
+    verified = _verified_by_ref(session)
+    assert verified.pop("F1-B01") is False
+    assert all(verified.values())
+    assert report.unverified_meals == 1
+    assert any("1 meals have no reviewer" in f for f in report.findings)
+
+    reviewed = load_f1_slice(session, DEFAULT_DATA_DIR)
+    assert _verified_by_ref(session)["F1-B01"] is True
+    assert reviewed.tables["meals"].updated == 1
+    assert reviewed.unverified_meals == 0
 
 
 def test_normalized_columns_use_normalize_search_text(session: Session) -> None:

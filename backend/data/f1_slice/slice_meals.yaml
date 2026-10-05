@@ -22,7 +22,7 @@ meals:
   - dinner_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '01123', grams: 200, label_ar: بيض}
   - {ndb_number: '11529', grams: 400, label_ar: طماطم}
@@ -46,7 +46,7 @@ meals:
   - breakfast_suitable
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '16052', grams: 250, label_ar: فول مجفف}
   - {ndb_number: '14555', grams: 750, label_ar: ماء}
@@ -69,7 +69,7 @@ meals:
   - breakfast_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: 08120, grams: 50, label_ar: شوفان}
   - {ndb_number: 01082, grams: 200, label_ar: حليب قليل الدسم}
@@ -88,7 +88,7 @@ meals:
   - snack_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '01256', grams: 170, label_ar: زبادي يوناني خالي الدسم}
   - {ndb_number: '11205', grams: 80, label_ar: خيار}
@@ -109,7 +109,7 @@ meals:
   - dinner_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: 01019, grams: 40, label_ar: جبن فيتا}
   - {ndb_number: 09193, grams: 30, label_ar: زيتون أسود}
@@ -128,7 +128,7 @@ meals:
   - breakfast_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '01123', grams: 100, label_ar: بيض}
   - {ndb_number: '11529', grams: 100, label_ar: طماطم}
@@ -146,7 +146,7 @@ meals:
   - breakfast_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '20081', grams: 150, label_ar: دقيق قمح أبيض}
   - {ndb_number: '14555', grams: 450, label_ar: ماء}
@@ -165,7 +165,7 @@ meals:
   - snack_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '18075', grams: 60, label_ar: خبز أسمر}
   - {ndb_number: '16398', grams: 20, label_ar: زبدة الفول السوداني بدون ملح}
@@ -181,7 +181,7 @@ meals:
   occasion_tags:
   - lunch_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '20029', grams: 600, label_ar: كسكسي مطبوخ}
   - {ndb_number: '17039', grams: 300, label_ar: كتف ضأن صافٍ}
@@ -208,7 +208,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '20120', grams: 400, label_ar: معكرونة}
   - {ndb_number: '17039', grams: 300, label_ar: كتف ضأن صافٍ}
@@ -232,7 +232,7 @@ meals:
   occasion_tags:
   - lunch_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '20130', grams: 400, label_ar: دقيق شعير}
   - {ndb_number: '14555', grams: 600, label_ar: ماء}
@@ -256,7 +256,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '20044', grams: 300, label_ar: أرز أبيض}
   - {ndb_number: 05096, grams: 500, label_ar: ورك دجاج بدون جلد}
@@ -280,7 +280,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '16051', grams: 500, label_ar: فاصوليا بيضاء معلبة}
   - {ndb_number: '17039', grams: 250, label_ar: كتف ضأن صافٍ}
@@ -302,7 +302,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '11278', grams: 500, label_ar: بامية}
   - {ndb_number: '17039', grams: 300, label_ar: كتف ضأن صافٍ}
@@ -324,7 +324,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '15261', grams: 600, label_ar: فيليه سمك البلطي}
   - {ndb_number: '11352', grams: 500, label_ar: بطاطا}
@@ -347,7 +347,7 @@ meals:
   occasion_tags:
   - lunch_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '20081', grams: 300, label_ar: دقيق قمح أبيض}
   - {ndb_number: '14555', grams: 1150, label_ar: ماء}
@@ -370,7 +370,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '17039', grams: 200, label_ar: كتف ضأن صافٍ}
   - {ndb_number: '20120', grams: 120, label_ar: معكرونة}
@@ -395,7 +395,7 @@ meals:
   - dinner_suitable
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '16069', grams: 250, label_ar: عدس}
   - {ndb_number: '11282', grams: 100, label_ar: بصل}
@@ -418,7 +418,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '15121', grams: 150, label_ar: تونة معلبة بالماء مصفاة}
   - {ndb_number: '11352', grams: 200, label_ar: بطاطا}
@@ -441,7 +441,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '05062', grams: 500, label_ar: صدر دجاج بدون جلد}
   - {ndb_number: '04053', grams: 30, label_ar: زيت زيتون}
@@ -465,7 +465,7 @@ meals:
   - dinner_suitable
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '16069', grams: 200, label_ar: عدس}
   - {ndb_number: '20012', grams: 200, label_ar: برغل}
@@ -486,7 +486,7 @@ meals:
   - lunch_suitable
   - dinner_suitable
   dietary_tags: []
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '23562', grams: 300, label_ar: لحم بقر مفروم 90% صافٍ}
   - {ndb_number: '20044', grams: 150, label_ar: أرز أبيض}
@@ -510,7 +510,7 @@ meals:
   - dinner_suitable
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '20012', grams: 100, label_ar: برغل}
   - {ndb_number: '14555', grams: 150, label_ar: ماء}
@@ -534,7 +534,7 @@ meals:
   - nuts_seeds_snack
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: 09087, grams: 50, label_ar: تمر}
   - {ndb_number: '12061', grams: 20, label_ar: لوز}
@@ -551,7 +551,7 @@ meals:
   - breakfast_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '01256', grams: 170, label_ar: زبادي يوناني خالي الدسم}
   - {ndb_number: '19296', grams: 15, label_ar: عسل}
@@ -569,7 +569,7 @@ meals:
   - breakfast_suitable
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: 09003, grams: 100, label_ar: تفاح}
   - {ndb_number: 09200, grams: 100, label_ar: برتقال}
@@ -588,7 +588,7 @@ meals:
   - snack_suitable
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '16358', grams: 300, label_ar: حمص معلب مصفى}
   - {ndb_number: '12166', grams: 60, label_ar: طحينة}
@@ -611,7 +611,7 @@ meals:
   - beverage
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: 01082, grams: 250, label_ar: حليب قليل الدسم}
   - {ndb_number: 09087, grams: 30, label_ar: تمر}
@@ -628,7 +628,7 @@ meals:
   - nuts_seeds_snack
   dietary_tags:
   - vegan
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: '16358', grams: 300, label_ar: حمص معلب مصفى}
   - {ndb_number: '04053', grams: 15, label_ar: زيت زيتون}
@@ -647,7 +647,7 @@ meals:
   - snack_suitable
   dietary_tags:
   - vegetarian
-  reviewed_by: null
+  reviewed_by: Hashem
   ingredients:
   - {ndb_number: 09326, grams: 300, label_ar: بطيخ}
   - {ndb_number: 01019, grams: 40, label_ar: جبن فيتا}
