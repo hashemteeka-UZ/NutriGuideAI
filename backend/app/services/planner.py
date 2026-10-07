@@ -287,6 +287,30 @@ def _rejections(
     return rules
 
 
+def placement_rejections(
+    meal: MealFacts,
+    multiplier: Decimal,
+    evaluation: MealEvaluation,
+    day_items: Sequence[tuple[str, MealFacts, Decimal]],
+    limits: ResolvedLimits,
+) -> list[str]:
+    """Rules `meal` breaks when added to a day holding `day_items` (slot, meal, multiplier).
+
+    The same hard rules as plan_day (Layer 1 codes of `evaluation`, repeated meal or
+    variant_group, max_per_day, LIMIT-tag servings) without the lookahead or the snack ceiling,
+    which only apply while a day is being built.
+    """
+    day = _Day([(slot, _Pair(m, mult)) for slot, m, mult in day_items])
+    return _rejections(_Pair(meal, multiplier), evaluation, day, limits, {}, None)
+
+
+def slot_target_kcal(slot: str, target_kcal: Decimal, snack_count: int) -> Decimal:
+    """Energy target of one item: its slot share, or the snack share split over the snacks."""
+    if slot == MealSlot.SNACK:
+        return SNACK_ENERGY_SHARE * target_kcal / snack_count if snack_count else Decimal(0)
+    return SLOT_ENERGY_SHARE[slot] * target_kcal
+
+
 def _valid_pairs(
     meals: Sequence[MealFacts],
     evaluations: Evaluations,
@@ -410,9 +434,6 @@ def plan_day(
         best = min(valid, key=lambda p: (abs(gap - p.kcal), p.meal.sort_key, p.multiplier))
         day.chosen.append((MealSlot.SNACK, best))
 
-    snack_target = (
-        SNACK_ENERGY_SHARE * target.kcal / day.snack_count if day.snack_count else Decimal(0)
-    )
     items = tuple(
         PlanItem(
             slot=str(slot),
@@ -428,7 +449,7 @@ def plan_day(
             reason_codes=reason_codes(
                 pair.meal,
                 pair.multiplier,
-                snack_target if slot == MealSlot.SNACK else SLOT_ENERGY_SHARE[slot] * target.kcal,
+                slot_target_kcal(slot, target.kcal, day.snack_count),
                 limits,
                 preferences,
             ),
@@ -436,6 +457,20 @@ def plan_day(
         for slot, pair in day.chosen
     )
     totals = {code: day.total(code) for code in nutrient_codes}
+    return DayPlan(
+        plan_date=plan_date,
+        target=target,
+        items=items,
+        totals=totals,
+        kcal_within_10pct=abs(day.kcal - target.kcal) <= KCAL_TOLERANCE * target.kcal,
+        unmet_minimums=unmet_minimums(totals, limits),
+    )
+
+
+def unmet_minimums(
+    totals: Mapping[str, Decimal | None], limits: ResolvedLimits
+) -> tuple[UnmetMinimum, ...]:
+    """Resolved min_per_day values the day totals do not reach (a missing total is unmet)."""
     unmet = []
     for nutrient, minimum in limits.min_per_day.items():
         total = totals.get(nutrient)
@@ -448,14 +483,7 @@ def plan_day(
                     gap=None if total is None else minimum.value - total,
                 )
             )
-    return DayPlan(
-        plan_date=plan_date,
-        target=target,
-        items=items,
-        totals=totals,
-        kcal_within_10pct=abs(day.kcal - target.kcal) <= KCAL_TOLERANCE * target.kcal,
-        unmet_minimums=tuple(unmet),
-    )
+    return tuple(unmet)
 
 
 def build_day_plan(
