@@ -183,6 +183,11 @@ def protein_reference_weight(weight_kg: Decimal, height_cm: Decimal) -> Decimal:
     return ideal + ADJUSTED_WEIGHT_FRACTION * (weight_kg - ideal)
 
 
+def fiber_target_g(target_kcal: Decimal) -> int:
+    """§30.4b: 14 g per 1000 kcal, rounded; not stored, fully determined by target_kcal."""
+    return int(round_half_up(FIBER_G_PER_1000_KCAL * target_kcal / 1000, 0))
+
+
 def compute_targets(inputs: TargetInputs) -> TargetResult:
     _validate(inputs)
     bmr = (
@@ -230,7 +235,7 @@ def compute_targets(inputs: TargetInputs) -> TargetResult:
         protein_g=round_half_up(protein_kcal / KCAL_PER_G_PROTEIN, GRAM_PLACES),
         fat_g=round_half_up(fat_kcal / KCAL_PER_G_FAT, GRAM_PLACES),
         carb_g=round_half_up(carb_kcal / KCAL_PER_G_CARB, GRAM_PLACES),
-        fiber_g=int(round_half_up(FIBER_G_PER_1000_KCAL * kcal / 1000, 0)),
+        fiber_g=fiber_target_g(kcal),
         effective_weekly_rate_kg=rate,
         adjustment_kcal=adjustment,
         rate_was_capped=rate_capped,
