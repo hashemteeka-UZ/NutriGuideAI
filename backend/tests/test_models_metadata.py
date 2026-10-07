@@ -532,7 +532,28 @@ def test_meals_columns_and_checks() -> None:
     assert meals.c.ref_external.nullable is True
     assert meals.c.source_license.nullable is False
     assert ("source", "ref_external") in _unique_column_sets(meals)
-    assert {"servings > 0", "total_grams > 0"} <= _checks("meals")
+    assert {
+        "servings > 0",
+        "total_grams > 0",
+        "yield_factor IS NULL OR (yield_factor > 0 AND yield_factor <= 3)",
+        "weight_method = 'YIELD_FACTOR' OR yield_factor IS NULL",
+    } <= _checks("meals")
+    for column in ("variant_group", "yield_factor", "yield_factor_source", "reviewed_by"):
+        assert meals.c[column].nullable is True, column
+    assert (("variant_group",), False, None) in _indexes("meals")
+
+
+def test_reference_codes_and_category_name_unique() -> None:
+    for table_name in ("cuisines", "allergens"):
+        table = _table(table_name)
+        assert table.c.code.nullable is False
+        assert ("code",) in _unique_column_sets(table)
+    assert ("name_en",) in _unique_column_sets(_table("categories"))
+
+
+def test_meal_tags_rule_version_only_for_derived() -> None:
+    assert _table("meal_tags").c.rule_version.nullable is True
+    assert "source = 'DERIVED' OR rule_version IS NULL" in _checks("meal_tags")
 
 
 def test_meal_translations_description_is_optional() -> None:
@@ -546,6 +567,7 @@ def test_meal_ingredients_columns_and_checks() -> None:
     assert table.c.food_id.nullable is True
     assert table.c.ingredient_id.nullable is False
     assert table.c.text_original.nullable is True
+    assert table.c.is_optional.nullable is False
     assert {
         "grams > 0",
         "position >= 1",
@@ -572,6 +594,7 @@ def test_server_defaults() -> None:
     assert default_sql("nutrients", "is_mandatory") == "false"
     assert default_sql("meals", "is_active") == "true"
     assert default_sql("meals", "is_verified") == "false"
+    assert default_sql("meal_ingredients", "is_optional") == "false"
     assert default_sql("meals", "ingested_at") == "now()"
     assert default_sql("user_profiles", "physiological_status") == "NONE"
     assert default_sql("user_health_conditions", "diagnosed") == "false"

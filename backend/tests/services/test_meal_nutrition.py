@@ -16,7 +16,7 @@ from app.services.meal_nutrition import (
     is_meal_nutritionally_complete,
 )
 from app.services.recompute_meals import MealRecompute
-from tests.services.conftest import NOW, meal_id
+from tests.services.conftest import NOW, clear_derived_meal_data, meal_id
 
 FILES = read_f1_files(DEFAULT_DATA_DIR)
 TOLERANCE = 0.001
@@ -118,15 +118,30 @@ def test_unmapped_ingredient_makes_every_nutrient_unknown(slice_session: Session
 def test_all_slice_meals_are_complete_after_recompute(
     slice_session: Session, recomputed: list[MealRecompute]
 ) -> None:
-    assert len(recomputed) == 30
+    assert len(recomputed) == 35
     assert all(r.nutrition.is_complete for r in recomputed)
     assert all(is_meal_nutritionally_complete(slice_session, r.meal_id) for r in recomputed)
+    assert not any(r.nutrition.changes.changed for r in recomputed)
     rows = slice_session.execute(select(func.count()).select_from(MealNutrient)).scalar_one()
-    assert rows == 30 * len(FILES.seed.nutrients)
+    assert rows == 35 * len(FILES.seed.nutrients)
 
 
 def test_meal_without_rows_is_not_complete(slice_session: Session) -> None:
+    clear_derived_meal_data(slice_session)
     assert not is_meal_nutritionally_complete(slice_session, meal_id(slice_session, "F1-B03"))
+
+
+def test_optional_ingredients_count_in_the_nutrients(slice_session: Session) -> None:
+    """#75: nutrients are computed on the full recipe, optional ingredients included."""
+    b02 = meal_id(slice_session, "F1-B02")
+    meal = next(m for m in FILES.meals.meals if m.ref_external == "F1-B02")
+    sodium_by_ndb = {
+        r.ndb_number: r.amount_per_100g for r in FILES.subset if r.nutrient_nbr == "307"
+    }
+    total = sum(i.grams / 100 * sodium_by_ndb[i.ndb_number] for i in meal.ingredients)
+    assert any(i.optional for i in meal.ingredients)
+    per_serving, _ = _stored(slice_session, b02)["sodium"]
+    assert per_serving == pytest.approx(total / meal.servings, abs=TOLERANCE)
 
 
 def test_recompute_keeps_unchanged_rows(slice_session: Session) -> None:

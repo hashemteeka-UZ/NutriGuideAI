@@ -1,13 +1,28 @@
-# PROJECT_CONTEXT.md — v4.13
+# PROJECT_CONTEXT.md — v4.14
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.13 → v4.14
+
+v4.14 is the **first post-freeze schema change** (2026-10-06, DEV_JOURNAL J-031), made through the §20.1 path during Step F.1. Sources: Step F.1 findings F-01, F-02, F-04 and the team's recipe review. One new migration, `0003`; migrations `0001` and `0002` are untouched.
+
+| # | Topic | Change | Schema? |
+|---|---|---|---|
+| #74 | Threshold tags (finding F-02) | `high_sodium` / `high_sugar` are derived at **meal level** from `meal_nutrients.amount_per_100g` with UK FSA "high" thresholds (sodium > 600 mg, sugars > 22.5 g per 100 g), rules version `tags_v1`. Ingredient-union derivation stays for presence tags (`added_sugar`). §9.5c, §9.13, §10.5 | No |
+| #75 | Optional ingredients | `meal_ingredients.is_optional`; nutrients computed on the full recipe; allergens of optional ingredients still count. §10.2 | **Yes** |
+| #76 | Dish variants | `meals.variant_group` links versions of one dish (e.g. lamb / chicken couscous); planner never places two of a group in one day; "switch meat" = swap to a sibling. §10.1 | **Yes** |
+| #77 | Stable codes (finding F-01) | `cuisines.code`, `allergens.code` (`UNIQUE NOT NULL`); `categories` `UNIQUE (name_en)`. Ingredient natural key stays deferred to Step G. §9.1–§9.3 | **Yes** |
+| #78 | QC columns (finding F-04) | `meals.yield_factor`, `meals.yield_factor_source`, `meals.reviewed_by`; `meal_tags.rule_version` for `DERIVED` rows. §10.1, §10.5 | **Yes** |
+| #79 | Seed reload rule | A meal removed from a seed file is deactivated (`is_active = false`), never deleted (§15.8); `meal_ingredients.text_original` stores the recipe's own wording of an ingredient. §10.2, §31 | No |
 
 ---
 
@@ -382,11 +397,15 @@ Food/category classification (used by `foods` only; NOT used for `meals`, which 
 
 Initial seed values (Phase 2 data): `grains_starches`, `legumes`, `vegetables`, `fruits`, `proteins_meat_poultry`, `proteins_seafood`, `dairy_eggs`, `fats_oils`, `nuts_seeds`, `spices_herbs`, `sweeteners`, `beverages`.
 
+- `UNIQUE (name_en)` — **NEW in v4.14 (#77)**: the seed loader matches categories by name (for FDC data, the FDC food-category description), so a reload never duplicates them.
+
 ## 9.2 `cuisines`
 - `cuisine_id` PK, `name_en`, `name_ar`
+- `code` — **NEW in v4.14 (#77)** — `VARCHAR NOT NULL UNIQUE`, stable key used by seeds and the application (e.g. `LIBYAN`, `LEVANTINE`, `GENERAL`). Migration `0003` backfills existing rows from `name_en` (upper case, spaces → `_`).
 
 ## 9.3 `allergens`
 - `allergen_id` PK, `name_en`, `name_ar`
+- `code` — **NEW in v4.14 (#77)** — `VARCHAR NOT NULL UNIQUE` (e.g. `GLUTEN`, `TREE_NUTS`); same backfill rule as §9.2.
 
 ## 9.4 `dietary_tags` — CHANGED in v4.2 (Decision #24)
 Reusable classification tags for meals and ingredients.
@@ -451,7 +470,7 @@ Condition rules expressed as "avoid/limit this kind of food".
 - `CHECK (max_servings_per_week IS NULL OR max_servings_per_week > 0)` (name `max_servings_positive`, v4.9, #63). A `LIMIT` row may leave it NULL.
 - `UNIQUE (condition_id, tag_id)`
 
-Example: hypertension → `LIMIT` `high_sodium`. Tags are applied at ingredient level (`ingredient_tags`, §9.13) and propagated to meals (§10.5).
+Example: hypertension → `LIMIT` `high_sodium`. Presence tags (e.g. `added_sugar`) are applied at ingredient level (`ingredient_tags`, §9.13) and propagated to meals; threshold tags (`high_sodium`, `high_sugar`) are derived at meal level from the meal's own nutrients (§10.5, v4.14 #74).
 
 ## 9.6 `foods`
 `food_id` = internal PK, `fdc_id` = external USDA/FDC identifier (kept separate).
@@ -520,7 +539,7 @@ Every ingredient in this table is, by policy, permissible for the app's users �
 - PK: `(ingredient_id, allergen_id)`
 
 ## 9.13 `ingredient_tags` — NEW in v4.2 (Decision #23)
-Source of truth for ingredient-level properties — primarily `tag_group = 'CONDITION'` tags such as `high_sodium` or `high_glycemic`, and ingredient-level `DIETARY` facts where relevant.
+Source of truth for ingredient-level **presence** properties — `tag_group = 'CONDITION'` tags such as `added_sugar`, and ingredient-level `DIETARY` facts where relevant. **Threshold tags (`high_sodium`, `high_sugar`) must never be stored here** (v4.14 #74): a pinch of salt would otherwise tag every savoury meal; they are derived per meal (§10.5) and the recompute raises if one appears here.
 - `ingredient_id` FK → `ingredients` (CASCADE)
 - `tag_id` FK → `dietary_tags` (RESTRICT)
 - PK: `(ingredient_id, tag_id)`
@@ -545,18 +564,23 @@ Source of truth for ingredient-level properties — primarily `tag_group = 'COND
 - `is_verified` — `BOOLEAN NOT NULL DEFAULT false` (v4.9)
 - `is_active` — `BOOLEAN NOT NULL DEFAULT true` (soft delete, §15.8)
 - `ingested_at` — `TIMESTAMPTZ NOT NULL DEFAULT now()` (v4.9), `dataset_version`
+- `variant_group` — **NEW in v4.14 (#76)** — `VARCHAR` nullable, indexed. Meals sharing a value are versions of one dish that differ in a main ingredient (e.g. `couscous`: lamb and chicken). Each version is a full meal with its own nutrients, allergens and tags, so Layer 1 filters each one exactly (a heart patient may lose the lamb version and keep the chicken one). The planner never places two meals of one group on the same day; the app's "switch meat" action swaps a plan item to a sibling of its group (`meal_plan_items.was_swapped = true`). Free ingredient substitution at use time is Future Work (§29).
+- `yield_factor` — **NEW in v4.14 (#78)** — `NUMERIC(12,3)` nullable; `CHECK (yield_factor IS NULL OR (yield_factor > 0 AND yield_factor <= 3))`; `CHECK (weight_method = 'YIELD_FACTOR' OR yield_factor IS NULL)`. The loader sets it for every `YIELD_FACTOR` meal.
+- `yield_factor_source` — **NEW in v4.14 (#78)** — `TEXT` nullable: where the factor comes from.
+- `reviewed_by` — **NEW in v4.14 (#78)** — `TEXT` nullable: the team member who reviewed an LLM-drafted recipe (§31.4); `is_verified = (reviewed_by IS NOT NULL)` is enforced by the loader.
 
 Constraints: `servings > 0`, `total_grams > 0`
 
 **`total_grams` definition (Decision #25):** the **final as-served weight of the whole recipe (all servings)** — i.e. after cooking, not the sum of raw ingredient weights. How it was obtained is recorded in `weight_method`:
 - `WEIGHED` — the prepared dish was physically weighed (preferred for GOLD).
-- `YIELD_FACTOR` — computed as Σ(raw ingredient grams) × a documented cooking yield factor (factor and its source recorded in the recipe's QC notes).
+- `YIELD_FACTOR` — computed as Σ(raw ingredient grams) × a documented cooking yield factor (factor and its source stored in `meals.yield_factor` / `yield_factor_source`, v4.14).
 - `SUM_OF_INGREDIENTS` — allowed **only** for no-cook meals (salads, yogurt bowls, drinks) where weight does not change.
 
 ## 10.2 `meal_ingredients`
 - `meal_id` FK, `position`, `ingredient_id` FK, `food_id` FK (nullable when mapping not yet accepted)
 - `grams` numeric NOT NULL — the weight **as added to the recipe**, in the `state` of the referenced `foods` row (normally `raw`)
-- `text_original` (traceability only, nullable — v4.9), `mapping_confidence` — `NUMERIC(4,3)` nullable, `CHECK (mapping_confidence BETWEEN 0 AND 1)` (v4.8)
+- `text_original` (nullable — v4.9): the recipe's own wording of the ingredient (e.g. "حبوب الشربة" for a pasta food); the app shows it in the recipe, and the ingredient's canonical name elsewhere (v4.14 #79). `mapping_confidence` — `NUMERIC(4,3)` nullable, `CHECK (mapping_confidence BETWEEN 0 AND 1)` (v4.8)
+- `is_optional` — **NEW in v4.14 (#75)** — `BOOLEAN NOT NULL DEFAULT false`: an ingredient people may leave out (e.g. lemon juice in ful). Nutrients are computed on the **full** recipe, including optional ingredients (the plan recommends the full recipe and the difference is small). Allergens of optional ingredients **still count** (safety first). Logging a meal without its optional ingredients is app-phase work. Water, salt, oil and an ingredient named in the dish's name are never optional (seed QC).
 - PK: `(meal_id, position)`
 - `CHECK (grams > 0)`, `CHECK (position >= 1)` (v4.8)
 
@@ -579,9 +603,10 @@ Derived cache: `meal_id`, `allergen_id` — PK `(meal_id, allergen_id)`. Fully r
 ## 10.5 `meal_tags` — CHANGED in v4.2 (Decision #23)
 - `meal_id`, `tag_id` — PK: `(meal_id, tag_id)`
 - `source` — **NEW** — `VARCHAR NOT NULL` + CHECK (`MANUAL`, `DERIVED`)
+- `rule_version` — **NEW in v4.14 (#78)** — `VARCHAR` nullable; `CHECK (source = 'DERIVED' OR rule_version IS NULL)`. The tag-rules version that produced a `DERIVED` row (e.g. `tags_v1`), like `meal_nutrients.computation_version`.
 
 Rules:
-- `DERIVED` rows = union of the `ingredient_tags` of the meal's ingredients (for `CONDITION` tags, e.g. `high_sodium`). Recomputed by the same `recompute_meal_derived(meal_id)` routine as `meal_allergens`; recompute deletes and rebuilds **only** `DERIVED` rows.
+- `DERIVED` rows (v4.14 #74) = (a) the union of the meal's ingredients' `ingredient_tags` with `tag_group = 'CONDITION'` (presence tags, e.g. `added_sugar`; `DIETARY` ingredient tags are not unioned), plus (b) threshold tags from the meal's own `meal_nutrients.amount_per_100g`: `high_sodium` when sodium > 600 mg, `high_sugar` when sugars > 22.5 g (UK FSA front-of-pack "high" thresholds for foods; drinks thresholds deferred to Step G). An unknown nutrient derives no threshold tag. Recomputed by the same `recompute_meal_derived(meal_id)` routine as `meal_allergens`, after `meal_nutrients`; recompute deletes and rebuilds **only** `DERIVED` rows. The seed loader runs it for every loaded meal.
 - `MANUAL` rows = curator judgments (all `OCCASION` tags, most `DIETARY` tags). Never touched by recompute.
 - If a curator manually adds a tag that is also derived, the `DERIVED` row wins on recompute (PK prevents duplicates; recompute upserts `source='DERIVED'`).
 
@@ -1081,7 +1106,7 @@ After testing, roll back or delete temporary test data.
 **Stage 6 — Clean database creation.**
 **Stage 7 — Integrity tests (§19).**
 **Stage 8 — Schema correction** if something fails.
-**Stage 9 — Freeze:** `INITIAL DATABASE SCHEMA = FROZEN` ✅ (decided in v4.12, implemented 2026-10-04): migrations `0001` + `0002`, git tag `schema-v1`.
+**Stage 9 — Freeze:** `INITIAL DATABASE SCHEMA = FROZEN` ✅ (decided in v4.12, implemented 2026-10-04): migrations `0001` + `0002`, commit `4116f89`, git tag `schema-v1`; CI run #3 green on `main` and on the tag.
 
 ## 20.1 Post-freeze change policy — NEW in v4.12 (Decision #73)
 - A committed migration is **never edited**. A CI test stores the SHA-256 of every file in `backend/alembic/versions/`; editing one fails CI. A new migration adds its own hash in the same commit.
@@ -1089,6 +1114,7 @@ After testing, roll back or delete temporary test data.
 - Step F.1 findings that need a schema change reopen the freeze explicitly through the same path, never silently (§25).
 - `.gitattributes` keeps migration files byte-exact on every platform (`backend/alembic/versions/*.py -text`), so the hash test only fails on a real edit (v4.13).
 - Seed and reference **data** are not schema: loading them does not reopen the freeze.
+- **First use (v4.14, 2026-10-06):** migration `0003` (decisions #75–#78) during Step F.1.
 
 ---
 
@@ -1142,13 +1168,15 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **v4.9: Step C implementation details (#61–#63)**
 - **Step D done (2026-10-01):** initial Alembic migration `0001`, round-trip and no-drift tests; commit `fe12089`
 - **Step E done (2026-10-02):** integrity tests on a migrated database (all 63 CHECK, 16 UNIQUE + partial unique index, 47 FK actions, NOT NULL, defaults, naming, identity, ORM float, query patterns) and GitHub Actions CI; 894 passed, 0 skipped; commit `79329b2`, first CI run green
-- **Step F done (2026-10-04): schema frozen** — pre-freeze review (#70–#73), migration `0002` (one partial unique index), migration-immutability test, tag `schema-v1`
+- **Step F done (2026-10-04): schema frozen** — pre-freeze review (#70–#73), migration `0002` (one partial unique index), migration-immutability test, `.gitattributes`; 903 passed locally, 0 skipped; commit `4116f89`, tag `schema-v1`, CI green (DEV_JOURNAL J-029)
 - **v4.10: §30 target-calculation details (#64–#69), no schema change**
+- **Step F.1 in progress:** passes F.1-a (slice data loader, quality gates) and F.1-b (calc_v1, derived tags, screening, targets_v1) committed with green CI; team recipe review done
+- **v4.14: first post-freeze change (#74–#79), migration `0003`**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.12 — the initial schema is **frozen** (tag `schema-v1`); **Step F.1 (vertical slice)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
+**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.14 — the schema is **frozen** at tag `schema-v1` plus migration `0003` (§20.1); **Step F.1 (vertical slice)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
 
 ---
 
@@ -1315,6 +1343,8 @@ Each `meal_plan_items` row stores `reason_codes` produced **at plan time** by de
 - Gout support (needs a licensed purine-content source + `high_purine` ingredient tagging) — removed from scope in v4.7 (Decision #54)
 - Packaged-product barcode scanning (Open Food Facts — license review needed, §31.5)
 - User-authored private meals (v4.8, Decision #59) — a separate USER-domain table referencing catalog data, so the dependency direction (§8) is kept
+- Free ingredient substitution at use time (e.g. any meat for any meat with a gram ratio and re-filtering) — v4.14 chose dish variants (#76) instead
+- Camel meat and other foods missing from USDA SR Legacy — need a documented regional food-composition source (Step G)
 
 None of these require a change to the existing Phase 1 tables (some would add new tables).
 

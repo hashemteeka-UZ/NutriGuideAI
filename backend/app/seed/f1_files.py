@@ -41,6 +41,8 @@ SUBSET_COLUMNS = (
 )
 
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+UpperSnake = Annotated[str, StringConstraints(pattern=r"^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$")]
+LowerSnake = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9]*(_[a-z0-9]+)*$")]
 # SR Legacy NDB numbers are five digits; kept as text so leading zeros survive.
 NdbNumber = Annotated[str, StringConstraints(pattern=r"^\d{5}$")]
 FdcCategoryCode = Annotated[str, StringConstraints(pattern=r"^\d{4}$")]
@@ -55,12 +57,13 @@ class _Model(BaseModel):
 
 
 class CuisineSeed(_Model):
-    key: Text
+    code: UpperSnake
     name_en: Text
     name_ar: Text
 
 
 class AllergenSeed(_Model):
+    code: UpperSnake
     name_en: Text
     name_ar: Text
 
@@ -146,8 +149,9 @@ class ReferenceSeed(_Model):
 
     @model_validator(mode="after")
     def _unique_keys(self) -> Self:
-        _require_unique("cuisines.key", [c.key for c in self.cuisines])
+        _require_unique("cuisines.code", [c.code for c in self.cuisines])
         _require_unique("cuisines.name_en", [c.name_en for c in self.cuisines])
+        _require_unique("allergens.code", [a.code for a in self.allergens])
         _require_unique("allergens.name_en", [a.name_en for a in self.allergens])
         _require_unique("dietary_tags.code", [t.code for t in self.dietary_tags])
         _require_unique("nutrients.code", [n.code for n in self.nutrients])
@@ -195,7 +199,8 @@ class SliceFoods(_Model):
 class MealIngredientEntry(_Model):
     ndb_number: NdbNumber
     grams: Annotated[float, Field(gt=0)]
-    label_ar: str | None = None  # informational only; the loader ignores it
+    label_ar: Text | None = None
+    optional: bool = False
 
 
 class SliceMeal(_Model):
@@ -207,6 +212,7 @@ class SliceMeal(_Model):
     weight_method: WeightMethod
     yield_factor: float | None
     yield_factor_source: Text | None
+    variant_group: LowerSnake | None = None
     occasion_tags: list[Text]
     dietary_tags: list[Text]
     reviewed_by: Text | None

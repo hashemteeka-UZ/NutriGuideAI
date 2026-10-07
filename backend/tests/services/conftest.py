@@ -6,11 +6,12 @@ from collections.abc import Iterator
 from datetime import UTC, datetime
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
-from app.db.models import Meal
+from app.db.models import Meal, MealAllergen, MealNutrient, MealTag
+from app.db.models.catalog import MealTagSource
 from app.seed.f1_loader import DEFAULT_DATA_DIR, load_f1_slice
 from app.services.recompute_meals import MealRecompute, recompute_active_meals
 
@@ -25,9 +26,16 @@ def session(integrity_conn: Connection) -> Iterator[Session]:
 
 @pytest.fixture
 def slice_session(session: Session) -> Session:
-    """The F.1 slice as loaded by pass F.1-a: no meal_nutrients or derived rows yet."""
-    load_f1_slice(session, DEFAULT_DATA_DIR)
+    """The F.1 slice as loaded by the loader, which recomputes every meal at NOW."""
+    load_f1_slice(session, DEFAULT_DATA_DIR, now=NOW)
     return session
+
+
+def clear_derived_meal_data(session: Session) -> None:
+    """Back to the state before any recompute: no meal_nutrients, allergens or DERIVED tags."""
+    session.execute(delete(MealNutrient))
+    session.execute(delete(MealAllergen))
+    session.execute(delete(MealTag).where(MealTag.source == MealTagSource.DERIVED.value))
 
 
 @pytest.fixture

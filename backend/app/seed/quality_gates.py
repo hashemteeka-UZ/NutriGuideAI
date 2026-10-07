@@ -30,6 +30,8 @@ ENERGY_TOLERANCE_RELATIVE = 0.20
 ENERGY_TOLERANCE_ABSOLUTE_KCAL = 15.0
 LOW_ENERGY_KCAL = 50.0
 MAX_YIELD_FACTOR = 3.0
+# §10.2 seed QC: basic cooking ingredients a recipe cannot leave out.
+NEVER_OPTIONAL_NDB = {"14555": "water", "02047": "salt", "04053": "olive oil"}
 
 
 @dataclass(frozen=True)
@@ -139,9 +141,10 @@ def gate_references(files: F1Files) -> list[GateFailure]:
     seed, foods, meals = files.seed, files.foods.foods, files.meals.meals
     food_ndbs = {f.ndb_number for f in foods}
     subset_ndbs = {r.ndb_number for r in files.subset}
-    allergens = {a.name_en for a in seed.allergens}
+    # slice_foods.yaml names allergens by name_en; the loader maps them to the seed's code.
+    allergens = set(allergen_codes_by_name(files))
     tags = {t.code for t in seed.dietary_tags}
-    cuisines = {c.key for c in seed.cuisines}
+    cuisines = {c.code for c in seed.cuisines}
     conditions = {c.code for c in seed.health_conditions}
     nutrient_codes = {n.code for n in seed.nutrients}
     nutrient_nbrs = {n.source_code for n in seed.nutrients if n.source_code}
@@ -198,6 +201,10 @@ def gate_references(files: F1Files) -> list[GateFailure]:
         if restriction.tag not in tags:
             fail(subject, f"unknown tag {restriction.tag!r}")
     return failures
+
+
+def allergen_codes_by_name(files: F1Files) -> dict[str, str]:
+    return {a.name_en: a.code for a in files.seed.allergens}
 
 
 def _values_by_ndb(
@@ -280,6 +287,47 @@ def gate_percent_energy_limits(limits: Sequence[ConditionLimitSeed]) -> list[Gat
     ]
 
 
+def gate_optional_ingredients(meals: Sequence[SliceMeal]) -> list[GateFailure]:
+    """G8: water, salt and olive oil are never optional; one ingredient must stay (#75, §10.2)."""
+    failures = []
+    for meal in meals:
+        for item in meal.ingredients:
+            if item.optional and item.ndb_number in NEVER_OPTIONAL_NDB:
+                name = NEVER_OPTIONAL_NDB[item.ndb_number]
+                failures.append(
+                    GateFailure(
+                        "G8", meal.ref_external, f"{name} ({item.ndb_number}) is never optional"
+                    )
+                )
+        if all(item.optional for item in meal.ingredients):
+            failures.append(GateFailure("G8", meal.ref_external, "every ingredient is optional"))
+    return failures
+
+
+def gate_variant_groups(meals: Sequence[SliceMeal]) -> list[GateFailure]:
+    """G9: a variant group has >= 2 meals sharing cuisine, servings and occasion tags (#76)."""
+    groups: dict[str, list[SliceMeal]] = defaultdict(list)
+    for meal in meals:
+        if meal.variant_group is not None:
+            groups[meal.variant_group].append(meal)
+    failures = []
+    for group, members in sorted(groups.items()):
+        refs = [m.ref_external for m in members]
+        if len(members) < 2:
+            failures.append(GateFailure("G9", group, f"only one meal in the group: {refs}"))
+            continue
+        shared: dict[str, Callable[[SliceMeal], object]] = {
+            "cuisine": lambda m: m.cuisine,
+            "servings": lambda m: m.servings,
+            "occasion_tags": lambda m: sorted(set(m.occasion_tags)),
+        }
+        for field, value in shared.items():
+            values = {m.ref_external: value(m) for m in members}
+            if len({str(v) for v in values.values()}) > 1:
+                failures.append(GateFailure("G9", group, f"{field} differs: {values}"))
+    return failures
+
+
 GATE_NAMES = {
     "G1": "mandatory nutrients",
     "G2": "energy consistency",
@@ -288,6 +336,8 @@ GATE_NAMES = {
     "G5": "tag groups",
     "G6": "weight method",
     "G7": "percent-energy limits",
+    "G8": "optional ingredients",
+    "G9": "variant groups",
 }
 
 
@@ -301,4 +351,6 @@ def run_all_gates(files: F1Files) -> dict[str, list[GateFailure]]:
         "G5": gate_tag_groups(files),
         "G6": gate_weight_method(files.meals.meals),
         "G7": gate_percent_energy_limits(seed.condition_nutrient_limits),
+        "G8": gate_optional_ingredients(files.meals.meals),
+        "G9": gate_variant_groups(files.meals.meals),
     }

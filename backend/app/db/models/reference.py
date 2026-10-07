@@ -79,7 +79,7 @@ class Category(Base):
     __tablename__ = "categories"
 
     category_id: Mapped[int] = pk_column()
-    name_en: Mapped[str] = mapped_column(String, nullable=False)
+    name_en: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     name_ar: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = created_at_column()
     updated_at: Mapped[datetime] = updated_at_column()
@@ -90,6 +90,7 @@ class Cuisine(Base):
     __tablename__ = "cuisines"
 
     cuisine_id: Mapped[int] = pk_column()
+    code: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     name_en: Mapped[str] = mapped_column(String, nullable=False)
     name_ar: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = created_at_column()
@@ -101,6 +102,7 @@ class Allergen(Base):
     __tablename__ = "allergens"
 
     allergen_id: Mapped[int] = pk_column()
+    code: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     name_en: Mapped[str] = mapped_column(String, nullable=False)
     name_ar: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = created_at_column()

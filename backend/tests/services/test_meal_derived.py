@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-from sqlalchemy import delete, insert, select
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
 
 from app.db.models import (
@@ -29,8 +29,8 @@ from app.services.recompute_meals import (
     recompute_active_meals,
     recompute_meal,
 )
-from app.services.tag_rules import THRESHOLD_TAGS
-from tests.services.conftest import NOW, meal_id
+from app.services.tag_rules import TAG_RULES_VERSION, THRESHOLD_TAGS
+from tests.services.conftest import NOW, clear_derived_meal_data, meal_id
 
 
 def _tags(session: Session, source: str | None = None) -> dict[str, set[str]]:
@@ -99,7 +99,7 @@ def test_threshold_tags_follow_meal_amount_per_100g(slice_session: Session) -> N
     }
     derived = _tags(slice_session, "DERIVED")
     refs = set(slice_session.execute(select(Meal.ref_external)).scalars())
-    assert len(refs) == 30
+    assert len(refs) == 35
     tagged = set()
     for ref in refs:
         for tag, (nutrient, threshold) in THRESHOLD_TAGS.items():
@@ -142,6 +142,8 @@ def test_meal_allergens(slice_session: Session) -> None:
     assert _allergens(slice_session, "F1-D04") == {"Gluten"}
     assert _allergens(slice_session, "F1-S04") == {"Sesame"}
     assert _allergens(slice_session, "F1-B08") == {"Gluten", "Peanut"}
+    # #75: the egg in bazeen is optional and still counts.
+    assert _allergens(slice_session, "F1-L03") == {"Gluten", "Egg"}
     for ref in slice_session.execute(select(Meal.ref_external)).scalars():
         union = set(
             slice_session.execute(
@@ -159,7 +161,8 @@ def test_meal_allergens(slice_session: Session) -> None:
 
 def test_manual_tags_survive_and_recompute_is_idempotent(slice_session: Session) -> None:
     manual = _tags(slice_session, "MANUAL")
-    assert sum(len(t) for t in manual.values()) == 69
+    assert sum(len(t) for t in manual.values()) == 77
+    clear_derived_meal_data(slice_session)
 
     first = recompute_active_meals(slice_session, NOW)
     after_first = _snapshot(slice_session)
@@ -175,14 +178,44 @@ def test_manual_tags_survive_and_recompute_is_idempotent(slice_session: Session)
 def test_manual_row_for_a_derived_tag_becomes_derived(slice_session: Session) -> None:
     s06 = meal_id(slice_session, "F1-S06")
     high_sodium = _tag_id(slice_session, "high_sodium")
-    slice_session.execute(insert(MealTag).values(meal_id=s06, tag_id=high_sodium, source="MANUAL"))
+    slice_session.execute(
+        update(MealTag)
+        .where(MealTag.meal_id == s06, MealTag.tag_id == high_sodium)
+        .values(source="MANUAL", rule_version=None)
+    )
     _, derived = recompute_meal(slice_session, s06, NOW)
 
     assert derived.replaced_manual_tags == ("high_sodium",)
-    sources = slice_session.execute(
-        select(MealTag.source).where(MealTag.meal_id == s06, MealTag.tag_id == high_sodium)
+    rows = slice_session.execute(
+        select(MealTag.source, MealTag.rule_version).where(
+            MealTag.meal_id == s06, MealTag.tag_id == high_sodium
+        )
+    ).all()
+    assert [tuple(row) for row in rows] == [("DERIVED", TAG_RULES_VERSION)]
+
+
+def test_rule_version_on_derived_rows_only(slice_session: Session) -> None:
+    rows = slice_session.execute(select(MealTag.source, MealTag.rule_version)).all()
+    versions: dict[str, set[str | None]] = {}
+    for source, version in rows:
+        versions.setdefault(source, set()).add(version)
+    assert versions == {"DERIVED": {TAG_RULES_VERSION}, "MANUAL": {None}}
+
+
+def test_derived_row_without_rule_version_is_updated(slice_session: Session) -> None:
+    s06 = meal_id(slice_session, "F1-S06")
+    slice_session.execute(
+        update(MealTag)
+        .where(MealTag.meal_id == s06, MealTag.source == "DERIVED")
+        .values(rule_version=None)
+    )
+    derived = recompute_meal_derived(slice_session, s06)
+    assert derived.tag_changes.updated == len(derived.derived_tags) > 0
+    assert derived.replaced_manual_tags == ()
+    versions = slice_session.execute(
+        select(MealTag.rule_version).where(MealTag.meal_id == s06, MealTag.source == "DERIVED")
     ).scalars()
-    assert list(sources) == ["DERIVED"]
+    assert set(versions) == {TAG_RULES_VERSION}
 
 
 def test_stale_derived_tags_are_removed(

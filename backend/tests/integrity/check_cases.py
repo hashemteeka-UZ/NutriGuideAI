@@ -149,6 +149,16 @@ CHECK_CASES: dict[str, CheckCase] = {
         positive={"default_lang": "en"},
         negative={"default_lang": "EN"},
     ),
+    "ck_meals_yield_factor_range": CheckCase(
+        table="meals",
+        positive={"weight_method": "YIELD_FACTOR", "yield_factor": 3},
+        negative={"weight_method": "YIELD_FACTOR", "yield_factor": 3.001},
+    ),
+    "ck_meals_yield_factor_only_for_yield_method": CheckCase(
+        table="meals",
+        positive={"weight_method": "WEIGHED", "yield_factor": None},
+        negative={"weight_method": "WEIGHED", "yield_factor": 1},
+    ),
     "ck_meal_ingredients_grams_positive": CheckCase(
         table="meal_ingredients",
         positive={"grams": 0.001},
@@ -173,6 +183,11 @@ CHECK_CASES: dict[str, CheckCase] = {
         table="meal_nutrients",
         positive={"amount_per_100g": 0},
         negative={"amount_per_100g": -0.001},
+    ),
+    "ck_meal_tags_rule_version_only_derived": CheckCase(
+        table="meal_tags",
+        positive={"source": "DERIVED", "rule_version": "tags_v1"},
+        negative={"source": "MANUAL", "rule_version": "tags_v1"},
     ),
     "ck_meal_translations_lang_iso639_1": CheckCase(
         table="meal_translations",
@@ -336,6 +351,9 @@ def _weight_day(conn: Connection) -> dict[str, Any]:
 
 
 UNIQUE_CASES: dict[str, UniqueCase] = {
+    "uq_categories_name_en": UniqueCase("categories", {"name_en": "dup-category"}),
+    "uq_cuisines_code": UniqueCase("cuisines", {"code": "DUP_CUISINE"}),
+    "uq_allergens_code": UniqueCase("allergens", {"code": "DUP_ALLERGEN"}),
     "uq_dietary_tags_code": UniqueCase("dietary_tags", {"code": "DUP_TAG"}),
     "uq_health_conditions_code": UniqueCase("health_conditions", {"code": "DUP_COND"}),
     "uq_condition_nutrient_limits_condition_nutrient_basis": UniqueCase(
@@ -411,4 +429,38 @@ PARTIAL_UNIQUE_CASES: dict[str, PartialUniqueCase] = {
     "ix_meal_plan_items_plan_id_day_index_slot": PartialUniqueCase(
         "meal_plan_items", _plan_day_slot("BREAKFAST"), _plan_day_slot("SNACK")
     ),
+}
+
+
+@dataclass(frozen=True)
+class IndexCase:
+    table: str
+    columns: tuple[str, ...]
+    method: str = "btree"
+    predicate: str | None = None
+
+
+# Non-unique indexes other than the single-column FK indexes (those are covered by the
+# FK-index check). A new secondary index without an entry here fails the suite.
+SECONDARY_INDEX_CASES: dict[str, IndexCase] = {
+    "ix_ingredient_aliases_alias_normalized": IndexCase(
+        "ingredient_aliases", ("alias_normalized",), method="gin"
+    ),
+    "ix_meals_name_normalized": IndexCase("meals", ("name_normalized",), method="gin"),
+    "ix_meals_variant_group": IndexCase("meals", ("variant_group",)),
+    "ix_meal_translations_name_normalized": IndexCase(
+        "meal_translations", ("name_normalized",), method="gin"
+    ),
+    "ix_user_interactions_user_id_created_at": IndexCase(
+        "user_interactions", ("user_id", "created_at")
+    ),
+    "ix_meal_plans_user_id_date_from": IndexCase("meal_plans", ("user_id", "date_from")),
+    "ix_consumption_logs_user_id_log_date": IndexCase(
+        "consumption_logs", ("user_id", "log_date"), predicate="(deleted_at IS NULL)"
+    ),
+    "ix_water_logs_user_id_log_date": IndexCase(
+        "water_logs", ("user_id", "log_date"), predicate="(deleted_at IS NULL)"
+    ),
+    "ix_user_targets_user_id_valid_from": IndexCase("user_targets", ("user_id", "valid_from")),
+    "ix_refresh_tokens_family_id": IndexCase("refresh_tokens", ("family_id",)),
 }

@@ -104,6 +104,44 @@ def pg_partial_unique_index_names(conn: Connection) -> set[str]:
     return set(rows.scalars())
 
 
+@dataclass(frozen=True)
+class IndexInfo:
+    name: str
+    table: str
+    columns: tuple[str, ...]
+    method: str
+    predicate: str | None
+
+
+def pg_non_unique_indexes(conn: Connection) -> list[IndexInfo]:
+    rows = conn.execute(
+        text(
+            "SELECT idx.relname AS name, tbl.relname AS table_name, am.amname AS method, "
+            "pg_get_expr(i.indpred, i.indrelid) AS predicate, "
+            "array(SELECT att.attname FROM unnest(i.indkey) WITH ORDINALITY AS k(attnum, ord) "
+            "JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = k.attnum "
+            "ORDER BY k.ord) AS columns "
+            "FROM pg_index i "
+            "JOIN pg_class idx ON idx.oid = i.indexrelid "
+            "JOIN pg_class tbl ON tbl.oid = i.indrelid "
+            "JOIN pg_am am ON am.oid = idx.relam "
+            "JOIN pg_namespace n ON n.oid = tbl.relnamespace "
+            "WHERE NOT i.indisunique AND NOT i.indisprimary "
+            "AND n.nspname = 'public' AND tbl.relname <> 'alembic_version'"
+        )
+    )
+    return [
+        IndexInfo(
+            name=row.name,
+            table=row.table_name,
+            columns=tuple(row.columns),
+            method=row.method,
+            predicate=row.predicate,
+        )
+        for row in rows
+    ]
+
+
 def pg_foreign_keys(conn: Connection) -> list[ForeignKeyInfo]:
     rows = conn.execute(
         text(

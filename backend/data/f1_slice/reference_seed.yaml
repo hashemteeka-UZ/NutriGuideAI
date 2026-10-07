@@ -1,7 +1,7 @@
-# Step F.1 reference seed (f1_seed_v0). Authored by the project assistant from published guidelines.
+# Step F.1 reference seed (f1_seed_v1: cuisine and allergen codes, migration 0003). Authored by the project assistant from published guidelines.
 # Every condition limit is PENDING dietitian review before any pilot with users (PROJECT_CONTEXT §30).
 # Data, not schema: loading this file does not reopen the schema freeze (§20.1).
-seed_version: f1_seed_v0
+seed_version: f1_seed_v1
 categories_ar:
   '0100': الألبان والبيض
   '0200': التوابل والأعشاب
@@ -20,33 +20,42 @@ categories_ar:
   '2000': الحبوب والمعكرونة
   '1300': لحم البقر
 cuisines:
-- key: LIBYAN
+- code: LIBYAN
   name_en: Libyan
   name_ar: ليبي
-- key: LEVANTINE
+- code: LEVANTINE
   name_en: Levantine
   name_ar: شامي
-- key: GENERAL
+- code: GENERAL
   name_en: General
   name_ar: عام
 allergens:
-- name_en: Gluten
+- code: GLUTEN
+  name_en: Gluten
   name_ar: الغلوتين
-- name_en: Milk
+- code: MILK
+  name_en: Milk
   name_ar: الحليب
-- name_en: Egg
+- code: EGG
+  name_en: Egg
   name_ar: البيض
-- name_en: Fish
+- code: FISH
+  name_en: Fish
   name_ar: السمك
-- name_en: Shellfish
+- code: SHELLFISH
+  name_en: Shellfish
   name_ar: المحار والقشريات
-- name_en: Peanut
+- code: PEANUT
+  name_en: Peanut
   name_ar: الفول السوداني
-- name_en: Tree nuts
+- code: TREE_NUTS
+  name_en: Tree nuts
   name_ar: المكسرات الشجرية
-- name_en: Sesame
+- code: SESAME
+  name_en: Sesame
   name_ar: السمسم
-- name_en: Soy
+- code: SOY
+  name_en: Soy
   name_ar: الصويا
 dietary_tags:
 - code: breakfast_suitable

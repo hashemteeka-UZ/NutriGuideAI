@@ -30,6 +30,17 @@ GIN_TRGM_INDEXES = {
     "ix_meal_translations_name_normalized",
 }
 MEAL_PLAN_SLOT_INDEX = "ix_meal_plan_items_plan_id_day_index_slot"
+VARIANT_GROUP_INDEX = "ix_meals_variant_group"
+MIGRATION_0003_COLUMNS = {
+    ("cuisines", "code"),
+    ("allergens", "code"),
+    ("meals", "variant_group"),
+    ("meals", "yield_factor"),
+    ("meals", "yield_factor_source"),
+    ("meals", "reviewed_by"),
+    ("meal_ingredients", "is_optional"),
+    ("meal_tags", "rule_version"),
+}
 
 
 def _alembic_config(conn: Connection) -> Config:
@@ -67,6 +78,19 @@ def _index_names(engine: Engine) -> set[str]:
         )
 
 
+def _columns(engine: Engine) -> set[tuple[str, str]]:
+    with engine.connect() as conn:
+        return {
+            (row.table_name, row.column_name)
+            for row in conn.execute(
+                text(
+                    "SELECT table_name, column_name FROM information_schema.columns "
+                    "WHERE table_schema = 'public'"
+                )
+            )
+        }
+
+
 def _current_revision(engine: Engine) -> str | None:
     with engine.connect() as conn:
         return MigrationContext.configure(conn).get_current_revision()
@@ -91,17 +115,22 @@ def test_round_trip_upgrade_downgrade_upgrade(migration_db: Engine) -> None:
     script = ScriptDirectory.from_config(Config(ALEMBIC_INI))
     head = script.get_current_head()
     revisions = [rev.revision for rev in reversed(list(script.walk_revisions()))]
-    assert revisions[:2] == ["0001", "0002"]
+    assert revisions[:3] == ["0001", "0002", "0003"]
     assert revisions[-1] == head
 
     for revision in revisions:
         _upgrade(migration_db, revision)
         assert _current_revision(migration_db) == revision
     assert MEAL_PLAN_SLOT_INDEX in _index_names(migration_db)
+    assert _columns(migration_db) >= MIGRATION_0003_COLUMNS
+    assert VARIANT_GROUP_INDEX in _index_names(migration_db)
 
     for revision in reversed(revisions[:-1]):
         _downgrade(migration_db, revision)
         assert _current_revision(migration_db) == revision
+        if revision == "0002":
+            assert not MIGRATION_0003_COLUMNS & _columns(migration_db)
+            assert VARIANT_GROUP_INDEX not in _index_names(migration_db)
     assert MEAL_PLAN_SLOT_INDEX not in _index_names(migration_db)
 
     _downgrade(migration_db)
@@ -112,6 +141,21 @@ def test_round_trip_upgrade_downgrade_upgrade(migration_db: Engine) -> None:
     _upgrade(migration_db)
     assert _current_revision(migration_db) == head
     assert _tables(migration_db) >= PROJECT_TABLES
+
+
+def test_0003_backfills_codes_of_existing_rows(migration_db: Engine) -> None:
+    _upgrade(migration_db, "0002")
+    with migration_db.begin() as conn:
+        conn.execute(text("INSERT INTO cuisines (name_en, name_ar) VALUES ('Libyan', 'ليبي')"))
+        conn.execute(
+            text("INSERT INTO allergens (name_en, name_ar) VALUES ('Tree nuts', 'مكسرات')")
+        )
+    _upgrade(migration_db, "0003")
+    with migration_db.begin() as conn:
+        assert conn.execute(text("SELECT code FROM cuisines")).scalars().all() == ["LIBYAN"]
+        assert conn.execute(text("SELECT code FROM allergens")).scalars().all() == ["TREE_NUTS"]
+        conn.execute(text("DELETE FROM cuisines"))
+        conn.execute(text("DELETE FROM allergens"))
 
 
 def test_no_drift_between_migration_and_models(migration_db: Engine) -> None:

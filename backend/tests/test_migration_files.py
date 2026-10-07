@@ -13,6 +13,9 @@ MIGRATION_SHA256: dict[str, str] = {
     "0002_meal_plan_items_unique_slot.py": (
         "f2f0c45c7679470be517f07815e791278b5e5cbd1a0b39c09aea42391304ff62"
     ),
+    "0003_codes_variants_optional_qc.py": (
+        "75371f5d06195665c308a57efd8c95504948a770b211b18ce712e86ef00fc6fe"
+    ),
 }
 
 EDITED_MESSAGE = (

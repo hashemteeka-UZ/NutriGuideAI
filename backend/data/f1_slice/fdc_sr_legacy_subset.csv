@@ -79,6 +79,26 @@ ndb_number,fdc_id,description,food_category_code,food_category_description,nutri
 02028,171329,"Spices, paprika",0200,Spices and Herbs,307,68
 02028,171329,"Spices, paprika",0200,Spices and Herbs,601,0
 02028,171329,"Spices, paprika",0200,Spices and Herbs,606,2.14
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,203,10.39
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,204,3.26
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,205,63.95
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,208,251
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,269,0.64
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,291,25.3
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,306,1329
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,307,20
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,601,0
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,606,1.392
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,203,12.01
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,204,17.27
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,205,56.63
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,208,318
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,269,10.34
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,291,27.2
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,306,2014
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,307,30
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,601,0
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,606,3.26
 02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,203,9.68
 02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,204,3.25
 02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,205,67.14
@@ -219,16 +239,6 @@ ndb_number,fdc_id,description,food_category_code,food_category_description,nutri
 09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,307,1
 09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,601,0
 09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,606,0.015
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,203,0.61
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,204,0.15
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,205,7.55
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,208,30
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,269,6.2
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,291,0.4
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,306,112
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,307,1
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,601,0
-09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,606,0.016
 11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,203,0.93
 11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,204,0.24
 11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,205,9.58
@@ -239,6 +249,16 @@ ndb_number,fdc_id,description,food_category_code,food_category_description,nutri
 11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,307,69
 11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,601,0
 11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,606,0.032
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,203,2.13
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,204,0.52
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,205,3.67
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,208,23
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,269,0.87
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,291,2.8
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,306,521
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,307,46
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,601,0
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,606,0.014
 11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,203,0.65
 11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,204,0.11
 11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,205,3.63

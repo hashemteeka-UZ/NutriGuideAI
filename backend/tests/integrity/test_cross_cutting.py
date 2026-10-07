@@ -24,11 +24,13 @@ from tests.integrity.check_cases import (
     ENUM_INVALID,
     ENUM_ROW_EXTRAS,
     PARTIAL_UNIQUE_CASES,
+    SECONDARY_INDEX_CASES,
     UNIQUE_CASES,
     resolve,
 )
 from tests.integrity.helpers import (
     BAD_ID,
+    IndexInfo,
     assert_rejects,
     fetch_by_pk,
     insert_invalid,
@@ -38,6 +40,7 @@ from tests.integrity.helpers import (
     pg_constraints,
     pg_foreign_keys,
     pg_indexes,
+    pg_non_unique_indexes,
     pg_not_null_without_default,
     pg_partial_unique_index_names,
     pg_unique_names,
@@ -49,6 +52,7 @@ CONSTRAINT_PREFIX = {"p": "pk_", "f": "fk_", "u": "uq_", "c": "ck_"}
 DOCUMENTED_DEFAULTS: dict[tuple[str, str], object] = {
     ("meals", "is_active"): True,
     ("meals", "is_verified"): False,
+    ("meal_ingredients", "is_optional"): False,
     ("ingredients", "review_status"): "PENDING",
     ("user_health_conditions", "diagnosed"): False,
     ("meal_plan_items", "was_swapped"): False,
@@ -81,6 +85,7 @@ def _orm_not_null_without_default() -> list[tuple[str, str]]:
 
 def test_check_registry_covers_every_pg_check(integrity_conn: Connection) -> None:
     assert pg_check_names(integrity_conn) == set(CHECK_CASES)
+    assert len(CHECK_CASES) == 66
 
 
 @pytest.mark.parametrize("name", sorted(CHECK_CASES))
@@ -102,6 +107,37 @@ def test_check_constraint_rejects_invalid(integrity_conn: Connection, name: str)
 def test_unique_registry_covers_every_pg_unique(integrity_conn: Connection) -> None:
     assert pg_unique_names(integrity_conn) == set(UNIQUE_CASES)
     assert pg_partial_unique_index_names(integrity_conn) == set(PARTIAL_UNIQUE_CASES)
+    assert (len(UNIQUE_CASES), len(PARTIAL_UNIQUE_CASES)) == (19, 2)
+
+
+def _secondary_indexes(conn: Connection) -> dict[str, IndexInfo]:
+    single_fk_columns = {(fk.table, (fk.column,)) for fk in pg_foreign_keys(conn)}
+    return {
+        index.name: index
+        for index in pg_non_unique_indexes(conn)
+        if not (
+            index.method == "btree"
+            and index.predicate is None
+            and (index.table, index.columns) in single_fk_columns
+        )
+    }
+
+
+def test_secondary_index_registry_covers_every_pg_index(integrity_conn: Connection) -> None:
+    assert set(_secondary_indexes(integrity_conn)) == set(SECONDARY_INDEX_CASES)
+    assert len(SECONDARY_INDEX_CASES) == 10
+
+
+@pytest.mark.parametrize("name", sorted(SECONDARY_INDEX_CASES))
+def test_secondary_index_definition(integrity_conn: Connection, name: str) -> None:
+    case = SECONDARY_INDEX_CASES[name]
+    index = _secondary_indexes(integrity_conn)[name]
+    assert (index.table, index.columns, index.method, index.predicate) == (
+        case.table,
+        case.columns,
+        case.method,
+        case.predicate,
+    )
 
 
 @pytest.mark.parametrize("name", sorted(UNIQUE_CASES))

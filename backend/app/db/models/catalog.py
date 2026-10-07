@@ -58,6 +58,14 @@ class Meal(Base):
         enum_check("weight_method", WeightMethod, name="weight_method_valid"),
         enum_check("quality_tier", QualityTier, name="quality_tier_valid"),
         lang_check("default_lang", name="default_lang_iso639_1"),
+        CheckConstraint(
+            "yield_factor IS NULL OR (yield_factor > 0 AND yield_factor <= 3)",
+            name="yield_factor_range",
+        ),
+        CheckConstraint(
+            f"weight_method = '{WeightMethod.YIELD_FACTOR.value}' OR yield_factor IS NULL",
+            name="yield_factor_only_for_yield_method",
+        ),
         trigram_index("name_normalized"),
     )
 
@@ -81,6 +89,10 @@ class Meal(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
     dataset_version: Mapped[str] = mapped_column(String, nullable=False)
+    variant_group: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
+    yield_factor: Mapped[float | None] = mapped_column(MEASURE, nullable=True)
+    yield_factor_source: Mapped[str | None] = mapped_column(String, nullable=True)
+    reviewed_by: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = created_at_column()
     updated_at: Mapped[datetime] = updated_at_column()
 
@@ -106,6 +118,7 @@ class MealIngredient(Base):
     grams: Mapped[float] = mapped_column(MEASURE, nullable=False)
     text_original: Mapped[str | None] = mapped_column(String, nullable=True)
     mapping_confidence: Mapped[float | None] = mapped_column(CONFIDENCE, nullable=True)
+    is_optional: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=false())
 
 
 # §10.3
@@ -140,11 +153,16 @@ class MealTag(Base):
     __table_args__ = (
         PrimaryKeyConstraint("meal_id", "tag_id"),
         enum_check("source", MealTagSource, name="source_valid"),
+        CheckConstraint(
+            f"source = '{MealTagSource.DERIVED.value}' OR rule_version IS NULL",
+            name="rule_version_only_derived",
+        ),
     )
 
     meal_id: Mapped[int] = fk_column("meals.meal_id", ondelete="CASCADE")
     tag_id: Mapped[int] = fk_column("dietary_tags.tag_id", ondelete="RESTRICT", index=True)
     source: Mapped[str] = mapped_column(String, nullable=False)
+    rule_version: Mapped[str | None] = mapped_column(String, nullable=True)
 
 
 # §10.6

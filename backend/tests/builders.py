@@ -52,12 +52,17 @@ def values_categories(_conn: Connection, **overrides: Any) -> dict[str, Any]:
 
 def values_cuisines(_conn: Connection, **overrides: Any) -> dict[str, Any]:
     n = nxt()
-    return {"name_en": f"cuisine-{n}", "name_ar": f"مطبخ-{n}", **overrides}
+    return {"code": f"CUISINE_{n}", "name_en": f"cuisine-{n}", "name_ar": f"مطبخ-{n}", **overrides}
 
 
 def values_allergens(_conn: Connection, **overrides: Any) -> dict[str, Any]:
     n = nxt()
-    return {"name_en": f"allergen-{n}", "name_ar": f"مسبب-{n}", **overrides}
+    return {
+        "code": f"ALLERGEN_{n}",
+        "name_en": f"allergen-{n}",
+        "name_ar": f"مسبب-{n}",
+        **overrides,
+    }
 
 
 def values_dietary_tags(_conn: Connection, **overrides: Any) -> dict[str, Any]:

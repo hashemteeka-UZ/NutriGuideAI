@@ -64,6 +64,20 @@ foods:
   state: as_purchased
   allergens: []
   ingredient_tags: []
+- ndb_number: '02030'
+  sr_description: Spices, pepper, black
+  ingredient_en: Black pepper
+  ingredient_ar: فلفل أسود
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '02031'
+  sr_description: Spices, pepper, red or cayenne
+  ingredient_en: Ground red hot pepper (cayenne)
+  ingredient_ar: فلفل مرحي (فلفل أحمر حار مطحون)
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
 - ndb_number: '02043'
   sr_description: Spices, turmeric, ground
   ingredient_en: Turmeric
@@ -95,7 +109,7 @@ foods:
 - ndb_number: 05096
   sr_description: Chicken, broilers or fryers, dark meat, thigh, meat only, raw
   ingredient_en: Chicken thigh, skinless
-  ingredient_ar: ورك دجاج بدون جلد
+  ingredient_ar: لحم فخذ الدجاج بدون جلد وعظم
   state: raw
   allergens: []
   ingredient_tags: []
@@ -162,17 +176,17 @@ foods:
   state: raw
   allergens: []
   ingredient_tags: []
-- ndb_number: 09326
-  sr_description: Watermelon, raw
-  ingredient_en: Watermelon
-  ingredient_ar: بطيخ
-  state: raw
-  allergens: []
-  ingredient_tags: []
 - ndb_number: '11124'
   sr_description: Carrots, raw
   ingredient_en: Carrot
   ingredient_ar: جزر
+  state: raw
+  allergens: []
+  ingredient_tags: []
+- ndb_number: '11165'
+  sr_description: Coriander (cilantro) leaves, raw
+  ingredient_en: Coriander leaves
+  ingredient_ar: كزبرة خضراء
   state: raw
   allergens: []
   ingredient_tags: []
@@ -360,7 +374,7 @@ foods:
 - ndb_number: '17039'
   sr_description: Lamb, domestic, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4" fat, choice, raw
   ingredient_en: Lamb shoulder, lean
-  ingredient_ar: كتف ضأن صافٍ
+  ingredient_ar: لحم ضأن
   state: raw
   allergens: []
   ingredient_tags: []

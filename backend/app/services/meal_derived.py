@@ -5,6 +5,7 @@ Run after compute_meal_nutrients: threshold tags read the meal's meal_nutrients 
 - DERIVED meal_tags = union of the ingredients' CONDITION ingredient_tags (presence properties)
   plus the threshold tags of app/services/tag_rules.py. DIETARY ingredient tags are not unioned.
 - Only DERIVED rows are deleted; a MANUAL row for a derived tag becomes DERIVED (§10.5).
+- Every DERIVED row records rule_version = TAG_RULES_VERSION; MANUAL rows keep it NULL.
 """
 
 from __future__ import annotations
@@ -188,33 +189,38 @@ def _sync_meal_allergens(session: Session, meal_id: int, allergen_ids: set[int])
 def _sync_derived_meal_tags(
     session: Session, meal_id: int, derived: Mapping[int, str]
 ) -> tuple[RowChanges, list[str]]:
-    existing = dict(
-        session.execute(select(MealTag.tag_id, MealTag.source).where(MealTag.meal_id == meal_id))
-        .tuples()
-        .all()
-    )
+    existing = {
+        row.tag_id: row
+        for row in session.execute(
+            select(MealTag.tag_id, MealTag.source, MealTag.rule_version).where(
+                MealTag.meal_id == meal_id
+            )
+        )
+    }
+    derived_values = {"source": MealTagSource.DERIVED, "rule_version": TAG_RULES_VERSION}
     changes = RowChanges()
     replaced: list[str] = []
     inserts: list[dict[str, Any]] = []
     for tag_id, code in derived.items():
-        source = existing.get(tag_id)
-        if source is None:
-            inserts.append({"meal_id": meal_id, "tag_id": tag_id, "source": MealTagSource.DERIVED})
+        row = existing.get(tag_id)
+        if row is None:
+            inserts.append({"meal_id": meal_id, "tag_id": tag_id, **derived_values})
             changes.inserted += 1
-        elif source == MealTagSource.DERIVED:
+        elif row.source == MealTagSource.DERIVED and row.rule_version == TAG_RULES_VERSION:
             changes.unchanged += 1
         else:
             session.execute(
                 update(MealTag)
                 .where(MealTag.meal_id == meal_id, MealTag.tag_id == tag_id)
-                .values(source=MealTagSource.DERIVED)
+                .values(**derived_values)
             )
-            replaced.append(code)
+            if row.source != MealTagSource.DERIVED:
+                replaced.append(code)
             changes.updated += 1
     stale = [
         tag_id
-        for tag_id, source in existing.items()
-        if source == MealTagSource.DERIVED and tag_id not in derived
+        for tag_id, row in existing.items()
+        if row.source == MealTagSource.DERIVED and tag_id not in derived
     ]
     if stale:
         session.execute(

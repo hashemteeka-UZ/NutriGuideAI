@@ -129,3 +129,58 @@ def test_meals_is_verified_defaults_false(integrity_conn: Connection) -> None:
     row = fetch_by_pk(integrity_conn, "meals", meal_id)
     assert row is not None
     assert row.is_verified is False
+
+
+def test_meals_yield_factor_range(integrity_conn: Connection) -> None:
+    for factor in (0.001, 3):
+        make_meal(integrity_conn, weight_method="YIELD_FACTOR", yield_factor=factor)
+    for factor in (0, 3.001):
+        assert_rejects(
+            integrity_conn,
+            "ck_meals_yield_factor_range",
+            lambda factor=factor: make_meal(
+                integrity_conn, weight_method="YIELD_FACTOR", yield_factor=factor
+            ),
+        )
+
+
+def test_meals_yield_factor_only_for_yield_factor_method(integrity_conn: Connection) -> None:
+    make_meal(integrity_conn, weight_method="YIELD_FACTOR", yield_factor=None)
+    make_meal(integrity_conn, weight_method="SUM_OF_INGREDIENTS", yield_factor=None)
+    assert_rejects(
+        integrity_conn,
+        "ck_meals_yield_factor_only_for_yield_method",
+        lambda: make_meal(integrity_conn, weight_method="SUM_OF_INGREDIENTS", yield_factor=1),
+    )
+
+
+def test_meals_variant_group_is_optional_and_shared(integrity_conn: Connection) -> None:
+    make_meal(integrity_conn, variant_group="couscous")
+    make_meal(integrity_conn, variant_group="couscous")
+    meal_id = make_meal(integrity_conn, variant_group=None)
+    row = fetch_by_pk(integrity_conn, "meals", meal_id)
+    assert row is not None
+    assert row.variant_group is None
+
+
+def test_meal_tags_rule_version_only_for_derived(integrity_conn: Connection) -> None:
+    make_meal_tag(integrity_conn, source="DERIVED", rule_version="tags_v1")
+    make_meal_tag(integrity_conn, source="DERIVED", rule_version=None)
+    make_meal_tag(integrity_conn, source="MANUAL", rule_version=None)
+    assert_rejects(
+        integrity_conn,
+        "ck_meal_tags_rule_version_only_derived",
+        lambda: make_meal_tag(integrity_conn, source="MANUAL", rule_version="tags_v1"),
+    )
+
+
+def test_meal_ingredients_is_optional_defaults_false(integrity_conn: Connection) -> None:
+    pk = make_meal_ingredient(integrity_conn)
+    row = fetch_by_pk(integrity_conn, "meal_ingredients", pk)
+    assert row is not None
+    assert row.is_optional is False
+    optional = fetch_by_pk(
+        integrity_conn, "meal_ingredients", make_meal_ingredient(integrity_conn, is_optional=True)
+    )
+    assert optional is not None
+    assert optional.is_optional is True

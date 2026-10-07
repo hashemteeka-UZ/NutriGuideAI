@@ -1,4 +1,4 @@
-"""Quality gates G1-G7 on small in-memory fixtures: no database, not the real files."""
+"""Quality gates G1-G9 on small in-memory fixtures: no database, not the real files."""
 
 from __future__ import annotations
 
@@ -12,9 +12,11 @@ from app.seed.quality_gates import (
     gate_energy_consistency,
     gate_excluded_ingredients,
     gate_mandatory_nutrients,
+    gate_optional_ingredients,
     gate_percent_energy_limits,
     gate_references,
     gate_tag_groups,
+    gate_variant_groups,
     gate_weight_method,
     run_all_gates,
 )
@@ -22,8 +24,8 @@ from app.seed.quality_gates import (
 SEED: dict[str, Any] = {
     "seed_version": "test_seed",
     "categories_ar": {"0100": "الألبان والبيض"},
-    "cuisines": [{"key": "GENERAL", "name_en": "General", "name_ar": "عام"}],
-    "allergens": [{"name_en": "Milk", "name_ar": "الحليب"}],
+    "cuisines": [{"code": "GENERAL", "name_en": "General", "name_ar": "عام"}],
+    "allergens": [{"code": "MILK", "name_en": "Milk", "name_ar": "الحليب"}],
     "dietary_tags": [
         {"code": "breakfast_suitable", "tag_group": "OCCASION", "name_en": "b", "name_ar": "ف"},
         {"code": "vegetarian", "tag_group": "DIETARY", "name_en": "v", "name_ar": "ن"},
@@ -300,6 +302,11 @@ def test_g4_reports_every_unresolved_reference() -> None:
     ]
 
 
+def test_g4_resolves_cuisines_by_code_not_by_name() -> None:
+    failures = gate_references(make_files(meals=meals_with(cuisine="General")))
+    assert [f.message for f in failures] == ["unknown cuisine 'General'"]
+
+
 def test_g4_fails_when_food_category_has_no_arabic_name() -> None:
     files = make_files(subset=subset_rows(category="1300"))
     failures = gate_references(files)
@@ -430,3 +437,57 @@ def test_g7_fails_for_sodium() -> None:
     seed = ReferenceSeed.model_validate(seed_with(condition_nutrient_limits=[_limit("sodium")]))
     failures = gate_percent_energy_limits(seed.condition_nutrient_limits)
     assert [(f.gate, f.subject) for f in failures] == [("G7", "HYPERTENSION/sodium")]
+
+
+# --- G8 optional ingredients ---------------------------------------------------------
+
+
+def _ingredients(*items: tuple[str, bool]) -> list[dict[str, Any]]:
+    return [{"ndb_number": ndb, "grams": 10, "optional": optional} for ndb, optional in items]
+
+
+def test_g8_passes_with_an_optional_garnish() -> None:
+    meals = SliceMeals.model_validate(
+        meals_with(ingredients=_ingredients(("01019", False), ("02047", False), ("11297", True)))
+    ).meals
+    assert gate_optional_ingredients(meals) == []
+
+
+def test_g8_fails_on_optional_salt_and_on_all_optional() -> None:
+    meals = SliceMeals.model_validate(
+        meals_with(ingredients=_ingredients(("02047", True), ("11297", True)))
+    ).meals
+    failures = gate_optional_ingredients(meals)
+    assert [(f.gate, f.subject, f.message) for f in failures] == [
+        ("G8", "T-01", "salt (02047) is never optional"),
+        ("G8", "T-01", "every ingredient is optional"),
+    ]
+
+
+# --- G9 variant groups ---------------------------------------------------------------
+
+
+def _meals_in_group(*changes: dict[str, Any]) -> list[Any]:
+    data = copy.deepcopy(MEALS)
+    base = data["meals"][0]
+    data["meals"] = [
+        {**base, "ref_external": f"T-{n:02}", "variant_group": "cheese_plate", **change}
+        for n, change in enumerate(changes, start=1)
+    ]
+    return SliceMeals.model_validate(data).meals
+
+
+def test_g9_passes_for_two_matching_variants() -> None:
+    meals = _meals_in_group({}, {"name_en": "Cheese plate, chicken"})
+    assert gate_variant_groups(meals) == []
+
+
+def test_g9_fails_on_a_single_meal_group_and_on_different_servings() -> None:
+    single = _meals_in_group({})
+    assert [(f.gate, f.subject, f.message) for f in gate_variant_groups(single)] == [
+        ("G9", "cheese_plate", "only one meal in the group: ['T-01']")
+    ]
+    differing = _meals_in_group({}, {"servings": 2, "occasion_tags": ["breakfast_suitable"]})
+    assert [f.message for f in gate_variant_groups(differing)] == [
+        "servings differs: {'T-01': 1, 'T-02': 2}"
+    ]

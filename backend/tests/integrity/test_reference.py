@@ -10,6 +10,7 @@ from tests.builders import (
     make_category,
     make_condition_nutrient_limit,
     make_condition_tag_restriction,
+    make_cuisine,
     make_dietary_tag,
     make_food,
     make_food_nutrient,
@@ -171,6 +172,36 @@ def test_duplicate_dietary_tags_code_rejected(integrity_conn: Connection) -> Non
         integrity_conn,
         "uq_dietary_tags_code",
         lambda: make_dietary_tag(integrity_conn, code="VEGAN"),
+    )
+
+
+def test_categories_name_en_unique(integrity_conn: Connection) -> None:
+    make_category(integrity_conn, name_en="Vegetables and Vegetable Products")
+    make_category(integrity_conn, name_en="Spices and Herbs")
+    assert_rejects(
+        integrity_conn,
+        "uq_categories_name_en",
+        lambda: make_category(integrity_conn, name_en="Spices and Herbs"),
+    )
+
+
+def test_cuisines_code_unique(integrity_conn: Connection) -> None:
+    make_cuisine(integrity_conn, code="LIBYAN")
+    make_cuisine(integrity_conn, code="LEVANTINE")
+    assert_rejects(
+        integrity_conn,
+        "uq_cuisines_code",
+        lambda: make_cuisine(integrity_conn, code="LIBYAN"),
+    )
+
+
+def test_allergens_code_unique(integrity_conn: Connection) -> None:
+    make_allergen(integrity_conn, code="GLUTEN")
+    make_allergen(integrity_conn, code="TREE_NUTS")
+    assert_rejects(
+        integrity_conn,
+        "uq_allergens_code",
+        lambda: make_allergen(integrity_conn, code="GLUTEN"),
     )
 
 
