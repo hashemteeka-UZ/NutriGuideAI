@@ -1,13 +1,32 @@
-# PROJECT_CONTEXT.md — v4.14
+# PROJECT_CONTEXT.md — v4.15
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.14 → v4.15
+
+v4.15 **closes Step F.1** (2026-10-10, DEV_JOURNAL J-032). The vertical slice ran end to end on 35 team-reviewed meals: data load → calc_v1 → derived data → screening and targets → Layer 1 → one-day plan → consumption logging → adherence → weight log and target recompute, plus a three-persona scenario report (`docs/reports/f1_scenario_report.md`). Commits `5eff2a0` (F.1-a), `18f304f` (F.1-b), `6e5bd92` (F.1-r, migration `0003`), `33427af` (F.1-c), `21c9452` (F.1-d), `6e1e5d7` (F.1-e); 1190 tests, 0 skipped, CI green. **No schema change in v4.15**: all items below are application rules decided by the assistant during F.1 (user delegation, J-030) and recorded here, or direction for later steps. Findings F-05 … F-14 are listed in `claude/steps/STEP_F1_plan.md`.
+
+| # | Topic | Change | Schema? |
+|---|---|---|---|
+| #80 | Baseline planner `greedy_v1` | Deterministic one-day greedy planner from Step F.1 recorded as the **baseline** of §28.4: slot energy shares, portion steps, lookahead on daily maxima, variant rule, tie-breaks, reason-code thresholds. §28.4b | No |
+| #81 | Condition minimums (F-05) | #68 clarified: a condition `min_per_day` (e.g. `DIABETES_T2` fiber 25 g) is a hard requirement for the Layer 3 optimizer; `greedy_v1` cannot guarantee it and reports every unmet minimum (`unmet_minimums`), never hides it. §30.4b | No |
+| #82 | Layer 1 details | Rule 5 is checked at the planned portion multiplier, not one serving; an unknown amount of a limited nutrient counts as a violation (fail closed, §9.8); `LIMIT` tags do not exclude in Layer 1; `SUITS_CONDITION_<CODE>` is not given to a meal carrying that condition's `LIMIT` tag. §28.1, §28.6 | No |
+| #83 | Consumption logging rules | `client_uuid` required; same uuid + same content = duplicate, different content = conflict; `nutrients_snapshot` shape fixed; meals/foods with an unknown mandatory nutrient cannot be logged; one active log per plan item; a correction never changes the logged meal/food. §11.9 | No |
+| #84 | Plan-item swap rules | A swap must pass Layer 1 at the item's slot and multiplier plus the day rules (no repeat, no second variant, daily maxima, `LIMIT` servings); refused once the item is logged; the plan's `target_snapshot` is never changed. §11.8 | No |
+| #85 | Adherence and screening details | Inclusive status bands; ±10% energy with an exceeded maximum falls to the ±25% band; past days use the user's **current** conditions (no condition history — known limitation); current plan ties broken by `plan_id`; screening uses the user's local date. §11.7, §30.1, §30.5 | No |
+| #86 | Weight log rules | Device clock skew tolerance 5 minutes; `measured_on` after the local today rejected; only the latest `measured_on` can trigger `WEIGHT_UPDATE`; no current target → none created; if the new target cannot be computed (screening fails or the goal becomes invalid) the weight is kept and the old target stays. §11.10, §30.6 | No |
+| #87 | General population limits (F-06) | Partly supersedes #69: users get a **general daily maximum of 2000 mg sodium** (WHO 2012) and **saturated fat < 10% of energy** (WHO 2023), resolved together with condition limits by §28.2 (strictest wins). Implemented together with the Layer 3 optimizer (#88), not in `greedy_v1`. Total-sugars limit for everyone stays out (#69: no added-sugar data). §30.1 | No |
+| #88 | Optimizer acceptance criteria (F-13, F-14) | The F.1-e scenario is the fixed benchmark; Layer 3 must beat `greedy_v1` on it: kcal within ±10% on every feasible day, 0 hard-limit violations, condition minimums met, no meal repeated on consecutive days. §28.4b, §28.5 | No |
+| #89 | Step F.1 closed | Known limitations carried to Step G / later: no cross-day variety in `greedy_v1`; weekly `LIMIT` servings counted within one day only; `condition_tag_restrictions` has no `source_reference` (provenance gap, §14 — a §20.1 change in Step G); no condition history; ingredient natural key (#77). Editorial: §10.1 variant example corrected (F-07). §24, §25 | No |
 
 ---
 
@@ -513,6 +532,7 @@ A `foods` row may only be loaded into the accepted reference layer if it has a `
 - `food_id` FK, `nutrient_id` FK, `amount_per_100g` (`NOT NULL`, `CHECK >= 0`)
 - PK: `(food_id, nutrient_id)`
 - **Missing ≠ zero:** an unknown value is represented by the *absence* of a row, never by `0`. `0` means "measured/known to be zero".
+- **Consequences (v4.15, #82, #83):** a meal or food with an unknown mandatory nutrient is not recommended (§10.3) and cannot be logged; in Layer 1 an unknown amount of a limited nutrient counts as a violation (fail closed).
 - Calculation model: `meal nutrient total = Σ (ingredient grams / 100) × food nutrient per 100 g`
 
 Data-entry templates may collect the mandatory nutrients as wide columns; Phase 2 ETL pivots each row into `food_nutrients` rows.
@@ -564,7 +584,7 @@ Source of truth for ingredient-level **presence** properties — `tag_group = 'C
 - `is_verified` — `BOOLEAN NOT NULL DEFAULT false` (v4.9)
 - `is_active` — `BOOLEAN NOT NULL DEFAULT true` (soft delete, §15.8)
 - `ingested_at` — `TIMESTAMPTZ NOT NULL DEFAULT now()` (v4.9), `dataset_version`
-- `variant_group` — **NEW in v4.14 (#76)** — `VARCHAR` nullable, indexed. Meals sharing a value are versions of one dish that differ in a main ingredient (e.g. `couscous`: lamb and chicken). Each version is a full meal with its own nutrients, allergens and tags, so Layer 1 filters each one exactly (a heart patient may lose the lamb version and keep the chicken one). The planner never places two meals of one group on the same day; the app's "switch meat" action swaps a plan item to a sibling of its group (`meal_plan_items.was_swapped = true`). Free ingredient substitution at use time is Future Work (§29).
+- `variant_group` — **NEW in v4.14 (#76)** — `VARCHAR` nullable, indexed. Meals sharing a value are versions of one dish that differ in a main ingredient (e.g. `couscous`: lamb and chicken). Each version is a full meal with its own nutrients, allergens and tags, so Layer 1 and the daily limits check each one exactly. *(v4.15, F-07: in the F.1 slice the chicken versions have less saturated fat but slightly more cholesterol and sodium than the lamb versions, and `HEART_DISEASE` has daily limits only, so a difference shows in the daily check, not in Layer 1.)* The planner never places two meals of one group on the same day; the app's "switch meat" action swaps a plan item to a sibling of its group (`meal_plan_items.was_swapped = true`). Free ingredient substitution at use time is Future Work (§29).
 - `yield_factor` — **NEW in v4.14 (#78)** — `NUMERIC(12,3)` nullable; `CHECK (yield_factor IS NULL OR (yield_factor > 0 AND yield_factor <= 3))`; `CHECK (weight_method = 'YIELD_FACTOR' OR yield_factor IS NULL)`. The loader sets it for every `YIELD_FACTOR` meal.
 - `yield_factor_source` — **NEW in v4.14 (#78)** — `TEXT` nullable: where the factor comes from.
 - `reviewed_by` — **NEW in v4.14 (#78)** — `TEXT` nullable: the team member who reviewed an LLM-drafted recipe (§31.4); `is_verified = (reviewed_by IS NOT NULL)` is enforced by the loader.
@@ -674,7 +694,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `target_id` — **NEW in v4.2** — FK → `user_targets` (nullable, SET NULL): which target version the plan was generated against. `target_snapshot` stays as an immutable copy (including the resolved condition limits at generation time).
 - `CHECK (date_to >= date_from)`
 - Index: `(user_id, date_from)` (v4.8, #60)
-- **Current plan rule (v4.12, #72):** plans are never deleted when a new one is generated for days an older plan already covers. For a given user and day, the **current** plan is the newest one (`created_at`) whose `date_from … date_to` covers that day; older plans stay as history so `consumption_logs.plan_item_id` links are never broken. Plan completion (§30.5) counts only the current plan's items.
+- **Current plan rule (v4.12, #72):** plans are never deleted when a new one is generated for days an older plan already covers. For a given user and day, the **current** plan is the newest one (`created_at`, ties broken by the larger `plan_id` — v4.15, #85) whose `date_from … date_to` covers that day; older plans stay as history so `consumption_logs.plan_item_id` links are never broken. Plan completion (§30.5) counts only the current plan's items.
 
 ## 11.8 `meal_plan_items` — CHANGED in v4.2 (Decision #21)
 - `id`, `plan_id`, `day_index`, `slot`, `meal_id`, `servings_multiplier`, `was_swapped`, `created_at`, `updated_at`
@@ -685,6 +705,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `CHECK (day_index >= 0)`
 - Partial unique index `(plan_id, day_index, slot) WHERE slot <> 'SNACK'` (name `ix_meal_plan_items_plan_id_day_index_slot`) — one breakfast, lunch and dinner per plan day; several snacks allowed (v4.12, #71, migration `0002`). The plain `(plan_id)` index stays for FK coverage (§15.3: partial indexes do not count).
 - **Removed:** `was_consumed` — now derived: an item is consumed iff a `consumption_logs` row references it via `plan_item_id` (§11.9).
+- **Swap rules (v4.15, #84):** the new meal must pass Layer 1 (§28.1) for the item's slot at the item's multiplier, with the user's condition limits resolved at the kcal frozen in the plan's `target_snapshot`; inside the plan day it must not repeat a meal or add a second meal of one `variant_group`, and the day totals must stay within every resolved `max_per_day` and `LIMIT` servings. A swap is refused once the item has an active log. On success: `meal_id` changes, `was_swapped = true`, `reason_codes` are recomputed, `updated_at` = service time; `target_snapshot` never changes.
 
 ## 11.9 `consumption_logs` — CHANGED in v4.2 (Decision #21) — single source of truth for what was eaten
 - `id` PK
@@ -712,6 +733,13 @@ Constraints:
 
 Application rule: when `plan_item_id` is set, `meal_id` must equal that plan item's `meal_id` (a swapped meal is recorded by first updating the plan item, `was_swapped = true`).
 
+**Logging rules (v4.15, #83):**
+- Every log carries a `client_uuid`. A repeated `client_uuid` with identical content (user, target, amount, `consumed_at`, `slot`) returns the existing row (`duplicate`); with different content it is rejected (`conflict`). A tombstoned row keeps its uuid, so a new log always needs a new uuid.
+- `nutrients_snapshot` = `{"computation_version": "calc_v1", "nutrients": {<mandatory nutrient code>: "<exact decimal string>"}}` with exactly the mandatory nutrients (§9.7): meal = `amount_per_serving × servings_consumed`; food = `amount_per_100g × grams_consumed / 100`. Computed once, never rewritten.
+- A meal that is not nutritionally complete, or a food with an unknown mandatory nutrient, cannot be logged (§9.8). Inactive meals can be logged (the user ate them).
+- A plan item has at most one active log; logging it again needs a tombstone first. Partial and larger-than-planned servings are allowed.
+- A correction tombstones the old row and inserts a new one for the **same** meal/food/plan item; changing what was eaten is a delete plus a new log.
+
 ## 11.10 `weight_logs` — NEW in v4.2 (Decision #19)
 - `id` PK
 - `user_id` FK (CASCADE)
@@ -722,6 +750,8 @@ Application rule: when `plan_item_id` is set, `meal_id` must equal that plan ite
 - `updated_at` — **NEW in v4.5 (Decision #44)** — `TIMESTAMPTZ NOT NULL` — time of the last edit as recorded on the device (server rejects values in the future beyond a small clock-skew tolerance)
   - No server default and no ORM `onupdate`: the client must send it; a server-supplied time could wrongly win last-write-wins (v4.9, #63)
 - `UNIQUE (user_id, measured_on)` — one value per day; a same-day entry is an **upsert**, and the row with the newer `updated_at` wins (last-write-wins, §33.4)
+
+**Weight rules (v4.15, #86):** `updated_at` may not be later than server time + 5 minutes (clock-skew tolerance); `measured_on` after the user's local today is rejected; a same-day write with an equal or older `updated_at` is ignored (last-write-wins).
 
 Current weight = row with the latest `measured_on`. Onboarding writes the first row. Future body measurements (waist, body-fat %) are Documented Future Work, not a Phase 1 table.
 
@@ -990,7 +1020,7 @@ Every `CheckConstraint` receives an explicit short `name=` (e.g. `grams_positive
 # 18. What Must NOT Be Added Yet
 
 - **18.1** No ML tables (no cluster tables, no embedding columns/`pgvector`, no bandit-parameter tables, no model registry) — §28 is direction only
-- **18.2** No recommendation algorithm implementation yet
+- **18.2** No recommendation algorithm implementation yet — *exception (v4.15): the deterministic baseline planner `greedy_v1` built for the Step F.1 vertical slice (§28.4b). Layer 2 (bandit) and Layer 3 (optimizer) remain unbuilt.*
 - **18.3** No synthetic ratings
 - **18.4** No large ETL pipeline yet
 - **18.5** ~~No forced FNDDS mapping for the 608 unresolved records~~ — **resolved in v4.4:** the 608 are sub-recipes with complete published values (§6.2); nothing to force
@@ -1170,13 +1200,14 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **Step E done (2026-10-02):** integrity tests on a migrated database (all 63 CHECK, 16 UNIQUE + partial unique index, 47 FK actions, NOT NULL, defaults, naming, identity, ORM float, query patterns) and GitHub Actions CI; 894 passed, 0 skipped; commit `79329b2`, first CI run green
 - **Step F done (2026-10-04): schema frozen** — pre-freeze review (#70–#73), migration `0002` (one partial unique index), migration-immutability test, `.gitattributes`; 903 passed locally, 0 skipped; commit `4116f89`, tag `schema-v1`, CI green (DEV_JOURNAL J-029)
 - **v4.10: §30 target-calculation details (#64–#69), no schema change**
-- **Step F.1 in progress:** passes F.1-a (slice data loader, quality gates) and F.1-b (calc_v1, derived tags, screening, targets_v1) committed with green CI; team recipe review done
+- **Step F.1 done (2026-10-10):** vertical slice end to end on 35 team-reviewed meals — passes F.1-a (loader, quality gates), F.1-b (calc_v1, derived tags, screening, targets_v1), F.1-r (recipe revision, migration `0003`), F.1-c (condition limits, Layer 1, `greedy_v1`), F.1-d (consumption logging, swap, adherence, weight recompute), F.1-e (three-persona scenario and report); 1190 tests, 0 skipped; last commit `6e1e5d7`, CI green (DEV_JOURNAL J-032)
+- **v4.15: Step F.1 closure decisions (#80–#89), no schema change**
 - **v4.14: first post-freeze change (#74–#79), migration `0003`**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.14 — the schema is **frozen** at tag `schema-v1` plus migration `0003` (§20.1); **Step F.1 (vertical slice)** is current. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
+**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.15 — the schema is **frozen** at tag `schema-v1` plus migration `0003` (§20.1); Step F.1 is closed; **Step G (dataset engineering)** is next. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
 
 ---
 
@@ -1188,8 +1219,8 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **Step D — Alembic initial migration:** generate and manually review ✅ done (2026-10-01)
 - **Step E — Integrity validation:** positive/negative tests (§19) + CI (§34.7) ✅ done (2026-10-02)
 - **Step F — Schema freeze** ✅ done (2026-10-04, tag `schema-v1`; change policy §20.1)
-- **Step F.1 — Vertical slice (NEW in v4.2, Decision #33)** ← **current**: after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
-- **Step G — Dataset engineering:** only after F.1 (starts with the extended `ingredients_master` template and the curated recipe catalog — §31)
+- **Step F.1 — Vertical slice (NEW in v4.2, Decision #33)** ✅ done (2026-10-10, v4.15): after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
+- **Step G — Dataset engineering** ← **next**: only after F.1 (starts with the extended `ingredients_master` template and the curated recipe catalog — §31)
 
 ---
 
@@ -1276,10 +1307,10 @@ A candidate meal for a given user and slot is excluded if any of these is true:
 2. It contains any allergen in `user_allergen_prefs` (via `meal_allergens`)
 3. It contains any ingredient with stance `EXCLUDE` in `user_ingredient_prefs`
 4. It carries a tag that is `AVOID` for any of the user's conditions (`condition_tag_restrictions` ⋈ `meal_tags`)
-5. One serving exceeds any resolved `max_per_meal` limit (§28.2)
+5. The planned portion (`amount_per_serving × servings_multiplier`) exceeds any resolved `max_per_meal` limit (§28.2); an unknown amount of a limited nutrient counts as exceeding (v4.15, #82)
 6. It has no `OCCASION` tag matching the requested slot (v4.1 rule: `BREAKFAST → breakfast_suitable`, etc.)
 
-`DISLIKE` does not exclude — it lowers the score in Layer 2.
+`DISLIKE` does not exclude — it lowers the score in Layer 2. `LIMIT` tags do not exclude either; they are counted by the planner (§28.4b).
 
 ## 28.2 Multi-condition limit resolution (Decision #18)
 For each nutrient, collect all rows from the user's conditions and resolve:
@@ -1297,7 +1328,21 @@ The resolved set is frozen into `meal_plans.target_snapshot`.
 - **Storage (later, not Phase 1):** model parameters and any embedding column (`pgvector`) are added only when Layer 2 is implemented — §18.1.
 
 ## 28.4 Layer 3 — optimization details (direction)
-CP-SAT decision variables: `x[day, slot, meal, step] ∈ {0,1}` with `step ∈ {0.5, 1.0, 1.5, 2.0}` (matches `meal_plan_items.servings_multiplier`). Constraints: exactly one meal per required slot; daily kcal within ±10% of target; daily macro ranges; resolved condition min/max per day; `LIMIT` tags ≤ weekly servings; no meal repeated within N days; only Layer-1-surviving candidates. Objective: minimize deviation from targets − λ × Layer-2 preference score. Greedy remains an acceptable fallback/baseline for comparison in the report.
+CP-SAT decision variables: `x[day, slot, meal, step] ∈ {0,1}` with `step ∈ {0.5, 1.0, 1.5, 2.0}` (matches `meal_plan_items.servings_multiplier`). Constraints: exactly one meal per required slot; daily kcal within ±10% of target; daily macro ranges; resolved condition min/max per day; `LIMIT` tags ≤ weekly servings; no meal repeated within N days; only Layer-1-surviving candidates. Objective: minimize deviation from targets − λ × Layer-2 preference score. Greedy remains an acceptable fallback/baseline for comparison in the report. **General population limits (#87)** are added to the resolved limits when this layer is built.
+
+## 28.4b Baseline planner `greedy_v1` — NEW in v4.15 (Decisions #80, #88)
+Built in Step F.1 (`app/services/planner.py`); deterministic (same inputs → same plan); writes one day per call.
+- **Slot energy shares** of `target_kcal`: breakfast 25%, lunch 35%, dinner 25%; the remaining 15% for at most 2 snacks. Portion steps `0.5, 1.0, 1.5, 2.0` (§11.8).
+- **Main slots** in order breakfast, lunch, dinner. A candidate (meal, step) must pass Layer 1 at that step, must not repeat a meal or a `variant_group` already in the day, must keep every running total within every resolved `max_per_day`, and must pass a **lookahead**: running total + candidate + the smallest amount any eligible meal could add (at step 0.5) for each main slot still empty must stay within every `max_per_day`. `LIMIT` tag servings in the day must not exceed the weekly number (weekly accounting across days is not done — known limitation, #89).
+- **Choice:** smallest |candidate kcal − slot target|; ties by protein closeness, then `ref_external`, then smaller step. A main slot with no valid candidate raises an error; no limit is ever relaxed and no main slot is dropped.
+- **Snacks:** added while day energy < 90% of target, never above 110%, closest to the remaining gap.
+- **Hard vs soft:** every Layer 1 rule and every maximum is hard; energy precision and condition minimums are soft — measured and reported (`kcal_within_10pct`, `unmet_minimums`), not enforced (#81).
+- **Reason codes (§28.6):** `FITS_KCAL_TARGET` within ±15% of the slot target; `HIGH_PROTEIN` protein energy ≥ 20%; `LOW_SODIUM` ≤ 120 mg, `LOW_SUGAR` ≤ 5 g, `LOW_SATURATED_FAT` ≤ 1.5 g per 100 g (UK FSA "low"); `HIGH_FIBER` ≥ 6 g per 100 g (EU "high fibre" claim).
+- **Snapshot:** `target_snapshot` stores the target (kcal, macros, fiber), the resolved limits with their sources, and the versions (`targets_v1`, `tags_v1`, `greedy_v1`, `calc_v1`).
+
+**Measured limits of the baseline (F.1-e scenario report, F-13, F-14):** with tight condition limits the greedy order exhausts budgets early — the `HYPERTENSION` + `DIABETES_T2` persona (target 1738 kcal) receives ≈1214 kcal plans (−30%), so full compliance still scores `NOT_ACHIEVED`; plans repeat day after day (identical days for that persona; 6 distinct meals in 12 items for the healthy persona); the healthy persona reaches 3200–4300 mg sodium/day (#69, addressed by #87).
+
+**Acceptance criteria for Layer 3 (#88):** run on the same F.1-e scenario and report side by side with `greedy_v1`: (1) 0 violations of Layer 1 and of every maximum — required 100%; (2) energy within ±10% of target on every day where a feasible plan exists; (3) every condition minimum met; (4) no meal repeated on consecutive days; (5) planning time reported.
 
 ## 28.5 Evaluation plan (direction)
 - **Nutritional correctness (rules + optimizer):** % of generated days meeting kcal/macro ranges and 0 violations of condition limits/allergens — must be 100% for violations.
@@ -1306,7 +1351,7 @@ CP-SAT decision variables: `x[day, slot, meal, step] ∈ {0,1}` with `step ∈ {
 - **User satisfaction:** short standardized questionnaire (e.g. SUS) at the end of the pilot.
 
 ## 28.6 Explainable recommendations (Decision #46, P-11)
-Each `meal_plan_items` row stores `reason_codes` produced **at plan time** by deterministic logic only (Layer 1 rules + targets + Layer 3 fit), never from bandit parameters. Initial code set (extensible): `FITS_KCAL_TARGET`, `HIGH_PROTEIN`, `LOW_SODIUM`, `LOW_SATURATED_FAT`, `LOW_SUGAR`, `HIGH_FIBER`, `SUITS_CONDITION_<CODE>`, `MATCHES_LIKED_INGREDIENT`, `NEW_FOR_VARIETY`. The device renders codes in the user's language. Theoretical basis: explainable recommendation (post-hoc, rule-based explanation).
+Each `meal_plan_items` row stores `reason_codes` produced **at plan time** by deterministic logic only (Layer 1 rules + targets + Layer 3 fit), never from bandit parameters. `SUITS_CONDITION_<CODE>` is given only when the item respects every per-meal limit of that condition and carries none of its `AVOID` or `LIMIT` tags (v4.15, #82). Initial code set (extensible): `FITS_KCAL_TARGET`, `HIGH_PROTEIN`, `LOW_SODIUM`, `LOW_SATURATED_FAT`, `LOW_SUGAR`, `HIGH_FIBER`, `SUITS_CONDITION_<CODE>`, `MATCHES_LIKED_INGREDIENT`, `NEW_FOR_VARIETY`. The device renders codes in the user's language. Theoretical basis: explainable recommendation (post-hoc, rule-based explanation).
 
 ---
 
@@ -1363,7 +1408,11 @@ The app does **not** generate personalized plans (it may show general informatio
 
 **Known limitation (v4.7, Decision #54):** only the three supported conditions and the recognized-unsupported ones in §9.5 can be declared. Conditions outside that list (e.g. gout) are not recognized; the disclaimer tells users with other medical conditions to consult their clinician before following a plan.
 
-**Known limitation (v4.10, Decision #69):** users without a declared condition get no daily limit for sodium, sugars or saturated fat; these limits come only from `condition_nutrient_limits`. The dataset stores total `sugars`, not added sugars, so the WHO added-sugar guideline cannot be applied honestly. Stated in the thesis limitations.
+**Screening date (v4.15, #85):** screening is evaluated on the user's local date (`user_profiles.timezone`) at the time of the request.
+
+**General population limits (v4.15, Decision #87 — partly supersedes #69):** every eligible user gets a daily maximum of **2000 mg sodium** (WHO 2012, adults) and **saturated fat < 10% of energy** (WHO 2023), merged with condition limits by §28.2 (strictest wins). Built together with the Layer 3 optimizer; `greedy_v1` (§28.4b) does not apply them. Total sugars stay without a general limit (no added-sugar data).
+
+**Known limitation (v4.10, Decision #69, sodium and saturated fat superseded by #87):** users without a declared condition get no daily limit for sodium, sugars or saturated fat; these limits come only from `condition_nutrient_limits`. The dataset stores total `sugars`, not added sugars, so the WHO added-sugar guideline cannot be applied honestly. Stated in the thesis limitations.
 
 Every screen presenting targets/plans shows a medical disclaimer: the app is not a medical device and does not replace a clinician.
 
@@ -1391,16 +1440,17 @@ Every screen presenting targets/plans shows a medical disclaimer: the app is not
 - **Not stored** in `user_targets`: it is fully determined by `target_kcal` and `formula_version`. Frozen with the other targets in `meal_plans.target_snapshot` at plan time. (If the report later needs it as a column, it is an additive change before the Step F freeze.)
 - **Soft target:** the optimizer (§28.3) includes fiber in the "deviation from targets" term; it never excludes a meal and never blocks a plan.
 - **Not part of the day status** (§30.5 unchanged); shown on the day screen for information.
-- For `DIABETES_T2`, the condition's `fiber` `min_per_day` (§9.5b) stays a **hard** limit and is resolved by §28.2 as before.
+- For `DIABETES_T2`, the condition's `fiber` `min_per_day` (§9.5b) stays a **hard** limit and is resolved by §28.2 as before. *Clarified in v4.15 (#81):* hard means the Layer 3 optimizer must meet it; the baseline `greedy_v1` cannot guarantee a minimum and reports every unmet one (`unmet_minimums`) to the user, never hiding it.
 
 ## 30.5 Daily adherence (computed, not stored)
 For a user and `log_date`: sum `consumption_logs.nutrients_snapshot`, compare with the `user_targets` row valid on that date. **Valid on that date (v4.12, #72):** the latest row whose `valid_from` is before the end of that local day in `user_profiles.timezone`, so a target changed mid-day applies to that whole day.
 - Day status `ACHIEVED` if kcal within ±10% of target **and** no resolved condition `max_per_day` exceeded; `PARTIAL` if kcal within ±25%; otherwise `NOT_ACHIEVED`.
 - Plan completion = consumed plan items / total plan items for that day.
+- **Details (v4.15, #85):** band edges are inclusive (exactly ±10% is within); a day within ±10% with an exceeded `max_per_day` falls to `PARTIAL` (if within ±25%) or `NOT_ACHIEVED`; a day without active logs is `NOT_ACHIEVED`; no target valid on that date → no status (`NO_TARGET`). Limits use the user's **current** conditions because condition history is not stored (known limitation). Condition minimums and the fiber target are shown, never part of the status. Completion is rounded to 3 decimals.
 - Streaks and weekly summaries are derived from these daily statuses.
 
 ## 30.6 Recompute triggers
-A new `user_targets` row (closing the previous one) is created on: onboarding (`INITIAL`), a new weight differing ≥ 1 kg from `based_on_weight_kg` (`WEIGHT_UPDATE`), goal/rate/target-weight change (`GOAL_CHANGE`), activity/height/sex/birth-date change (`PROFILE_CHANGE`), or a new `formula_version` (`FORMULA_CHANGE`).
+*(v4.15, #86: a weight triggers `WEIGHT_UPDATE` only when it is the user's latest `measured_on` and a current target exists; if the new target cannot be computed the weight is kept and the old target stays.)* A new `user_targets` row (closing the previous one) is created on: onboarding (`INITIAL`), a new weight differing ≥ 1 kg from `based_on_weight_kg` (`WEIGHT_UPDATE`), goal/rate/target-weight change (`GOAL_CHANGE`), activity/height/sex/birth-date change (`PROFILE_CHANGE`), or a new `formula_version` (`FORMULA_CHANGE`).
 
 ## 30.7 Water goal & fluid safety — NEW in v4.6 (Decisions #49, #50)
 - **Default goal** (used only when `user_profiles.water_goal_ml IS NULL`): beverage-water target derived from EFSA (2010) adequate intake of total water (2.0 L women / 2.5 L men), minus ~20% supplied by food → **1600 ml (women) / 2000 ml (men)**. Computed in application logic, not stored. The "8 glasses a day" rule is not used (no scientific basis).
