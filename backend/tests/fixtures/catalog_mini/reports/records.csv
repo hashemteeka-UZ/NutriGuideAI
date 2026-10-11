@@ -1,0 +1,24 @@
+record_type,key,outcome,reason,detail
+food,01217,accepted,,
+food,10123,excluded,non_permissible_ingredient,excluded keyword 'pork'
+food,14429,accepted,,
+food,19177,quarantine,ingredient_status_uncertain,uncertain keyword 'gelatin'
+food,20028,accepted,,
+food,20037,quarantine,missing_mandatory_nutrient,missing ['sodium']
+food,99013,accepted,,
+food,CAMEL_MEAT,accepted,,
+ingredient,BEEF_GELATIN,quarantine,ingredient_status_uncertain,uncertain keyword 'gelatin'
+ingredient,BOTTLED_WATER,accepted,,
+ingredient,CAMEL_MEAT,accepted,,
+ingredient,DRY_COUSCOUS,accepted,,
+ingredient,LAMB_LEG,accepted,,
+ingredient,PORK_SHOULDER,excluded,non_permissible_ingredient,excluded keyword 'pork'
+ingredient,WHITE_RICE,quarantine,missing_mandatory_nutrient,missing ['sodium']
+ingredient,YOGURT_PLAIN,accepted,,
+meal,NG-DRAFT-01,quarantine,not_reviewed,
+meal,NG-GEL-01,quarantine,uses_quarantined_ingredient,ingredients ['BEEF_GELATIN']
+meal,NG-GOLD-01,accepted,,
+meal,NG-HISOD-01,quarantine,G10,
+meal,NG-MISSNA-01,quarantine,uses_quarantined_ingredient,ingredients ['WHITE_RICE']
+meal,NG-PORK-01,excluded,uses_excluded_ingredient,ingredients ['PORK_SHOULDER']
+meal,NG-SILVER-01,accepted,,

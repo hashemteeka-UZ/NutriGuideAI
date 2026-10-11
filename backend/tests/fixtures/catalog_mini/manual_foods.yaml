@@ -1,0 +1,17 @@
+# Regional food absent from USDA (#93 step 4). Nutrient values are authored, never imputed.
+- code: CAMEL_MEAT
+  description: Camel meat, raw, lean
+  category: '1700'
+  state: raw
+  source_reference: 'Al-Shami A.S. (2013). Nutrient composition of camel meat. Journal of Food Composition and Analysis. Values per 100 g edible portion.'
+  nutrients:
+    energy_kcal: 116
+    protein: 20
+    total_fat: 4
+    carbohydrate: 0
+    fiber: 0
+    sugars: 0
+    saturated_fat: 1.6
+    cholesterol: 60
+    sodium: 86
+    potassium: 350

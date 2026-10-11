@@ -1,0 +1,109 @@
+# Mini catalog meals. quality_tier is computed by the loader (#96), never read from this file.
+dataset_version: team_recipes_v1
+source: team_catalog
+source_license: Team-authored recipes, project internal use
+default_lang: ar
+meals:
+- ref_external: NG-GOLD-01
+  name_ar: زبادي باللحم
+  name_en: Yogurt with lamb
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: YOGURT_PLAIN, grams: 150, label_ar: زبادي}
+  - {code: LAMB_LEG, grams: 80, label_ar: لحم ضأن}
+  - {code: BOTTLED_WATER, grams: 20, label_ar: ماء}
+- ref_external: NG-SILVER-01
+  name_ar: كسكس
+  name_en: Couscous
+  cuisine: LIBYAN
+  servings: 2
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate
+  yield_factor_kind: TEAM_ESTIMATE
+  variant_group: null
+  occasion_tags: [dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: DRY_COUSCOUS, grams: 100, label_ar: كسكس}
+  - {code: BOTTLED_WATER, grams: 200, label_ar: ماء}
+- ref_external: NG-MISSNA-01
+  name_ar: أرز
+  name_en: Rice
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: WHITE_RICE, grams: 80, label_ar: أرز}
+- ref_external: NG-PORK-01
+  name_ar: لحم خنزير
+  name_en: Pork plate
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: PORK_SHOULDER, grams: 100, label_ar: خنزير}
+- ref_external: NG-GEL-01
+  name_ar: جيلاتين
+  name_en: Gelatin dessert
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: BEEF_GELATIN, grams: 10, label_ar: جيلاتين}
+  - {code: BOTTLED_WATER, grams: 90, label_ar: ماء}
+- ref_external: NG-DRAFT-01
+  name_ar: زبادي
+  name_en: Plain yogurt bowl
+  cuisine: LEVANTINE
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: null
+  ingredients:
+  - {code: YOGURT_PLAIN, grams: 200, label_ar: زبادي}
+- ref_external: NG-HISOD-01
+  name_ar: زبادي مالح
+  name_en: Salty yogurt
+  cuisine: LEVANTINE
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable]
+  dietary_tags: [high_sodium]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: YOGURT_PLAIN, grams: 180, label_ar: زبادي}

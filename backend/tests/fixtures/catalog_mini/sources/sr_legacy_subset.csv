@@ -1,0 +1,69 @@
+ndb_number,fdc_id,description,food_category_code,food_category_description,nutrient_nbr,amount_per_100g
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,203,10
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,204,0.4
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,205,4
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,208,60
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,269,4
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,291,0
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,306,140
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,307,36
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,601,5
+01217,900001,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,606,0.3
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",203,25.2
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",204,21.6
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",205,0
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",208,294
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",291,0
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",306,280
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",307,62
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",601,78
+99013,900002,"Lamb, leg, raw",1700,"Lamb, Veal, and Game Products",606,9
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,203,6.6
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,204,0.6
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,205,79.3
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,208,360
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,269,0.1
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,291,1.4
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,306,80
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,601,0
+20037,900003,"Rice, white, raw",2000,Cereal Grains and Pasta,606,0.2
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,203,17
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,204,21
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,205,0
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,208,250
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,269,0
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,291,0
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,306,300
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,307,65
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,601,70
+10123,900004,"Pork, shoulder, raw",1300,Beef Products,606,7
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,203,85.6
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,204,0.1
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,205,0
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,208,335
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,269,0
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,291,0
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,306,16
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,307,196
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,601,0
+19177,900005,"Gelatin, dry powder, unsweetened",1900,Sweets,606,0
+14429,900006,"Water, bottled, generic",1400,Beverages,203,0
+14429,900006,"Water, bottled, generic",1400,Beverages,204,0
+14429,900006,"Water, bottled, generic",1400,Beverages,205,0
+14429,900006,"Water, bottled, generic",1400,Beverages,208,0
+14429,900006,"Water, bottled, generic",1400,Beverages,269,0
+14429,900006,"Water, bottled, generic",1400,Beverages,291,0
+14429,900006,"Water, bottled, generic",1400,Beverages,306,0
+14429,900006,"Water, bottled, generic",1400,Beverages,307,2
+14429,900006,"Water, bottled, generic",1400,Beverages,601,0
+14429,900006,"Water, bottled, generic",1400,Beverages,606,0
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,203,12.8
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,204,0.6
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,205,77.4
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,208,376
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,269,0.6
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,291,5
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,306,166
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,307,10
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,601,0
+20028,900007,"Couscous, dry",2000,Cereal Grains and Pasta,606,0.1

@@ -1,0 +1,85 @@
+# Mini catalog ingredients for pipeline tests. Codes do not overlap the F.1 slice.
+dataset_version: catalog_mini_v1
+ingredients:
+- code: YOGURT_PLAIN
+  name_en: Plain yogurt
+  name_ar: زبادي سادة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01217'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+# 99013 is synthetic test data, not an SR Legacy NDB. The official FNDDS
+# Ingredient Nutrient Values file has no row for 17013; the sugars fill below is not FNDDS.
+- code: LAMB_LEG
+  name_en: Lamb leg
+  name_ar: فخذ ضأن
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '99013'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHITE_RICE
+  name_en: White rice
+  name_ar: أرز أبيض
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20037'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PORK_SHOULDER
+  name_en: Pork shoulder
+  name_ar: كتف خنزير
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '10123'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: BEEF_GELATIN
+  name_en: Beef gelatin
+  name_ar: جيلاتين بقري
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '19177'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: BOTTLED_WATER
+  name_en: Bottled water
+  name_ar: ماء معبأ
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '14429'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DRY_COUSCOUS
+  name_en: Dry couscous
+  name_ar: كسكس جاف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20028'}
+  state: as_purchased
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CAMEL_MEAT
+  name_en: Camel meat
+  name_ar: لحم جمل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: MANUAL, code: CAMEL_MEAT}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED

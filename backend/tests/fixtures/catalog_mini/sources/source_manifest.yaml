@@ -1,0 +1,8 @@
+raw_files: []
+subsets:
+  sr_legacy_subset.csv:
+    sha256: 39dfc89caa86a8b62472fadbec85f14f701cff271b0c3c91b42acf8185c810a2
+    row_count: 68
+  fndds_ingredient_subset.csv:
+    sha256: a6d3f31208f851fd8d508bc8b373bcb877bd9adf43df0fc3cf6a7be3a3b56714
+    row_count: 1
