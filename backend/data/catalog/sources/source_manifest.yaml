@@ -29,4 +29,10 @@ raw_files:
   sha256: f0f34892cf4d9f1ca997344814acd9d3dfef11ce827a46abda02f46988bcf0b7
   download_page: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds-download-databases/
   extracted_on: '2026-10-11'
-subsets: {}
+subsets:
+  sr_legacy_subset.csv:
+    sha256: 9b8a1c09d0f79b8b99a4a8e4e2538c2e2b8a35fa83da3bec1b4e3f29d629c856
+    row_count: 1941
+  fndds_ingredient_subset.csv:
+    sha256: 733f0c8a17d26ed6ecd820e6c716b67919d17a9b117d36aa4546b2d25185cf6e
+    row_count: 1440

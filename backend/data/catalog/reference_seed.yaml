@@ -19,6 +19,7 @@ categories_ar:
   '1900': الحلويات والمحليات
   '2000': الحبوب والمعكرونة
   '1300': لحم البقر
+  '2500': الوجبات الخفيفة
 cuisines:
 - code: LIBYAN
   name_en: Libyan
@@ -29,6 +30,12 @@ cuisines:
 - code: GENERAL
   name_en: General
   name_ar: عام
+- code: EGYPTIAN
+  name_en: Egyptian
+  name_ar: مصري
+- code: MAGHREBI
+  name_en: Maghrebi
+  name_ar: مغاربي
 allergens:
 - code: GLUTEN
   name_en: Gluten

@@ -150,6 +150,211 @@ def test_extract_requires_named_fndds_files(tmp_path: Path) -> None:
         run_extract(data_dir, raw_dir, profile_only=True)
 
 
+def _parse_lookup(text: str) -> dict[str, tuple[list[str], list[str]]]:
+    rows: dict[str, tuple[list[str], list[str]]] = {}
+    current: str | None = None
+    for line in text.splitlines():
+        if not line.strip() or line.startswith("#") or line.startswith("code |"):
+            continue
+        if line.startswith("  "):
+            assert current is not None
+            rows[current][1].append(line.strip())
+            continue
+        cells = [cell.strip() for cell in line.split("|")]
+        assert len(cells) == 8
+        current = cells[0]
+        rows[current] = (cells, [])
+    return rows
+
+
+def test_ingredient_lookup_ranks_only_complete_foods_and_is_stable(tmp_path: Path) -> None:
+    raw_dir = tmp_path / "raw"
+    data_dir = tmp_path / "catalog"
+    _seed(data_dir)
+    (data_dir / "ingredients.yaml").write_text(
+        """
+dataset_version: lookup_test_v1
+ingredients:
+- code: CAMEL_MEAT
+  name_en: Camel meat
+  name_ar: لحم جمل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: MANUAL, code: CAMEL_MEAT}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: COUSCOUS_DRY
+  name_en: Dry couscous
+  name_ar: كسكس
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20028'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LAMB_LEG
+  name_en: Lambs legs
+  name_ar: فخذ
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '22222'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: RICE_WHITE
+  name_en: White rice
+  name_ar: أرز
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20037'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: UNKNOWN_LAMB
+  name_en: Fresh lamb shoulder
+  name_ar: كتف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '99999'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: UNKNOWN_RICE
+  name_en: White rice
+  name_ar: أرز
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '77777'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+""".lstrip(),
+        encoding="utf-8",
+    )
+    categories = [
+        (11, "1100", "Vegetables and Vegetable Products"),
+        (17, "1700", "Lamb, Veal, and Game Products"),
+        (20, "2000", "Cereal Grains and Pasta"),
+        (50, "0500", "Poultry Products"),
+        (90, "0900", "Fruits and Fruit Juices"),
+    ]
+    foods = [
+        (910001, 10001, "Fresh peas, raw", 11),
+        (910002, 17001, "Lamb, ground, raw", 17),
+        (910003, 17002, "Lamb, leg, cooked", 17),
+        (910004, 17003, "Lamb, shoulder, raw", 17),
+        (910005, 17004, "Lamb, loin, raw", 17),
+        (910006, 17005, "Fresh lamb, shoulder", 17),
+        (910007, 18888, "Lamb, leg, raw", 17),
+        (910008, 20028, "Couscous, dry", 20),
+        (910009, 20037, "Rice, white, raw", 20),
+        (910010, 22222, "Lamb, leg, raw", 17),
+        (910011, 50620, "Chicken, breast, raw", 50),
+        (910012, 90010, "Apple, raw", 90),
+    ]
+    nutrients = [
+        *complete_nutrients(910001),
+        *complete_nutrients(910002),
+        *complete_nutrients(910003),
+        *complete_nutrients(910004),
+        *complete_nutrients(910005, skip={"269"}),
+        *complete_nutrients(910006),
+        *complete_nutrients(910007, skip={"307"}),
+        *complete_nutrients(910008, skip={"291"}),
+        *complete_nutrients(910009),
+        *complete_nutrients(910010, skip={"269"}),
+        *complete_nutrients(910011),
+        *complete_nutrients(910012),
+    ]
+    write_sr_zip(raw_dir, foods=foods, food_nutrients=nutrients, categories=categories)
+    write_fndds_dir(
+        raw_dir,
+        ingredient_nutrients=[[17004, 269, 0], [20028, 291, 4]],
+    )
+    report_path = data_dir / "reports" / "ingredient_lookup.md"
+
+    def _run(extracted_on: str) -> bytes:
+        with pytest.raises(ExtractError, match="NDB numbers not found") as exc:
+            run_extract(data_dir, raw_dir, profile_only=False, extracted_on=extracted_on)
+        message = str(exc.value)
+        assert "[77777, 99999]" in message
+        assert not (data_dir / SOURCES_DIR / SR_SUBSET_FILE).exists()
+        return report_path.read_bytes()
+
+    first = _run("2026-01-01")
+    assert first == _run("2026-10-11")
+    parsed = _parse_lookup(first.decode("utf-8"))
+    assert list(parsed) == [
+        "COUSCOUS_DRY",
+        "LAMB_LEG",
+        "RICE_WHITE",
+        "UNKNOWN_LAMB",
+        "UNKNOWN_RICE",
+    ]
+    assert "CAMEL_MEAT" not in first.decode("utf-8")
+
+    couscous, _ = parsed["COUSCOUS_DRY"]
+    assert couscous[3:8] == [
+        "Couscous, dry",
+        "Cereal Grains and Pasta",
+        "fiber",
+        "fiber",
+        "COMPLETE",
+    ]
+    assert parsed["COUSCOUS_DRY"][1] == []
+    assert parsed["RICE_WHITE"][1] == []
+    assert parsed["RICE_WHITE"][0][7] == "COMPLETE"
+
+    lamb, lamb_candidates = parsed["LAMB_LEG"]
+    assert lamb[2:8] == [
+        "22222",
+        "Lamb, leg, raw",
+        "Lamb, Veal, and Game Products",
+        "sugars",
+        "",
+        "INCOMPLETE",
+    ]
+    unknown, unknown_candidates = parsed["UNKNOWN_LAMB"]
+    assert unknown[2] == "99999" and unknown[3] == "" and unknown[7] == "NOT_FOUND"
+    rice_unknown, rice_candidates = parsed["UNKNOWN_RICE"]
+    assert rice_unknown[7] == "NOT_FOUND"
+
+    complete = {
+        "10001",
+        "17001",
+        "17002",
+        "17003",
+        "17004",
+        "17005",
+        "20028",
+        "20037",
+        "50620",
+        "90010",
+    }
+    expected = {
+        "LAMB_LEG": ["17002", "17001", "17003", "17004", "17005"],
+        "UNKNOWN_LAMB": ["17003", "17005", "17001", "17002", "17004"],
+        "UNKNOWN_RICE": ["20037", "10001", "17001", "17002", "17003"],
+    }
+    found = {
+        "LAMB_LEG": lamb_candidates,
+        "UNKNOWN_LAMB": unknown_candidates,
+        "UNKNOWN_RICE": rice_candidates,
+    }
+    for code, lines in found.items():
+        ndbs = [line.split(" | ", 1)[0] for line in lines]
+        assert ndbs == expected[code]
+        assert set(ndbs) <= complete
+        assert "18888" not in ndbs and "22222" not in ndbs
+
+
 def test_reference_seed_parses_uncertain_keywords() -> None:
     seed = read_catalog_reference_seed(MINI_CATALOG / REFERENCE_SEED_FILE)
     assert "gelatin" in seed.uncertain_keywords

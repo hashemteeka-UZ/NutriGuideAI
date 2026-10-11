@@ -38,6 +38,7 @@ from app.pipeline.files import (
     write_csv,
     write_yaml,
 )
+from app.pipeline.lookup import LOOKUP_REPORT_FILE, format_ingredient_lookup, index_sr_foods
 from app.pipeline.profile import (
     FNDDS_FOODS,
     FNDDS_INGREDIENT_NUTRIENTS,
@@ -575,6 +576,22 @@ def run_extract(
             raise ExtractError(f"{INGREDIENTS_FILE} is required unless --profile-only")
         ingredients = CatalogIngredients.model_validate(
             yaml.safe_load(ingredients_path.read_text(encoding="utf-8"))
+        )
+        # Lookup is written even when some NDB numbers are missing. The subset
+        # step below still fails and lists every unknown number together.
+        reports_dir = data_dir / REPORTS_DIR
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        foods = index_sr_foods(
+            sr_tables["food.csv"],
+            sr_tables["food_nutrient.csv"],
+            sr_tables["nutrient.csv"],
+            sr_tables["sr_legacy_food.csv"],
+            sr_tables["food_category.csv"],
+            fndds_tables["Ingredient Nutrient Values"],
+            seed.nutrients,
+        )
+        (reports_dir / LOOKUP_REPORT_FILE).write_text(
+            format_ingredient_lookup(ingredients, foods), encoding="utf-8"
         )
         subsets = _write_subsets(
             data_dir, ingredients, seed, sr_tables, fndds_tables["Ingredient Nutrient Values"]

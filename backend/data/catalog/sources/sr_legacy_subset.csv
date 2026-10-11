@@ -1,0 +1,1942 @@
+ndb_number,fdc_id,description,food_category_code,food_category_description,nutrient_nbr,amount_per_100g
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,203,12.39
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,204,1.02
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,205,2.72
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,208,72
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,269,2.72
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,291,0
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,306,86
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,307,406
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,601,4
+01016,173417,"Cheese, cottage, lowfat, 1% milkfat",0100,Dairy and Egg Products,606,0.645
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,203,14.21
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,204,21.49
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,205,3.88
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,208,265
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,269,0
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,291,0
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,306,62
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,307,1139
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,601,89
+01019,173420,"Cheese, feta",0100,Dairy and Egg Products,606,13.3
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,203,24.26
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,204,15.92
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,205,2.77
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,208,254
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,269,1.13
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,291,0
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,306,84
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,307,619
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,601,64
+01028,170847,"Cheese, mozzarella, part skim milk",0100,Dairy and Egg Products,606,10.114
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,203,11.39
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,204,7.91
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,205,5.14
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,208,138
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,269,0.31
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,291,0
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,306,125
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,307,99
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,601,31
+01037,171248,"Cheese, ricotta, part skim milk",0100,Dairy and Egg Products,606,4.927
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,203,3.15
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,204,3.25
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,205,4.8
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,208,61
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,269,5.05
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,291,0
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,306,132
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,307,43
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,601,10
+01077,171265,"Milk, whole, 3.25% milkfat, with added vitamin D",0100,Dairy and Egg Products,606,1.865
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,203,3.37
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,204,0.97
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,205,4.99
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,208,42
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,269,5.2
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,291,0
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,306,150
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,307,44
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,601,5
+01082,170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",0100,Dairy and Egg Products,606,0.633
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,203,3.31
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,204,1.07
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,205,4.79
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,208,40
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,269,5.36
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,291,0
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,306,151
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,307,148
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,601,4
+01088,170874,"Milk, buttermilk, fluid, cultured, lowfat",0100,Dairy and Egg Products,606,0.66
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,203,3.47
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,204,3.25
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,205,4.66
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,208,61
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,269,4.66
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,291,0
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,306,155
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,307,46
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,601,13
+01116,171284,"Yogurt, plain, whole milk",0100,Dairy and Egg Products,606,2.096
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,203,5.25
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,204,1.55
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,205,7.04
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,208,63
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,269,7.04
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,291,0
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,306,234
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,307,70
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,601,6
+01117,170886,"Yogurt, plain, low fat",0100,Dairy and Egg Products,606,1
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,203,12.56
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,204,9.51
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,205,0.72
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,208,143
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,269,0.37
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,291,0
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,306,138
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,307,142
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,601,372
+01123,171287,"Egg, whole, raw, fresh",0100,Dairy and Egg Products,606,3.126
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,203,10.9
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,204,0.17
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,205,0.73
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,208,52
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,269,0.71
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,291,0
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,306,163
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,307,166
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,601,0
+01124,172183,"Egg, white, raw, fresh",0100,Dairy and Egg Products,606,0
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,203,0.85
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,204,81.11
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,205,0.06
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,208,717
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,269,0.06
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,291,0
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,306,24
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,307,11
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,601,215
+01145,173430,"Butter, without salt",0100,Dairy and Egg Products,606,50.489
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,203,10.19
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,204,0.39
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,205,3.6
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,208,59
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,269,3.24
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,291,0
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,306,141
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,307,36
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,601,5
+01256,170894,"Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",0100,Dairy and Egg Products,606,0.117
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,203,9
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,204,5
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,205,3.98
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,208,97
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,269,4
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,291,0
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,306,141
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,307,35
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,601,13
+01293,171304,"Yogurt, Greek, plain, whole milk",0100,Dairy and Egg Products,606,2.395
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,203,6.09
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,204,8.69
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,205,72.12
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,208,263
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,291,21.6
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,306,1044
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,307,77
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,601,0
+02001,171315,"Spices, allspice, ground",0200,Spices and Herbs,606,2.55
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,203,7.61
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,204,8.36
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,205,74.97
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,208,313
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,291,26.3
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,306,529
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,307,23
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,601,0
+02004,170917,"Spices, bay leaf",0200,Spices and Herbs,606,2.28
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,203,19.77
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,204,14.59
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,205,49.9
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,208,333
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,269,0.64
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,291,38
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,306,1351
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,307,17
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,601,0
+02005,170918,"Spices, caraway seed",0200,Spices and Herbs,606,0.62
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,203,10.76
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,204,6.7
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,205,68.47
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,208,311
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,291,28
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,306,1119
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,307,18
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,601,0
+02006,170919,"Spices, cardamom",0200,Spices and Herbs,606,0.68
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,203,13.46
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,204,14.28
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,205,49.7
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,208,282
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,269,7.19
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,291,34.8
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,306,1950
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,307,2867
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,601,0
+02009,171319,"Spices, chili powder",0200,Spices and Herbs,606,2.462
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,203,3.99
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,204,1.24
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,205,80.59
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,208,247
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,269,2.17
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,291,53.1
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,306,431
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,307,10
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,601,0
+02010,171320,"Spices, cinnamon, ground",0200,Spices and Herbs,606,0.345
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,203,5.97
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,204,13
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,205,65.53
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,208,274
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,269,2.38
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,291,33.9
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,306,1020
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,307,277
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,601,0
+02011,171321,"Spices, cloves, ground",0200,Spices and Herbs,606,3.952
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,203,12.37
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,204,17.77
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,205,54.99
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,208,298
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,291,41.9
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,306,1267
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,307,35
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,601,0
+02013,170922,"Spices, coriander seed",0200,Spices and Herbs,606,0.99
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,203,17.81
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,204,22.27
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,205,44.24
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,208,375
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,269,2.25
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,291,10.5
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,306,1788
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,307,168
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,601,0
+02014,170923,"Spices, cumin seed",0200,Spices and Herbs,606,1.535
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,203,15.8
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,204,14.87
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,205,52.29
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,208,345
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,291,39.8
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,306,1694
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,307,88
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,601,0
+02018,171323,"Spices, fennel seed",0200,Spices and Herbs,606,0.48
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,203,16.55
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,204,0.73
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,205,72.73
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,208,331
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,269,2.43
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,291,9
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,306,1193
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,307,60
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,601,0
+02020,171325,"Spices, garlic powder",0200,Spices and Herbs,606,0.249
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,203,8.98
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,204,4.24
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,205,71.62
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,208,335
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,269,3.39
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,291,14.1
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,306,1320
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,307,27
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,601,0
+02021,170926,"Spices, ginger, ground",0200,Spices and Herbs,606,2.599
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,203,5.84
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,204,36.31
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,205,49.29
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,208,525
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,269,2.99
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,291,20.8
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,306,350
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,307,16
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,601,0
+02025,171326,"Spices, nutmeg, ground",0200,Spices and Herbs,606,25.94
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,203,10.41
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,204,1.04
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,205,79.12
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,208,341
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,269,6.63
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,291,15.2
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,306,985
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,307,73
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,601,0
+02026,171327,"Spices, onion powder",0200,Spices and Herbs,606,0.219
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,203,9
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,204,4.28
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,205,68.92
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,208,265
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,269,4.09
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,291,42.5
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,306,1260
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,307,25
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,601,0
+02027,171328,"Spices, oregano, dried",0200,Spices and Herbs,606,1.551
+02028,171329,"Spices, paprika",0200,Spices and Herbs,203,14.14
+02028,171329,"Spices, paprika",0200,Spices and Herbs,204,12.89
+02028,171329,"Spices, paprika",0200,Spices and Herbs,205,53.99
+02028,171329,"Spices, paprika",0200,Spices and Herbs,208,282
+02028,171329,"Spices, paprika",0200,Spices and Herbs,269,10.34
+02028,171329,"Spices, paprika",0200,Spices and Herbs,291,34.9
+02028,171329,"Spices, paprika",0200,Spices and Herbs,306,2280
+02028,171329,"Spices, paprika",0200,Spices and Herbs,307,68
+02028,171329,"Spices, paprika",0200,Spices and Herbs,601,0
+02028,171329,"Spices, paprika",0200,Spices and Herbs,606,2.14
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,203,10.39
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,204,3.26
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,205,63.95
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,208,251
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,269,0.64
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,291,25.3
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,306,1329
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,307,20
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,601,0
+02030,170931,"Spices, pepper, black",0200,Spices and Herbs,606,1.392
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,203,12.01
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,204,17.27
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,205,56.63
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,208,318
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,269,10.34
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,291,27.2
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,306,2014
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,307,30
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,601,0
+02031,170932,"Spices, pepper, red or cayenne",0200,Spices and Herbs,606,3.26
+02037,170934,"Spices, saffron",0200,Spices and Herbs,203,11.43
+02037,170934,"Spices, saffron",0200,Spices and Herbs,204,5.85
+02037,170934,"Spices, saffron",0200,Spices and Herbs,205,65.37
+02037,170934,"Spices, saffron",0200,Spices and Herbs,208,310
+02037,170934,"Spices, saffron",0200,Spices and Herbs,291,3.9
+02037,170934,"Spices, saffron",0200,Spices and Herbs,306,1724
+02037,170934,"Spices, saffron",0200,Spices and Herbs,307,148
+02037,170934,"Spices, saffron",0200,Spices and Herbs,601,0
+02037,170934,"Spices, saffron",0200,Spices and Herbs,606,1.586
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,203,9.11
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,204,7.43
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,205,63.94
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,208,276
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,269,1.71
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,291,37
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,306,814
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,307,55
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,601,0
+02042,170938,"Spices, thyme, dried",0200,Spices and Herbs,606,2.73
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,203,9.68
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,204,3.25
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,205,67.14
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,208,312
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,269,3.21
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,291,22.7
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,306,2080
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,307,27
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,601,0
+02043,172231,"Spices, turmeric, ground",0200,Spices and Herbs,606,1.838
+02044,172232,"Basil, fresh",0200,Spices and Herbs,203,3.15
+02044,172232,"Basil, fresh",0200,Spices and Herbs,204,0.64
+02044,172232,"Basil, fresh",0200,Spices and Herbs,205,2.65
+02044,172232,"Basil, fresh",0200,Spices and Herbs,208,23
+02044,172232,"Basil, fresh",0200,Spices and Herbs,269,0.3
+02044,172232,"Basil, fresh",0200,Spices and Herbs,291,1.6
+02044,172232,"Basil, fresh",0200,Spices and Herbs,306,295
+02044,172232,"Basil, fresh",0200,Spices and Herbs,307,4
+02044,172232,"Basil, fresh",0200,Spices and Herbs,601,0
+02044,172232,"Basil, fresh",0200,Spices and Herbs,606,0.041
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,203,3.46
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,204,1.12
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,205,7.02
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,208,43
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,291,2.1
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,306,738
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,307,61
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,601,0
+02045,172233,"Dill weed, fresh",0200,Spices and Herbs,606,0.06
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,203,3.74
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,204,3.34
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,205,5.83
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,208,60
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,269,0.92
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,291,4
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,306,152
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,307,1104
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,601,0
+02046,172234,"Mustard, prepared, yellow",0200,Spices and Herbs,606,0.214
+02047,173468,"Salt, table",0200,Spices and Herbs,203,0
+02047,173468,"Salt, table",0200,Spices and Herbs,204,0
+02047,173468,"Salt, table",0200,Spices and Herbs,205,0
+02047,173468,"Salt, table",0200,Spices and Herbs,208,0
+02047,173468,"Salt, table",0200,Spices and Herbs,269,0
+02047,173468,"Salt, table",0200,Spices and Herbs,291,0
+02047,173468,"Salt, table",0200,Spices and Herbs,306,8
+02047,173468,"Salt, table",0200,Spices and Herbs,307,38758
+02047,173468,"Salt, table",0200,Spices and Herbs,601,0
+02047,173468,"Salt, table",0200,Spices and Herbs,606,0
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,203,0
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,204,0
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,205,0.04
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,208,18
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,269,0.04
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,291,0
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,306,2
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,307,2
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,601,0
+02053,172237,"Vinegar, distilled",0200,Spices and Herbs,606,0
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,203,3.29
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,204,0.73
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,205,8.41
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,208,44
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,291,6.8
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,306,458
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,307,30
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,601,0
+02065,173475,"Spearmint, fresh",0200,Spices and Herbs,606,0.191
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,203,19.93
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,204,6.03
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,205,52.04
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,208,285
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,291,29.8
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,306,1924
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,307,344
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,601,0
+02066,172239,"Spearmint, dried",0200,Spices and Herbs,606,1.577
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,203,0
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,204,100
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,205,0
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,208,884
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,269,0
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,291,0
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,306,1
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,307,2
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,601,0
+04053,171413,"Oil, olive, salad or cooking",0400,Fats and Oils,606,13.808
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,203,0
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,204,100
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,205,0
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,208,884
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,269,0
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,291,0
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,306,0
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,307,0
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,601,0
+04506,171025,"Oil, sunflower, linoleic, (approx. 65%)",0400,Fats and Oils,606,10.3
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,203,0
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,204,100
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,205,0
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,208,900
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,269,0
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,291,0
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,306,0
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,307,0
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,601,0
+04518,171029,"Oil, corn, industrial and retail, all purpose salad or cooking",0400,Fats and Oils,606,12.948
+04582,172336,"Oil, canola",0400,Fats and Oils,203,0
+04582,172336,"Oil, canola",0400,Fats and Oils,204,100
+04582,172336,"Oil, canola",0400,Fats and Oils,205,0
+04582,172336,"Oil, canola",0400,Fats and Oils,208,884
+04582,172336,"Oil, canola",0400,Fats and Oils,269,0
+04582,172336,"Oil, canola",0400,Fats and Oils,291,0
+04582,172336,"Oil, canola",0400,Fats and Oils,306,0
+04582,172336,"Oil, canola",0400,Fats and Oils,307,0
+04582,172336,"Oil, canola",0400,Fats and Oils,601,0
+04582,172336,"Oil, canola",0400,Fats and Oils,606,7.365
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,203,18.6
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,204,15.06
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,205,0
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,208,215
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,269,0
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,291,0
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,306,189
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,307,70
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,601,75
+05006,171447,"Chicken, broilers or fryers, meat and skin, raw",0500,Poultry Products,606,4.31
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,203,16.92
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,204,4.83
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,205,0.73
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,208,119
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,269,0
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,291,0
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,306,230
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,307,71
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,601,345
+05027,171060,"Chicken, liver, all classes, raw",0500,Poultry Products,606,1.563
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,203,22.5
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,204,2.62
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,205,0
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,208,120
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,269,0
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,291,0
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,306,334
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,307,45
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,601,73
+05062,171077,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw",0500,Poultry Products,606,0.563
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,203,19.41
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,204,3.71
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,205,0
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,208,116
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,269,0
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,291,0
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,306,225
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,307,114
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,601,89
+05071,173614,"Chicken, broilers or fryers, dark meat, drumstick, meat only, raw",0500,Poultry Products,606,0.949
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,203,19.66
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,204,4.12
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,205,0
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,208,121
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,269,0
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,291,0
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,306,242
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,307,95
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,601,94
+05096,173627,"Chicken, broilers or fryers, dark meat, thigh, meat only, raw",0500,Poultry Products,606,1.097
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,203,17.44
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,204,8.1
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,205,0.04
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,208,143
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,269,0
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,291,0
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,306,522
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,307,60
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,601,86
+05332,171116,"Chicken, ground, raw",0500,Poultry Products,606,2.301
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,203,13.15
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,204,6.52
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,205,67.7
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,208,379
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,269,0.99
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,291,10.1
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,306,362
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,307,6
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,601,0
+08120,173904,"Cereals, oats, regular and quick, not fortified, dry",0800,Breakfast Cereals,606,1.11
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,203,0.26
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,204,0.17
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,205,13.81
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,208,52
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,269,10.39
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,291,2.4
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,306,107
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,307,1
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,601,0
+09003,171688,"Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,606,0.028
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,203,1.4
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,204,0.39
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,205,11.12
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,208,48
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,269,9.24
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,291,2
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,306,259
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,307,1
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,601,0
+09021,171697,"Apricots, raw",0900,Fruits and Fruit Juices,606,0.027
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,203,3.39
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,204,0.51
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,205,62.64
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,208,241
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,269,53.44
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,291,7.3
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,306,1162
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,307,10
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,601,0
+09032,173941,"Apricots, dried, sulfured, uncooked",0900,Fruits and Fruit Juices,606,0.017
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,203,1.09
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,204,0.33
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,205,22.84
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,208,89
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,269,12.23
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,291,2.6
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,306,358
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,307,1
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,601,0
+09040,173944,"Bananas, raw",0900,Fruits and Fruit Juices,606,0.112
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,203,0.74
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,204,0.33
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,205,14.49
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,208,57
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,269,9.96
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,291,2.4
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,306,77
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,307,1
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,601,0
+09050,171711,"Blueberries, raw",0900,Fruits and Fruit Juices,606,0.028
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,203,1.06
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,204,0.2
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,205,16.01
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,208,63
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,269,12.82
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,291,2.1
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,306,222
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,307,0
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,601,0
+09070,171719,"Cherries, sweet, raw",0900,Fruits and Fruit Juices,606,0.038
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,203,2.45
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,204,0.39
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,205,75.03
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,208,282
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,269,63.35
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,291,8
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,306,656
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,307,2
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,601,0
+09087,171726,"Dates, deglet noor",0900,Fruits and Fruit Juices,606,0.032
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,203,0.75
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,204,0.3
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,205,19.18
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,208,74
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,269,16.26
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,291,2.9
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,306,232
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,307,1
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,601,0
+09089,173021,"Figs, raw",0900,Fruits and Fruit Juices,606,0.06
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,203,3.3
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,204,0.93
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,205,63.87
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,208,249
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,269,47.92
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,291,9.8
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,306,680
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,307,10
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,601,0
+09094,174665,"Figs, dried, uncooked",0900,Fruits and Fruit Juices,606,0.144
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,203,0.72
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,204,0.16
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,205,18.1
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,208,69
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,269,15.48
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,291,0.9
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,306,191
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,307,2
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,601,0
+09132,174683,"Grapes, red or green (European type, such as Thompson seedless), raw",0900,Fruits and Fruit Juices,606,0.054
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,203,2.55
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,204,0.95
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,205,14.32
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,208,68
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,269,8.92
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,291,5.4
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,306,417
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,307,2
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,601,0
+09139,173044,"Guavas, common, raw",0900,Fruits and Fruit Juices,606,0.272
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,203,1.14
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,204,0.52
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,205,14.66
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,208,61
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,269,8.99
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,291,3
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,306,312
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,307,3
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,601,0
+09148,168153,"Kiwifruit, green, raw",0900,Fruits and Fruit Juices,606,0.029
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,203,1.1
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,204,0.3
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,205,9.32
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,208,29
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,269,2.5
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,291,2.8
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,306,138
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,307,2
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,601,0
+09150,167746,"Lemons, raw, without peel",0900,Fruits and Fruit Juices,606,0.039
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,203,0.35
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,204,0.24
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,205,6.9
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,208,22
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,269,2.52
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,291,0.3
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,306,103
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,307,1
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,601,0
+09152,167747,"Lemon juice, raw",0900,Fruits and Fruit Juices,606,0.04
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,203,0.42
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,204,0.07
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,205,8.42
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,208,25
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,269,1.69
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,291,0.4
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,306,117
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,307,2
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,601,0
+09160,168156,"Lime juice, raw",0900,Fruits and Fruit Juices,606,0.008
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,203,0.82
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,204,0.38
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,205,14.98
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,208,60
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,269,13.66
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,291,1.6
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,306,168
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,307,1
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,601,0
+09176,169910,"Mangos, raw",0900,Fruits and Fruit Juices,606,0.092
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,203,0.84
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,204,0.19
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,205,8.16
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,208,34
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,269,7.86
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,291,0.9
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,306,267
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,307,16
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,601,0
+09181,169092,"Melons, cantaloupe, raw",0900,Fruits and Fruit Juices,606,0.051
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,203,0.84
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,204,10.9
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,205,6.04
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,208,116
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,269,0
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,291,1.6
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,306,8
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,307,735
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,601,0
+09193,169094,"Olives, ripe, canned (small-extra large)",0900,Fruits and Fruit Juices,606,2.279
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,203,1.03
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,204,15.32
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,205,3.84
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,208,145
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,269,0.54
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,291,3.3
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,306,42
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,307,1556
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,601,0
+09195,169096,"Olives, pickled, canned or bottled, green",0900,Fruits and Fruit Juices,606,2.029
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,203,0.94
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,204,0.12
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,205,11.75
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,208,47
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,269,9.35
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,291,2.4
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,306,181
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,307,0
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,601,0
+09200,169097,"Oranges, raw, all commercial varieties",0900,Fruits and Fruit Juices,606,0.015
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,203,0.7
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,204,0.2
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,205,10.4
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,208,45
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,269,8.4
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,291,0.2
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,306,200
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,307,1
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,601,0
+09206,169098,"Orange juice, raw (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,606,0.024
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,203,0.91
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,204,0.25
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,205,9.54
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,208,39
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,269,8.39
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,291,1.5
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,306,190
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,307,0
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,601,0
+09236,169928,"Peaches, yellow, raw",0900,Fruits and Fruit Juices,606,0.019
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,203,0.36
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,204,0.14
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,205,15.23
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,208,57
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,269,9.75
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,291,3.1
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,306,116
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,307,1
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,601,0
+09252,169118,"Pears, raw",0900,Fruits and Fruit Juices,606,0.022
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,203,0.7
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,204,0.28
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,205,11.42
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,208,46
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,269,9.92
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,291,1.4
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,306,157
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,307,0
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,601,0
+09279,169949,"Plums, raw",0900,Fruits and Fruit Juices,606,0.017
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,203,1.67
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,204,1.17
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,205,18.7
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,208,83
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,269,13.67
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,291,4
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,306,236
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,307,3
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,601,0
+09286,169134,"Pomegranates, raw",0900,Fruits and Fruit Juices,606,0.12
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,203,0.73
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,204,0.51
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,205,9.57
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,208,41
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,291,3.6
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,306,220
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,307,5
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,601,0
+09287,167750,"Prickly pears, raw",0900,Fruits and Fruit Juices,606,0.067
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,203,3.3
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,204,0.25
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,205,79.32
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,208,299
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,269,65.18
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,291,4.5
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,306,744
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,307,26
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,601,0
+09298,168165,"Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",0900,Fruits and Fruit Juices,606,0.094
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,203,0.67
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,204,0.3
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,205,7.68
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,208,32
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,269,4.89
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,291,2
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,306,153
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,307,1
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,601,0
+09316,167762,"Strawberries, raw",0900,Fruits and Fruit Juices,606,0.015
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,203,0.61
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,204,0.15
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,205,7.55
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,208,30
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,269,6.2
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,291,0.4
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,306,112
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,307,1
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,601,0
+09326,167765,"Watermelon, raw",0900,Fruits and Fruit Juices,606,0.016
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,203,1.81
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,204,0.15
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,205,74.97
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,208,277
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,269,66.47
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,291,6.7
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,306,696
+09421,168191,"Dates, medjool",0900,Fruits and Fruit Juices,307,1
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,203,3.27
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,204,0.15
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,205,10.51
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,208,47
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,269,0.99
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,291,5.4
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,306,370
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,307,94
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,601,0
+11007,169205,"Artichokes, (globe or french), raw",1100,Vegetables and Vegetable Products,606,0.036
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,203,1.83
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,204,0.22
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,205,6.97
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,208,31
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,269,3.26
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,291,2.7
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,306,211
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,307,6
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,601,0
+11052,169961,"Beans, snap, green, raw",1100,Vegetables and Vegetable Products,606,0.05
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,203,1.61
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,204,0.17
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,205,9.56
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,208,43
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,269,6.76
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,291,2.8
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,306,325
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,307,78
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,601,0
+11080,169145,"Beets, raw",1100,Vegetables and Vegetable Products,606,0.027
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,203,2.82
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,204,0.37
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,205,6.64
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,208,34
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,269,1.7
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,291,2.6
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,306,316
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,307,33
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,601,0
+11090,170379,"Broccoli, raw",1100,Vegetables and Vegetable Products,606,0.114
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,203,1.28
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,204,0.1
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,205,5.8
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,208,25
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,269,3.2
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,291,2.5
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,306,170
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,307,18
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,601,0
+11109,169975,"Cabbage, raw",1100,Vegetables and Vegetable Products,606,0.034
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,203,0.93
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,204,0.24
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,205,9.58
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,208,41
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,269,4.74
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,291,2.8
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,306,320
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,307,69
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,601,0
+11124,170393,"Carrots, raw",1100,Vegetables and Vegetable Products,606,0.032
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,203,1.92
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,204,0.28
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,205,4.97
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,208,25
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,269,1.91
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,291,2
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,306,299
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,307,30
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,601,0
+11135,169986,"Cauliflower, raw",1100,Vegetables and Vegetable Products,606,0.13
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,203,0.69
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,204,0.17
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,205,2.97
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,208,14
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,269,1.34
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,291,1.6
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,306,260
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,307,80
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,601,0
+11143,169988,"Celery, raw",1100,Vegetables and Vegetable Products,606,0.042
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,203,1.8
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,204,0.2
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,205,3.74
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,208,19
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,269,1.1
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,291,1.6
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,306,379
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,307,213
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,601,0
+11147,169991,"Chard, swiss, raw",1100,Vegetables and Vegetable Products,606,0.03
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,203,2.13
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,204,0.52
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,205,3.67
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,208,23
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,269,0.87
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,291,2.8
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,306,521
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,307,46
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,601,0
+11165,169997,"Coriander (cilantro) leaves, raw",1100,Vegetables and Vegetable Products,606,0.014
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,203,3.27
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,204,1.35
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,205,18.7
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,208,86
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,269,6.26
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,291,2
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,306,270
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,307,15
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,601,0
+11167,169998,"Corn, sweet, yellow, raw",1100,Vegetables and Vegetable Products,606,0.325
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,203,0.65
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,204,0.11
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,205,3.63
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,208,15
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,269,1.67
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,291,0.5
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,306,147
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,307,2
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,601,0
+11205,168409,"Cucumber, with peel, raw",1100,Vegetables and Vegetable Products,606,0.037
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,203,0.98
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,204,0.18
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,205,5.88
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,208,25
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,269,3.53
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,291,3
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,306,229
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,307,2
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,601,0
+11209,169228,"Eggplant, raw",1100,Vegetables and Vegetable Products,606,0.034
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,203,6.36
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,204,0.5
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,205,33.06
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,208,149
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,269,1
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,291,2.1
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,306,401
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,307,17
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,601,0
+11215,169230,"Garlic, raw",1100,Vegetables and Vegetable Products,606,0.089
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,203,3.68
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,204,0.2
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,205,7.29
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,208,37
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,269,1
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,291,2
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,306,550
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,307,11
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,601,0
+11232,168420,"Jute, potherb, cooked, boiled, drained, without salt",1100,Vegetables and Vegetable Products,606,0.03
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,203,1.5
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,204,0.3
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,205,14.15
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,208,61
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,269,3.9
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,291,1.8
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,306,180
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,307,20
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,601,0
+11246,169246,"Leeks, (bulb and lower leaf-portion), raw",1100,Vegetables and Vegetable Products,606,0.04
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,203,1.23
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,204,0.3
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,205,3.29
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,208,17
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,269,1.19
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,291,2.1
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,306,247
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,307,8
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,601,0
+11251,169247,"Lettuce, cos or romaine, raw",1100,Vegetables and Vegetable Products,606,0.039
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,203,3.09
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,204,0.34
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,205,3.26
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,208,22
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,269,1.98
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,291,1
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,306,318
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,307,5
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,601,0
+11260,169251,"Mushrooms, white, raw",1100,Vegetables and Vegetable Products,606,0.05
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,203,1.93
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,204,0.19
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,205,7.45
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,208,33
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,269,1.48
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,291,3.2
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,306,299
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,307,7
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,601,0
+11278,169260,"Okra, raw",1100,Vegetables and Vegetable Products,606,0.026
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,203,1.1
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,204,0.1
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,205,9.34
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,208,40
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,269,4.24
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,291,1.7
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,306,146
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,307,4
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,601,0
+11282,170000,"Onions, raw",1100,Vegetables and Vegetable Products,606,0.042
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,203,1.83
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,204,0.19
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,205,7.34
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,208,32
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,269,2.33
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,291,2.6
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,306,276
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,307,16
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,601,0
+11291,170005,"Onions, spring or scallions (includes tops and bulb), raw",1100,Vegetables and Vegetable Products,606,0.032
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,203,2.97
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,204,0.79
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,205,6.33
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,208,36
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,269,0.85
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,291,3.3
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,306,554
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,307,56
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,601,0
+11297,170416,"Parsley, fresh",1100,Vegetables and Vegetable Products,606,0.132
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,203,5.42
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,204,0.4
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,205,14.45
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,208,81
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,269,5.67
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,291,5.7
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,306,244
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,307,5
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,601,0
+11304,170419,"Peas, green, raw",1100,Vegetables and Vegetable Products,606,0.071
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,203,0.86
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,204,0.17
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,205,4.64
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,208,20
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,269,2.4
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,291,1.7
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,306,175
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,307,3
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,601,0
+11333,170427,"Peppers, sweet, green, raw",1100,Vegetables and Vegetable Products,606,0.058
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,203,2.05
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,204,0.09
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,205,17.49
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,208,77
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,269,0.82
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,291,2.1
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,306,425
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,307,6
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,601,0
+11352,170026,"Potatoes, flesh and skin, raw",1100,Vegetables and Vegetable Products,606,0.025
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,203,1
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,204,0.1
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,205,6.5
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,208,26
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,269,2.76
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,291,0.5
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,306,340
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,307,1
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,601,0
+11422,168448,"Pumpkin, raw",1100,Vegetables and Vegetable Products,606,0.052
+11427,169274,"Purslane, raw",1100,Vegetables and Vegetable Products,203,2.03
+11427,169274,"Purslane, raw",1100,Vegetables and Vegetable Products,204,0.36
+11427,169274,"Purslane, raw",1100,Vegetables and Vegetable Products,205,3.39
+11427,169274,"Purslane, raw",1100,Vegetables and Vegetable Products,208,20
+11427,169274,"Purslane, raw",1100,Vegetables and Vegetable Products,306,494
+11427,169274,"Purslane, raw",1100,Vegetables and Vegetable Products,307,45
+11427,169274,"Purslane, raw",1100,Vegetables and Vegetable Products,601,0
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,203,0.68
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,204,0.1
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,205,3.4
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,208,16
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,269,1.86
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,291,1.6
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,306,233
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,307,39
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,601,0
+11429,169276,"Radishes, raw",1100,Vegetables and Vegetable Products,606,0.032
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,203,2.86
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,204,0.39
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,205,3.63
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,208,23
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,269,0.42
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,291,2.2
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,306,558
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,307,79
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,601,0
+11457,168462,"Spinach, raw",1100,Vegetables and Vegetable Products,606,0.063
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,203,1.21
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,204,0.32
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,205,3.11
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,208,17
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,269,2.5
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,291,1
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,306,261
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,307,8
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,601,0
+11477,169291,"Squash, summer, zucchini, includes skin, raw",1100,Vegetables and Vegetable Products,606,0.084
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,203,1
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,204,0.1
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,205,11.69
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,208,45
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,269,2.2
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,291,2
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,306,352
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,307,4
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,601,0
+11485,169295,"Squash, winter, butternut, raw",1100,Vegetables and Vegetable Products,606,0.021
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,203,1.57
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,204,0.05
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,205,20.12
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,208,86
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,269,4.18
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,291,3
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,306,337
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,307,55
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,601,0
+11507,168482,"Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,606,0.018
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,203,0.88
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,204,0.2
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,205,3.89
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,208,18
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,269,2.63
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,291,1.2
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,306,237
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,307,5
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,601,0
+11529,170457,"Tomatoes, red, ripe, raw, year round average",1100,Vegetables and Vegetable Products,606,0.028
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,203,0.79
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,204,0.25
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,205,3.47
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,208,16
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,269,2.55
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,291,1.9
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,306,191
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,307,115
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,601,0
+11531,170051,"Tomatoes, red, ripe, canned, packed in tomato juice",1100,Vegetables and Vegetable Products,606,0.034
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,203,4.32
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,204,0.47
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,205,18.91
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,208,82
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,269,12.18
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,291,4.1
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,306,1014
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,307,59
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,601,0
+11546,170459,"Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",1100,Vegetables and Vegetable Products,606,0.1
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,203,1.2
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,204,0.3
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,205,5.31
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,208,24
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,269,3.56
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,291,1.5
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,306,297
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,307,474
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,601,0
+11549,170054,"Tomato products, canned, sauce",1100,Vegetables and Vegetable Products,606,0.041
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,203,0.9
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,204,0.1
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,205,6.43
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,208,28
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,269,3.8
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,291,1.8
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,306,191
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,307,67
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,601,0
+11564,170465,"Turnips, raw",1100,Vegetables and Vegetable Products,606,0.011
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,203,3.33
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,204,0.52
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,205,13.47
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,208,72
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,291,4
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,306,212
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,307,47
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,601,0
+11583,170471,"Vegetables, mixed, frozen, unprepared",1100,Vegetables and Vegetable Products,606,0.098
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,203,2
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,204,0.2
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,205,9.46
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,208,40
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,269,5.1
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,291,1.5
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,306,340
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,307,7
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,601,0
+11670,170497,"Peppers, hot chili, green, raw",1100,Vegetables and Vegetable Products,606,0.021
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,203,0.99
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,204,0.3
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,205,6.03
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,208,26
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,269,4.2
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,291,2.1
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,306,211
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,307,4
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,601,0
+11821,170108,"Peppers, sweet, red, raw",1100,Vegetables and Vegetable Products,606,0.059
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,203,0.5
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,204,0.3
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,205,2.41
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,208,12
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,269,1.07
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,291,1
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,306,117
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,307,809
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,601,0
+11937,168558,"Pickles, cucumber, dill or kosher dill",1100,Vegetables and Vegetable Products,606,0.079
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,203,1.24
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,204,0.2
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,205,7.3
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,208,31
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,269,3.93
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,291,3.1
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,306,414
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,307,52
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,601,0
+11957,169385,"Fennel, bulb, raw",1100,Vegetables and Vegetable Products,606,0.09
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,203,2.58
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,204,0.66
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,205,3.65
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,208,25
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,269,2.05
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,291,1.6
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,306,369
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,307,27
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,601,0
+11959,169387,"Arugula, raw",1100,Vegetables and Vegetable Products,606,0.086
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,203,5.6
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,204,2.12
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,205,17.31
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,208,93
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,269,6.3
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,291,11
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,306,272
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,307,9
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,601,0
+11974,168575,"Grape leaves, raw",1100,Vegetables and Vegetable Products,606,0.336
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,203,16.54
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,204,30.74
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,205,42.12
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,208,486
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,291,34.4
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,306,407
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,307,16
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,601,0
+12006,170554,"Seeds, chia seeds, dried",1200,Nut and Seed Products,606,3.33
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,203,30.23
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,204,49.05
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,205,10.71
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,208,559
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,269,1.4
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,291,6
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,306,809
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,307,7
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,601,0
+12014,170556,"Seeds, pumpkin and squash seed kernels, dried",1200,Nut and Seed Products,606,8.659
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,203,17.73
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,204,49.67
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,205,23.45
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,208,573
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,269,0.3
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,291,11.8
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,306,468
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,307,11
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,601,0
+12023,170150,"Seeds, sesame seeds, whole, dried",1200,Nut and Seed Products,606,6.957
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,203,20.78
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,204,51.46
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,205,20
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,208,584
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,269,2.62
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,291,8.6
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,306,645
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,307,9
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,601,0
+12036,170562,"Seeds, sunflower seed kernels, dried",1200,Nut and Seed Products,606,4.455
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,203,21.15
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,204,49.93
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,205,21.55
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,208,579
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,269,4.35
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,291,12.5
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,306,733
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,307,1
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,601,0
+12061,170567,"Nuts, almonds",1200,Nut and Seed Products,606,3.802
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,203,18.22
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,204,43.85
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,205,30.19
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,208,553
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,269,5.91
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,291,3.3
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,306,660
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,307,12
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,601,0
+12087,170162,"Nuts, cashew nuts, raw",1200,Nut and Seed Products,606,7.783
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,203,14.95
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,204,60.75
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,205,16.7
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,208,628
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,269,4.34
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,291,9.7
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,306,680
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,307,0
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,601,0
+12120,170581,"Nuts, hazelnuts or filberts",1200,Nut and Seed Products,606,4.464
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,203,13.69
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,204,68.37
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,205,13.08
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,208,673
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,269,3.59
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,291,3.7
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,306,597
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,307,2
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,601,0
+12147,170591,"Nuts, pine nuts, dried",1200,Nut and Seed Products,606,4.899
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,203,20.16
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,204,45.32
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,205,27.17
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,208,560
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,269,7.66
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,291,10.6
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,306,1025
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,307,1
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,601,0
+12151,170184,"Nuts, pistachio nuts, raw",1200,Nut and Seed Products,606,5.907
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,203,15.23
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,204,65.21
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,205,13.71
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,208,654
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,269,2.61
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,291,6.7
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,306,441
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,307,2
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,601,0
+12155,170187,"Nuts, walnuts, english",1200,Nut and Seed Products,606,6.126
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,203,17
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,204,53.76
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,205,21.19
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,208,595
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,269,0.49
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,291,9.3
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,306,414
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,307,115
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,601,0
+12166,170189,"Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",1200,Nut and Seed Products,606,7.529
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,203,18.29
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,204,42.16
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,205,28.88
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,208,534
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,269,1.55
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,291,27.3
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,306,813
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,307,30
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,601,0
+12220,169414,"Seeds, flaxseed",1200,Nut and Seed Products,606,3.663
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,203,20.36
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,204,3.63
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,205,3.89
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,208,135
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,269,0
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,291,0
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,306,313
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,307,69
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,601,275
+13325,169451,"Beef, variety meats and by-products, liver, raw",1300,Beef Products,606,1.233
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,203,0.12
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,204,0.02
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,205,0
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,208,1
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,269,0
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,291,0
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,306,49
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,307,2
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,601,0
+14209,171890,"Beverages, coffee, brewed, prepared with tap water",1400,Beverages,606,0.002
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,203,0.22
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,204,0
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,205,0
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,208,1
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,269,0
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,291,0
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,306,8
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,307,1
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,601,0
+14278,171917,"Beverages, tea, green, brewed, regular",1400,Beverages,606,0
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,203,0
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,204,0
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,205,0.3
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,208,1
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,269,0
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,291,0
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,306,37
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,307,3
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,601,0
+14355,173227,"Beverages, tea, black, brewed, prepared with tap water",1400,Beverages,606,0.002
+14555,174158,"Water, bottled, generic",1400,Beverages,203,0
+14555,174158,"Water, bottled, generic",1400,Beverages,204,0
+14555,174158,"Water, bottled, generic",1400,Beverages,205,0
+14555,174158,"Water, bottled, generic",1400,Beverages,208,0
+14555,174158,"Water, bottled, generic",1400,Beverages,269,0
+14555,174158,"Water, bottled, generic",1400,Beverages,291,0
+14555,174158,"Water, bottled, generic",1400,Beverages,306,0
+14555,174158,"Water, bottled, generic",1400,Beverages,307,2
+14555,174158,"Water, bottled, generic",1400,Beverages,601,0
+14555,174158,"Water, bottled, generic",1400,Beverages,606,0
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,203,17.81
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,204,0.67
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,205,0
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,208,82
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,269,0
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,291,0
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,306,413
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,307,54
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,601,43
+15015,171955,"Fish, cod, Atlantic, raw",1500,Finfish and Shellfish Products,606,0.131
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,203,18.6
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,204,13.89
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,205,0
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,208,205
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,269,0
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,291,0
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,306,314
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,307,90
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,601,70
+15046,175119,"Fish, mackerel, Atlantic, raw",1500,Finfish and Shellfish Products,606,3.257
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,203,24.62
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,204,11.45
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,205,0
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,208,208
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,269,0
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,291,0
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,306,397
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,307,307
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,601,142
+15088,175139,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",1500,Finfish and Shellfish Products,606,1.528
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,203,18.43
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,204,2
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,205,0
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,208,97
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,269,0
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,291,0
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,306,256
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,307,68
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,601,41
+15091,175142,"Fish, sea bass, mixed species, raw",1500,Finfish and Shellfish Products,606,0.511
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,203,19.44
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,204,0.96
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,205,0
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,208,86
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,269,0
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,291,0
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,306,179
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,307,247
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,601,36
+15121,173709,"Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",1500,Finfish and Shellfish Products,606,0.211
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,203,13.61
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,204,1.01
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,205,0.91
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,208,71
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,269,0
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,291,0
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,306,113
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,307,566
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,601,126
+15149,174210,"Crustaceans, shrimp, mixed species, raw (may contain additives to retain moisture)",1500,Finfish and Shellfish Products,606,0.261
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,203,20.42
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,204,13.42
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,205,0
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,208,208
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,269,0
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,291,0
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,306,363
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,307,59
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,601,55
+15236,175167,"Fish, salmon, Atlantic, farmed, raw",1500,Finfish and Shellfish Products,606,3.05
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,203,20.08
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,204,1.7
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,205,0
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,208,96
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,269,0
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,291,0
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,306,302
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,307,52
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,601,50
+15261,175176,"Fish, tilapia, raw",1500,Finfish and Shellfish Products,606,0.585
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,203,5.22
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,204,0.36
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,205,14.83
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,208,81
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,269,1.85
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,291,4.3
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,306,260
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,307,256
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,601,0
+16034,175195,"Beans, kidney, red, mature seeds, canned, solids and liquids",1600,Legumes and Legume Products,606,0.125
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,203,23.36
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,204,0.85
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,205,60.27
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,208,333
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,269,2.11
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,291,15.2
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,306,1795
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,307,16
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,601,0
+16049,175202,"Beans, white, mature seeds, raw",1600,Legumes and Legume Products,606,0.219
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,203,7.26
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,204,0.29
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,205,21.2
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,208,114
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,269,0.29
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,291,4.8
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,306,454
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,307,340
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,601,0
+16051,175204,"Beans, white, mature seeds, canned",1600,Legumes and Legume Products,606,0.074
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,203,26.12
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,204,1.53
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,205,58.29
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,208,341
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,269,5.7
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,291,25
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,306,1062
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,307,13
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,601,0
+16052,175205,"Broadbeans (fava beans), mature seeds, raw",1600,Legumes and Legume Products,606,0.254
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,203,7.6
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,204,0.4
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,205,19.65
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,208,110
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,269,1.82
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,291,5.4
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,306,268
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,307,5
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,601,0
+16053,173753,"Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",1600,Legumes and Legume Products,606,0.066
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,203,20.47
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,204,6.04
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,205,62.95
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,208,378
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,269,10.7
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,291,12.2
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,306,718
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,307,24
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,601,0
+16056,173756,"Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",1600,Legumes and Legume Products,606,0.603
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,203,23.52
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,204,1.26
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,205,60.03
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,208,336
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,269,6.9
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,291,10.6
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,306,1112
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,307,16
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,601,0
+16062,173758,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, raw",1600,Legumes and Legume Products,606,0.331
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,203,24.63
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,204,1.06
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,205,63.35
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,208,352
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,269,2.03
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,291,10.7
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,306,677
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,307,6
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,601,0
+16069,172420,"Lentils, raw",1600,Legumes and Legume Products,606,0.154
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,203,23.12
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,204,3.89
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,205,61.63
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,208,364
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,269,3.14
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,291,22.2
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,306,852
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,307,5
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,601,0
+16085,172428,"Peas, green, split, mature seeds, raw",1600,Legumes and Legume Products,606,0.408
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,203,23.91
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,204,2.17
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,205,63.1
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,208,358
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,291,10.8
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,306,668
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,307,7
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,601,0
+16144,174284,"Lentils, pink or red, raw",1600,Legumes and Legume Products,606,0.379
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,203,7.78
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,204,17.82
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,205,15
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,208,237
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,269,0.62
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,291,5.5
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,306,312
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,307,426
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,601,0
+16158,174289,"Hummus, commercial",1600,Legumes and Legume Products,606,2.562
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,203,7.05
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,204,2.77
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,205,22.53
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,208,139
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,269,4.01
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,291,6.4
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,306,126
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,307,246
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,601,0
+16358,173800,"Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids",1600,Legumes and Legume Products,606,0.214
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,203,24.35
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,204,49.66
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,205,21.26
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,208,587
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,269,4.9
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,291,8.4
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,306,634
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,307,6
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,601,0
+16390,173806,"Peanuts, all types, dry-roasted, without salt",1600,Legumes and Legume Products,606,7.723
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,203,22.21
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,204,51.36
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,205,22.31
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,208,598
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,269,10.49
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,291,5
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,306,558
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,307,17
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,601,0
+16398,172470,"Peanut butter, smooth style, without salt",1600,Legumes and Legume Products,606,10.325
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",203,19.55
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",204,6.76
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",205,0
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",208,144
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",269,0
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",291,0
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",306,274
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",307,70
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",601,66
+17039,174326,"Lamb, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4"" fat, choice, raw",1700,"Lamb, Veal, and Game Products",606,2.42
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",203,16.56
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",204,23.41
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",205,0
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",208,282
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",269,0
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",291,0
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",306,222
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",307,59
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",601,73
+17224,174370,"Lamb, ground, raw",1700,"Lamb, Veal, and Game Products",606,10.19
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",203,20.7
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",204,4.92
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",205,2.22
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",208,136
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",269,0
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",291,0
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",306,285
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",307,59
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",601,386
+17369,172615,"Lamb, New Zealand, imported, liver, raw",1700,"Lamb, Veal, and Game Products",606,1.514
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,203,10.75
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,204,2.42
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,205,51.88
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,208,272
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,269,4.62
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,291,2.2
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,306,117
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,307,602
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,601,0
+18029,172675,"Bread, french or vienna (includes sourdough)",1800,Baked Products,606,0.529
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,203,9.1
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,204,1.2
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,205,55.7
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,208,275
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,269,1.3
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,291,2.2
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,306,120
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,307,536
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,601,0
+18041,174915,"Bread, pita, white, enriched",1800,Baked Products,606,0.166
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,203,9.8
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,204,1.71
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,205,55.89
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,208,262
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,269,2.87
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,291,6.1
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,306,170
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,307,421
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,601,0
+18042,174916,"Bread, pita, whole-wheat",1800,Baked Products,606,0.208
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,203,12.45
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,204,3.5
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,205,42.71
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,208,252
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,269,4.34
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,291,6
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,306,254
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,307,455
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,601,0
+18075,172688,"Bread, whole-wheat, commercially prepared",1800,Baked Products,606,0.722
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,203,0
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,204,0
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,205,27.7
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,208,53
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,269,0
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,291,0.2
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,306,20
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,307,10600
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,601,0
+18369,172803,"Leavening agents, baking powder, double-acting, sodium aluminum sulfate",1800,Baked Products,606,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,203,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,204,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,205,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,208,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,269,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,291,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,306,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,307,27360
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,601,0
+18372,175040,"Leavening agents, baking soda",1800,Baked Products,606,0
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,203,40.44
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,204,7.61
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,205,41.22
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,208,325
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,269,0
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,291,26.9
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,306,955
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,307,51
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,601,0
+18375,175043,"Leavening agents, yeast, baker's, active dry",1800,Baked Products,606,1.001
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,203,12.94
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,204,4.54
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,205,77.78
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,208,387
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,269,0.87
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,291,14.5
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,306,329
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,307,8
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,601,0
+19034,167959,"Snacks, popcorn, air-popped",2500,Snacks,606,0.637
+19296,169640,Honey,1900,Sweets,203,0.3
+19296,169640,Honey,1900,Sweets,204,0
+19296,169640,Honey,1900,Sweets,205,82.4
+19296,169640,Honey,1900,Sweets,208,304
+19296,169640,Honey,1900,Sweets,269,82.12
+19296,169640,Honey,1900,Sweets,291,0.2
+19296,169640,Honey,1900,Sweets,306,52
+19296,169640,Honey,1900,Sweets,307,4
+19296,169640,Honey,1900,Sweets,601,0
+19296,169640,Honey,1900,Sweets,606,0
+19297,169641,Jams and preserves,1900,Sweets,203,0.37
+19297,169641,Jams and preserves,1900,Sweets,204,0.07
+19297,169641,Jams and preserves,1900,Sweets,205,68.86
+19297,169641,Jams and preserves,1900,Sweets,208,278
+19297,169641,Jams and preserves,1900,Sweets,269,48.5
+19297,169641,Jams and preserves,1900,Sweets,291,1.1
+19297,169641,Jams and preserves,1900,Sweets,306,77
+19297,169641,Jams and preserves,1900,Sweets,307,32
+19297,169641,Jams and preserves,1900,Sweets,601,0
+19297,169641,Jams and preserves,1900,Sweets,606,0.01
+19304,168820,Molasses,1900,Sweets,203,0
+19304,168820,Molasses,1900,Sweets,204,0.1
+19304,168820,Molasses,1900,Sweets,205,74.73
+19304,168820,Molasses,1900,Sweets,208,290
+19304,168820,Molasses,1900,Sweets,269,74.72
+19304,168820,Molasses,1900,Sweets,291,0
+19304,168820,Molasses,1900,Sweets,306,1464
+19304,168820,Molasses,1900,Sweets,307,37
+19304,168820,Molasses,1900,Sweets,601,0
+19304,168820,Molasses,1900,Sweets,606,0.018
+19335,169655,"Sugars, granulated",1900,Sweets,203,0
+19335,169655,"Sugars, granulated",1900,Sweets,204,0
+19335,169655,"Sugars, granulated",1900,Sweets,205,99.98
+19335,169655,"Sugars, granulated",1900,Sweets,208,387
+19335,169655,"Sugars, granulated",1900,Sweets,269,99.8
+19335,169655,"Sugars, granulated",1900,Sweets,291,0
+19335,169655,"Sugars, granulated",1900,Sweets,306,2
+19335,169655,"Sugars, granulated",1900,Sweets,307,1
+19335,169655,"Sugars, granulated",1900,Sweets,601,0
+19335,169655,"Sugars, granulated",1900,Sweets,606,0
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,203,9.91
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,204,1.16
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,205,77.72
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,208,352
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,269,0.8
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,291,15.6
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,306,280
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,307,9
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,601,0
+20005,170284,"Barley, pearled, raw",2000,Cereal Grains and Pasta,606,0.244
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,203,12.29
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,204,1.33
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,205,75.87
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,208,342
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,269,0.41
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,291,12.5
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,306,410
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,307,17
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,601,0
+20012,170688,"Bulgur, dry",2000,Cereal Grains and Pasta,606,0.232
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,203,3.79
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,204,0.16
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,205,23.22
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,208,112
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,269,0.1
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,291,1.4
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,306,58
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,307,5
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,601,0
+20029,169700,"Couscous, cooked",2000,Cereal Grains and Pasta,606,0.029
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,203,17.3
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,204,7.03
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,205,66.22
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,208,246
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,269,1.45
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,291,15.4
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,306,566
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,307,4
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,601,0
+20033,168872,"Oat bran, raw",2000,Cereal Grains and Pasta,606,1.328
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,203,7.54
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,204,3.2
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,205,76.25
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,208,367
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,269,0.66
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,291,3.6
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,306,250
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,307,5
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,601,0
+20036,169703,"Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,606,0.591
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,203,7.13
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,204,0.66
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,205,79.95
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,208,365
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,269,0.12
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,291,1.3
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,306,115
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,307,5
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,601,0
+20044,168877,"Rice, white, long-grain, regular, raw, enriched",2000,Cereal Grains and Pasta,606,0.18
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,203,13.21
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,204,2.5
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,205,71.97
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,208,340
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,269,0.41
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,291,10.7
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,306,363
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,307,2
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,601,0
+20080,168893,"Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,606,0.43
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,203,10.33
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,204,0.98
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,205,76.31
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,208,364
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,269,0.27
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,291,2.7
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,306,107
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,307,2
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,601,0
+20081,168894,"Wheat flour, white, all-purpose, enriched, bleached",2000,Cereal Grains and Pasta,606,0.155
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,203,13.04
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,204,1.51
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,205,74.67
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,208,371
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,269,2.67
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,291,3.2
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,306,223
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,307,6
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,601,0
+20120,169736,"Pasta, dry, enriched",2000,Cereal Grains and Pasta,606,0.277
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,203,13.87
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,204,2.93
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,205,73.37
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,208,352
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,269,2.74
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,291,9.2
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,306,434
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,307,6
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,601,0
+20124,169738,"Pasta, whole-wheat, dry (Includes foods for USDA's Food Distribution Program)",2000,Cereal Grains and Pasta,606,0.428
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,203,10.5
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,204,1.6
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,205,74.52
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,208,345
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,269,0.8
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,291,10.1
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,306,309
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,307,4
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,601,0
+20130,169739,Barley flour or meal,2000,Cereal Grains and Pasta,606,0.335
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,203,4.4
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,204,1.92
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,205,21.3
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,208,120
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,269,0.87
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,291,2.8
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,306,172
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,307,7
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,601,0
+20137,168917,"Quinoa, cooked",2000,Cereal Grains and Pasta,606,0.231
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,203,12.68
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,204,1.05
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,205,72.83
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,208,360
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,291,3.9
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,306,186
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,307,1
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,601,0
+20466,168933,"Semolina, unenriched",2000,Cereal Grains and Pasta,606,0.15
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,203,23.59
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,204,2.94
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,205,0
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,208,121
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,269,0
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,291,0
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,306,313
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,307,54
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,601,62
+23354,171757,"Beef, round, top round steak, boneless, separable lean only, trimmed to 0"" fat, all grades, raw",1300,Beef Products,606,1.12
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,203,20
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,204,10
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,205,0
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,208,176
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,269,0
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,291,0
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,306,321
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,307,66
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,601,65
+23562,174030,"Beef, ground, 90% lean meat / 10% fat, raw",1300,Beef Products,606,3.927
