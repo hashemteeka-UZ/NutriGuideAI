@@ -6,15 +6,15 @@ Generated from `run_f1_scenario` with `start_date` 2026-10-07 and `start_now` 20
 
 | field | value |
 | --- | --- |
-| dataset_version | f1_slice_v0, f1_slice_v1 |
+| dataset_version | f1_slice_v1 |
 | computation_version | calc_v1 |
-| tag_rules_version | tags_v1 |
+| tag_rules_version | tags_v2 |
 | planner_version | greedy_v1 |
 | formula_version | targets_v1 |
-| meals | 36 |
+| meals | 35 |
 | active meals | 35 |
-| inactive meals | 1 |
-| foods | 63 |
+| inactive meals | 0 |
+| foods | 62 |
 
 ## 2. P1 profile, screening, targets, limits
 
@@ -369,14 +369,14 @@ Streak at last day: 0
 
 | persona | slot | survivors | evaluated | removing_codes |
 | --- | --- | --- | --- | --- |
-| P1 | BREAKFAST | 10 | 36 | INACTIVE 1, NO_OCCASION:BREAKFAST 26 |
-| P1 | LUNCH | 21 | 36 | INACTIVE 1, NO_OCCASION:LUNCH 15 |
-| P1 | DINNER | 18 | 36 | INACTIVE 1, NO_OCCASION:DINNER 18 |
-| P1 | SNACK | 8 | 36 | INACTIVE 1, NO_OCCASION:SNACK 27 |
-| P2 | BREAKFAST | 6 | 36 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, INACTIVE 1, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:BREAKFAST 26 |
-| P2 | LUNCH | 12 | 36 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, INACTIVE 1, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:LUNCH 15 |
-| P2 | DINNER | 14 | 36 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, INACTIVE 1, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:DINNER 18 |
-| P2 | SNACK | 6 | 36 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, INACTIVE 1, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:SNACK 27 |
+| P1 | BREAKFAST | 10 | 35 | NO_OCCASION:BREAKFAST 25 |
+| P1 | LUNCH | 21 | 35 | NO_OCCASION:LUNCH 14 |
+| P1 | DINNER | 18 | 35 | NO_OCCASION:DINNER 17 |
+| P1 | SNACK | 8 | 35 | NO_OCCASION:SNACK 27 |
+| P2 | BREAKFAST | 6 | 35 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:BREAKFAST 25 |
+| P2 | LUNCH | 12 | 35 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:LUNCH 14 |
+| P2 | DINNER | 14 | 35 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:DINNER 17 |
+| P2 | SNACK | 6 | 35 | ALLERGEN:Peanut 1, AVOID_TAG:added_sugar 2, MAX_PER_MEAL:carbohydrate 10, NO_OCCASION:SNACK 27 |
 
 P1 variety across three days: 6 distinct meals / 12 items.
 
@@ -385,9 +385,9 @@ P1 variety across three days: 6 distinct meals / 12 items.
 | statistic | ms |
 | --- | --- |
 | n | 6 |
-| min | 18.635 |
-| median | 21.637 |
-| max | 32.160 |
+| min | 19.271 |
+| median | 25.055 |
+| max | 27.396 |
 
 ## 7. Observations
 

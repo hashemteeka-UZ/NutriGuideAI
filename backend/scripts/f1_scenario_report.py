@@ -1,11 +1,14 @@
-"""Run the F.1-e scenario on the dev database and write docs/reports/f1_scenario_report.md.
+"""Run the F.1-e scenario on an isolated F.1-slice database and write the report.
 
-The scenario runs inside one transaction that is always rolled back. Catalog rows already on
-the dev database are left untouched; persona rows created by the scenario are discarded.
+The bench database is a sibling of the dev database (`{dev_db}_f1_bench`): created, migrated,
+loaded with the F.1 slice, then dropped. The scenario runs inside one transaction that is
+always rolled back. The dev database is never written; it is only the server the sibling is
+created from. `--keep-db` leaves the bench database in place for inspection.
 """
 
 from __future__ import annotations
 
+import argparse
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -15,11 +18,14 @@ from statistics import median
 from typing import Final
 
 from sqlalchemy import create_engine, func, select
+from sqlalchemy.engine import URL, Engine, make_url
 from sqlalchemy.orm import Session
 
 from app.core.config import REPO_ROOT, get_settings
+from app.db.admin import admin_engine, create_database, drop_database, require_db_name, upgrade_head
 from app.db.models import ConsumptionLog, Food, Meal, MealNutrient, MealPlan, Nutrient, User
 from app.db.models.user import MealSlot
+from app.seed.f1_loader import DEFAULT_DATA_DIR, load_f1_slice
 from app.services.condition_limits import ResolvedLimits
 from app.services.meal_filter import evaluate_meals
 from app.services.meal_nutrition import COMPUTATION_VERSION
@@ -486,30 +492,90 @@ def render_report(session: Session, result: ScenarioResult) -> str:
     return text
 
 
-def main() -> int:
-    engine = create_engine(get_settings().DATABASE_URL)
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    before = (0, 0, 0)
-    after = (0, 0, 0)
-    with engine.connect() as conn:
-        trans = conn.begin()
-        try:
+def f1_bench_name(database: str | None) -> str:
+    """Sibling name `{database}_f1_bench`, rejected unless it is a plain identifier."""
+    if not database:
+        raise ValueError("refusing to use database name ''")
+    return require_db_name(f"{database}_f1_bench")
+
+
+def setup_f1_bench(base_url: URL) -> Engine:
+    """Create `{base}_f1_bench`, migrate it, and load the F.1 slice.
+
+    The base database is not written. On failure the sibling is dropped. The caller drops it
+    after a successful return.
+    """
+    name = f1_bench_name(base_url.database)
+    admin = admin_engine(base_url)
+    engine: Engine | None = None
+    try:
+        drop_database(admin, name)
+        create_database(admin, name)
+        engine = create_engine(base_url.set(database=name))
+        upgrade_head(engine)
+        with Session(engine) as session:
+            load_f1_slice(session, DEFAULT_DATA_DIR)
+            session.commit()
+        return engine
+    except Exception:
+        if engine is not None:
+            engine.dispose()
+        drop_database(admin, name)
+        raise
+    finally:
+        admin.dispose()
+
+
+def drop_f1_bench(base_url: URL) -> None:
+    name = f1_bench_name(base_url.database)
+    admin = admin_engine(base_url)
+    try:
+        drop_database(admin, name)
+    finally:
+        admin.dispose()
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Run the F.1-e scenario on an isolated F.1-slice database."
+    )
+    parser.add_argument(
+        "--keep-db",
+        action="store_true",
+        help="Leave the bench database in place after the report is written.",
+    )
+    args = parser.parse_args(argv)
+    base_url = make_url(get_settings().DATABASE_URL)
+    print(f1_bench_name(base_url.database))
+    engine = setup_f1_bench(base_url)
+    code = 0
+    try:
+        OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        before = (0, 0, 0)
+        after = (0, 0, 0)
+        with engine.connect() as conn:
+            trans = conn.begin()
+            try:
+                with Session(bind=conn) as session:
+                    before = _counts(session)
+                    result = run_f1_scenario(session, conn, START_DATE, START_NOW)
+                    OUTPUT_PATH.write_text(render_report(session, result), encoding="utf-8")
+            finally:
+                trans.rollback()
             with Session(bind=conn) as session:
-                before = _counts(session)
-                result = run_f1_scenario(session, conn, START_DATE, START_NOW)
-                OUTPUT_PATH.write_text(render_report(session, result), encoding="utf-8")
-        finally:
-            trans.rollback()
-        with Session(bind=conn) as session:
-            after = _counts(session)
-    print(OUTPUT_PATH)
-    print(f"users {before[0]} -> {after[0]}")
-    print(f"meal_plans {before[1]} -> {after[1]}")
-    print(f"consumption_logs {before[2]} -> {after[2]}")
-    if before != after:
-        print("row counts changed; rollback failed", file=sys.stderr)
-        return 1
-    return 0
+                after = _counts(session)
+        print(OUTPUT_PATH)
+        print(f"users {before[0]} -> {after[0]}")
+        print(f"meal_plans {before[1]} -> {after[1]}")
+        print(f"consumption_logs {before[2]} -> {after[2]}")
+        if before != after:
+            print("row counts changed; rollback failed", file=sys.stderr)
+            code = 1
+    finally:
+        engine.dispose()
+        if not args.keep_db:
+            drop_f1_bench(base_url)
+    return code
 
 
 if __name__ == "__main__":

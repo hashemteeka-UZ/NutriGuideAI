@@ -25,8 +25,16 @@ from app.services.meal_filter import (
 )
 from app.services.meal_nutrition import COMPUTATION_VERSION
 from app.services.planner import (
+    BEVERAGE_LOW_SATURATED_FAT_G_PER_100G,
+    BEVERAGE_LOW_SUGAR_G_PER_100G,
     DAY_KCAL_CEILING,
     FITS_KCAL_TOLERANCE,
+    LOW_SATURATED_FAT,
+    LOW_SATURATED_FAT_G_PER_100G,
+    LOW_SODIUM,
+    LOW_SODIUM_MG_PER_100G,
+    LOW_SUGAR,
+    LOW_SUGAR_G_PER_100G,
     MAX_SNACKS,
     MULTIPLIERS,
     PLANNER_VERSION,
@@ -42,7 +50,7 @@ from app.services.planner import (
     plan_day,
     reason_codes,
 )
-from app.services.tag_rules import TAG_RULES_VERSION
+from app.services.tag_rules import BEVERAGE_TAG, TAG_RULES_VERSION
 from app.services.targets import UserNotEligibleError
 from tests.builders import make_user_allergen_pref, make_user_ingredient_pref
 from tests.services.conftest import (
@@ -187,12 +195,20 @@ def test_reason_codes_follow_the_thresholds(
         )
         kcal = item.nutrients["energy_kcal"]
         per_100g = meal.per_100g
+        sugar_limit = (
+            BEVERAGE_LOW_SUGAR_G_PER_100G if BEVERAGE_TAG in meal.tags else LOW_SUGAR_G_PER_100G
+        )
+        sat_limit = (
+            BEVERAGE_LOW_SATURATED_FAT_G_PER_100G
+            if BEVERAGE_TAG in meal.tags
+            else LOW_SATURATED_FAT_G_PER_100G
+        )
         expected = {
             "FITS_KCAL_TARGET": abs(kcal - slot_kcal) <= FITS_KCAL_TOLERANCE * slot_kcal,
             "HIGH_PROTEIN": item.nutrients["protein"] * 4 >= D("0.20") * kcal,
-            "LOW_SODIUM": per_100g["sodium"] <= 120,
-            "LOW_SUGAR": per_100g["sugars"] <= 5,
-            "LOW_SATURATED_FAT": per_100g["saturated_fat"] <= D("1.5"),
+            "LOW_SODIUM": per_100g["sodium"] <= LOW_SODIUM_MG_PER_100G,
+            "LOW_SUGAR": per_100g["sugars"] <= sugar_limit,
+            "LOW_SATURATED_FAT": per_100g["saturated_fat"] <= sat_limit,
             "HIGH_FIBER": per_100g["fiber"] >= 6,
             "MATCHES_LIKED_INGREDIENT": False,
         }
@@ -523,6 +539,60 @@ def _limits(max_sodium: int | None = None) -> ResolvedLimits:
         limit_tags={},
         tag_restrictions=(),
     )
+
+
+def _tagged_meal(tags: Iterable[str], per_100g: dict[str, Decimal]) -> MealFacts:
+    return MealFacts(
+        meal_id=1,
+        ref_external="X",
+        name="x",
+        variant_group=None,
+        is_active=True,
+        is_nutritionally_complete=True,
+        per_serving={"energy_kcal": D(100), "protein": D(0)},
+        per_100g=per_100g,
+        allergens={},
+        ingredient_ids=frozenset(),
+        tags=frozenset(tags),
+    )
+
+
+def _reason(tags: Iterable[str], per_100g: dict[str, Decimal]) -> set[str]:
+    return set(reason_codes(_tagged_meal(tags, per_100g), D(1), D(100), _limits(), NO_PREFERENCES))
+
+
+@pytest.mark.parametrize("beverage", [False, True])
+@pytest.mark.parametrize(
+    ("code", "nutrient", "food_limit", "drink_limit"),
+    [
+        (LOW_SUGAR, "sugars", LOW_SUGAR_G_PER_100G, BEVERAGE_LOW_SUGAR_G_PER_100G),
+        (
+            LOW_SATURATED_FAT,
+            "saturated_fat",
+            LOW_SATURATED_FAT_G_PER_100G,
+            BEVERAGE_LOW_SATURATED_FAT_G_PER_100G,
+        ),
+        (LOW_SODIUM, "sodium", LOW_SODIUM_MG_PER_100G, LOW_SODIUM_MG_PER_100G),
+    ],
+)
+def test_low_reason_just_below_and_above(
+    beverage: bool, code: str, nutrient: str, food_limit: Decimal, drink_limit: Decimal
+) -> None:
+    tags = {BEVERAGE_TAG} if beverage else set()
+    limit = drink_limit if beverage else food_limit
+    assert code in _reason(tags, {nutrient: limit})
+    assert code not in _reason(tags, {nutrient: limit + D("0.001")})
+    if food_limit != drink_limit:
+        looser = max(food_limit, drink_limit)
+        if limit < looser:
+            assert code not in _reason(tags, {nutrient: looser})
+        else:
+            assert code in _reason(tags, {nutrient: looser})
+
+
+def test_missing_sugars_does_not_add_low_sugar() -> None:
+    assert LOW_SUGAR not in _reason({BEVERAGE_TAG}, {"sodium": D(1)})
+    assert LOW_SUGAR not in _reason(set(), {"sodium": D(1)})
 
 
 def _target(kcal: int) -> PlanTarget:

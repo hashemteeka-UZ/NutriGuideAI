@@ -3,7 +3,9 @@
 Run after compute_meal_nutrients: threshold tags read the meal's meal_nutrients rows.
 - meal_allergens = union of the ingredients' ingredient_allergens (fully rebuilt).
 - DERIVED meal_tags = union of the ingredients' CONDITION ingredient_tags (presence properties)
-  plus the threshold tags of app/services/tag_rules.py. DIETARY ingredient tags are not unioned.
+  plus the threshold tags of app/services/tag_rules.py. A meal carrying the occasion tag
+  `beverage` uses the drink thresholds; every other meal uses the food thresholds.
+  DIETARY ingredient tags are not unioned.
 - Only DERIVED rows are deleted; a MANUAL row for a derived tag becomes DERIVED (§10.5).
 - Every DERIVED row records rule_version = TAG_RULES_VERSION; MANUAL rows keep it NULL.
 """
@@ -32,7 +34,7 @@ from app.db.models import (
 from app.db.models.catalog import MealTagSource
 from app.db.models.reference import TagGroup
 from app.services.common import MealNotFoundError, RowChanges, to_decimal
-from app.services.tag_rules import TAG_RULES_VERSION, THRESHOLD_TAGS
+from app.services.tag_rules import TAG_RULES_VERSION, THRESHOLD_TABLES, threshold_tags_for
 
 
 class TagRuleError(ValueError):
@@ -56,27 +58,28 @@ class MealDerivedResult:
 
 
 def _threshold_tag_ids(session: Session) -> dict[str, int]:
+    """Tags and nutrients of every threshold table (foods and drinks) must exist."""
+    tag_codes = sorted({code for table in THRESHOLD_TABLES for code in table})
     rows = session.execute(
         select(DietaryTag.code, DietaryTag.tag_id, DietaryTag.tag_group).where(
-            DietaryTag.code.in_(list(THRESHOLD_TAGS))
+            DietaryTag.code.in_(tag_codes)
         )
     ).all()
     found = {row.code: row for row in rows}
-    problems = [
-        f"{code}: not in dietary_tags" for code in sorted(THRESHOLD_TAGS) if code not in found
-    ]
+    problems = [f"{code}: not in dietary_tags" for code in tag_codes if code not in found]
     problems += [
         f"{row.code}: tag_group is {row.tag_group}, expected {TagGroup.CONDITION}"
         for row in rows
         if row.tag_group != TagGroup.CONDITION
     ]
-    nutrient_codes = {nutrient for nutrient, _ in THRESHOLD_TAGS.values()}
+    nutrient_codes = {nutrient for table in THRESHOLD_TABLES for nutrient, _ in table.values()}
     known_nutrients = set(
         session.execute(select(Nutrient.code).where(Nutrient.code.in_(nutrient_codes))).scalars()
     )
     problems += [
         f"{tag}: nutrient {nutrient!r} not in nutrients"
-        for tag, (nutrient, _) in sorted(THRESHOLD_TAGS.items())
+        for table in THRESHOLD_TABLES
+        for tag, (nutrient, _) in sorted(table.items())
         if nutrient not in known_nutrients
     ]
     if problems:
@@ -144,8 +147,15 @@ def recompute_meal_derived(session: Session, meal_id: int) -> MealDerivedResult:
         .tuples()
         .all()
     )
+    meal_tag_codes = set(
+        session.execute(
+            select(DietaryTag.code)
+            .join(MealTag, MealTag.tag_id == DietaryTag.tag_id)
+            .where(MealTag.meal_id == meal_id)
+        ).scalars()
+    )
     unknown: list[str] = []
-    for tag_code, (nutrient_code, threshold) in sorted(THRESHOLD_TAGS.items()):
+    for tag_code, (nutrient_code, threshold) in sorted(threshold_tags_for(meal_tag_codes).items()):
         amount = per_100g.get(nutrient_code)
         if amount is None:
             unknown.append(tag_code)

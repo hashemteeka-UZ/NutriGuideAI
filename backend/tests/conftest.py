@@ -3,23 +3,17 @@
 from __future__ import annotations
 
 import os
-import re
 from collections.abc import Iterator
-from pathlib import Path
 from typing import NoReturn
 
 import pytest
-from alembic import command
-from alembic.config import Config
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.engine import URL, Connection, Engine, make_url
 from sqlalchemy.exc import OperationalError
 
 from app.core.config import REPO_ROOT, get_settings
-
-ALEMBIC_INI = Path(__file__).resolve().parents[1] / "alembic.ini"
-_DB_NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+from app.db.admin import admin_engine, create_database, drop_database, require_db_name, upgrade_head
 
 
 class _TestDbSettings(BaseSettings):
@@ -33,19 +27,6 @@ def _skip_or_fail_ci(message: str) -> NoReturn:
     if os.environ.get("CI") == "true":
         pytest.fail(message)
     pytest.skip(message)
-
-
-def _alembic_config(conn: Connection) -> Config:
-    """Real alembic.ini, but env.py migrates `conn` instead of DATABASE_URL."""
-    config = Config(ALEMBIC_INI)
-    config.attributes["connection"] = conn
-    return config
-
-
-def _require_db_name(name: str) -> str:
-    if not _DB_NAME_RE.match(name):
-        raise ValueError(f"refusing to use database name {name!r}")
-    return name
 
 
 def _test_db_url() -> URL:
@@ -78,17 +59,11 @@ def test_db_engine() -> Iterator[Engine]:
     engine.dispose()
 
 
-def _drop_database(admin: Engine, name: str) -> None:
-    ident = _require_db_name(name)
-    with admin.connect() as conn:
-        conn.execute(text(f"DROP DATABASE IF EXISTS {ident} WITH (FORCE)"))
-
-
 @pytest.fixture(scope="session")
 def integrity_engine() -> Iterator[Engine]:
     """Migrated sibling of db_test: `{POSTGRES_TEST_DB}_integrity`. Not create_all."""
     url = _test_db_url()
-    admin = create_engine(url, isolation_level="AUTOCOMMIT", connect_args={"connect_timeout": 3})
+    admin = admin_engine(url)
     try:
         admin.connect().close()
     except OperationalError:
@@ -98,23 +73,21 @@ def integrity_engine() -> Iterator[Engine]:
             "start it with `docker compose --profile test up -d db_test`"
         )
 
-    integrity_name = _require_db_name(f"{url.database}_integrity")
+    integrity_name = require_db_name(f"{url.database}_integrity")
     engine: Engine | None = None
     created = False
     try:
-        _drop_database(admin, integrity_name)
-        with admin.connect() as conn:
-            conn.execute(text(f"CREATE DATABASE {integrity_name}"))
+        drop_database(admin, integrity_name)
+        create_database(admin, integrity_name)
         created = True
         engine = create_engine(url.set(database=integrity_name))
-        with engine.begin() as conn:
-            command.upgrade(_alembic_config(conn), "head")
+        upgrade_head(engine)
         yield engine
     finally:
         if engine is not None:
             engine.dispose()
         if created:
-            _drop_database(admin, integrity_name)
+            drop_database(admin, integrity_name)
         admin.dispose()
 
 

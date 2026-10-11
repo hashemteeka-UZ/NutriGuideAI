@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -22,14 +23,22 @@ from app.db.models import (
     MealTag,
     Nutrient,
 )
+from app.services.condition_limits import ResolvedLimits
 from app.services.meal_derived import TagRuleError, recompute_meal_derived
+from app.services.meal_filter import UserPreferences, load_meal_facts
+from app.services.planner import LOW_SUGAR, reason_codes
 from app.services.recompute_meals import (
     MealRecompute,
     format_results,
     recompute_active_meals,
     recompute_meal,
 )
-from app.services.tag_rules import TAG_RULES_VERSION, THRESHOLD_TAGS
+from app.services.tag_rules import (
+    BEVERAGE_TAG,
+    TAG_RULES_VERSION,
+    THRESHOLD_TAGS,
+    threshold_tags_for,
+)
 from tests.services.conftest import NOW, clear_derived_meal_data, meal_id
 
 
@@ -98,16 +107,26 @@ def test_threshold_tags_follow_meal_amount_per_100g(slice_session: Session) -> N
         )
     }
     derived = _tags(slice_session, "DERIVED")
+    meal_tags = _tags(slice_session)
     refs = set(slice_session.execute(select(Meal.ref_external)).scalars())
     assert len(refs) == 35
     tagged = set()
     for ref in refs:
-        for tag, (nutrient, threshold) in THRESHOLD_TAGS.items():
+        rules = threshold_tags_for(meal_tags.get(ref, set()))
+        if BEVERAGE_TAG in meal_tags.get(ref, set()):
+            assert rules is not THRESHOLD_TAGS
+        else:
+            assert rules == THRESHOLD_TAGS
+        for tag, (nutrient, threshold) in rules.items():
             expected = per_100g[(ref, nutrient)] > threshold
             assert (tag in derived.get(ref, set())) == expected, (ref, tag)
             if expected:
                 tagged.add((ref, tag))
-    assert tagged == {("F1-S06", "high_sodium"), ("F1-S01", "high_sugar")}
+    assert tagged == {
+        ("F1-S06", "high_sodium"),
+        ("F1-S01", "high_sugar"),
+        ("F1-S05", "high_sugar"),
+    }
 
 
 @pytest.mark.usefixtures("recomputed")
@@ -247,6 +266,120 @@ def test_unknown_nutrient_does_not_derive_the_threshold_tag(slice_session: Sessi
     assert nutrition.missing_mandatory == ("sodium",)
     assert derived.unknown_threshold_tags == ("high_sodium",)
     assert "high_sodium" not in derived.derived_tags
+
+
+def _set_per_100g(session: Session, meal: int, nutrient: str, amount: Decimal) -> None:
+    nutrient_id = session.execute(
+        select(Nutrient.nutrient_id).where(Nutrient.code == nutrient)
+    ).scalar_one()
+    updated = session.execute(
+        update(MealNutrient)
+        .where(MealNutrient.meal_id == meal, MealNutrient.nutrient_id == nutrient_id)
+        .values(amount_per_100g=amount)
+    )
+    assert updated.rowcount == 1
+
+
+@pytest.mark.parametrize(
+    ("ref", "beverage", "nutrient", "tag", "threshold"),
+    [
+        ("F1-S06", False, "sodium", "high_sodium", Decimal(600)),
+        ("F1-S06", False, "sugars", "high_sugar", Decimal("22.5")),
+        ("F1-S05", True, "sodium", "high_sodium", Decimal(300)),
+        ("F1-S05", True, "sugars", "high_sugar", Decimal("11.25")),
+    ],
+)
+def test_threshold_just_below_and_above(
+    slice_session: Session,
+    ref: str,
+    beverage: bool,
+    nutrient: str,
+    tag: str,
+    threshold: Decimal,
+) -> None:
+    meal = meal_id(slice_session, ref)
+    codes = set(
+        slice_session.execute(
+            select(DietaryTag.code)
+            .join(MealTag, MealTag.tag_id == DietaryTag.tag_id)
+            .where(MealTag.meal_id == meal)
+        ).scalars()
+    )
+    assert (BEVERAGE_TAG in codes) is beverage
+    _set_per_100g(slice_session, meal, nutrient, threshold)
+    at = recompute_meal_derived(slice_session, meal)
+    assert tag not in at.derived_tags
+    _set_per_100g(slice_session, meal, nutrient, threshold + Decimal("0.001"))
+    above = recompute_meal_derived(slice_session, meal)
+    assert tag in above.derived_tags
+
+
+def test_food_meal_does_not_use_drink_thresholds(slice_session: Session) -> None:
+    """A food just above the drink 'high' figures stays untagged; those figures are for drinks."""
+    meal = meal_id(slice_session, "F1-S06")
+    _set_per_100g(slice_session, meal, "sugars", Decimal("11.251"))
+    _set_per_100g(slice_session, meal, "sodium", Decimal("300.001"))
+    derived = recompute_meal_derived(slice_session, meal)
+    assert "high_sugar" not in derived.derived_tags
+    assert "high_sodium" not in derived.derived_tags
+
+
+def test_beverage_with_sugars_missing_has_no_high_sugar_and_no_low_sugar(
+    slice_session: Session,
+) -> None:
+    meal = meal_id(slice_session, "F1-S05")
+    sugars = select(Nutrient.nutrient_id).where(Nutrient.code == "sugars").scalar_subquery()
+    slice_session.execute(
+        delete(MealNutrient).where(MealNutrient.meal_id == meal, MealNutrient.nutrient_id == sugars)
+    )
+    derived = recompute_meal_derived(slice_session, meal)
+    assert derived.unknown_threshold_tags == ("high_sugar",)
+    assert "high_sugar" not in derived.derived_tags
+    facts = {item.meal_id: item for item in load_meal_facts(slice_session)}
+    codes = reason_codes(
+        facts[meal],
+        Decimal(1),
+        Decimal(100),
+        ResolvedLimits(
+            target_kcal=Decimal(2000),
+            conditions=(),
+            max_per_day={},
+            min_per_day={},
+            max_per_meal={},
+            max_per_meal_percent_energy={},
+            avoid_tags=frozenset(),
+            limit_tags={},
+            tag_restrictions=(),
+        ),
+        UserPreferences(frozenset(), frozenset(), frozenset()),
+    )
+    assert LOW_SUGAR not in codes
+
+
+def test_tags_v1_derived_rows_are_updated_without_duplicates(slice_session: Session) -> None:
+    s06 = meal_id(slice_session, "F1-S06")
+    before = (
+        slice_session.execute(select(MealTag.tag_id).where(MealTag.meal_id == s06)).scalars().all()
+    )
+    slice_session.execute(
+        update(MealTag)
+        .where(MealTag.meal_id == s06, MealTag.source == "DERIVED")
+        .values(rule_version="tags_v1")
+    )
+    derived = recompute_meal_derived(slice_session, s06)
+    assert derived.tag_changes.updated == len(derived.derived_tags) > 0
+    assert derived.tag_changes.inserted == 0
+    assert derived.tag_changes.deleted == 0
+    after = (
+        slice_session.execute(select(MealTag.tag_id).where(MealTag.meal_id == s06)).scalars().all()
+    )
+    assert sorted(after) == sorted(before)
+    assert len(after) == len(set(after))
+    versions = slice_session.execute(
+        select(MealTag.rule_version).where(MealTag.meal_id == s06, MealTag.source == "DERIVED")
+    ).scalars()
+    assert set(versions) == {TAG_RULES_VERSION}
+    assert TAG_RULES_VERSION == "tags_v2"
 
 
 def test_threshold_tag_in_ingredient_tags_raises(slice_session: Session) -> None:

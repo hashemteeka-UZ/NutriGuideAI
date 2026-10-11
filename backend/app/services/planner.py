@@ -44,7 +44,7 @@ from app.services.meal_filter import (
 )
 from app.services.meal_nutrition import COMPUTATION_VERSION
 from app.services.screening import ProfileNotFoundError, screen_user
-from app.services.tag_rules import TAG_RULES_VERSION
+from app.services.tag_rules import BEVERAGE_TAG, TAG_RULES_VERSION
 from app.services.targets import KCAL_PER_G_PROTEIN, UserNotEligibleError, fiber_target_g
 
 PLANNER_VERSION: Final = "greedy_v1"
@@ -68,9 +68,13 @@ KCAL_TOLERANCE: Final = Decimal("0.10")  # kcal_within_10pct (§28.4, §30.5)
 # §28.6 reason-code thresholds.
 FITS_KCAL_TOLERANCE: Final = Decimal("0.15")  # of the item's slot target
 HIGH_PROTEIN_ENERGY_SHARE: Final = Decimal("0.20")
-LOW_SODIUM_MG_PER_100G: Final = Decimal(120)  # UK FSA "low"
-LOW_SUGAR_G_PER_100G: Final = Decimal(5)  # UK FSA "low"
-LOW_SATURATED_FAT_G_PER_100G: Final = Decimal("1.5")  # UK FSA "low"
+LOW_SODIUM_MG_PER_100G: Final = Decimal(120)  # UK FSA "low" (foods and drinks; salt <= 0.3 g)
+LOW_SUGAR_G_PER_100G: Final = Decimal(5)  # UK FSA "low", foods per 100 g
+LOW_SATURATED_FAT_G_PER_100G: Final = Decimal("1.5")  # UK FSA "low", foods per 100 g
+# UK FSA drinks "low" per 100 ml (Guide to creating a front of pack nutrition label, 2016).
+# 100 ml ≈ 100 g assumed for water- and milk-based drinks (Decision #97). LOW_SODIUM stays 120 mg.
+BEVERAGE_LOW_SUGAR_G_PER_100G: Final = Decimal("2.5")
+BEVERAGE_LOW_SATURATED_FAT_G_PER_100G: Final = Decimal("0.75")
 HIGH_FIBER_G_PER_100G: Final = Decimal(6)  # EU "high fibre" claim
 # ---------------------------------------------------------------------------------------------
 
@@ -86,6 +90,13 @@ PER_100G_REASONS: Final = (
     (LOW_SODIUM, "sodium", LOW_SODIUM_MG_PER_100G, False),
     (LOW_SUGAR, "sugars", LOW_SUGAR_G_PER_100G, False),
     (LOW_SATURATED_FAT, "saturated_fat", LOW_SATURATED_FAT_G_PER_100G, False),
+    (HIGH_FIBER, "fiber", HIGH_FIBER_G_PER_100G, True),
+)
+# Drinks: LOW_SUGAR and LOW_SATURATED_FAT use the FSA per-100 ml "low" figures; LOW_SODIUM stays.
+BEVERAGE_PER_100G_REASONS: Final = (
+    (LOW_SODIUM, "sodium", LOW_SODIUM_MG_PER_100G, False),
+    (LOW_SUGAR, "sugars", BEVERAGE_LOW_SUGAR_G_PER_100G, False),
+    (LOW_SATURATED_FAT, "saturated_fat", BEVERAGE_LOW_SATURATED_FAT_G_PER_100G, False),
     (HIGH_FIBER, "fiber", HIGH_FIBER_G_PER_100G, True),
 )
 
@@ -342,6 +353,15 @@ def _valid_pairs(
     return valid, removed, candidates
 
 
+def per_100g_reason_rules(
+    tag_codes: Iterable[str],
+) -> tuple[tuple[str, str, Decimal, bool], ...]:
+    """§28.6 per-100 g reason codes: drink thresholds for a `beverage` meal, else foods."""
+    if BEVERAGE_TAG in tag_codes:
+        return BEVERAGE_PER_100G_REASONS
+    return PER_100G_REASONS
+
+
 def reason_codes(
     meal: MealFacts,
     multiplier: Decimal,
@@ -362,7 +382,7 @@ def reason_codes(
         and protein * KCAL_PER_G_PROTEIN >= HIGH_PROTEIN_ENERGY_SHARE * serving_kcal
     ):
         codes.add(HIGH_PROTEIN)
-    for code, nutrient, threshold, at_least in PER_100G_REASONS:
+    for code, nutrient, threshold, at_least in per_100g_reason_rules(meal.tags):
         amount = meal.per_100g.get(nutrient)
         if amount is not None and (amount >= threshold if at_least else amount <= threshold):
             codes.add(code)
