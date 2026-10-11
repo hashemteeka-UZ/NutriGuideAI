@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 from sqlalchemy import delete
 from sqlalchemy.engine import Connection
 
@@ -247,3 +248,29 @@ def test_ingredients_review_status_defaults_to_pending(integrity_conn: Connectio
     row = fetch_by_pk(integrity_conn, "ingredients", ingredient_id)
     assert row is not None
     assert row.review_status == "PENDING"
+
+
+@pytest.mark.parametrize("code", ["EGG", "LOW_FAT_MILK_1"])
+def test_ingredient_code_format_accepted(integrity_conn: Connection, code: str) -> None:
+    ingredient_id = make_ingredient(integrity_conn, code=code)
+    row = fetch_by_pk(integrity_conn, "ingredients", ingredient_id)
+    assert row is not None
+    assert row.code == code
+
+
+@pytest.mark.parametrize("code", ["egg", "1EGG", "EGG-1", ""])
+def test_ingredient_code_format_rejected(integrity_conn: Connection, code: str) -> None:
+    assert_rejects(
+        integrity_conn,
+        "ck_ingredients_code_format",
+        lambda: make_ingredient(integrity_conn, code=code),
+    )
+
+
+def test_duplicate_ingredient_code_rejected(integrity_conn: Connection) -> None:
+    make_ingredient(integrity_conn, code="EGG")
+    assert_rejects(
+        integrity_conn,
+        "uq_ingredients_code",
+        lambda: make_ingredient(integrity_conn, code="EGG"),
+    )

@@ -21,6 +21,10 @@ def test_real_files_parse_with_five_digit_text_ndb_numbers() -> None:
     assert all(isinstance(n, str) and len(n) == 5 for n in ndbs)
     assert "01019" in ndbs and "08120" in ndbs
     assert all(isinstance(code, str) for code in files.seed.categories_ar)
+    codes = [f.ingredient_code for f in files.foods.foods]
+    assert len(codes) == len(set(codes)) == 62
+    assert "EGG" in codes and "LOW_FAT_MILK_1" in codes
+    assert all(r.source_reference for r in files.seed.condition_tag_restrictions)
 
 
 def test_integer_ndb_number_rejected() -> None:
@@ -49,6 +53,35 @@ def test_duplicate_ndb_number_rejected() -> None:
     data["foods"].append(copy.deepcopy(data["foods"][0]))
     with pytest.raises(ValidationError, match=r"duplicate foods\.ndb_number"):
         SliceFoods.model_validate(data)
+
+
+def test_duplicate_ingredient_code_rejected() -> None:
+    data = copy.deepcopy(FOODS)
+    other = copy.deepcopy(data["foods"][0])
+    other["ndb_number"] = "01082"
+    other["ingredient_en"] = "Other cheese"
+    data["foods"].append(other)
+    with pytest.raises(ValidationError, match=r"duplicate foods\.ingredient_code"):
+        SliceFoods.model_validate(data)
+
+
+@pytest.mark.parametrize("code", ["egg", "1EGG", "EGG-1", ""])
+def test_ingredient_code_must_match_schema_check(code: str) -> None:
+    data = copy.deepcopy(FOODS)
+    data["foods"][0]["ingredient_code"] = code
+    with pytest.raises(ValidationError):
+        SliceFoods.model_validate(data)
+
+
+def test_restriction_source_reference_required_and_non_empty() -> None:
+    data = copy.deepcopy(SEED)
+    del data["condition_tag_restrictions"][0]["source_reference"]
+    with pytest.raises(ValidationError):
+        ReferenceSeed.model_validate(data)
+    data = copy.deepcopy(SEED)
+    data["condition_tag_restrictions"][0]["source_reference"] = "   "
+    with pytest.raises(ValidationError):
+        ReferenceSeed.model_validate(data)
 
 
 def test_real_seed_has_upper_snake_codes() -> None:

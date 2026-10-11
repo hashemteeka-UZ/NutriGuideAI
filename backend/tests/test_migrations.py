@@ -41,6 +41,10 @@ MIGRATION_0003_COLUMNS = {
     ("meal_ingredients", "is_optional"),
     ("meal_tags", "rule_version"),
 }
+MIGRATION_0004_COLUMNS = {
+    ("ingredients", "code"),
+    ("condition_tag_restrictions", "source_reference"),
+}
 
 
 def _alembic_config(conn: Connection) -> Config:
@@ -115,19 +119,21 @@ def test_round_trip_upgrade_downgrade_upgrade(migration_db: Engine) -> None:
     script = ScriptDirectory.from_config(Config(ALEMBIC_INI))
     head = script.get_current_head()
     revisions = [rev.revision for rev in reversed(list(script.walk_revisions()))]
-    assert revisions[:3] == ["0001", "0002", "0003"]
+    assert revisions[:4] == ["0001", "0002", "0003", "0004"]
     assert revisions[-1] == head
 
     for revision in revisions:
         _upgrade(migration_db, revision)
         assert _current_revision(migration_db) == revision
     assert MEAL_PLAN_SLOT_INDEX in _index_names(migration_db)
-    assert _columns(migration_db) >= MIGRATION_0003_COLUMNS
+    assert _columns(migration_db) >= MIGRATION_0003_COLUMNS | MIGRATION_0004_COLUMNS
     assert VARIANT_GROUP_INDEX in _index_names(migration_db)
 
     for revision in reversed(revisions[:-1]):
         _downgrade(migration_db, revision)
         assert _current_revision(migration_db) == revision
+        if revision == "0003":
+            assert not MIGRATION_0004_COLUMNS & _columns(migration_db)
         if revision == "0002":
             assert not MIGRATION_0003_COLUMNS & _columns(migration_db)
             assert VARIANT_GROUP_INDEX not in _index_names(migration_db)
@@ -156,6 +162,85 @@ def test_0003_backfills_codes_of_existing_rows(migration_db: Engine) -> None:
         assert conn.execute(text("SELECT code FROM allergens")).scalars().all() == ["TREE_NUTS"]
         conn.execute(text("DELETE FROM cuisines"))
         conn.execute(text("DELETE FROM allergens"))
+
+
+def test_0004_backfills_ingredient_codes_and_restriction_source(migration_db: Engine) -> None:
+    _upgrade(migration_db, "0003")
+    with migration_db.begin() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO ingredients (canonical_name, canonical_name_ar) "
+                "VALUES ('Egg', 'بيض'), ('Low-fat milk (1%)', 'حليب قليل الدسم')"
+            )
+        )
+        conn.execute(
+            text(
+                "INSERT INTO health_conditions (code, name_en, name_ar) "
+                "VALUES ('HYPERTENSION', 'Hypertension', 'ضغط')"
+            )
+        )
+        conn.execute(
+            text(
+                "INSERT INTO dietary_tags (code, name_en, name_ar, tag_group) "
+                "VALUES ('high_sodium', 'High sodium', 'صوديوم', 'CONDITION')"
+            )
+        )
+        conn.execute(
+            text(
+                "INSERT INTO condition_tag_restrictions "
+                "(condition_id, tag_id, restriction_type) "
+                "SELECT c.condition_id, t.tag_id, 'LIMIT' "
+                "FROM health_conditions c, dietary_tags t "
+                "WHERE c.code = 'HYPERTENSION' AND t.code = 'high_sodium'"
+            )
+        )
+    _upgrade(migration_db, "0004")
+    with migration_db.begin() as conn:
+        codes = dict(conn.execute(text("SELECT canonical_name, code FROM ingredients")).all())
+        assert codes == {"Egg": "EGG", "Low-fat milk (1%)": "LOW_FAT_MILK_1"}
+        assert conn.execute(
+            text("SELECT source_reference FROM condition_tag_restrictions")
+        ).all() == [("backfilled by migration 0004; reloaded from the reference seed",)]
+        conn.execute(text("DELETE FROM condition_tag_restrictions"))
+        conn.execute(text("DELETE FROM dietary_tags"))
+        conn.execute(text("DELETE FROM health_conditions"))
+        conn.execute(text("DELETE FROM ingredients"))
+
+
+def test_0004_upgrade_then_loader_matches_existing_ingredients_by_code(
+    migration_db: Engine,
+) -> None:
+    """F.1 rows loaded under 0003 keep their ids after 0004; the loader updates, never inserts."""
+    from sqlalchemy.orm import Session
+
+    from app.seed.f1_files import SLICE_FOODS_FILE, read_slice_foods
+    from app.seed.f1_loader import DEFAULT_DATA_DIR, load_f1_slice
+
+    foods = read_slice_foods(DEFAULT_DATA_DIR / SLICE_FOODS_FILE)
+    _upgrade(migration_db, "0003")
+    with migration_db.begin() as conn:
+        for food in foods.foods:
+            conn.execute(
+                text(
+                    "INSERT INTO ingredients (canonical_name, canonical_name_ar) VALUES (:en, :ar)"
+                ),
+                {"en": food.ingredient_en, "ar": food.ingredient_ar},
+            )
+    _upgrade(migration_db, "0004")
+    with migration_db.connect() as conn:
+        codes = dict(conn.execute(text("SELECT canonical_name, code FROM ingredients")).all())
+        assert codes == {f.ingredient_en: f.ingredient_code for f in foods.foods}
+
+    with Session(migration_db) as session:
+        report = load_f1_slice(session, DEFAULT_DATA_DIR)
+        session.commit()
+
+    assert report.ok, report.format()
+    assert report.tables["ingredients"].inserted == 0
+    assert report.tables["ingredients"].updated >= 0
+    with migration_db.connect() as conn:
+        assert conn.execute(text("SELECT count(*) FROM ingredients")).scalar_one() == 62
+        assert conn.execute(text("SELECT count(DISTINCT code) FROM ingredients")).scalar_one() == 62
 
 
 def test_no_drift_between_migration_and_models(migration_db: Engine) -> None:

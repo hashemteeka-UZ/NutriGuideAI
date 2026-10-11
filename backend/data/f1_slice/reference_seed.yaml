@@ -1,7 +1,7 @@
-# Step F.1 reference seed (f1_seed_v1: cuisine and allergen codes, migration 0003). Authored by the project assistant from published guidelines.
+# Step F.1 reference seed (f1_seed_v2: v1 + source_reference on condition_tag_restrictions, migration 0004; f1_seed_v1 added cuisine and allergen codes, migration 0003). Authored by the project assistant from published guidelines.
 # Every condition limit is PENDING dietitian review before any pilot with users (PROJECT_CONTEXT §30).
 # Data, not schema: loading this file does not reopen the schema freeze (§20.1).
-seed_version: f1_seed_v1
+seed_version: f1_seed_v2
 categories_ar:
   '0100': الألبان والبيض
   '0200': التوابل والأعشاب
@@ -227,17 +227,21 @@ condition_tag_restrictions:
   tag: high_sodium
   restriction_type: LIMIT
   max_servings_per_week: 3
+  source_reference: 'Project rule (v4.2 #18, v4.14 #74), PENDING dietitian review: high-sodium meals (> 600 mg/100 g, UK FSA) at most 3 servings/week, to keep within WHO (2012) Guideline: Sodium intake for adults and children, < 2 g sodium/day'
 - condition: HEART_DISEASE
   tag: high_sodium
   restriction_type: LIMIT
   max_servings_per_week: 3
+  source_reference: 'Project rule (v4.2 #18, v4.14 #74), PENDING dietitian review: high-sodium meals (> 600 mg/100 g, UK FSA) at most 3 servings/week, to keep within AHA (2021) Dietary Guidance to Improve Cardiovascular Health, <= 2300 mg sodium/day'
 - condition: DIABETES_T2
   tag: high_sugar
   restriction_type: LIMIT
   max_servings_per_week: 3
+  source_reference: 'Project rule (v4.2 #18, v4.14 #74), PENDING dietitian review: high-sugar meals (> 22.5 g sugars/100 g, UK FSA) at most 3 servings/week, following ADA Standards of Care in Diabetes (2024), section 5: minimize added sugars and refined grains'
 - condition: DIABETES_T2
   tag: added_sugar
   restriction_type: AVOID
+  source_reference: 'ADA Standards of Care in Diabetes (2024), section 5: replace sugar-sweetened foods and beverages; minimize added sugars (PENDING dietitian review)'
 excluded_keywords:
 - pork
 - bacon

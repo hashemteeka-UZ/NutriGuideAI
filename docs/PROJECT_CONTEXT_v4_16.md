@@ -1,13 +1,33 @@
-# PROJECT_CONTEXT.md — v4.15
+# PROJECT_CONTEXT.md — v4.16
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.15 → v4.16
+
+v4.16 **opens Step G (dataset engineering)** (2026-10-11, DEV_JOURNAL J-033). Plan: `claude/steps/STEP_G_plan.md`. All decisions were taken by the assistant under the user's delegation (J-030). Step G is split so that schema work and data work never share a step: **Step G.0** is the only schema change (migration `0004`, §20.1) and closes on its own; data passes G.1–G.5 change no schema.
+
+| # | Topic | Change | Schema? |
+|---|---|---|---|
+| #90 | Step G structure | Step G.0 = schema only (migration `0004`), closed with its own commit and CI before any data work; passes G.1–G.5 = data only. §18.4 (no large ETL) is lifted for Step G. The F.1 slice data and scenario stay frozen as the #88 benchmark (G.0 only adds codes/references, no number changes). §25, §31.7 | — |
+| #91 | Migration `0004` | `ingredients.code` `TEXT NOT NULL UNIQUE` + `CHECK (code ~ '^[A-Z][A-Z0-9_]*$')` — ingredient natural key (F-01, #77); `condition_tag_restrictions.source_reference` `TEXT NOT NULL` (provenance gap, #89, §14). Existing rows backfilled inside the migration, then NOT NULL. §9.10, §9.5c | **Yes** |
+| #92 | Pipeline architecture | New package `app/pipeline` (source hash check → `pandera` profiling of raw tables → normalize/map → business gates → accepted / quarantine / excluded with reasons → idempotent load → committed reports). Raw files stay outside git with a SHA-256 manifest; only used subsets are committed. The loader rejects manual threshold tags. `f1_loader` stays for the slice. §13, §31.7 | No |
+| #93 | Ingredient nutrient source order (F-03) | SR Legacy → same SR code in FNDDS 2021–2023 *Ingredient Nutrient Values* for a missing mandatory nutrient (noted in `foods.source_reference`) → an equivalent SR Legacy / Foundation item → a published regional source (`external_source = 'MANUAL'`, full citation) for items absent from USDA (e.g. camel meat). The project never writes a zero of its own ("structural zero" rejected, §9.8); otherwise quarantine. §31.7 | No |
+| #94 | Data-entry format | Git-tracked YAML files in `backend/data/catalog/` replace the teammate's xlsx template (one developer; reviewable diffs; gates in code replace the sheet formula). Recipes reference ingredients by `ingredients.code`. §4.2, §31.7 | No |
+| #95 | Catalog authoring | The team edits a dish list proposed by the assistant; the assistant drafts grams per §31.4; the team reviews each batch (`reviewed_by`). `ref_external` prefix `NG-`, `dataset_version = team_recipes_v1`; the 35 F.1 recipes are re-entered under new codes. The dev database is loaded from the catalog; the slice is for tests only. §31.7 | No |
+| #96 | Quality tier rule | `GOLD` = reviewed + every ingredient complete + `total_grams` from `WEIGHED`, `SUM_OF_INGREDIENTS` (no-cook) or a **published** yield factor + cross-check not failed; otherwise `SILVER` (team-estimated yield, or reviewed deviation). A weighed sample of ≥ 10 dishes measures the yield-factor error. §10.1, §31.7 | No |
+| #97 | `tags_v2` drink thresholds | Meals tagged `beverage` use UK FSA drink thresholds per 100 ml: `high_sugar` > 11.25 g, `high_sodium` > 300 mg; reason codes `LOW_SUGAR` ≤ 2.5 g, `LOW_SATURATED_FAT` ≤ 0.75 g (`LOW_SODIUM` stays 120 mg). 100 ml ≈ 100 g assumed for water/milk-based drinks. Other meals keep `tags_v1` thresholds. §10.5, §28.4b | No |
+| #98 | FNDDS ready foods | ≈150 items (`FNDDS_FOOD`) with published values and FNDDS portions into `portions_food`; same gates; never planned. §31.2 | No |
+| #99 | Dataset freeze | `backend/data/catalog/DATASET_MANIFEST.yaml` (version `catalog_v1`, SHA-256 of every raw and curated file, stage counts, gate results, rule versions) + a CI hash test + git tag `dataset-v1`. No versioning table (§18.8 kept). §22 | No |
+| #100 | Coverage acceptance | For each supported condition alone and for `HYPERTENSION` + `DIABETES_T2`, Layer 1 leaves ≥ 8 eligible meals per main slot at multiplier 1.0. Plus ≥ 150 active verified meals (breakfast ≥ 35, lunch ≥ 45, dinner ≥ 35, snack ≥ 25; `LIBYAN` ≥ 35%) and ≥ 100 ready foods. §31.7 | No |
 
 ---
 
@@ -488,6 +508,7 @@ Condition rules expressed as "avoid/limit this kind of food".
 - `max_servings_per_week` — **NEW in v4.2** — nullable integer, meaningful only for `LIMIT` (`CHECK (restriction_type = 'LIMIT' OR max_servings_per_week IS NULL)`). Gives `LIMIT` an enforceable meaning for the optimizer (§28, Layer 3).
 - `CHECK (max_servings_per_week IS NULL OR max_servings_per_week > 0)` (name `max_servings_positive`, v4.9, #63). A `LIMIT` row may leave it NULL.
 - `UNIQUE (condition_id, tag_id)`
+- `source_reference` — **NEW in v4.16 (#91)** — `TEXT NOT NULL`: the guideline or project rule each restriction comes from (§14); rows existing before migration `0004` are backfilled and then overwritten by the loader.
 
 Example: hypertension → `LIMIT` `high_sodium`. Presence tags (e.g. `added_sugar`) are applied at ingredient level (`ingredient_tags`, §9.13) and propagated to meals; threshold tags (`high_sodium`, `high_sugar`) are derived at meal level from the meal's own nutrients (§10.5, v4.14 #74).
 
@@ -545,6 +566,7 @@ Data-entry templates may collect the mandatory nutrients as wide columns; Phase 
 Culinary ingredient concept layer.
 - `ingredient_id` PK, `canonical_name`, `canonical_name_ar`, `default_food_id` FK → `foods`, `review_status`
 - `review_status` — `VARCHAR NOT NULL DEFAULT 'PENDING'` + CHECK (`PENDING`, `APPROVED`, `REJECTED`) (v4.8, #60)
+- `code` — **NEW in v4.16 (#91)** — `TEXT NOT NULL UNIQUE`, `CHECK (code ~ '^[A-Z][A-Z0-9_]*$')`: the ingredient's natural key (F-01, #77). Recipes reference ingredients by code, so changing an ingredient's `default_food_id` never breaks a recipe, and reloads are idempotent.
 
 Every ingredient in this table is, by policy, permissible for the app's users — non-permissible ingredients are never ingested (Decision #34, §31.6). There is therefore no permissibility column and no permissibility filter anywhere in the system.
 
@@ -879,7 +901,7 @@ data/
 └── reference/
 ```
 
-**Raw:** immutable, never silently edited. **Processed:** transformation/mapping/QC/exclusion happens outside authoritative reference tables. **Accepted:** only validated data. **Quarantine:** unresolved/review-required records (including foods missing a mandatory nutrient and ingredients of uncertain permissibility — §31.6). **Excluded:** records that cannot satisfy requirements, provenance preserved.
+**Raw:** immutable, never silently edited (v4.16, #92: large raw downloads stay outside git under `backend/data/raw/`; git holds a manifest with URL + SHA-256 and the extracted subset actually used). **Processed:** transformation/mapping/QC/exclusion happens outside authoritative reference tables. **Accepted:** only validated data. **Quarantine:** unresolved/review-required records (including foods missing a mandatory nutrient and ingredients of uncertain permissibility — §31.6). **Excluded:** records that cannot satisfy requirements, provenance preserved.
 
 ---
 
@@ -1022,7 +1044,7 @@ Every `CheckConstraint` receives an explicit short `name=` (e.g. `grams_positive
 - **18.1** No ML tables (no cluster tables, no embedding columns/`pgvector`, no bandit-parameter tables, no model registry) — §28 is direction only
 - **18.2** No recommendation algorithm implementation yet — *exception (v4.15): the deterministic baseline planner `greedy_v1` built for the Step F.1 vertical slice (§28.4b). Layer 2 (bandit) and Layer 3 (optimizer) remain unbuilt.*
 - **18.3** No synthetic ratings
-- **18.4** No large ETL pipeline yet
+- **18.4** ~~No large ETL pipeline yet~~ — **lifted for Step G in v4.16 (#90, #92):** the pipeline of §31.7
 - **18.5** ~~No forced FNDDS mapping for the 608 unresolved records~~ — **resolved in v4.4:** the 608 are sub-recipes with complete published values (§6.2); nothing to force
 - **18.6** No final dataset freeze before the schema itself is frozen
 - **18.7** No unit-conversion system in the schema — Phase 2 ingestion only
@@ -1145,6 +1167,7 @@ After testing, roll back or delete temporary test data.
 - `.gitattributes` keeps migration files byte-exact on every platform (`backend/alembic/versions/*.py -text`), so the hash test only fails on a real edit (v4.13).
 - Seed and reference **data** are not schema: loading them does not reopen the freeze.
 - **First use (v4.14, 2026-10-06):** migration `0003` (decisions #75–#78) during Step F.1.
+- **Second use (v4.16, 2026-10-11):** migration `0004` (decision #91) as Step G.0, closed before any Step G data work (#90).
 
 ---
 
@@ -1165,8 +1188,10 @@ dataset_version:     "fndds_2021_2023_v1" / "team_recipes_v1"   (pattern: source
 computation_version: "calc_v1"
 formula_version:     "targets_v1"   (user_targets — §30)
 algorithm_version:   "rec_v1"       (meal_plans / user_interactions.context — §28)
+dataset_version:     "catalog_v1"   (whole frozen Step G catalog — v4.16, #99)
+rule version:        "tags_v2"      (drink thresholds — v4.16, #97)
 ```
-A formal versioning/provenance table is deferred until Phase 2 shows a need.
+A formal versioning/provenance table is still not needed (v4.16, #99): the frozen catalog is identified by `backend/data/catalog/DATASET_MANIFEST.yaml` (SHA-256 of every raw and curated file, stage counts, gate results), checked by a CI test, and git tag `dataset-v1`.
 
 ---
 
@@ -1202,12 +1227,13 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **v4.10: §30 target-calculation details (#64–#69), no schema change**
 - **Step F.1 done (2026-10-10):** vertical slice end to end on 35 team-reviewed meals — passes F.1-a (loader, quality gates), F.1-b (calc_v1, derived tags, screening, targets_v1), F.1-r (recipe revision, migration `0003`), F.1-c (condition limits, Layer 1, `greedy_v1`), F.1-d (consumption logging, swap, adherence, weight recompute), F.1-e (three-persona scenario and report); 1190 tests, 0 skipped; last commit `6e1e5d7`, CI green (DEV_JOURNAL J-032)
 - **v4.15: Step F.1 closure decisions (#80–#89), no schema change**
+- **v4.16: Step G plan decisions (#90–#100); migration `0004` specified (#91)**
 - **v4.14: first post-freeze change (#74–#79), migration `0003`**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Build and validate the PostgreSQL database architecture from scratch**, incorporating v4.15 — the schema is **frozen** at tag `schema-v1` plus migration `0003` (§20.1); Step F.1 is closed; **Step G (dataset engineering)** is next. NOT populating the dataset; NOT implementing ML, chatbot, or any §29 future-work feature.
+**Step G — dataset engineering** (v4.16, plan `claude/steps/STEP_G_plan.md`): first Step G.0 (migration `0004`, #91), then data passes G.1–G.5 that build the curated catalog and freeze `catalog_v1` (§31.7). NOT implementing the optimizer, ML, chatbot, or any §29 future-work feature.
 
 ---
 
@@ -1220,7 +1246,14 @@ A formal versioning/provenance table is deferred until Phase 2 shows a need.
 - **Step E — Integrity validation:** positive/negative tests (§19) + CI (§34.7) ✅ done (2026-10-02)
 - **Step F — Schema freeze** ✅ done (2026-10-04, tag `schema-v1`; change policy §20.1)
 - **Step F.1 — Vertical slice (NEW in v4.2, Decision #33)** ✅ done (2026-10-10, v4.15): after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
-- **Step G — Dataset engineering** ← **next**: only after F.1 (starts with the extended `ingredients_master` template and the curated recipe catalog — §31)
+- **Step G — Dataset engineering** ← **current** (v4.16, plan `claude/steps/STEP_G_plan.md`):
+  - **G.0** schema only: migration `0004` (#91), closed with its own commit + CI
+  - **G.1** pipeline foundation (`app/pipeline`, manifests, `pandera` profiling, gates, source order #93, reports)
+  - **G.2** reference layer (ingredients with codes, aliases, allergens, tags; SR/FNDDS extraction; regional source)
+  - **G.3** `tags_v2` (#97) + recipe batches (draft → team review → load → commit)
+  - **G.4** FNDDS ready foods with portions (#98)
+  - **G.5** coverage report (#100), cross-check and weighed sample (#96), manifest + `dataset-v1` (#99); closure = new document version + DEV_JOURNAL
+  - The extended xlsx template is replaced by YAML files (#94).
 
 ---
 
@@ -1495,6 +1528,17 @@ All food in the system is permissible for its users by construction. This is enf
 - The exclusion keyword list and the quarantine decisions are part of the Phase 2 pipeline configuration and QC records.
 - Team-authored recipes (§31.2) use only permissible ingredients.
 - The teammate template's former permissibility column is dropped; a data-entry person simply does not enter non-permissible items.
+
+## 31.7 Step G pipeline and catalog rules — NEW in v4.16 (Decisions #90–#100)
+- **Layout:** `backend/data/catalog/` holds the reference seed, `ingredients.yaml`, recipe batch files, `ready_foods.yaml`, source manifests with extracted subsets, `reports/` (committed run reports) and `DATASET_MANIFEST.yaml`. Raw downloads live in `backend/data/raw/` (not in git). `backend/data/f1_slice/` stays the frozen #88 benchmark fixture.
+- **Stages (`app/pipeline`):** verify raw SHA-256 → profile raw tables with `pandera` → normalize and map (recipe → ingredient code → default food) → business gates (F.1 G1–G9 plus new ones) → classify each record as accepted / quarantine / excluded with a reason code → one-transaction idempotent load → recompute (`calc_v1`, derived tags) → run report.
+- **Nutrient source order (#93):** SR Legacy → FNDDS 2021–2023 ingredient values for the same SR code (per-nutrient fill, recorded in `foods.source_reference`) → equivalent SR Legacy/Foundation item → published regional source (`MANUAL`). Never a project-written zero.
+- **Authoring (#95):** dish list proposed by the assistant and edited by the team; grams drafted per §31.4; every recipe reviewed (`reviewed_by`); `ref_external` `NG-…`; `dataset_version = team_recipes_v1`.
+- **Quality tier (#96):** `GOLD` needs review, complete ingredients, `WEIGHED` / no-cook `SUM_OF_INGREDIENTS` / published yield factor, and no failed cross-check; else `SILVER`. Cross-check: computed kcal/100 g vs a similar FNDDS dish when one exists; > 25% deviation → review note. Weighed sample ≥ 10 dishes.
+- **Drinks (#97):** `tags_v2` thresholds for `beverage` meals (FSA drinks).
+- **Ready foods (#98):** ≈150 `FNDDS_FOOD` items with portions; logged, never planned.
+- **Coverage (#100):** ≥ 8 Layer-1-eligible meals per main slot for each supported condition and for `HYPERTENSION` + `DIABETES_T2`; ≥ 150 active verified meals with slot minimums and `LIBYAN` ≥ 35%; ≥ 100 ready foods.
+- **Freeze (#99):** `catalog_v1` manifest + CI hash test + tag `dataset-v1`; the F.1 scenario report must stay identical.
 
 ---
 

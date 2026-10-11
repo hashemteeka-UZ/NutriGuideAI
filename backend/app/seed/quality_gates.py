@@ -178,6 +178,9 @@ def gate_references(files: F1Files) -> list[GateFailure]:
     ):
         for name in sorted({n for n in names if names.count(n) > 1}):
             fail(name, f"ingredient name used by more than one food (alias {lang} must be unique)")
+    codes = [f.ingredient_code for f in foods]
+    for code in sorted({c for c in codes if codes.count(c) > 1}):
+        fail(code, "ingredient_code used by more than one food")
 
     for meal in meals:
         if meal.cuisine not in cuisines:

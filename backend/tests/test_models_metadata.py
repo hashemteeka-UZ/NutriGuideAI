@@ -544,11 +544,16 @@ def test_meals_columns_and_checks() -> None:
 
 
 def test_reference_codes_and_category_name_unique() -> None:
-    for table_name in ("cuisines", "allergens"):
+    for table_name in ("cuisines", "allergens", "ingredients"):
         table = _table(table_name)
         assert table.c.code.nullable is False
         assert ("code",) in _unique_column_sets(table)
     assert ("name_en",) in _unique_column_sets(_table("categories"))
+
+
+def test_ingredients_code_format_and_restriction_source_reference() -> None:
+    assert "code ~ '^[A-Z][A-Z0-9_]*$'" in _checks("ingredients")
+    assert _table("condition_tag_restrictions").c.source_reference.nullable is False
 
 
 def test_meal_tags_rule_version_only_for_derived() -> None:

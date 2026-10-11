@@ -93,10 +93,7 @@ TABLES = (
 )
 RECOMPUTE_TABLES = ("meal_nutrients", "meal_allergens", "meal_tags (DERIVED)")
 
-STATIC_FINDINGS = (
-    "§9.10: ingredients have no natural key; idempotency uses default_food_id (one ingredient "
-    "per food in F.1), which the schema does not keep unique (deferred to Step G, #77).",
-)
+STATIC_FINDINGS: tuple[str, ...] = ()
 
 
 @dataclass
@@ -472,6 +469,7 @@ class _Loader:
                 {
                     "restriction_type": restriction.restriction_type.value,
                     "max_servings_per_week": restriction.max_servings_per_week,
+                    "source_reference": restriction.source_reference,
                 },
             )
         nutrient_by_nbr = {
@@ -548,8 +546,12 @@ class _Loader:
                 "ingredients",
                 Ingredient,
                 "ingredient_id",
-                {"default_food_id": food_id},
-                {"canonical_name": food.ingredient_en, "canonical_name_ar": food.ingredient_ar},
+                {"code": food.ingredient_code},
+                {
+                    "canonical_name": food.ingredient_en,
+                    "canonical_name_ar": food.ingredient_ar,
+                    "default_food_id": food_id,
+                },
                 insert_only={"review_status": ReviewStatus.PENDING.value},
             )
             ingredient_ids[food.ndb_number] = ingredient_id

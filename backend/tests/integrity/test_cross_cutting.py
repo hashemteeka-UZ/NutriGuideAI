@@ -85,7 +85,7 @@ def _orm_not_null_without_default() -> list[tuple[str, str]]:
 
 def test_check_registry_covers_every_pg_check(integrity_conn: Connection) -> None:
     assert pg_check_names(integrity_conn) == set(CHECK_CASES)
-    assert len(CHECK_CASES) == 66
+    assert len(CHECK_CASES) == 67
 
 
 @pytest.mark.parametrize("name", sorted(CHECK_CASES))
@@ -107,7 +107,7 @@ def test_check_constraint_rejects_invalid(integrity_conn: Connection, name: str)
 def test_unique_registry_covers_every_pg_unique(integrity_conn: Connection) -> None:
     assert pg_unique_names(integrity_conn) == set(UNIQUE_CASES)
     assert pg_partial_unique_index_names(integrity_conn) == set(PARTIAL_UNIQUE_CASES)
-    assert (len(UNIQUE_CASES), len(PARTIAL_UNIQUE_CASES)) == (19, 2)
+    assert (len(UNIQUE_CASES), len(PARTIAL_UNIQUE_CASES)) == (20, 2)
 
 
 def _secondary_indexes(conn: Connection) -> dict[str, IndexInfo]:

@@ -1,12 +1,14 @@
 # Step F.1 slice foods: USDA FDC SR Legacy (public domain), selected by NDB number.
 # Nutrient values are NOT in this file: they come from the official SR Legacy CSV release via fdc_sr_legacy_subset.csv.
 # One ingredient per food in F.1 (ingredients.default_food_id = this food).
+# ingredient_code (v4.16, #91): the ingredient's natural key = upper snake case of ingredient_en, the same rule migration 0004 uses to backfill existing rows.
 source: USDA FoodData Central, SR Legacy (April 2018)
 foods:
 - ndb_number: 01019
   sr_description: Cheese, feta
   ingredient_en: Feta cheese
   ingredient_ar: جبن فيتا
+  ingredient_code: FETA_CHEESE
   state: as_purchased
   allergens:
   - Milk
@@ -15,6 +17,7 @@ foods:
   sr_description: Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D
   ingredient_en: Low-fat milk (1%)
   ingredient_ar: حليب قليل الدسم
+  ingredient_code: LOW_FAT_MILK_1
   state: as_purchased
   allergens:
   - Milk
@@ -23,6 +26,7 @@ foods:
   sr_description: Egg, whole, raw, fresh
   ingredient_en: Egg
   ingredient_ar: بيض
+  ingredient_code: EGG
   state: raw
   allergens:
   - Egg
@@ -31,6 +35,7 @@ foods:
   sr_description: Butter, without salt
   ingredient_en: Unsalted butter
   ingredient_ar: زبدة غير مملحة
+  ingredient_code: UNSALTED_BUTTER
   state: as_purchased
   allergens:
   - Milk
@@ -39,6 +44,7 @@ foods:
   sr_description: Yogurt, Greek, plain, nonfat
   ingredient_en: Greek yogurt, nonfat
   ingredient_ar: زبادي يوناني خالي الدسم
+  ingredient_code: GREEK_YOGURT_NONFAT
   state: as_purchased
   allergens:
   - Milk
@@ -47,6 +53,7 @@ foods:
   sr_description: Spices, cinnamon, ground
   ingredient_en: Cinnamon
   ingredient_ar: قرفة
+  ingredient_code: CINNAMON
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -54,6 +61,7 @@ foods:
   sr_description: Spices, cumin seed
   ingredient_en: Cumin
   ingredient_ar: كمون
+  ingredient_code: CUMIN
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -61,6 +69,7 @@ foods:
   sr_description: Spices, paprika
   ingredient_en: Paprika
   ingredient_ar: فلفل أحمر حلو مطحون
+  ingredient_code: PAPRIKA
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -68,6 +77,7 @@ foods:
   sr_description: Spices, pepper, black
   ingredient_en: Black pepper
   ingredient_ar: فلفل أسود
+  ingredient_code: BLACK_PEPPER
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -75,6 +85,7 @@ foods:
   sr_description: Spices, pepper, red or cayenne
   ingredient_en: Ground red hot pepper (cayenne)
   ingredient_ar: فلفل مرحي (فلفل أحمر حار مطحون)
+  ingredient_code: GROUND_RED_HOT_PEPPER_CAYENNE
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -82,6 +93,7 @@ foods:
   sr_description: Spices, turmeric, ground
   ingredient_en: Turmeric
   ingredient_ar: كركم
+  ingredient_code: TURMERIC
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -89,6 +101,7 @@ foods:
   sr_description: Salt, table
   ingredient_en: Salt
   ingredient_ar: ملح
+  ingredient_code: SALT
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -96,6 +109,7 @@ foods:
   sr_description: Oil, olive, salad or cooking
   ingredient_en: Olive oil
   ingredient_ar: زيت زيتون
+  ingredient_code: OLIVE_OIL
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -103,6 +117,7 @@ foods:
   sr_description: Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw
   ingredient_en: Chicken breast, skinless
   ingredient_ar: صدر دجاج بدون جلد
+  ingredient_code: CHICKEN_BREAST_SKINLESS
   state: raw
   allergens: []
   ingredient_tags: []
@@ -110,6 +125,7 @@ foods:
   sr_description: Chicken, broilers or fryers, dark meat, thigh, meat only, raw
   ingredient_en: Chicken thigh, skinless
   ingredient_ar: لحم فخذ الدجاج بدون جلد وعظم
+  ingredient_code: CHICKEN_THIGH_SKINLESS
   state: raw
   allergens: []
   ingredient_tags: []
@@ -117,6 +133,7 @@ foods:
   sr_description: Cereals, oats, regular and quick, not fortified, dry
   ingredient_en: Rolled oats
   ingredient_ar: شوفان
+  ingredient_code: ROLLED_OATS
   state: raw
   allergens: []
   ingredient_tags: []
@@ -124,6 +141,7 @@ foods:
   sr_description: Apples, raw, with skin
   ingredient_en: Apple
   ingredient_ar: تفاح
+  ingredient_code: APPLE
   state: raw
   allergens: []
   ingredient_tags: []
@@ -131,6 +149,7 @@ foods:
   sr_description: Bananas, raw
   ingredient_en: Banana
   ingredient_ar: موز
+  ingredient_code: BANANA
   state: raw
   allergens: []
   ingredient_tags: []
@@ -138,6 +157,7 @@ foods:
   sr_description: Dates, deglet noor
   ingredient_en: Dates
   ingredient_ar: تمر
+  ingredient_code: DATES
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -145,6 +165,7 @@ foods:
   sr_description: Grapes, red or green (European type, such as Thompson seedless), raw
   ingredient_en: Grapes
   ingredient_ar: عنب
+  ingredient_code: GRAPES
   state: raw
   allergens: []
   ingredient_tags: []
@@ -152,6 +173,7 @@ foods:
   sr_description: Lemon juice, raw
   ingredient_en: Lemon juice
   ingredient_ar: عصير ليمون
+  ingredient_code: LEMON_JUICE
   state: raw
   allergens: []
   ingredient_tags: []
@@ -159,6 +181,7 @@ foods:
   sr_description: Olives, ripe, canned (small-extra large)
   ingredient_en: Black olives
   ingredient_ar: زيتون أسود
+  ingredient_code: BLACK_OLIVES
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -166,6 +189,7 @@ foods:
   sr_description: Oranges, raw, all commercial varieties
   ingredient_en: Orange
   ingredient_ar: برتقال
+  ingredient_code: ORANGE
   state: raw
   allergens: []
   ingredient_tags: []
@@ -173,6 +197,7 @@ foods:
   sr_description: Strawberries, raw
   ingredient_en: Strawberries
   ingredient_ar: فراولة
+  ingredient_code: STRAWBERRIES
   state: raw
   allergens: []
   ingredient_tags: []
@@ -180,6 +205,7 @@ foods:
   sr_description: Carrots, raw
   ingredient_en: Carrot
   ingredient_ar: جزر
+  ingredient_code: CARROT
   state: raw
   allergens: []
   ingredient_tags: []
@@ -187,6 +213,7 @@ foods:
   sr_description: Coriander (cilantro) leaves, raw
   ingredient_en: Coriander leaves
   ingredient_ar: كزبرة خضراء
+  ingredient_code: CORIANDER_LEAVES
   state: raw
   allergens: []
   ingredient_tags: []
@@ -194,6 +221,7 @@ foods:
   sr_description: Cucumber, with peel, raw
   ingredient_en: Cucumber
   ingredient_ar: خيار
+  ingredient_code: CUCUMBER
   state: raw
   allergens: []
   ingredient_tags: []
@@ -201,6 +229,7 @@ foods:
   sr_description: Garlic, raw
   ingredient_en: Garlic
   ingredient_ar: ثوم
+  ingredient_code: GARLIC
   state: raw
   allergens: []
   ingredient_tags: []
@@ -208,6 +237,7 @@ foods:
   sr_description: Lettuce, cos or romaine, raw
   ingredient_en: Romaine lettuce
   ingredient_ar: خس
+  ingredient_code: ROMAINE_LETTUCE
   state: raw
   allergens: []
   ingredient_tags: []
@@ -215,6 +245,7 @@ foods:
   sr_description: Okra, raw
   ingredient_en: Okra
   ingredient_ar: بامية
+  ingredient_code: OKRA
   state: raw
   allergens: []
   ingredient_tags: []
@@ -222,6 +253,7 @@ foods:
   sr_description: Onions, raw
   ingredient_en: Onion
   ingredient_ar: بصل
+  ingredient_code: ONION
   state: raw
   allergens: []
   ingredient_tags: []
@@ -229,6 +261,7 @@ foods:
   sr_description: Parsley, fresh
   ingredient_en: Parsley
   ingredient_ar: بقدونس
+  ingredient_code: PARSLEY
   state: raw
   allergens: []
   ingredient_tags: []
@@ -236,6 +269,7 @@ foods:
   sr_description: Peas, green, raw
   ingredient_en: Green peas
   ingredient_ar: بازلاء
+  ingredient_code: GREEN_PEAS
   state: raw
   allergens: []
   ingredient_tags: []
@@ -243,6 +277,7 @@ foods:
   sr_description: Peppers, sweet, green, raw
   ingredient_en: Green bell pepper
   ingredient_ar: فلفل أخضر حلو
+  ingredient_code: GREEN_BELL_PEPPER
   state: raw
   allergens: []
   ingredient_tags: []
@@ -250,6 +285,7 @@ foods:
   sr_description: Potatoes, flesh and skin, raw
   ingredient_en: Potato
   ingredient_ar: بطاطا
+  ingredient_code: POTATO
   state: raw
   allergens: []
   ingredient_tags: []
@@ -257,6 +293,7 @@ foods:
   sr_description: Pumpkin, raw
   ingredient_en: Pumpkin
   ingredient_ar: قرع
+  ingredient_code: PUMPKIN
   state: raw
   allergens: []
   ingredient_tags: []
@@ -264,6 +301,7 @@ foods:
   sr_description: Tomatoes, red, ripe, raw, year round average
   ingredient_en: Tomato
   ingredient_ar: طماطم
+  ingredient_code: TOMATO
   state: raw
   allergens: []
   ingredient_tags: []
@@ -271,6 +309,7 @@ foods:
   sr_description: Tomatoes, red, ripe, canned, packed in tomato juice
   ingredient_en: Canned tomatoes
   ingredient_ar: طماطم معلبة
+  ingredient_code: CANNED_TOMATOES
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -278,6 +317,7 @@ foods:
   sr_description: Tomato products, canned, paste, without salt added
   ingredient_en: Tomato paste, no added salt
   ingredient_ar: معجون طماطم بدون ملح مضاف
+  ingredient_code: TOMATO_PASTE_NO_ADDED_SALT
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -285,6 +325,7 @@ foods:
   sr_description: Peppers, hot chili, green, raw
   ingredient_en: Green chili pepper
   ingredient_ar: فلفل حار أخضر
+  ingredient_code: GREEN_CHILI_PEPPER
   state: raw
   allergens: []
   ingredient_tags: []
@@ -292,6 +333,7 @@ foods:
   sr_description: Nuts, almonds
   ingredient_en: Almonds
   ingredient_ar: لوز
+  ingredient_code: ALMONDS
   state: raw
   allergens:
   - Tree nuts
@@ -300,6 +342,7 @@ foods:
   sr_description: Nuts, walnuts, english
   ingredient_en: Walnuts
   ingredient_ar: جوز
+  ingredient_code: WALNUTS
   state: raw
   allergens:
   - Tree nuts
@@ -308,6 +351,7 @@ foods:
   sr_description: Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)
   ingredient_en: Tahini
   ingredient_ar: طحينة
+  ingredient_code: TAHINI
   state: as_purchased
   allergens:
   - Sesame
@@ -316,6 +360,7 @@ foods:
   sr_description: Water, bottled, generic
   ingredient_en: Water
   ingredient_ar: ماء
+  ingredient_code: WATER
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -323,6 +368,7 @@ foods:
   sr_description: Fish, tuna, light, canned in water, drained solids
   ingredient_en: Canned tuna in water, drained
   ingredient_ar: تونة معلبة بالماء مصفاة
+  ingredient_code: CANNED_TUNA_IN_WATER_DRAINED
   state: as_purchased
   allergens:
   - Fish
@@ -331,6 +377,7 @@ foods:
   sr_description: Fish, tilapia, raw
   ingredient_en: Tilapia fillet
   ingredient_ar: فيليه سمك البلطي
+  ingredient_code: TILAPIA_FILLET
   state: raw
   allergens:
   - Fish
@@ -339,6 +386,7 @@ foods:
   sr_description: Beans, white, mature seeds, canned
   ingredient_en: Canned white beans
   ingredient_ar: فاصوليا بيضاء معلبة
+  ingredient_code: CANNED_WHITE_BEANS
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -346,6 +394,7 @@ foods:
   sr_description: Broadbeans (fava beans), mature seeds, raw
   ingredient_en: Dried fava beans
   ingredient_ar: فول مجفف
+  ingredient_code: DRIED_FAVA_BEANS
   state: raw
   allergens: []
   ingredient_tags: []
@@ -353,6 +402,7 @@ foods:
   sr_description: Lentils, raw
   ingredient_en: Lentils
   ingredient_ar: عدس
+  ingredient_code: LENTILS
   state: raw
   allergens: []
   ingredient_tags: []
@@ -360,6 +410,7 @@ foods:
   sr_description: Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained solids
   ingredient_en: Canned chickpeas, drained
   ingredient_ar: حمص معلب مصفى
+  ingredient_code: CANNED_CHICKPEAS_DRAINED
   state: as_purchased
   allergens: []
   ingredient_tags: []
@@ -367,6 +418,7 @@ foods:
   sr_description: Peanut butter, smooth style, without salt
   ingredient_en: Peanut butter, unsalted
   ingredient_ar: زبدة الفول السوداني بدون ملح
+  ingredient_code: PEANUT_BUTTER_UNSALTED
   state: as_purchased
   allergens:
   - Peanut
@@ -375,6 +427,7 @@ foods:
   sr_description: Lamb, domestic, shoulder, whole (arm and blade), separable lean only, trimmed to 1/4" fat, choice, raw
   ingredient_en: Lamb shoulder, lean
   ingredient_ar: لحم ضأن
+  ingredient_code: LAMB_SHOULDER_LEAN
   state: raw
   allergens: []
   ingredient_tags: []
@@ -382,6 +435,7 @@ foods:
   sr_description: Bread, pita, whole-wheat
   ingredient_en: Whole-wheat pita bread
   ingredient_ar: خبز عربي أسمر
+  ingredient_code: WHOLE_WHEAT_PITA_BREAD
   state: as_purchased
   allergens:
   - Gluten
@@ -390,6 +444,7 @@ foods:
   sr_description: Bread, whole-wheat, commercially prepared
   ingredient_en: Whole-wheat bread
   ingredient_ar: خبز أسمر
+  ingredient_code: WHOLE_WHEAT_BREAD
   state: as_purchased
   allergens:
   - Gluten
@@ -398,6 +453,7 @@ foods:
   sr_description: Honey
   ingredient_en: Honey
   ingredient_ar: عسل
+  ingredient_code: HONEY
   state: as_purchased
   allergens: []
   ingredient_tags:
@@ -406,6 +462,7 @@ foods:
   sr_description: Bulgur, dry
   ingredient_en: Bulgur
   ingredient_ar: برغل
+  ingredient_code: BULGUR
   state: raw
   allergens:
   - Gluten
@@ -414,6 +471,7 @@ foods:
   sr_description: Couscous, cooked
   ingredient_en: Couscous, cooked
   ingredient_ar: كسكسي مطبوخ
+  ingredient_code: COUSCOUS_COOKED
   state: cooked
   allergens:
   - Gluten
@@ -422,6 +480,7 @@ foods:
   sr_description: Rice, white, long-grain, regular, raw, enriched
   ingredient_en: White rice
   ingredient_ar: أرز أبيض
+  ingredient_code: WHITE_RICE
   state: raw
   allergens: []
   ingredient_tags: []
@@ -429,6 +488,7 @@ foods:
   sr_description: Wheat flour, white, all-purpose, enriched, bleached
   ingredient_en: White wheat flour
   ingredient_ar: دقيق قمح أبيض
+  ingredient_code: WHITE_WHEAT_FLOUR
   state: raw
   allergens:
   - Gluten
@@ -437,6 +497,7 @@ foods:
   sr_description: Pasta, dry, enriched
   ingredient_en: Pasta
   ingredient_ar: معكرونة
+  ingredient_code: PASTA
   state: raw
   allergens:
   - Gluten
@@ -445,6 +506,7 @@ foods:
   sr_description: Barley flour or meal
   ingredient_en: Barley flour
   ingredient_ar: دقيق شعير
+  ingredient_code: BARLEY_FLOUR
   state: raw
   allergens:
   - Gluten
@@ -453,6 +515,7 @@ foods:
   sr_description: Beef, ground, 90% lean meat / 10% fat, raw
   ingredient_en: Ground beef, 90% lean
   ingredient_ar: لحم بقر مفروم 90% صافٍ
+  ingredient_code: GROUND_BEEF_90_LEAN
   state: raw
   allergens: []
   ingredient_tags: []

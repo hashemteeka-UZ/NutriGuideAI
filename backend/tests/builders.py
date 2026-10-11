@@ -132,6 +132,7 @@ def values_portions_food(conn: Connection, **overrides: Any) -> dict[str, Any]:
 def values_ingredients(_conn: Connection, **overrides: Any) -> dict[str, Any]:
     n = nxt()
     return {
+        "code": f"INGREDIENT_{n}",
         "canonical_name": f"ingredient-{n}",
         "canonical_name_ar": f"مكون-{n}",
         **overrides,
@@ -184,7 +185,11 @@ def values_condition_nutrient_limits(conn: Connection, **overrides: Any) -> dict
 
 
 def values_condition_tag_restrictions(conn: Connection, **overrides: Any) -> dict[str, Any]:
-    values: dict[str, Any] = {"restriction_type": "AVOID", **overrides}
+    values: dict[str, Any] = {
+        "restriction_type": "AVOID",
+        "source_reference": "test-guideline",
+        **overrides,
+    }
     if "condition_id" not in values:
         values["condition_id"] = make_health_condition(conn)
     if "tag_id" not in values:

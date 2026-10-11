@@ -7,7 +7,14 @@ from typing import Any
 
 import pytest
 
-from app.seed.f1_files import F1Files, ReferenceSeed, SliceFoods, SliceMeals, SubsetRow
+from app.seed.f1_files import (
+    F1Files,
+    ReferenceSeed,
+    SliceFood,
+    SliceFoods,
+    SliceMeals,
+    SubsetRow,
+)
 from app.seed.quality_gates import (
     gate_energy_consistency,
     gate_excluded_ingredients,
@@ -82,6 +89,7 @@ SEED: dict[str, Any] = {
             "tag": "high_sodium",
             "restriction_type": "LIMIT",
             "max_servings_per_week": 3,
+            "source_reference": "test",
         }
     ],
     "excluded_keywords": ["pork", "ham"],
@@ -95,6 +103,7 @@ FOODS: dict[str, Any] = {
             "sr_description": "Cheese, feta",
             "ingredient_en": "Feta cheese",
             "ingredient_ar": "جبن فيتا",
+            "ingredient_code": "FETA_CHEESE",
             "state": "as_purchased",
             "allergens": ["Milk"],
             "ingredient_tags": ["high_sodium"],
@@ -327,7 +336,12 @@ def test_g4_fails_on_unknown_limit_and_restriction_references() -> None:
             }
         ],
         condition_tag_restrictions=[
-            {"condition": "HYPERTENSION", "tag": "unknown_tag", "restriction_type": "AVOID"}
+            {
+                "condition": "HYPERTENSION",
+                "tag": "unknown_tag",
+                "restriction_type": "AVOID",
+                "source_reference": "x",
+            }
         ],
     )
     messages = sorted(f.message for f in gate_references(make_files(seed=seed)))
@@ -342,6 +356,26 @@ def test_g4_fails_when_food_has_no_subset_rows() -> None:
     failures = gate_references(make_files(subset=[]))
     assert ("01019", "food has no rows in the FDC subset") in [
         (f.subject, f.message) for f in failures
+    ]
+
+
+def test_g4_fails_when_two_foods_share_ingredient_code() -> None:
+    food_a = SliceFood.model_validate(FOODS["foods"][0])
+    food_b = food_a.model_copy(
+        update={
+            "ndb_number": "01082",
+            "ingredient_en": "Other cheese",
+            "ingredient_ar": "جبن آخر",
+        }
+    )
+    files = F1Files(
+        seed=ReferenceSeed.model_validate(SEED),
+        foods=SliceFoods.model_construct(source="test", foods=[food_a, food_b]),
+        meals=SliceMeals.model_validate(MEALS),
+        subset=subset_rows() + subset_rows(ndb="01082"),
+    )
+    assert ("FETA_CHEESE", "ingredient_code used by more than one food") in [
+        (f.subject, f.message) for f in gate_references(files)
     ]
 
 
@@ -379,7 +413,12 @@ def test_g5_fails_on_occasion_tag_on_ingredient() -> None:
 def test_g5_fails_on_non_condition_tag_in_restriction() -> None:
     seed = seed_with(
         condition_tag_restrictions=[
-            {"condition": "HYPERTENSION", "tag": "vegetarian", "restriction_type": "AVOID"}
+            {
+                "condition": "HYPERTENSION",
+                "tag": "vegetarian",
+                "restriction_type": "AVOID",
+                "source_reference": "x",
+            }
         ]
     )
     failures = gate_tag_groups(make_files(seed=seed))

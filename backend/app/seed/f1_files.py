@@ -42,6 +42,8 @@ SUBSET_COLUMNS = (
 
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 UpperSnake = Annotated[str, StringConstraints(pattern=r"^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$")]
+# §9.10 / #91: same CHECK as ingredients.code.
+IngredientCode = Annotated[str, StringConstraints(pattern=r"^[A-Z][A-Z0-9_]*$")]
 LowerSnake = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9]*(_[a-z0-9]+)*$")]
 # SR Legacy NDB numbers are five digits; kept as text so leading zeros survive.
 NdbNumber = Annotated[str, StringConstraints(pattern=r"^\d{5}$")]
@@ -124,6 +126,7 @@ class ConditionTagRestrictionSeed(_Model):
     tag: Text
     restriction_type: RestrictionType
     max_servings_per_week: Annotated[int, Field(gt=0)] | None = None
+    source_reference: Text
 
     @model_validator(mode="after")
     def _servings_only_for_limit(self) -> Self:
@@ -178,6 +181,7 @@ class SliceFood(_Model):
     sr_description: Text
     ingredient_en: Text
     ingredient_ar: Text
+    ingredient_code: IngredientCode
     state: FoodState
     allergens: list[Text]
     ingredient_tags: list[Text]
@@ -190,6 +194,7 @@ class SliceFoods(_Model):
     @model_validator(mode="after")
     def _unique_foods(self) -> Self:
         _require_unique("foods.ndb_number", [f.ndb_number for f in self.foods])
+        _require_unique("foods.ingredient_code", [f.ingredient_code for f in self.foods])
         return self
 
 

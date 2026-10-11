@@ -15,9 +15,12 @@ from sqlalchemy.orm import Session
 from app.core.text import normalize_search_text
 from app.db.models import (
     Allergen,
+    ConditionTagRestriction,
     Cuisine,
+    DietaryTag,
     Food,
     FoodNutrient,
+    HealthCondition,
     Ingredient,
     IngredientAlias,
     Meal,
@@ -128,7 +131,33 @@ def test_real_files_load_without_gate_failures(session: Session) -> None:
     assert {name: c.inserted for name, c in report.tables.items() if name != "meal_tags"} == counts
     assert report.unverified_meals == 0
     assert report.deactivated_meals == report.reactivated_meals == []
-    assert not any("§9.1-§9.3" in f or "§10.1/§31.4" in f for f in report.findings)
+    assert not any("§9.1-§9.3" in f or "§10.1/§31.4" in f or "§9.10" in f for f in report.findings)
+
+
+def test_real_files_write_ingredient_codes_and_restriction_sources(session: Session) -> None:
+    load_f1_slice(session, DEFAULT_DATA_DIR)
+    codes = dict(session.execute(select(Ingredient.code, Ingredient.canonical_name)).tuples().all())
+    expected = {f.ingredient_code: f.ingredient_en for f in FILES.foods.foods}
+    assert codes == expected
+    assert len(codes) == 62
+    restrictions = session.execute(
+        select(
+            HealthCondition.code,
+            DietaryTag.code,
+            ConditionTagRestriction.source_reference,
+        )
+        .join(
+            HealthCondition,
+            HealthCondition.condition_id == ConditionTagRestriction.condition_id,
+        )
+        .join(DietaryTag, DietaryTag.tag_id == ConditionTagRestriction.tag_id)
+        .order_by(HealthCondition.code, DietaryTag.code)
+    ).all()
+    expected_refs = {
+        (r.condition, r.tag): r.source_reference for r in FILES.seed.condition_tag_restrictions
+    }
+    assert len(restrictions) == 4
+    assert {(condition, tag): source for condition, tag, source in restrictions} == expected_refs
 
 
 def test_every_food_has_the_nine_mandatory_nutrients(session: Session) -> None:
@@ -330,7 +359,7 @@ def _aliases(session: Session, ndb: str) -> set[tuple[str, str, str | None]]:
 def test_renamed_ingredient_loses_its_old_seed_alias(session: Session, tmp_path: Path) -> None:
     data_dir = _copy_data_dir(tmp_path)
     _replace_once(
-        data_dir / REFERENCE_SEED_FILE, "seed_version: f1_seed_v1", "seed_version: f1_seed_v0"
+        data_dir / REFERENCE_SEED_FILE, "seed_version: f1_seed_v2", "seed_version: f1_seed_v0"
     )
     _replace_once(
         data_dir / SLICE_FOODS_FILE,
@@ -342,8 +371,8 @@ def test_renamed_ingredient_loses_its_old_seed_alias(session: Session, tmp_path:
 
     report = load_f1_slice(session, DEFAULT_DATA_DIR)
     assert _aliases(session, "17039") == {
-        ("Lamb shoulder, lean", "en", "f1_seed_v1"),
-        ("لحم ضأن", "ar", "f1_seed_v1"),
+        ("Lamb shoulder, lean", "en", "f1_seed_v2"),
+        ("لحم ضأن", "ar", "f1_seed_v2"),
     }
     aliases = report.tables["ingredient_aliases"]
     assert (aliases.inserted, aliases.deleted, aliases.updated) == (1, 1, 123)
@@ -370,6 +399,42 @@ def test_alias_from_another_source_is_kept(session: Session) -> None:
     report = load_f1_slice(session, DEFAULT_DATA_DIR)
     assert ("لحم غنم", "ar", "curator") in _aliases(session, "17039")
     assert report.all_unchanged, report.format()
+
+
+def test_changing_an_ingredients_food_keeps_the_same_ingredient_id(
+    session: Session, tmp_path: Path
+) -> None:
+    first = load_f1_slice(session, DEFAULT_DATA_DIR)
+    assert first.ok
+    egg = session.execute(select(Ingredient).where(Ingredient.code == "EGG")).scalar_one()
+    original_id = egg.ingredient_id
+    original_food = session.execute(
+        select(Food.external_code).where(Food.food_id == egg.default_food_id)
+    ).scalar_one()
+    assert original_food == "01123"
+
+    data_dir = _copy_data_dir(tmp_path)
+    foods_file = data_dir / SLICE_FOODS_FILE
+    _replace_once(
+        foods_file,
+        "ndb_number: '01123'\n  sr_description: Egg, whole, raw, fresh",
+        "ndb_number: '01019'\n  sr_description: Egg, whole, raw, fresh",
+    )
+    _replace_once(
+        foods_file,
+        "ndb_number: 01019\n  sr_description: Cheese, feta",
+        "ndb_number: '01123'\n  sr_description: Cheese, feta",
+    )
+    report = load_f1_slice(session, data_dir)
+    assert report.ok, report.format()
+    updated = session.execute(select(Ingredient).where(Ingredient.code == "EGG")).scalar_one()
+    assert updated.ingredient_id == original_id
+    new_food = session.execute(
+        select(Food.external_code).where(Food.food_id == updated.default_food_id)
+    ).scalar_one()
+    assert new_food == "01019"
+    assert report.tables["ingredients"].inserted == 0
+    assert session.execute(select(func.count()).select_from(Ingredient)).scalar_one() == 62
 
 
 def test_normalized_columns_use_normalize_search_text(session: Session) -> None:

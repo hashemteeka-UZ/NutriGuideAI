@@ -109,6 +109,11 @@ CHECK_CASES: dict[str, CheckCase] = {
         positive={"restriction_type": "LIMIT", "max_servings_per_week": 1},
         negative={"restriction_type": "LIMIT", "max_servings_per_week": 0},
     ),
+    "ck_ingredients_code_format": CheckCase(
+        table="ingredients",
+        positive={"code": "EGG"},
+        negative={"code": "egg"},
+    ),
     "ck_foods_basis_grams_100": CheckCase(
         table="foods",
         positive={"basis_grams": 100},
@@ -367,6 +372,7 @@ UNIQUE_CASES: dict[str, UniqueCase] = {
     ),
     "uq_foods_fdc_id": UniqueCase("foods", {"fdc_id": 424242}, nullable=("fdc_id",)),
     "uq_nutrients_code": UniqueCase("nutrients", {"code": "DUP_NUT"}),
+    "uq_ingredients_code": UniqueCase("ingredients", {"code": "DUP_ING"}),
     "uq_ingredient_aliases_alias_text_lang": UniqueCase(
         "ingredient_aliases", {"alias_text": "dup-alias", "lang": "en"}
     ),

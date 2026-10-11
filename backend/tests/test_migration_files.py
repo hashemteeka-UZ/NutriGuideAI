@@ -16,6 +16,9 @@ MIGRATION_SHA256: dict[str, str] = {
     "0003_codes_variants_optional_qc.py": (
         "75371f5d06195665c308a57efd8c95504948a770b211b18ce712e86ef00fc6fe"
     ),
+    "0004_ingredient_code_restriction_source.py": (
+        "9014f489970c9b63dfbd84b919368bd5174addf3f4aed2158925a6647ba43793"
+    ),
 }
 
 EDITED_MESSAGE = (

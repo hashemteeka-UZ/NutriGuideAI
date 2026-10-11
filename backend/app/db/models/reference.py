@@ -208,6 +208,7 @@ class ConditionTagRestriction(Base):
     tag_id: Mapped[int] = fk_column("dietary_tags.tag_id", ondelete="RESTRICT", index=True)
     restriction_type: Mapped[str] = mapped_column(String, nullable=False)
     max_servings_per_week: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    source_reference: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = created_at_column()
     updated_at: Mapped[datetime] = updated_at_column()
 
@@ -279,9 +280,13 @@ class PortionFood(Base):
 # §9.10
 class Ingredient(Base):
     __tablename__ = "ingredients"
-    __table_args__ = (enum_check("review_status", ReviewStatus, name="review_status_valid"),)
+    __table_args__ = (
+        enum_check("review_status", ReviewStatus, name="review_status_valid"),
+        CheckConstraint("code ~ '^[A-Z][A-Z0-9_]*$'", name="code_format"),
+    )
 
     ingredient_id: Mapped[int] = pk_column()
+    code: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     canonical_name: Mapped[str] = mapped_column(String, nullable=False)
     canonical_name_ar: Mapped[str] = mapped_column(String, nullable=False)
     default_food_id: Mapped[int | None] = fk_column(
