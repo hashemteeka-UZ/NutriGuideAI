@@ -1,13 +1,29 @@
-# PROJECT_CONTEXT.md — v4.16
+# PROJECT_CONTEXT.md — v4.17
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.16 → v4.17
+
+v4.17 **closes Step G (dataset engineering)** (2026-10-12, DEV_JOURNAL J-034). Commits: G.0 `b6c5e4e`, G.1 `93a9615`, G.2 `aad2ca7`, G.3a `bf214ff`, G.3b `6a09ea9`, G.5 `f5e10f0`; git tag `dataset-v1`; CI green; 1248 tests, 0 skipped. No schema change after G.0. Decisions taken by the assistant under the user's delegation (J-030), scope reduction requested by the user.
+
+| # | Topic | Change | Schema? |
+|---|---|---|---|
+| #101 | Step G scope reduction (user, 2026-10-11/12) | The project values correct algorithms and results over data volume. Step G closes with **one recipe batch** (`team_recipes_batch_01.yaml`, 40 meals, `team_recipes_v1`) plus the F.1 slice (75 active meals in the dev database). **Postponed to Future Work:** G.4 FNDDS ready foods (#98), the FNDDS dish cross-check and the weighed sample (#96). Closure criteria revised: the per-slot coverage rule of #100 stays and is met; the totals of #100 (≥ 150 meals, slot minimums, `LIBYAN` ≥ 35%, ≥ 100 ready foods) are dropped. The user asked for mostly `GENERAL` recipes (batch 01: `GENERAL` 22, `LIBYAN` 13, `EGYPTIAN` 2, `LEVANTINE` 2, `MAGHREBI` 1). More recipes are wanted later: the team reviews the 183-dish proposal (`claude/steps/g2_data/dish_list_proposal.xlsx`) and each new batch is one more file in `backend/data/catalog/meals/` (no code or schema change; the manifest is re-written and reviewed). §31.7, §29 | No |
+| #102 | #93 revised by evidence (G-01) | On the real files 2083 of 7793 SR Legacy foods miss a mandatory nutrient (3174 gaps, mostly sugars and fiber) and the FNDDS fill closes only 17 (one used: chia seed sugars). The fill step stays (safe, rare); the working rule is **choose an SR Legacy item that is already complete** (5710 exist). 485 of 15049 shared values differ by > 5% between FNDDS and SR (G-02, no effect because SR is first). §31.7 | No |
+| #103 | Reference layer result | `ingredients.yaml`: 196 ingredients, **177 approved**, 19 quarantined (15 missing a mandatory nutrient, 4 failing the energy gate) and kept `PENDING`, never used in recipes (substitutes: lentils 16069 for red lentils, standard dates for Medjool, flour for semolina, yeast for baking powder; spices without sugars dropped). An extractor report `reports/ingredient_lookup.md` checks every NDB number against its SR description and proposes complete candidates. Gelatin moved from excluded to quarantine (`uncertain_keywords`, G-03). Camel meat stays out (no published complete source, #93 step 4). Cuisines `EGYPTIAN`, `MAGHREBI` and category 2500 added. A recipe may show a local display name through `label_ar` (e.g. low-fat cottage cheese shown as «جبن أبيض طري»); the ingredient row is unchanged. §9.10, §31.7 | No |
+| #104 | Benchmark isolation (G-04) and one re-baseline | `scripts/f1_scenario_report.py` builds a sibling database `{dev_db}_f1_bench`, migrates it, loads the F.1 slice, runs the scenario in a rolled-back transaction and drops it (`--keep-db` keeps it). The #88 report changed **once**, in G.3a, only through `tags_v2` (`F1-S05` gains `high_sugar`; no plan or reason code changed) and the removal of leftover dev rows; that file is the final #88 baseline, fixed before any optimizer exists. `--catalog` runs the same personas on the dev database (catalog + slice) and writes `docs/reports/catalog_scenario_report.md`: graduation evidence, not the benchmark. §28.4b | No |
+| #105 | `SUM_OF_INGREDIENTS` for absorbed-water dishes | §10.1 relaxed: `SUM_OF_INGREDIENTS` is also allowed for cooked dishes whose added water is counted as an ingredient and stays in the dish (rice, pasta, stews); dishes where water clearly evaporates use `YIELD_FACTOR` (`TEAM_ESTIMATE`, tier `SILVER`). Per-serving nutrients, which the planner uses, do not depend on the weight method; only `amount_per_100g` (threshold tags) does. #96 GOLD wording follows. Weighing remains Future Work. §10.1, §31.7 | No |
+| #106 | Coverage result and Layer 1 meaning (G-05) | `docs/reports/catalog_coverage_report.md`: all 15 main-slot rows pass (≥ 8 eligible meals at multiplier 1.0; tightest `DIABETES_T2` breakfast 22). `HYPERTENSION` and `HEART_DISEASE` filter exactly like `NONE` at meal level because their nutrient limits are **per day** (applied by the planner over the day) and `high_sodium` is a `LIMIT` tag (servings); only `DIABETES_T2` removes meals per meal (`added_sugar` AVOID, carbohydrate max per meal). This is by design. §28.1 | No |
+| #107 | Dataset freeze implemented (#99) | `app/pipeline/manifest.py` (`--write` / `--check`) writes `backend/data/catalog/DATASET_MANIFEST.yaml`: `catalog_v1`, SHA-256 of every curated file (reference seed, ingredients, meal batches, source manifest and subsets; generated reports excluded), raw files from the source manifest, classification counts and meal tiers from the build, rule versions (`calc_v1`, `tags_v2`, `greedy_v1`). A CI test fails when a curated file changes without `--write`. Tag `dataset-v1` on `f5e10f0`. §22 | No |
 
 ---
 
@@ -616,7 +632,7 @@ Constraints: `servings > 0`, `total_grams > 0`
 **`total_grams` definition (Decision #25):** the **final as-served weight of the whole recipe (all servings)** — i.e. after cooking, not the sum of raw ingredient weights. How it was obtained is recorded in `weight_method`:
 - `WEIGHED` — the prepared dish was physically weighed (preferred for GOLD).
 - `YIELD_FACTOR` — computed as Σ(raw ingredient grams) × a documented cooking yield factor (factor and its source stored in `meals.yield_factor` / `yield_factor_source`, v4.14).
-- `SUM_OF_INGREDIENTS` — allowed **only** for no-cook meals (salads, yogurt bowls, drinks) where weight does not change.
+- `SUM_OF_INGREDIENTS` — no-cook meals (salads, yogurt bowls, drinks) where weight does not change, and (v4.17, #105) cooked dishes whose added water is listed as an ingredient and stays in the dish (rice, pasta, stews). Dishes where water clearly evaporates use `YIELD_FACTOR`. Per-serving nutrients do not depend on this choice; `amount_per_100g` does.
 
 ## 10.2 `meal_ingredients`
 - `meal_id` FK, `position`, `ingredient_id` FK, `food_id` FK (nullable when mapping not yet accepted)
@@ -645,10 +661,10 @@ Derived cache: `meal_id`, `allergen_id` — PK `(meal_id, allergen_id)`. Fully r
 ## 10.5 `meal_tags` — CHANGED in v4.2 (Decision #23)
 - `meal_id`, `tag_id` — PK: `(meal_id, tag_id)`
 - `source` — **NEW** — `VARCHAR NOT NULL` + CHECK (`MANUAL`, `DERIVED`)
-- `rule_version` — **NEW in v4.14 (#78)** — `VARCHAR` nullable; `CHECK (source = 'DERIVED' OR rule_version IS NULL)`. The tag-rules version that produced a `DERIVED` row (e.g. `tags_v1`), like `meal_nutrients.computation_version`.
+- `rule_version` — **NEW in v4.14 (#78)** — `VARCHAR` nullable; `CHECK (source = 'DERIVED' OR rule_version IS NULL)`. The tag-rules version that produced a `DERIVED` row (`tags_v2` since v4.17; `tags_v1` before), like `meal_nutrients.computation_version`.
 
 Rules:
-- `DERIVED` rows (v4.14 #74) = (a) the union of the meal's ingredients' `ingredient_tags` with `tag_group = 'CONDITION'` (presence tags, e.g. `added_sugar`; `DIETARY` ingredient tags are not unioned), plus (b) threshold tags from the meal's own `meal_nutrients.amount_per_100g`: `high_sodium` when sodium > 600 mg, `high_sugar` when sugars > 22.5 g (UK FSA front-of-pack "high" thresholds for foods; drinks thresholds deferred to Step G). An unknown nutrient derives no threshold tag. Recomputed by the same `recompute_meal_derived(meal_id)` routine as `meal_allergens`, after `meal_nutrients`; recompute deletes and rebuilds **only** `DERIVED` rows. The seed loader runs it for every loaded meal.
+- `DERIVED` rows (v4.14 #74) = (a) the union of the meal's ingredients' `ingredient_tags` with `tag_group = 'CONDITION'` (presence tags, e.g. `added_sugar`; `DIETARY` ingredient tags are not unioned), plus (b) threshold tags from the meal's own `meal_nutrients.amount_per_100g`: `high_sodium` when sodium > 600 mg, `high_sugar` when sugars > 22.5 g (UK FSA front-of-pack "high" thresholds for foods). **`tags_v2` (v4.16 #97, built in G.3a):** a meal carrying the manual `beverage` tag uses the FSA drink thresholds per 100 ml instead — `high_sodium` > 300 mg, `high_sugar` > 11.25 g (100 ml ≈ 100 g assumed for water- and milk-based drinks). An unknown nutrient derives no threshold tag. Recomputed by the same `recompute_meal_derived(meal_id)` routine as `meal_allergens`, after `meal_nutrients`; recompute deletes and rebuilds **only** `DERIVED` rows. The seed loader runs it for every loaded meal.
 - `MANUAL` rows = curator judgments (all `OCCASION` tags, most `DIETARY` tags). Never touched by recompute.
 - If a curator manually adds a tag that is also derived, the `DERIVED` row wins on recompute (PK prevents duplicates; recompute upserts `source='DERIVED'`).
 
@@ -1189,9 +1205,9 @@ computation_version: "calc_v1"
 formula_version:     "targets_v1"   (user_targets — §30)
 algorithm_version:   "rec_v1"       (meal_plans / user_interactions.context — §28)
 dataset_version:     "catalog_v1"   (whole frozen Step G catalog — v4.16, #99)
-rule version:        "tags_v2"      (drink thresholds — v4.16, #97)
+rule version:        "tags_v2"      (drink thresholds — v4.16, #97; active since G.3a)
 ```
-A formal versioning/provenance table is still not needed (v4.16, #99): the frozen catalog is identified by `backend/data/catalog/DATASET_MANIFEST.yaml` (SHA-256 of every raw and curated file, stage counts, gate results), checked by a CI test, and git tag `dataset-v1`.
+A formal versioning/provenance table is still not needed (v4.16, #99): the frozen catalog is identified by `backend/data/catalog/DATASET_MANIFEST.yaml` (SHA-256 of every raw and curated file, stage counts, gate results), checked by a CI test, and git tag `dataset-v1` (v4.17, #107: created on `f5e10f0`).
 
 ---
 
@@ -1228,12 +1244,14 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
 - **Step F.1 done (2026-10-10):** vertical slice end to end on 35 team-reviewed meals — passes F.1-a (loader, quality gates), F.1-b (calc_v1, derived tags, screening, targets_v1), F.1-r (recipe revision, migration `0003`), F.1-c (condition limits, Layer 1, `greedy_v1`), F.1-d (consumption logging, swap, adherence, weight recompute), F.1-e (three-persona scenario and report); 1190 tests, 0 skipped; last commit `6e1e5d7`, CI green (DEV_JOURNAL J-032)
 - **v4.15: Step F.1 closure decisions (#80–#89), no schema change**
 - **v4.16: Step G plan decisions (#90–#100); migration `0004` specified (#91)**
+- **Step G done (2026-10-12, reduced scope #101):** migration `0004` (G.0), `app/pipeline` (G.1), 177 approved ingredients (G.2), `tags_v2` + isolated #88 bench database (G.3a), 40 catalog recipes + catalog scenario report (G.3b), coverage report + `DATASET_MANIFEST.yaml` + tag `dataset-v1` (G.5); 1248 tests, 0 skipped; last commit `f5e10f0`, CI green (DEV_JOURNAL J-034)
+- **v4.17: Step G closure decisions (#101–#107), no schema change**
 - **v4.14: first post-freeze change (#74–#79), migration `0003`**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Step G — dataset engineering** (v4.16, plan `claude/steps/STEP_G_plan.md`): first Step G.0 (migration `0004`, #91), then data passes G.1–G.5 that build the curated catalog and freeze `catalog_v1` (§31.7). NOT implementing the optimizer, ML, chatbot, or any §29 future-work feature.
+**Step H — to be planned.** Step G is closed (v4.17). The next step is chosen with the user at the start of Step H; the two candidates are the Layer 3 optimizer judged against #88 (§28.4) and the API phase that the Flutter teammate needs (§34.2–§34.5). Adding recipe batches from the dish proposal (#101) can run alongside either.
 
 ---
 
@@ -1246,13 +1264,14 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
 - **Step E — Integrity validation:** positive/negative tests (§19) + CI (§34.7) ✅ done (2026-10-02)
 - **Step F — Schema freeze** ✅ done (2026-10-04, tag `schema-v1`; change policy §20.1)
 - **Step F.1 — Vertical slice (NEW in v4.2, Decision #33)** ✅ done (2026-10-10, v4.15): after freeze, push ~30 real team-authored meals through the full path — entry → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight log/target recompute. Purpose: reveal integration problems before scaling data. Findings that require a schema change reopen the freeze explicitly (documented as a new version), never silently.
-- **Step G — Dataset engineering** ← **current** (v4.16, plan `claude/steps/STEP_G_plan.md`):
+- **Step G — Dataset engineering** ✅ done (2026-10-12, v4.17, reduced scope #101; plan `claude/steps/STEP_G_plan.md`):
   - **G.0** schema only: migration `0004` (#91), closed with its own commit + CI
   - **G.1** pipeline foundation (`app/pipeline`, manifests, `pandera` profiling, gates, source order #93, reports)
   - **G.2** reference layer (ingredients with codes, aliases, allergens, tags; SR/FNDDS extraction; regional source)
   - **G.3** `tags_v2` (#97) + recipe batches (draft → team review → load → commit)
-  - **G.4** FNDDS ready foods with portions (#98)
-  - **G.5** coverage report (#100), cross-check and weighed sample (#96), manifest + `dataset-v1` (#99); closure = new document version + DEV_JOURNAL
+  - **G.4** FNDDS ready foods with portions (#98) — postponed to Future Work (#101)
+  - **G.5** coverage report (#100) and manifest + `dataset-v1` (#99) done; cross-check and weighed sample (#96) postponed (#101)
+- **Step H — next, to be planned with the user** (optimizer per #88, or the API phase)
   - The extended xlsx template is replaced by YAML files (#94).
 
 ---
@@ -1370,10 +1389,14 @@ Built in Step F.1 (`app/services/planner.py`); deterministic (same inputs → sa
 - **Choice:** smallest |candidate kcal − slot target|; ties by protein closeness, then `ref_external`, then smaller step. A main slot with no valid candidate raises an error; no limit is ever relaxed and no main slot is dropped.
 - **Snacks:** added while day energy < 90% of target, never above 110%, closest to the remaining gap.
 - **Hard vs soft:** every Layer 1 rule and every maximum is hard; energy precision and condition minimums are soft — measured and reported (`kcal_within_10pct`, `unmet_minimums`), not enforced (#81).
-- **Reason codes (§28.6):** `FITS_KCAL_TARGET` within ±15% of the slot target; `HIGH_PROTEIN` protein energy ≥ 20%; `LOW_SODIUM` ≤ 120 mg, `LOW_SUGAR` ≤ 5 g, `LOW_SATURATED_FAT` ≤ 1.5 g per 100 g (UK FSA "low"); `HIGH_FIBER` ≥ 6 g per 100 g (EU "high fibre" claim).
-- **Snapshot:** `target_snapshot` stores the target (kcal, macros, fiber), the resolved limits with their sources, and the versions (`targets_v1`, `tags_v1`, `greedy_v1`, `calc_v1`).
+- **Reason codes (§28.6):** `FITS_KCAL_TARGET` within ±15% of the slot target; `HIGH_PROTEIN` protein energy ≥ 20%; `LOW_SODIUM` ≤ 120 mg, `LOW_SUGAR` ≤ 5 g, `LOW_SATURATED_FAT` ≤ 1.5 g per 100 g (UK FSA "low"); for `beverage` meals (v4.17, #97) `LOW_SUGAR` ≤ 2.5 g and `LOW_SATURATED_FAT` ≤ 0.75 g (FSA drinks "low"); `HIGH_FIBER` ≥ 6 g per 100 g (EU "high fibre" claim).
+- **Snapshot:** `target_snapshot` stores the target (kcal, macros, fiber), the resolved limits with their sources, and the versions (`targets_v1`, `tags_v2` since v4.17, `greedy_v1`, `calc_v1`).
 
 **Measured limits of the baseline (F.1-e scenario report, F-13, F-14):** with tight condition limits the greedy order exhausts budgets early — the `HYPERTENSION` + `DIABETES_T2` persona (target 1738 kcal) receives ≈1214 kcal plans (−30%), so full compliance still scores `NOT_ACHIEVED`; plans repeat day after day (identical days for that persona; 6 distinct meals in 12 items for the healthy persona); the healthy persona reaches 3200–4300 mg sodium/day (#69, addressed by #87).
+
+**On the real catalog (v4.17, #104, `catalog_scenario_report.md`, 75 meals):** every slot is filled, but one day per persona falls outside ±10% (P1 1935 vs 2316 kcal; P2 1416 vs 1738), the same breakfast repeats every day, and P2 misses the fiber minimum by < 1 g on two days — the same greedy limits, with more choice.
+
+**Benchmark location (v4.17, #104):** the #88 report runs on an isolated database holding only the F.1 slice; its G.3a version is the fixed baseline.
 
 **Acceptance criteria for Layer 3 (#88):** run on the same F.1-e scenario and report side by side with `greedy_v1`: (1) 0 violations of Layer 1 and of every maximum — required 100%; (2) energy within ±10% of target on every day where a feasible plan exists; (3) every condition minimum met; (4) no meal repeated on consecutive days; (5) planning time reported.
 
@@ -1422,7 +1445,9 @@ Each `meal_plan_items` row stores `reason_codes` produced **at plan time** by de
 - Packaged-product barcode scanning (Open Food Facts — license review needed, §31.5)
 - User-authored private meals (v4.8, Decision #59) — a separate USER-domain table referencing catalog data, so the dependency direction (§8) is kept
 - Free ingredient substitution at use time (e.g. any meat for any meat with a gram ratio and re-filtering) — v4.14 chose dish variants (#76) instead
-- Camel meat and other foods missing from USDA SR Legacy — need a documented regional food-composition source (Step G)
+- Camel meat and other foods missing from USDA SR Legacy — need a documented regional food-composition source (still none in v4.17, #103)
+- FNDDS ready foods with portions (#98), the FNDDS dish cross-check and a weighed sample of ≥ 10 dishes (#96) — postponed from Step G (v4.17, #101)
+- More team recipe batches from the 183-dish proposal (#101): data work only, no design change
 
 None of these require a change to the existing Phase 1 tables (some would add new tables).
 
@@ -1529,16 +1554,16 @@ All food in the system is permissible for its users by construction. This is enf
 - Team-authored recipes (§31.2) use only permissible ingredients.
 - The teammate template's former permissibility column is dropped; a data-entry person simply does not enter non-permissible items.
 
-## 31.7 Step G pipeline and catalog rules — NEW in v4.16 (Decisions #90–#100)
+## 31.7 Step G pipeline and catalog rules — NEW in v4.16 (Decisions #90–#100), results in v4.17 (#101–#107)
 - **Layout:** `backend/data/catalog/` holds the reference seed, `ingredients.yaml`, recipe batch files, `ready_foods.yaml`, source manifests with extracted subsets, `reports/` (committed run reports) and `DATASET_MANIFEST.yaml`. Raw downloads live in `backend/data/raw/` (not in git). `backend/data/f1_slice/` stays the frozen #88 benchmark fixture.
 - **Stages (`app/pipeline`):** verify raw SHA-256 → profile raw tables with `pandera` → normalize and map (recipe → ingredient code → default food) → business gates (F.1 G1–G9 plus new ones) → classify each record as accepted / quarantine / excluded with a reason code → one-transaction idempotent load → recompute (`calc_v1`, derived tags) → run report.
-- **Nutrient source order (#93):** SR Legacy → FNDDS 2021–2023 ingredient values for the same SR code (per-nutrient fill, recorded in `foods.source_reference`) → equivalent SR Legacy/Foundation item → published regional source (`MANUAL`). Never a project-written zero.
+- **Nutrient source order (#93):** SR Legacy → FNDDS 2021–2023 ingredient values for the same SR code (per-nutrient fill, recorded in `foods.source_reference`) → equivalent SR Legacy/Foundation item → published regional source (`MANUAL`). Never a project-written zero. In practice (v4.17, #102) the fill is rare (17 of 3174 gaps), so recipes use SR items that are already complete.
 - **Authoring (#95):** dish list proposed by the assistant and edited by the team; grams drafted per §31.4; every recipe reviewed (`reviewed_by`); `ref_external` `NG-…`; `dataset_version = team_recipes_v1`.
-- **Quality tier (#96):** `GOLD` needs review, complete ingredients, `WEIGHED` / no-cook `SUM_OF_INGREDIENTS` / published yield factor, and no failed cross-check; else `SILVER`. Cross-check: computed kcal/100 g vs a similar FNDDS dish when one exists; > 25% deviation → review note. Weighed sample ≥ 10 dishes.
+- **Quality tier (#96, #105):** `GOLD` needs review, complete ingredients, `WEIGHED` / `SUM_OF_INGREDIENTS` (no-cook, or absorbed-water dish) / published yield factor, and no failed cross-check; else `SILVER`. Batch 01: 36 `GOLD`, 4 `SILVER` (team-estimated yield). Cross-check and weighed sample postponed (#101).
 - **Drinks (#97):** `tags_v2` thresholds for `beverage` meals (FSA drinks).
-- **Ready foods (#98):** ≈150 `FNDDS_FOOD` items with portions; logged, never planned.
-- **Coverage (#100):** ≥ 8 Layer-1-eligible meals per main slot for each supported condition and for `HYPERTENSION` + `DIABETES_T2`; ≥ 150 active verified meals with slot minimums and `LIBYAN` ≥ 35%; ≥ 100 ready foods.
-- **Freeze (#99):** `catalog_v1` manifest + CI hash test + tag `dataset-v1`; the F.1 scenario report must stay identical.
+- **Ready foods (#98):** ≈150 `FNDDS_FOOD` items with portions; logged, never planned. Postponed (v4.17, #101).
+- **Coverage (#100, #101, #106):** ≥ 8 Layer-1-eligible meals per main slot for each supported condition and for `HYPERTENSION` + `DIABETES_T2` — met on all 15 rows (`docs/reports/catalog_coverage_report.md`). The totals (≥ 150 meals, `LIBYAN` ≥ 35%, ≥ 100 ready foods) were dropped by #101.
+- **Freeze (#99, #107):** `catalog_v1` manifest + CI hash test + tag `dataset-v1` (done, `f5e10f0`); the F.1 scenario report stays identical (isolated bench database, #104). A new recipe batch = new file in `meals/` → build → `manifest --write` → review → commit (a new tag when the catalog version changes).
 
 ---
 
