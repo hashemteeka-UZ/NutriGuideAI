@@ -1,0 +1,51 @@
+counts:
+  foods:
+    accepted: 177
+    excluded: 0
+    quarantine: 19
+  ingredients:
+    accepted: 177
+    excluded: 0
+    quarantine: 19
+  meal_tiers:
+    GOLD: 36
+    SILVER: 4
+  meals:
+    accepted: 40
+    excluded: 0
+    quarantine: 0
+curated_files:
+  ingredients.yaml: 9dfea1d0a769d038f9b448c5e734860c85fb52ae3b186a1310074cf85ce1e1d5
+  meals/team_recipes_batch_01.yaml: 91832e99fa30fd753935f4fd47b063d4d718b8d4a42bda83fd3719717f06f3f4
+  reference_seed.yaml: e6401e0387f6ae1c57b92e7e25e22d8e6a994726819a4f1b53d4ae180f873572
+  sources/fndds_ingredient_subset.csv: 733f0c8a17d26ed6ecd820e6c716b67919d17a9b117d36aa4546b2d25185cf6e
+  sources/source_manifest.yaml: 107f09d6c8f7975b7cb50643144dbf1f3305ac4f6ae9cfafec78e5c51725798f
+  sources/sr_legacy_subset.csv: 9b8a1c09d0f79b8b99a4a8e4e2538c2e2b8a35fa83da3bec1b4e3f29d629c856
+dataset_version: catalog_v1
+meal_batches:
+  meals/team_recipes_batch_01.yaml:
+    dataset_version: team_recipes_v1
+    meal_count: 40
+raw_files:
+- download_page: https://fdc.nal.usda.gov/download-datasets
+  name: FoodData_Central_sr_legacy_food_csv_2018-04.zip
+  sha256: b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0
+- download_page: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds-download-databases/
+  name: FNDDS Ingredients.xlsx
+  sha256: 0281173c2b4ecf758994d55038d3ec66c7752bade5219e796343205408557781
+- download_page: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds-download-databases/
+  name: FNDDS Nutrient Values.xlsx
+  sha256: 518ea282df6e9dc949cbcfff0e95d458ae479ce7b19244fd36e66457939ea77a
+- download_page: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds-download-databases/
+  name: Foods and Beverages.xlsx
+  sha256: ae7e41d348ff0c9d63199c12746c9dfa8ee1444ce2efb32b824ae191814d7d15
+- download_page: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds-download-databases/
+  name: Ingredient Nutrient Values.xlsx
+  sha256: aa923adcc585121990886dff7048bae3c50e66392f29e94ef9f588c7071b842b
+- download_page: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds-download-databases/
+  name: Portions and Weights.xlsx
+  sha256: f0f34892cf4d9f1ca997344814acd9d3dfef11ce827a46abda02f46988bcf0b7
+rule_versions:
+  computation_version: calc_v1
+  planner_version: greedy_v1
+  tag_rules_version: tags_v2
