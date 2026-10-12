@@ -3,6 +3,7 @@
 ## Input files
 
 - `ingredients.yaml`: `9dfea1d0a769d038f9b448c5e734860c85fb52ae3b186a1310074cf85ce1e1d5`
+- `meals/team_recipes_batch_01.yaml`: `91832e99fa30fd753935f4fd47b063d4d718b8d4a42bda83fd3719717f06f3f4`
 - `reference_seed.yaml`: `e6401e0387f6ae1c57b92e7e25e22d8e6a994726819a4f1b53d4ae180f873572`
 - `sources/fndds_ingredient_subset.csv`: `733f0c8a17d26ed6ecd820e6c716b67919d17a9b117d36aa4546b2d25185cf6e`
 - `sources/source_manifest.yaml`: `107f09d6c8f7975b7cb50643144dbf1f3305ac4f6ae9cfafec78e5c51725798f`
@@ -32,11 +33,11 @@
 
 ## meals
 
-- total: 0
+- total: 40
 - by outcome:
-  - (none)
+  - accepted: 40
 - by outcome and reason:
-  - (none)
+  - accepted:accepted: 40
 
 ## Nutrient fills (#93)
 
@@ -46,18 +47,23 @@
 
 ## Meals by quality tier
 
-  - (none)
+  - GOLD: 36
+  - SILVER: 4
 
 ## Meals per occasion tag
 
-  - breakfast_suitable: 0
-  - lunch_suitable: 0
-  - dinner_suitable: 0
-  - snack_suitable: 0
+  - breakfast_suitable: 16
+  - lunch_suitable: 18
+  - dinner_suitable: 23
+  - snack_suitable: 16
 
 ## Share per cuisine
 
-  - (none)
+  - EGYPTIAN: 2 (5.0%)
+  - GENERAL: 22 (55.0%)
+  - LEVANTINE: 2 (5.0%)
+  - LIBYAN: 13 (32.5%)
+  - MAGHREBI: 1 (2.5%)
 
 ## Load counts (inserted / updated / unchanged / deactivated)
 
@@ -75,10 +81,10 @@
   ingredient_aliases             0 /    0 /  389 /    0
   ingredient_allergens           0 /    0 /   45 /    0
   ingredient_tags                0 /    0 /    4 /    0
-  meals                          0 /    0 /    0 /    0
-  meal_translations              0 /    0 /    0 /    0
-  meal_ingredients               0 /    0 /    0 /    0
-  meal_tags                      0 /    0 /    0 /    0
+  meals                          0 /    0 /   40 /    0
+  meal_translations              0 /    0 /   40 /    0
+  meal_ingredients               0 /    0 /  285 /    0
+  meal_tags                      0 /    0 /  114 /    0
 
 - deactivated meals: []
 - reactivated meals: []

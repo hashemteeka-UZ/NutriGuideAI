@@ -4,6 +4,10 @@ The bench database is a sibling of the dev database (`{dev_db}_f1_bench`): creat
 loaded with the F.1 slice, then dropped. The scenario runs inside one transaction that is
 always rolled back. The dev database is never written; it is only the server the sibling is
 created from. `--keep-db` leaves the bench database in place for inspection.
+
+`--catalog` runs the same scenario on the dev database itself (no bench database) and writes
+`docs/reports/catalog_scenario_report.md`. That transaction is rolled back, so the dev
+database is not changed. It is not the #88 benchmark.
 """
 
 from __future__ import annotations
@@ -14,6 +18,7 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from datetime import UTC, date, datetime
 from decimal import Decimal
+from pathlib import Path
 from statistics import median
 from typing import Final
 
@@ -37,6 +42,7 @@ from tests.scenario.f1_scenario import PersonaResult, ScenarioResult, run_f1_sce
 START_DATE: Final = date(2026, 10, 7)
 START_NOW: Final = datetime(2026, 10, 7, 5, 0, tzinfo=UTC)
 OUTPUT_PATH: Final = REPO_ROOT / "docs" / "reports" / "f1_scenario_report.md"
+CATALOG_OUTPUT_PATH: Final = REPO_ROOT / "docs" / "reports" / "catalog_scenario_report.md"
 TIMING_HEADING: Final = "## 6. Planner timing"
 
 
@@ -535,6 +541,32 @@ def drop_f1_bench(base_url: URL) -> None:
         admin.dispose()
 
 
+def write_scenario_report(engine: Engine, output_path: Path) -> int:
+    """Run the scenario in one transaction, write the report, and roll the transaction back."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    before = (0, 0, 0)
+    after = (0, 0, 0)
+    with engine.connect() as conn:
+        trans = conn.begin()
+        try:
+            with Session(bind=conn) as session:
+                before = _counts(session)
+                result = run_f1_scenario(session, conn, START_DATE, START_NOW)
+                output_path.write_text(render_report(session, result), encoding="utf-8")
+        finally:
+            trans.rollback()
+        with Session(bind=conn) as session:
+            after = _counts(session)
+    print(output_path)
+    print(f"users {before[0]} -> {after[0]}")
+    print(f"meal_plans {before[1]} -> {after[1]}")
+    print(f"consumption_logs {before[2]} -> {after[2]}")
+    if before != after:
+        print("row counts changed; rollback failed", file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Run the F.1-e scenario on an isolated F.1-slice database."
@@ -544,38 +576,30 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Leave the bench database in place after the report is written.",
     )
+    parser.add_argument(
+        "--catalog",
+        action="store_true",
+        help=(
+            "Run on the dev database and write the catalog scenario report. "
+            "The transaction is rolled back."
+        ),
+    )
     args = parser.parse_args(argv)
     base_url = make_url(get_settings().DATABASE_URL)
+    if args.catalog:
+        engine = create_engine(base_url)
+        try:
+            return write_scenario_report(engine, CATALOG_OUTPUT_PATH)
+        finally:
+            engine.dispose()
     print(f1_bench_name(base_url.database))
     engine = setup_f1_bench(base_url)
-    code = 0
     try:
-        OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        before = (0, 0, 0)
-        after = (0, 0, 0)
-        with engine.connect() as conn:
-            trans = conn.begin()
-            try:
-                with Session(bind=conn) as session:
-                    before = _counts(session)
-                    result = run_f1_scenario(session, conn, START_DATE, START_NOW)
-                    OUTPUT_PATH.write_text(render_report(session, result), encoding="utf-8")
-            finally:
-                trans.rollback()
-            with Session(bind=conn) as session:
-                after = _counts(session)
-        print(OUTPUT_PATH)
-        print(f"users {before[0]} -> {after[0]}")
-        print(f"meal_plans {before[1]} -> {after[1]}")
-        print(f"consumption_logs {before[2]} -> {after[2]}")
-        if before != after:
-            print("row counts changed; rollback failed", file=sys.stderr)
-            code = 1
+        return write_scenario_report(engine, OUTPUT_PATH)
     finally:
         engine.dispose()
         if not args.keep_db:
             drop_f1_bench(base_url)
-    return code
 
 
 if __name__ == "__main__":
