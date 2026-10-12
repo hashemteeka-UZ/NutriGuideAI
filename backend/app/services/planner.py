@@ -17,9 +17,9 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import Any, Final
+from typing import Any, Final, Literal
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
@@ -31,6 +31,7 @@ from app.services.common import to_decimal
 from app.services.condition_limits import (
     ENERGY_NUTRIENT,
     ResolvedLimits,
+    apply_general_limits,
     resolve_condition_limits,
 )
 from app.services.meal_filter import (
@@ -49,6 +50,8 @@ from app.services.targets import KCAL_PER_G_PROTEIN, UserNotEligibleError, fiber
 
 PLANNER_VERSION: Final = "greedy_v1"
 GENERATED_BY: Final = "greedy"
+PlannerName = Literal["greedy", "cpsat"]
+DEFAULT_PLANNER: Final[PlannerName] = "greedy"
 PROTEIN_NUTRIENT: Final = "protein"
 
 # --- Step F.1 planner decision, to be recorded in the next doc version -------------------------
@@ -527,23 +530,48 @@ def build_day_plan(
     )
 
 
-def target_snapshot(target: PlanTarget, limits: ResolvedLimits) -> dict[str, Any]:
+def target_snapshot(
+    target: PlanTarget,
+    limits: ResolvedLimits,
+    planner_version: str = PLANNER_VERSION,
+    solver: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
     """meal_plans.target_snapshot: immutable copy of what the plan was built against (§11.7)."""
-    return {
+    snapshot: dict[str, Any] = {
         "formula_version": target.formula_version,
         "target": target.to_snapshot(),
         "limits": limits.to_snapshot(),
         "tag_rules_version": TAG_RULES_VERSION,
-        "planner_version": PLANNER_VERSION,
+        "planner_version": planner_version,
         "computation_version": COMPUTATION_VERSION,
     }
+    if solver is not None:
+        snapshot["solver"] = dict(solver)
+    return snapshot
 
 
-def create_day_plan(session: Session, user_id: int, plan_date: date, now: datetime) -> MealPlan:
+def _previous_meal_ids(session: Session, user_id: int, plan_date: date) -> frozenset[int]:
+    """Meal ids of the current plan on the previous calendar day (#72), or none."""
+    plan_id = current_plan_id(session, user_id, plan_date - timedelta(days=1))
+    if plan_id is None:
+        return frozenset()
+    return frozenset(
+        session.scalars(select(MealPlanItem.meal_id).where(MealPlanItem.plan_id == plan_id))
+    )
+
+
+def create_day_plan(
+    session: Session,
+    user_id: int,
+    plan_date: date,
+    now: datetime,
+    planner: PlannerName = DEFAULT_PLANNER,
+) -> MealPlan:
     """Generate and store a one-day plan; older plans of the same day are never touched (#72).
 
     Screening uses the user's local date of `now`. created_at = now, so the newest plan
-    covering a day is the current one.
+    covering a day is the current one. The default planner is greedy_v1. ``cpsat`` applies
+    the #87 general limits and excludes the previous day's meals.
     """
     if now.tzinfo is None:
         raise ValueError("now must be timezone-aware")
@@ -560,16 +588,43 @@ def create_day_plan(session: Session, user_id: int, plan_date: date, now: dateti
         raise MissingTargetError(f"user {user_id} has no current user_targets row")
     target = PlanTarget.from_user_target(current)
     limits = resolve_condition_limits(session, user_id, target.kcal)
-    day = build_day_plan(session, user_id, limits, target, plan_date)
+    if planner == "greedy":
+        day_items = build_day_plan(session, user_id, limits, target, plan_date).items
+        generated_by = GENERATED_BY
+        algorithm_version = PLANNER_VERSION
+        snapshot = target_snapshot(target, limits)
+    else:
+        # optimizer imports this module, so a module-level import would cycle.
+        from app.services.optimizer import GENERATED_BY as CPSAT_GENERATED_BY
+        from app.services.optimizer import PLANNER_VERSION as CPSAT_VERSION
+        from app.services.optimizer import build_optimized_day_plan
+
+        limits = apply_general_limits(limits)
+        excluded = _previous_meal_ids(session, user_id, plan_date)
+        optimized = build_optimized_day_plan(session, user_id, limits, target, plan_date, excluded)
+        day_items = optimized.plan.items
+        generated_by = CPSAT_GENERATED_BY
+        algorithm_version = CPSAT_VERSION
+        snapshot = target_snapshot(
+            target,
+            limits,
+            CPSAT_VERSION,
+            {
+                "solver_status": optimized.solver_status,
+                "kcal_relaxed": optimized.kcal_relaxed,
+                "objective": optimized.objective,
+                "excluded_meal_ids": sorted(excluded),
+            },
+        )
 
     plan = MealPlan(
         user_id=user_id,
         date_from=plan_date,
         date_to=plan_date,
-        generated_by=GENERATED_BY,
-        algorithm_version=PLANNER_VERSION,
+        generated_by=generated_by,
+        algorithm_version=algorithm_version,
         target_id=current.target_id,
-        target_snapshot=target_snapshot(target, limits),
+        target_snapshot=snapshot,
         created_at=now,
         updated_at=now,
     )
@@ -587,7 +642,7 @@ def create_day_plan(session: Session, user_id: int, plan_date: date, now: dateti
             created_at=now,
             updated_at=now,
         )
-        for item in day.items
+        for item in day_items
     )
     session.flush()
     return plan

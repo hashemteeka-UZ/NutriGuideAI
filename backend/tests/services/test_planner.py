@@ -305,6 +305,7 @@ def test_create_day_plan_writes_plan_and_items(
     assert snapshot["tag_rules_version"] == TAG_RULES_VERSION
     assert snapshot["planner_version"] == PLANNER_VERSION
     assert snapshot["computation_version"] == COMPUTATION_VERSION
+    assert "solver" not in snapshot
 
     items = slice_session.execute(
         select(MealPlanItem).where(MealPlanItem.plan_id == plan.plan_id).order_by(MealPlanItem.id)
@@ -676,3 +677,55 @@ def test_snacks_fill_the_gap_up_to_two_and_never_past_the_ceiling() -> None:
     none = plan(_meal(4, "S-HUGE", ["SNACK"], kcal=700))
     assert [i.slot for i in none.items] == MAIN
     assert not none.kcal_within_10pct
+
+
+def test_explicit_greedy_snapshot_matches_the_default_keys(
+    slice_session: Session, integrity_conn: Connection
+) -> None:
+    user = case_1_user(integrity_conn)
+    plan_target(slice_session, user)
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
+    assert (plan.generated_by, plan.algorithm_version) == ("greedy", PLANNER_VERSION)
+    assert set(plan.target_snapshot) == SNAPSHOT_KEYS
+    assert "solver" not in plan.target_snapshot
+
+
+def test_cpsat_plan_records_general_limits_and_excludes_the_previous_day(
+    slice_session: Session, integrity_conn: Connection
+) -> None:
+    user = case_1_user(integrity_conn)
+    plan_target(slice_session, user)
+    first = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="cpsat")
+    second = create_day_plan(
+        slice_session,
+        user,
+        PLAN_DATE + timedelta(days=1),
+        NOW + timedelta(days=1),
+        planner="cpsat",
+    )
+
+    assert (first.generated_by, first.algorithm_version) == ("cpsat", "cpsat_v1")
+    snapshot = first.target_snapshot
+    assert snapshot["planner_version"] == "cpsat_v1"
+    solver = snapshot["solver"]
+    assert set(solver) == {"solver_status", "kcal_relaxed", "objective", "excluded_meal_ids"}
+    assert solver["excluded_meal_ids"] == []
+    assert solver["solver_status"] in {"OPTIMAL", "FEASIBLE"}
+    for nutrient in ("sodium", "saturated_fat"):
+        sources = snapshot["limits"]["max_per_day"][nutrient]["sources"]
+        assert any(source["condition"] == "GENERAL_POPULATION" for source in sources)
+
+    first_ids = list(
+        slice_session.scalars(
+            select(MealPlanItem.meal_id)
+            .where(MealPlanItem.plan_id == first.plan_id)
+            .order_by(MealPlanItem.id)
+        )
+    )
+    assert second.target_snapshot["solver"]["excluded_meal_ids"] == sorted(first_ids)
+    second_ids = set(
+        slice_session.scalars(
+            select(MealPlanItem.meal_id).where(MealPlanItem.plan_id == second.plan_id)
+        )
+    )
+    assert second_ids.isdisjoint(first_ids)

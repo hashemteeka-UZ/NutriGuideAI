@@ -19,13 +19,14 @@ from sqlalchemy.orm import Session
 from app.db.models import MealPlan, MealPlanItem
 from app.db.models.user import MealSlot
 from app.services.common import MealNotFoundError, require_aware, to_decimal
-from app.services.condition_limits import resolve_condition_limits
+from app.services.condition_limits import apply_general_limits, resolve_condition_limits
 from app.services.consumption import (
     PlanItemAlreadyLoggedError,
     PlanItemNotFoundError,
     has_active_log,
 )
 from app.services.meal_filter import evaluate_meal, load_meal_facts, load_user_preferences
+from app.services.optimizer import PLANNER_VERSION as CPSAT_VERSION
 from app.services.planner import placement_rejections, reason_codes, slot_target_kcal
 
 SAME_MEAL: Final = "SAME_MEAL"
@@ -68,6 +69,8 @@ def swap_plan_item(
 
     target_kcal = plan_target_kcal(plan)
     limits = resolve_condition_limits(session, user_id, target_kcal)
+    if plan.algorithm_version == CPSAT_VERSION:
+        limits = apply_general_limits(limits)
     preferences = load_user_preferences(session, user_id)
     multiplier = to_decimal(item.servings_multiplier)
     others = session.execute(

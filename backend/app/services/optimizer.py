@@ -24,10 +24,19 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal
 from typing import Any, Final
 
 from ortools.sat.python import cp_model
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
+from app.db.models import Nutrient
 from app.db.models.user import MealSlot
 from app.services.condition_limits import ENERGY_NUTRIENT, ResolvedLimits
-from app.services.meal_filter import MealFacts, UserPreferences, evaluate_meal
+from app.services.meal_filter import (
+    MealFacts,
+    UserPreferences,
+    evaluate_meal,
+    load_meal_facts,
+    load_user_preferences,
+)
 from app.services.planner import (
     KCAL_TOLERANCE,
     LIMIT_TAG,
@@ -708,4 +717,31 @@ def _plan(
         kcal_within_10pct=abs(kcal - target.kcal) <= KCAL_TOLERANCE * target.kcal,
         unmet_minimums=unmet_minimums(totals, limits),
         planner_version=PLANNER_VERSION,
+    )
+
+
+def build_optimized_day_plan(
+    session: Session,
+    user_id: int,
+    limits: ResolvedLimits,
+    target: PlanTarget,
+    plan_date: date,
+    excluded_meal_ids: frozenset[int],
+) -> OptimizedDay:
+    """One optimized day for the user (no writes); raises NoFeasiblePlanError.
+
+    Meal facts, preferences and nutrient codes are loaded the same way as build_day_plan.
+    Limits are used as given: this function does not add the #87 general limits.
+    """
+    nutrient_codes = tuple(
+        session.execute(select(Nutrient.code).order_by(Nutrient.nutrient_id)).scalars()
+    )
+    return optimize_day(
+        load_meal_facts(session),
+        load_user_preferences(session, user_id),
+        limits,
+        target,
+        plan_date,
+        nutrient_codes,
+        excluded_meal_ids=excluded_meal_ids,
     )

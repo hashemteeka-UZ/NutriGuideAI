@@ -674,14 +674,8 @@ def _profile(
     )
 
 
-def _run_p1(
-    session: Session,
-    conn: Connection,
-    result: ScenarioResult,
-    start_date: date,
-    start_now: datetime,
-    nutrient_codes: Sequence[str],
-) -> None:
+def setup_p1(session: Session, conn: Connection, start_date: date, start_now: datetime) -> int:
+    """P1 user, profile, initial weight and current target. Returns the user id."""
     user = make_user(conn, email="f1e.p1@example.com")
     make_user_profile(
         conn,
@@ -696,6 +690,21 @@ def _run_p1(
         timezone=TIMEZONE,
     )
     session.expire_all()
+    now0 = _morning(start_now, 0)
+    record_weight(session, user, start_date, 90, now0, now0)
+    create_user_target(session, user, TargetReason.INITIAL, now0)
+    return user
+
+
+def _run_p1(
+    session: Session,
+    conn: Connection,
+    result: ScenarioResult,
+    start_date: date,
+    start_now: datetime,
+    nutrient_codes: Sequence[str],
+) -> None:
+    user = setup_p1(session, conn, start_date, start_now)
     screening = screen_user(session, user, start_date)
     persona = _new_persona(
         "P1",
@@ -714,9 +723,6 @@ def _run_p1(
         ),
         screening,
     )
-    now0 = _morning(start_now, 0)
-    _record_weight(session, persona, start_date, 90, now0)
-    create_user_target(session, user, TargetReason.INITIAL, now0)
     _run_three_days(
         session,
         persona,
@@ -731,14 +737,8 @@ def _run_p1(
     result.personas["P1"] = persona
 
 
-def _run_p2(
-    session: Session,
-    conn: Connection,
-    result: ScenarioResult,
-    start_date: date,
-    start_now: datetime,
-    nutrient_codes: Sequence[str],
-) -> None:
+def setup_p2(session: Session, conn: Connection, start_date: date, start_now: datetime) -> int:
+    """P2 user, conditions, preferences, initial weight and current target. Returns the user id."""
     user = make_user(conn, email="f1e.p2@example.com")
     make_user_profile(
         conn,
@@ -766,6 +766,21 @@ def _run_p2(
         conn, user_id=user, ingredient_id=_ingredient_id(session, CHICKPEAS_NDB), stance="LIKE"
     )
     session.expire_all()
+    now0 = _morning(start_now, 0)
+    record_weight(session, user, start_date, 70, now0, now0)
+    create_user_target(session, user, TargetReason.INITIAL, now0)
+    return user
+
+
+def _run_p2(
+    session: Session,
+    conn: Connection,
+    result: ScenarioResult,
+    start_date: date,
+    start_now: datetime,
+    nutrient_codes: Sequence[str],
+) -> None:
+    user = setup_p2(session, conn, start_date, start_now)
     screening = screen_user(session, user, start_date)
     persona = _new_persona(
         "P2",
@@ -784,9 +799,6 @@ def _run_p2(
         ),
         screening,
     )
-    now0 = _morning(start_now, 0)
-    _record_weight(session, persona, start_date, 70, now0)
-    create_user_target(session, user, TargetReason.INITIAL, now0)
     _run_three_days(
         session,
         persona,

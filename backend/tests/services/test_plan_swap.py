@@ -16,9 +16,14 @@ from sqlalchemy.orm import Session
 from app.db.models import Allergen, Meal
 from app.db.models.user import MealPlan, MealPlanItem, MealSlot
 from app.services.common import to_decimal
-from app.services.condition_limits import resolve_condition_limits
+from app.services.condition_limits import apply_general_limits, resolve_condition_limits
 from app.services.consumption import PlanItemAlreadyLoggedError, log_plan_item
-from app.services.meal_filter import evaluate_meal, load_meal_facts, load_user_preferences
+from app.services.meal_filter import (
+    MealFacts,
+    evaluate_meal,
+    load_meal_facts,
+    load_user_preferences,
+)
 from app.services.plan_swap import SwapRejectedError, swap_plan_item
 from app.services.planner import (
     create_day_plan,
@@ -199,3 +204,89 @@ def test_htn_dm2_swap_that_would_exceed_day_sodium_is_rejected(
     slice_session.refresh(dinner)
     assert dinner.was_swapped is False
     assert dinner.meal_id != salty
+
+
+def test_cpsat_swap_rejects_general_sodium_that_a_greedy_plan_accepts(
+    slice_session: Session, integrity_conn: Connection
+) -> None:
+    """A meal over the #87 sodium cap is rejected on cpsat_v1 and accepted on greedy_v1."""
+    greedy_user = case_1_user(integrity_conn)
+    cpsat_user = case_1_user(integrity_conn)
+    plan_target(slice_session, greedy_user)
+    plan_target(slice_session, cpsat_user)
+    greedy_plan = create_day_plan(slice_session, greedy_user, PLAN_DATE, NOW)
+    cpsat_plan = create_day_plan(slice_session, cpsat_user, PLAN_DATE, NOW, planner="cpsat")
+    meals: dict[int, MealFacts] = {meal.meal_id: meal for meal in load_meal_facts(slice_session)}
+    greedy_items = _items(slice_session, greedy_plan.plan_id)
+    cpsat_items = _items(slice_session, cpsat_plan.plan_id)
+    used = {row.meal_id for row in greedy_items} | {row.meal_id for row in cpsat_items}
+    greedy_prefs = load_user_preferences(slice_session, greedy_user)
+    cpsat_prefs = load_user_preferences(slice_session, cpsat_user)
+    greedy_kcal = to_decimal(greedy_plan.target_snapshot["target"]["kcal"])
+    cpsat_kcal = to_decimal(cpsat_plan.target_snapshot["target"]["kcal"])
+    greedy_limits = resolve_condition_limits(slice_session, greedy_user, greedy_kcal)
+    cpsat_plain = resolve_condition_limits(slice_session, cpsat_user, cpsat_kcal)
+    cpsat_limits = apply_general_limits(cpsat_plain)
+
+    found: tuple[int, MealPlanItem, MealPlanItem] | None = None
+    for meal in sorted(meals.values(), key=lambda candidate: candidate.meal_id):
+        if meal.meal_id in used:
+            continue
+        for greedy_item in greedy_items:
+            multiplier = Decimal(str(greedy_item.servings_multiplier))
+            others = [
+                (row.slot, meals[row.meal_id], Decimal(str(row.servings_multiplier)))
+                for row in greedy_items
+                if row.id != greedy_item.id
+            ]
+            evaluation = evaluate_meal(
+                meal, greedy_prefs, greedy_item.slot, greedy_limits, multiplier
+            )
+            if placement_rejections(meal, multiplier, evaluation, others, greedy_limits):
+                continue
+            for cpsat_item in cpsat_items:
+                cpsat_multiplier = Decimal(str(cpsat_item.servings_multiplier))
+                cpsat_others = [
+                    (row.slot, meals[row.meal_id], Decimal(str(row.servings_multiplier)))
+                    for row in cpsat_items
+                    if row.id != cpsat_item.id
+                ]
+                plain = evaluate_meal(
+                    meal, cpsat_prefs, cpsat_item.slot, cpsat_plain, cpsat_multiplier
+                )
+                if placement_rejections(meal, cpsat_multiplier, plain, cpsat_others, cpsat_plain):
+                    continue
+                merged = evaluate_meal(
+                    meal, cpsat_prefs, cpsat_item.slot, cpsat_limits, cpsat_multiplier
+                )
+                rejected = placement_rejections(
+                    meal, cpsat_multiplier, merged, cpsat_others, cpsat_limits
+                )
+                added = meal.amount("sodium", cpsat_multiplier)
+                rest = Decimal(0)
+                for row in cpsat_items:
+                    if row.id == cpsat_item.id:
+                        continue
+                    amount = meals[row.meal_id].amount(
+                        "sodium", Decimal(str(row.servings_multiplier))
+                    )
+                    if amount is None or added is None:
+                        rest = Decimal(-1)
+                        break
+                    rest += amount
+                if rejected == ["MAX_PER_DAY:sodium"] and added is not None and rest + added > 2000:
+                    found = (meal.meal_id, greedy_item, cpsat_item)
+                    break
+            if found is not None:
+                break
+        if found is not None:
+            break
+    assert found is not None
+    new_meal_id, greedy_item, cpsat_item = found
+
+    swapped = swap_plan_item(slice_session, greedy_user, greedy_item.id, new_meal_id, NOW)
+    assert swapped.was_swapped is True
+    assert swapped.meal_id == new_meal_id
+    with pytest.raises(SwapRejectedError) as caught:
+        swap_plan_item(slice_session, cpsat_user, cpsat_item.id, new_meal_id, NOW)
+    assert caught.value.exclusion_codes == ["MAX_PER_DAY:sodium"]
