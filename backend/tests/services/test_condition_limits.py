@@ -19,9 +19,17 @@ from app.db.models import (
     MealPlanItem,
     Nutrient,
 )
+from app.db.models.reference import RestrictionType
 from app.services.condition_limits import (
+    GENERAL_POPULATION,
     ConditionConflictError,
     ConditionLimitError,
+    LimitSource,
+    ResolvedLimit,
+    ResolvedLimits,
+    TagRestriction,
+    _grams,
+    apply_general_limits,
     resolve_condition_limits,
 )
 from app.services.planner import create_day_plan
@@ -280,3 +288,155 @@ def test_conflict_writes_no_plan(slice_session: Session, integrity_conn: Connect
         create_day_plan(slice_session, user, PLAN_DATE, NOW)
     assert slice_session.execute(select(func.count()).select_from(MealPlan)).scalar_one() == 0
     assert slice_session.execute(select(func.count()).select_from(MealPlanItem)).scalar_one() == 0
+
+
+def _empty_limits(kcal: Decimal | None = None) -> ResolvedLimits:
+    if kcal is None:
+        kcal = D(2000)
+    return ResolvedLimits(
+        target_kcal=kcal,
+        conditions=("HYPERTENSION",),
+        max_per_day={},
+        min_per_day={},
+        max_per_meal={},
+        max_per_meal_percent_energy={},
+        avoid_tags=frozenset({"added_sugar"}),
+        limit_tags={"high_sodium": 3},
+        tag_restrictions=(TagRestriction("HYPERTENSION", "high_sodium", RestrictionType.LIMIT, 3),),
+    )
+
+
+def _absolute(condition: str, value: int) -> ResolvedLimit:
+    amount = D(value)
+    return ResolvedLimit(
+        amount,
+        (
+            LimitSource(
+                condition_code=condition,
+                source_reference="test",
+                limit_basis="ABSOLUTE",
+                stated_value=amount,
+                value=amount,
+            ),
+        ),
+    )
+
+
+def test_general_limits_fill_an_empty_resolution() -> None:
+    merged = apply_general_limits(_empty_limits())
+    sodium = merged.max_per_day["sodium"]
+    saturated = merged.max_per_day["saturated_fat"]
+    assert sodium.value == D(2000)
+    assert [(s.condition_code, s.limit_basis, s.stated_value, s.value) for s in sodium.sources] == [
+        (GENERAL_POPULATION, "ABSOLUTE", D(2000), D(2000)),
+    ]
+    assert sodium.sources[0].source_reference == (
+        "WHO (2012). Guideline: Sodium intake for adults and children. < 2 g sodium/day"
+    )
+    assert saturated.value == _grams("saturated_fat", D(10), D(2000))
+    assert saturated.value == D(200) / D(9)
+    [source] = saturated.sources
+    assert (source.condition_code, source.limit_basis, source.stated_value) == (
+        GENERAL_POPULATION,
+        "PERCENT_ENERGY",
+        D(10),
+    )
+    assert source.source_reference == (
+        "WHO (2023). Saturated fatty acid and trans-fatty acid intake for adults and children. "
+        "< 10% of total energy"
+    )
+
+
+def test_general_limits_keep_the_other_resolved_fields() -> None:
+    original = _empty_limits()
+    original = ResolvedLimits(
+        target_kcal=original.target_kcal,
+        conditions=original.conditions,
+        max_per_day={},
+        min_per_day={"fiber": _absolute("DIABETES_T2", 25)},
+        max_per_meal={"carbohydrate": _absolute("DIABETES_T2", 60)},
+        max_per_meal_percent_energy={},
+        avoid_tags=original.avoid_tags,
+        limit_tags=original.limit_tags,
+        tag_restrictions=original.tag_restrictions,
+    )
+    merged = apply_general_limits(original)
+    assert merged.target_kcal == original.target_kcal
+    assert merged.conditions == original.conditions
+    assert merged.min_per_day == original.min_per_day
+    assert merged.max_per_meal == original.max_per_meal
+    assert merged.max_per_meal_percent_energy == original.max_per_meal_percent_energy
+    assert merged.avoid_tags == original.avoid_tags
+    assert merged.limit_tags == original.limit_tags
+    assert merged.tag_restrictions == original.tag_restrictions
+
+
+def test_stricter_condition_sodium_wins_and_keeps_both_sources() -> None:
+    limits = _empty_limits()
+    limits = ResolvedLimits(
+        target_kcal=limits.target_kcal,
+        conditions=limits.conditions,
+        max_per_day={"sodium": _absolute("HYPERTENSION", 1500)},
+        min_per_day={},
+        max_per_meal={},
+        max_per_meal_percent_energy={},
+        avoid_tags=limits.avoid_tags,
+        limit_tags=limits.limit_tags,
+        tag_restrictions=limits.tag_restrictions,
+    )
+    sodium = apply_general_limits(limits).max_per_day["sodium"]
+    assert sodium.value == D(1500)
+    assert [(s.condition_code, s.value) for s in sodium.sources] == [
+        (GENERAL_POPULATION, D(2000)),
+        ("HYPERTENSION", D(1500)),
+    ]
+
+
+def test_looser_condition_sodium_loses_to_the_general_limit() -> None:
+    limits = _empty_limits()
+    limits = ResolvedLimits(
+        target_kcal=limits.target_kcal,
+        conditions=limits.conditions,
+        max_per_day={"sodium": _absolute("HYPERTENSION", 2300)},
+        min_per_day={},
+        max_per_meal={},
+        max_per_meal_percent_energy={},
+        avoid_tags=limits.avoid_tags,
+        limit_tags=limits.limit_tags,
+        tag_restrictions=limits.tag_restrictions,
+    )
+    sodium = apply_general_limits(limits).max_per_day["sodium"]
+    assert sodium.value == D(2000)
+    assert [(s.condition_code, s.value) for s in sodium.sources] == [
+        (GENERAL_POPULATION, D(2000)),
+        ("HYPERTENSION", D(2300)),
+    ]
+
+
+def test_apply_general_limits_is_idempotent() -> None:
+    once = apply_general_limits(_empty_limits())
+    twice = apply_general_limits(once)
+    assert once == twice
+    assert len(twice.max_per_day["sodium"].sources) == 1
+    assert len(twice.max_per_day["saturated_fat"].sources) == 1
+
+
+def test_general_limit_conflicts_with_a_higher_minimum() -> None:
+    limits = _empty_limits()
+    limits = ResolvedLimits(
+        target_kcal=limits.target_kcal,
+        conditions=limits.conditions,
+        max_per_day={},
+        min_per_day={"sodium": _absolute("SYNTHETIC", 2500)},
+        max_per_meal={},
+        max_per_meal_percent_energy={},
+        avoid_tags=limits.avoid_tags,
+        limit_tags=limits.limit_tags,
+        tag_restrictions=limits.tag_restrictions,
+    )
+    with pytest.raises(ConditionConflictError) as caught:
+        apply_general_limits(limits)
+    error = caught.value
+    assert error.nutrient == "sodium"
+    assert (error.min_per_day, error.max_per_day) == (D(2500), D(2000))
+    assert error.conditions == (GENERAL_POPULATION, "SYNTHETIC")

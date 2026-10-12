@@ -2,14 +2,16 @@
 
 resolve_condition_limits collects the condition_nutrient_limits and condition_tag_restrictions
 rows of all the user's conditions and resolves them; the strictest limit always wins and no
-limit is ever relaxed. A user without a condition gets no limit at all (§30.1, #69).
+limit is ever relaxed. A user without a condition gets no limit from resolve_condition_limits
+(§30.1, #69). apply_general_limits adds the #87 general-population maxima for the Layer 3
+optimizer; greedy_v1 does not apply them.
 """
 
 from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal
 from typing import Any, Final
 
@@ -39,6 +41,17 @@ KCAL_PER_GRAM: Final[Mapping[str, Decimal]] = {
 }
 ENERGY_NUTRIENT: Final = "energy_kcal"
 PERCENT: Final = Decimal(100)
+# §30.1 / #87 general-population daily maxima. Layer 3 only; greedy_v1 does not apply them.
+GENERAL_POPULATION: Final = "GENERAL_POPULATION"
+GENERAL_SODIUM_MG_PER_DAY: Final = Decimal(2000)  # WHO 2012, adults
+GENERAL_SATURATED_FAT_PERCENT_ENERGY: Final = Decimal(10)  # WHO 2023, "< 10%" applied as <= 10%
+_WHO_SODIUM_REFERENCE: Final = (
+    "WHO (2012). Guideline: Sodium intake for adults and children. < 2 g sodium/day"
+)
+_WHO_SATURATED_FAT_REFERENCE: Final = (
+    "WHO (2023). Saturated fatty acid and trans-fatty acid intake for adults and children. "
+    "< 10% of total energy"
+)
 # ---------------------------------------------------------------------------------------------
 
 
@@ -232,6 +245,48 @@ def _resolve(
             sources=tuple(sorted(sources, key=lambda s: (s.condition_code, s.limit_basis))),
         )
     return resolved
+
+
+def apply_general_limits(limits: ResolvedLimits) -> ResolvedLimits:
+    """Merge the #87 general-population daily maxima into `limits` (§28.2, §30.1).
+
+    Sodium and saturated fat are added as GENERAL_POPULATION sources and re-resolved with the
+    same strictest-wins rule as resolve_condition_limits (the minimum of the maxima). A source
+    that is already present is not added again, so a second call returns an equal object.
+    Conditions, tags, per-meal limits and min_per_day are unchanged. A min above the new max
+    raises ConditionConflictError.
+    """
+    general = {
+        "sodium": LimitSource(
+            condition_code=GENERAL_POPULATION,
+            source_reference=_WHO_SODIUM_REFERENCE,
+            limit_basis=LimitBasis.ABSOLUTE,
+            stated_value=GENERAL_SODIUM_MG_PER_DAY,
+            value=GENERAL_SODIUM_MG_PER_DAY,
+        ),
+        "saturated_fat": LimitSource(
+            condition_code=GENERAL_POPULATION,
+            source_reference=_WHO_SATURATED_FAT_REFERENCE,
+            limit_basis=LimitBasis.PERCENT_ENERGY,
+            stated_value=GENERAL_SATURATED_FAT_PERCENT_ENERGY,
+            value=_grams("saturated_fat", GENERAL_SATURATED_FAT_PERCENT_ENERGY, limits.target_kcal),
+        ),
+    }
+    combined: dict[str, list[LimitSource]] = {
+        nutrient: list(limit.sources) for nutrient, limit in limits.max_per_day.items()
+    }
+    for nutrient, source in general.items():
+        sources = combined.setdefault(nutrient, [])
+        if any(existing.condition_code == GENERAL_POPULATION for existing in sources):
+            continue
+        sources.append(source)
+    resolved_max = _resolve(combined, maximum_wins=False)
+    for nutrient in sorted(limits.min_per_day):
+        minimum = limits.min_per_day[nutrient]
+        maximum = resolved_max.get(nutrient)
+        if maximum is not None and minimum.value > maximum.value:
+            raise ConditionConflictError(nutrient, minimum, maximum)
+    return replace(limits, max_per_day=resolved_max)
 
 
 def resolve_condition_limits(
