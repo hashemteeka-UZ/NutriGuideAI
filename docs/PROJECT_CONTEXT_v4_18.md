@@ -1,13 +1,39 @@
-# PROJECT_CONTEXT.md — v4.17
+# PROJECT_CONTEXT.md — v4.18
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_17.md`, `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.17 → v4.18
+
+v4.18 **closes Step H (Layer 3 optimizer)** (2026-10-12, DEV_JOURNAL J-035). Commits: H.0 `18b6803` (pure optimizer + general limits), H.1 `e9d72b7` (database wiring + comparison report), H.2 = commit `feat(planner): Step H.2 cpsat_v1 default planner (#122)`; CI green; 1287 tests, 0 skipped. No schema change, no migration, no data change (`catalog_v1` and `DATASET_MANIFEST.yaml` unchanged). Decisions taken by the assistant under the user's delegation (J-030); "optimizer first, API after" chosen by the user. Plan and status log: `claude/steps/STEP_H_plan.md`.
+
+| # | Topic | Change | Schema? |
+|---|---|---|---|
+| #108 | Solver | Google OR-Tools CP-SAT (`ortools>=9.12,<10`, locked 9.15.6755, Apache-2.0): free, deterministic with one worker and a fixed seed, proves optimality or infeasibility. PuLP/CBC rejected (slower, determinism harder). | No |
+| #109 | Model scope | One day per solve, same inputs as `plan_day`. Boolean `x[position, meal, step]` only for (meal, step) pairs that pass Layer 1 at that step (`evaluate_meal`), so Layer 1 is never re-modelled. Positions breakfast, lunch, dinner (exactly one each) and `snack_1`, `snack_2` (optional; `snack_2` only with `snack_1`, symmetry breaking). Weekly (7-day) model is Future Work. | No |
+| #110 | Hard constraints | Each meal and each `variant_group` at most once per day; every `max_per_day`; every `min_per_day` (hard, #81); `LIMIT` tag servings in the day ≤ the weekly number (same accounting as greedy, #89; half-servings as integers); meals of the previous day's current plan excluded (#88 criterion 4). A pair whose energy or any limited or macro nutrient is unknown is not a candidate (missing ≠ zero, §9.8). | No |
+| #111 | General limits implemented (#87) | Pure `apply_general_limits(limits)` in `condition_limits.py` adds `GENERAL_POPULATION` sources (sodium 2000 mg/day, WHO 2012; saturated fat 10% of energy as grams, WHO 2023, "< 10%" applied as "≤ 10%") and merges them by §28.2 (strictest wins, conflict check re-run, idempotent). Applied **only on the optimizer path**; `greedy_v1` stays the unchanged baseline. | No |
+| #112 | Energy phases | Phase 1: energy hard within ±10%. If INFEASIBLE, phase 2: the band is removed and its deviation weighted 50 in the objective, `kcal_relaxed = true`. If phase 2 is INFEASIBLE: `NoFeasiblePlanError`. No health limit is ever relaxed, no slot dropped. | No |
+| #113 | Objective | Integer units of 0.1 kcal-equivalent: 3 × abs(kcal − target) + 1 × (abs(protein − target)×4 + abs(carbohydrate − target)×4 + abs(fat − target)×9) + 1 × fiber shortfall×4 + 1 × Σ main-slot abs(slot kcal − share × target) (25/35/25%) − 10 per item with a liked ingredient (Layer 2). Absolute values linearised with auxiliary integer variables. | No |
+| #114 | Numeric exactness | Amounts scaled ×1000 to integers with outward rounding (upper bounds: coefficients ceil, bound floor; lower bounds the reverse); objective coefficients half-up. Every hard rule is re-checked on the chosen items with exact `Decimal` (`_verify`); a failure is an `AssertionError` (programming error, never hidden). | No |
+| #115 | Determinism | `num_workers = 1`, `random_seed = 0`, `max_deterministic_time = 10.0`, variables created in a fixed order (position, `sort_key`, step). Same inputs → same plan; input order does not matter (tested). | No |
+| #116 | Integration rule | The optimizer becomes the default only if it meets the five #88 criteria in a side-by-side report; greedy stays the baseline. | No |
+| #117 | Planner selection | `create_day_plan(..., planner="greedy" \| "cpsat")` is the single entry point. The cpsat path applies #111, excludes the previous day's current plan (`current_plan_id`), stores `generated_by = "cpsat"`, `algorithm_version = "cpsat_v1"`, the merged limits and a `"solver"` entry (status, `kcal_relaxed`, objective, excluded meal ids) in `target_snapshot`. Greedy snapshots are unchanged (no `"solver"` key). | No |
+| #118 | Swap consistency | A swap on a `cpsat_v1` plan is checked against the same merged limits (#111), so a swap cannot break the general sodium cap; greedy plans keep their behaviour. | No |
+| #119 | Comparison report | `scripts/planner_comparison_report.py` → `docs/reports/planner_comparison_report.md`: P1 and P2, three consecutive days per planner, each planner in its own SAVEPOINT, on the isolated F.1 bench (the #88 benchmark) and on the full catalog; criteria recomputed independently from stored items with exact `Decimal`; verdict computed, not hand-written. | No |
+| #120 | Step H tests | Pure optimizer tests (19), general-limit tests, cpsat integration on the F.1 slice, swap test, `evaluate_criteria` PASS/FAIL per criterion, report determinism (timing stripped), end-to-end default-planner test (plan → log → adherence). | No |
+| #121 | "Feasible day" in #88 | A cpsat day whose phase 1 was proven INFEASIBLE (`kcal_relaxed = true` and kcal outside ±10%) is not a feasible day in the #88 sense: C2 is `N/A*`, not FAIL. Greedy days never get N/A (no proof). The report also prints a strict verdict counting N/A as FAIL, and a diagnostic solve without the #87 caps for each such day. | No |
+| #122 | Default planner | `DEFAULT_PLANNER = "cpsat"`. `greedy_v1` stays the fixed #88 baseline: the F.1 scenario, its reports and greedy-specific tests pass `planner="greedy"` explicitly. `planner.PLANNER_VERSION` stays `greedy_v1`, so `DATASET_MANIFEST.yaml` keeps recording the planner `catalog_v1` was frozen against. | No |
+
+**Results (`planner_comparison_report.md`):** full catalog: cpsat meets criteria 1–4 on 6/6 persona-days (all phase 1, `OPTIMAL`), greedy on 1/6. F.1 benchmark: cpsat 6/6 under #121 (3 P2 days `N/A*`), greedy 1/6; strict reading NO on F.1 only. Diagnostic: the P2 F.1 days stay out of band even without the #87 caps, so the condition limits and the 35-meal slice alone make the band impossible. Planning time: greedy ≈ 25–40 ms; cpsat median ≈ 1.4 s (F.1) and ≈ 3.8 s (catalog), max ≈ 13 s.
 
 ---
 
@@ -1246,12 +1272,14 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
 - **v4.16: Step G plan decisions (#90–#100); migration `0004` specified (#91)**
 - **Step G done (2026-10-12, reduced scope #101):** migration `0004` (G.0), `app/pipeline` (G.1), 177 approved ingredients (G.2), `tags_v2` + isolated #88 bench database (G.3a), 40 catalog recipes + catalog scenario report (G.3b), coverage report + `DATASET_MANIFEST.yaml` + tag `dataset-v1` (G.5); 1248 tests, 0 skipped; last commit `f5e10f0`, CI green (DEV_JOURNAL J-034)
 - **v4.17: Step G closure decisions (#101–#107), no schema change**
+- **Step H done (2026-10-12):** Layer 3 optimizer `cpsat_v1` (OR-Tools CP-SAT) with the #87 general limits, database wiring, swap consistency and `planner_comparison_report.md`; cpsat meets #88 (#121) and is the default planner (#122); 1287 tests, 0 skipped; commits `18b6803`, `e9d72b7` and the H.2 commit, CI green (DEV_JOURNAL J-035)
+- **v4.18: Step H decisions (#108–#122), no schema change**
 - **v4.14: first post-freeze change (#74–#79), migration `0003`**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Step H — to be planned.** Step G is closed (v4.17). The next step is chosen with the user at the start of Step H; the two candidates are the Layer 3 optimizer judged against #88 (§28.4) and the API phase that the Flutter teammate needs (§34.2–§34.5). Adding recipe batches from the dish proposal (#101) can run alongside either.
+**Step I — to be planned: the API phase** (§34.2–§34.5) that the Flutter teammate needs. Step H is closed (v4.18): plans are generated by `cpsat_v1` by default. Open points carried into Step I: optimizer latency behind an HTTP request (§28.4c), and recipe batches from the dish proposal (#101), which can run alongside.
 
 ---
 
@@ -1271,7 +1299,11 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
   - **G.3** `tags_v2` (#97) + recipe batches (draft → team review → load → commit)
   - **G.4** FNDDS ready foods with portions (#98) — postponed to Future Work (#101)
   - **G.5** coverage report (#100) and manifest + `dataset-v1` (#99) done; cross-check and weighed sample (#96) postponed (#101)
-- **Step H — next, to be planned with the user** (optimizer per #88, or the API phase)
+- **Step H — Layer 3 optimizer** ✅ done (2026-10-12, v4.18; plan `claude/steps/STEP_H_plan.md`):
+  - **H.0** pure CP-SAT `optimize_day` + `apply_general_limits` (#108–#116)
+  - **H.1** database wiring, swap consistency, comparison report (#117–#121)
+  - **H.2** `cpsat_v1` default planner (#122) + closure
+- **Step I — API phase** ← **next, to be planned with the user** (§34.2–§34.5)
   - The extended xlsx template is replaced by YAML files (#94).
 
 ---
@@ -1379,7 +1411,7 @@ The resolved set is frozen into `meal_plans.target_snapshot`.
 - **Why this fits the project:** it learns from exactly the data the app collects, needs no synthetic ratings, and has a clear academic literature and evaluation method.
 - **Storage (later, not Phase 1):** model parameters and any embedding column (`pgvector`) are added only when Layer 2 is implemented — §18.1.
 
-## 28.4 Layer 3 — optimization details (direction)
+## 28.4 Layer 3 — optimization details (direction; implemented as `cpsat_v1` in v4.18, see §28.4c)
 CP-SAT decision variables: `x[day, slot, meal, step] ∈ {0,1}` with `step ∈ {0.5, 1.0, 1.5, 2.0}` (matches `meal_plan_items.servings_multiplier`). Constraints: exactly one meal per required slot; daily kcal within ±10% of target; daily macro ranges; resolved condition min/max per day; `LIMIT` tags ≤ weekly servings; no meal repeated within N days; only Layer-1-surviving candidates. Objective: minimize deviation from targets − λ × Layer-2 preference score. Greedy remains an acceptable fallback/baseline for comparison in the report. **General population limits (#87)** are added to the resolved limits when this layer is built.
 
 ## 28.4b Baseline planner `greedy_v1` — NEW in v4.15 (Decisions #80, #88)
@@ -1399,6 +1431,18 @@ Built in Step F.1 (`app/services/planner.py`); deterministic (same inputs → sa
 **Benchmark location (v4.17, #104):** the #88 report runs on an isolated database holding only the F.1 slice; its G.3a version is the fixed baseline.
 
 **Acceptance criteria for Layer 3 (#88):** run on the same F.1-e scenario and report side by side with `greedy_v1`: (1) 0 violations of Layer 1 and of every maximum — required 100%; (2) energy within ±10% of target on every day where a feasible plan exists; (3) every condition minimum met; (4) no meal repeated on consecutive days; (5) planning time reported.
+
+## 28.4c Layer 3 optimizer `cpsat_v1` — NEW in v4.18 (Decisions #108–#122)
+Built in Step H (`app/services/optimizer.py`, pure `optimize_day`; `build_optimized_day_plan` loads the inputs). The default planner of `create_day_plan` (#122); `greedy_v1` (§28.4b) is kept as the #88 baseline.
+- **Differences from the direction above:** one day per solve (#109) instead of a multi-day model; repetition is prevented against the previous day's current plan only (#110), so a meal may come back on day d+2; macros are in the objective (#113), not hard ranges; Layer 1 is applied before the model by keeping only eligible (meal, step) pairs (#109).
+- **Limits:** condition limits merged with the #87 general limits (#111) — strictest wins; every maximum and minimum is hard (#110). Energy is hard within ±10% in phase 1 and soft only when phase 1 is proven infeasible (#112).
+- **Guarantee:** status `OPTIMAL` means no better plan exists under the model; phase 1 `INFEASIBLE` is a proof that no plan within ±10% respects the health limits (#121). Greedy can give neither statement.
+- **Exactness and reproducibility:** integer scaling with outward rounding, exact `Decimal` re-verification (#114); one worker, seed 0, deterministic time limit 10 (#115).
+- **Snapshot:** `generated_by = cpsat`, `algorithm_version = cpsat_v1`, merged limits with `GENERAL_POPULATION` sources, and `"solver"` (status, `kcal_relaxed`, objective, excluded meal ids) (#117).
+- **Result against #88:** see the v4.18 changelog and `docs/reports/planner_comparison_report.md`.
+- **Latency:** seconds, not milliseconds (catalog median ≈ 3.8 s, max ≈ 13 s on the developer machine). Acceptable for one plan per day; the API phase must not block a request thread on it without a timeout policy, and catalog growth may turn `OPTIMAL` into `FEASIBLE` at the time limit (still deterministic and verified).
+
+**Theoretical note (for the thesis):** `greedy_v1` is a constructive heuristic: it fixes one slot at a time and never revisits a choice, so an early choice can consume a sodium or energy budget and leave later slots without a good option; it can neither prove that its plan is the best nor that no better plan exists. `cpsat_v1` formulates the whole day as an integer linear program (binary choice variables, linear health constraints, a weighted linear objective) solved exactly by CP-SAT (constraint programming with SAT-based clause learning and linear relaxation). It returns a plan that is optimal under the model, or a certificate that no plan meets the hard constraints. The comparison report shows the practical effect: on the full catalog the optimizer meets every #88 criterion on all persona-days while greedy meets them on one; on the F.1 slice it proves that the energy band is unreachable for the hypertension + diabetes persona instead of silently returning a −30% plan.
 
 ## 28.5 Evaluation plan (direction)
 - **Nutritional correctness (rules + optimizer):** % of generated days meeting kcal/macro ranges and 0 violations of condition limits/allergens — must be 100% for violations.
@@ -1448,6 +1492,8 @@ Each `meal_plan_items` row stores `reason_codes` produced **at plan time** by de
 - Camel meat and other foods missing from USDA SR Legacy — need a documented regional food-composition source (still none in v4.17, #103)
 - FNDDS ready foods with portions (#98), the FNDDS dish cross-check and a weighed sample of ≥ 10 dishes (#96) — postponed from Step G (v4.17, #101)
 - More team recipe batches from the 183-dish proposal (#101): data work only, no design change
+- Weekly (7-day) optimization in one CP-SAT model, with variety across the whole week instead of consecutive days only (v4.18, #109)
+- Optimizer performance work if the catalog grows (warm start from greedy, symmetry breaking, solve-time budget per request) (v4.18, §28.4c)
 
 None of these require a change to the existing Phase 1 tables (some would add new tables).
 
@@ -1468,7 +1514,7 @@ The app does **not** generate personalized plans (it may show general informatio
 
 **Screening date (v4.15, #85):** screening is evaluated on the user's local date (`user_profiles.timezone`) at the time of the request.
 
-**General population limits (v4.15, Decision #87 — partly supersedes #69):** every eligible user gets a daily maximum of **2000 mg sodium** (WHO 2012, adults) and **saturated fat < 10% of energy** (WHO 2023), merged with condition limits by §28.2 (strictest wins). Built together with the Layer 3 optimizer; `greedy_v1` (§28.4b) does not apply them. Total sugars stay without a general limit (no added-sugar data).
+**General population limits (v4.15, Decision #87 — partly supersedes #69):** every eligible user gets a daily maximum of **2000 mg sodium** (WHO 2012, adults) and **saturated fat < 10% of energy** (WHO 2023), merged with condition limits by §28.2 (strictest wins). Built together with the Layer 3 optimizer; `greedy_v1` (§28.4b) does not apply them. Implemented in v4.18 (#111) as `apply_general_limits`, applied to every `cpsat_v1` plan and swap (#117, #118). Total sugars stay without a general limit (no added-sugar data).
 
 **Known limitation (v4.10, Decision #69, sodium and saturated fat superseded by #87):** users without a declared condition get no daily limit for sodium, sugars or saturated fat; these limits come only from `condition_nutrient_limits`. The dataset stores total `sugars`, not added sugars, so the WHO added-sugar guideline cannot be applied honestly. Stated in the thesis limitations.
 
