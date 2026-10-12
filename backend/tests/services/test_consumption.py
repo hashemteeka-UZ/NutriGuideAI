@@ -317,7 +317,7 @@ def test_plan_item_idempotent_retry_after_create(
 ) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     item = _items(slice_session, plan.plan_id)[0]
     client = uuid4()
     first = log_plan_item(

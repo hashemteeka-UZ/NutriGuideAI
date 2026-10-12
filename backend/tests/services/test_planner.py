@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
+from uuid import uuid4
 
 import pytest
 from sqlalchemy import func, insert, select
@@ -15,7 +16,9 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Allergen, MealPlan, MealPlanItem, UserTarget
 from app.db.models.user import SERVINGS_MULTIPLIER_STEPS
+from app.services.adherence import daily_adherence
 from app.services.condition_limits import ResolvedLimit, ResolvedLimits, resolve_condition_limits
+from app.services.consumption import log_plan_item
 from app.services.meal_filter import (
     SLOT_OCCASION,
     MealFacts,
@@ -53,6 +56,7 @@ from app.services.planner import (
 from app.services.tag_rules import BEVERAGE_TAG, TAG_RULES_VERSION
 from app.services.targets import UserNotEligibleError
 from tests.builders import make_user_allergen_pref, make_user_ingredient_pref
+from tests.scenario.f1_scenario import setup_p1
 from tests.services.conftest import (
     NOW,
     PLAN_DATE,
@@ -279,7 +283,7 @@ def test_create_day_plan_writes_plan_and_items(
     user = case_2_user(integrity_conn)
     add_conditions(slice_session, integrity_conn, user, "HYPERTENSION", "DIABETES_T2")
     day, limits, target = _plan(slice_session, user)
-    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
 
     current_target = slice_session.execute(
         select(UserTarget).where(UserTarget.user_id == user, UserTarget.valid_to.is_(None))
@@ -330,13 +334,15 @@ def test_second_plan_leaves_the_first_untouched(
 ) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    first = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    first = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     first_id = first.plan_id
     before = (
         _rows(slice_session, MealPlan, MealPlan.plan_id == first_id),
         _rows(slice_session, MealPlanItem, MealPlanItem.plan_id == first_id),
     )
-    second = create_day_plan(slice_session, user, PLAN_DATE, NOW + timedelta(hours=1))
+    second = create_day_plan(
+        slice_session, user, PLAN_DATE, NOW + timedelta(hours=1), planner="greedy"
+    )
 
     assert second.plan_id != first_id
     after = (
@@ -354,7 +360,7 @@ def test_ineligible_user_writes_nothing(slice_session: Session, integrity_conn: 
     plan_target(slice_session, user)
     add_conditions(slice_session, integrity_conn, user, "CKD")
     with pytest.raises(UserNotEligibleError) as caught:
-        create_day_plan(slice_session, user, PLAN_DATE, NOW)
+        create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     assert caught.value.reasons == ["UNSUPPORTED_CONDITION:CKD"]
     assert _plan_counts(slice_session, user) == (0, 0)
 
@@ -364,7 +370,7 @@ def test_user_without_current_target_writes_nothing(
 ) -> None:
     user = case_1_user(integrity_conn)
     with pytest.raises(MissingTargetError):
-        create_day_plan(slice_session, user, PLAN_DATE, NOW)
+        create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     assert _plan_counts(slice_session, user) == (0, 0)
 
 
@@ -372,7 +378,7 @@ def test_naive_now_is_rejected(slice_session: Session, integrity_conn: Connectio
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
     with pytest.raises(ValueError, match="timezone-aware"):
-        create_day_plan(slice_session, user, PLAN_DATE, NOW.replace(tzinfo=None))
+        create_day_plan(slice_session, user, PLAN_DATE, NOW.replace(tzinfo=None), planner="greedy")
 
 
 def test_one_main_slot_per_day_is_enforced(
@@ -380,7 +386,7 @@ def test_one_main_slot_per_day_is_enforced(
 ) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     slots = slice_session.execute(
         select(MealPlanItem.slot, func.count())
         .where(MealPlanItem.plan_id == plan.plan_id)
@@ -432,7 +438,7 @@ def test_no_breakfast_left_raises_and_writes_nothing(
     plan_target(slice_session, user)
 
     with pytest.raises(NoFeasiblePlanError) as caught:
-        create_day_plan(slice_session, user, PLAN_DATE, NOW)
+        create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     error = caught.value
     assert error.slot == "BREAKFAST"
     assert error.candidates == len(facts) * len(MULTIPLIERS)
@@ -500,7 +506,7 @@ def test_two_variants_of_one_dish_never_share_a_day(
     assert error.slot == "DINNER"
     assert dinner_codes <= set(error.reasons)
     with pytest.raises(NoFeasiblePlanError):
-        create_day_plan(slice_session, user, PLAN_DATE, NOW)
+        create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     assert _plan_counts(slice_session, user) == (0, 0)
 
 
@@ -679,15 +685,49 @@ def test_snacks_fill_the_gap_up_to_two_and_never_past_the_ceiling() -> None:
     assert not none.kcal_within_10pct
 
 
-def test_explicit_greedy_snapshot_matches_the_default_keys(
+def test_default_planner_stores_a_cpsat_plan(
     slice_session: Session, integrity_conn: Connection
 ) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
-    assert (plan.generated_by, plan.algorithm_version) == ("greedy", PLANNER_VERSION)
-    assert set(plan.target_snapshot) == SNAPSHOT_KEYS
-    assert "solver" not in plan.target_snapshot
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    assert (plan.generated_by, plan.algorithm_version) == ("cpsat", "cpsat_v1")
+    snapshot = plan.target_snapshot
+    assert "solver" in snapshot
+    for nutrient in ("sodium", "saturated_fat"):
+        sources = snapshot["limits"]["max_per_day"][nutrient]["sources"]
+        assert any(source["condition"] == "GENERAL_POPULATION" for source in sources)
+
+
+def test_default_planner_logs_and_excludes_the_previous_day(
+    slice_session: Session, integrity_conn: Connection
+) -> None:
+    start = date(2026, 10, 7)
+    now = datetime(2026, 10, 7, 5, 0, tzinfo=UTC)
+    user = setup_p1(slice_session, integrity_conn, start, now)
+    first = create_day_plan(slice_session, user, start, now)
+    second = create_day_plan(
+        slice_session, user, start + timedelta(days=1), now + timedelta(days=1)
+    )
+    items = list(
+        slice_session.scalars(
+            select(MealPlanItem)
+            .where(MealPlanItem.plan_id == first.plan_id)
+            .order_by(MealPlanItem.id)
+        )
+    )
+    for item in items:
+        log_plan_item(slice_session, user, item.id, item.servings_multiplier, now, uuid4(), now)
+    day = daily_adherence(slice_session, user, start)
+    assert day.status is not None
+    assert day.plan_id == first.plan_id
+    assert day.log_count == len(items)
+    second_ids = set(
+        slice_session.scalars(
+            select(MealPlanItem.meal_id).where(MealPlanItem.plan_id == second.plan_id)
+        )
+    )
+    assert second_ids.isdisjoint(item.meal_id for item in items)
 
 
 def test_cpsat_plan_records_general_limits_and_excludes_the_previous_day(

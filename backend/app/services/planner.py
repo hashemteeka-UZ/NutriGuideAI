@@ -1,7 +1,10 @@
-"""greedy_v1: deterministic one-day meal plan (Step F.1; §28.1, §28.2, §28.4, §28.6, §11.7).
+"""One-day meal plans (Step F.1 greedy_v1 baseline, Step H cpsat_v1; §28.1-§28.6, §11.7).
 
-build_day_plan writes nothing; create_day_plan screens the user, resolves the condition limits
-and stores the plan with its frozen target_snapshot. Greedy is the accepted baseline (§28.4).
+create_day_plan uses the CP-SAT optimizer (cpsat_v1, with the #87 general limits) by default.
+greedy_v1 is kept as the #88 baseline and is selected with planner="greedy".
+
+build_day_plan writes nothing and is the greedy algorithm. create_day_plan screens the user,
+resolves the condition limits and stores the plan with its frozen target_snapshot.
 
 Hard rules (never relaxed): every Layer 1 rule at the item's multiplier, every resolved
 max_per_day (with a lookahead over the main slots still to fill), LIMIT-tag servings, no meal
@@ -51,7 +54,7 @@ from app.services.targets import KCAL_PER_G_PROTEIN, UserNotEligibleError, fiber
 PLANNER_VERSION: Final = "greedy_v1"
 GENERATED_BY: Final = "greedy"
 PlannerName = Literal["greedy", "cpsat"]
-DEFAULT_PLANNER: Final[PlannerName] = "greedy"
+DEFAULT_PLANNER: Final[PlannerName] = "cpsat"
 PROTEIN_NUTRIENT: Final = "protein"
 
 # --- Step F.1 planner decision, to be recorded in the next doc version -------------------------
@@ -570,8 +573,8 @@ def create_day_plan(
     """Generate and store a one-day plan; older plans of the same day are never touched (#72).
 
     Screening uses the user's local date of `now`. created_at = now, so the newest plan
-    covering a day is the current one. The default planner is greedy_v1. ``cpsat`` applies
-    the #87 general limits and excludes the previous day's meals.
+    covering a day is the current one. The default is cpsat_v1, which applies the #87 general
+    limits and excludes the previous day's meals. ``planner="greedy"`` selects the baseline.
     """
     if now.tzinfo is None:
         raise ValueError("now must be timezone-aware")

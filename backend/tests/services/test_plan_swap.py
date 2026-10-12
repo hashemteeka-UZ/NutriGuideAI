@@ -109,7 +109,7 @@ def test_swap_to_meal_with_user_allergen_is_rejected(
 ) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     lunch = _item(slice_session, plan.plan_id, "LUNCH")
     gluten = slice_session.execute(
         select(Allergen.allergen_id).where(Allergen.name_en == "Gluten")
@@ -128,7 +128,7 @@ def test_swap_breakfast_only_meal_into_lunch_is_rejected(
 ) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     lunch = _item(slice_session, plan.plan_id, "LUNCH")
 
     with pytest.raises(SwapRejectedError) as caught:
@@ -143,7 +143,7 @@ def test_swap_to_other_member_of_a_variant_group_already_in_the_day_is_rejected(
 ) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    plan = create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     lunch = _item(slice_session, plan.plan_id, "LUNCH")
     dinner = _item(slice_session, plan.plan_id, "DINNER")
     dinner_ref = slice_session.execute(
@@ -214,7 +214,7 @@ def test_cpsat_swap_rejects_general_sodium_that_a_greedy_plan_accepts(
     cpsat_user = case_1_user(integrity_conn)
     plan_target(slice_session, greedy_user)
     plan_target(slice_session, cpsat_user)
-    greedy_plan = create_day_plan(slice_session, greedy_user, PLAN_DATE, NOW)
+    greedy_plan = create_day_plan(slice_session, greedy_user, PLAN_DATE, NOW, planner="greedy")
     cpsat_plan = create_day_plan(slice_session, cpsat_user, PLAN_DATE, NOW, planner="cpsat")
     meals: dict[int, MealFacts] = {meal.meal_id: meal for meal in load_meal_facts(slice_session)}
     greedy_items = _items(slice_session, greedy_plan.plan_id)

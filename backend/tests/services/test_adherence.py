@@ -243,7 +243,7 @@ def test_newer_plan_replaces_the_old_one_in_completion(
     user, first = htn_dm2_plan(slice_session, integrity_conn)
     _log_items(slice_session, user, _items(slice_session, first.plan_id))
     later = NOW + timedelta(hours=1)
-    second = create_day_plan(slice_session, user, PLAN_DATE, later)
+    second = create_day_plan(slice_session, user, PLAN_DATE, later, planner="greedy")
     day = daily_adherence(slice_session, user, PLAN_DATE)
     assert day.plan_id == second.plan_id != first.plan_id
     assert day.plan_items_consumed == 0

@@ -14,7 +14,7 @@ from app.db.models import HealthCondition, Meal, MealAllergen, MealNutrient, Mea
 from app.db.models.catalog import MealTagSource
 from app.db.models.user import TargetReason
 from app.seed.f1_loader import DEFAULT_DATA_DIR, load_f1_slice
-from app.services.planner import PlanTarget, create_day_plan
+from app.services.planner import PlannerName, PlanTarget, create_day_plan
 from app.services.recompute_meals import MealRecompute, recompute_active_meals
 from app.services.targets import create_user_target
 from tests.builders import make_user_health_condition, make_user_profile, make_weight_log
@@ -104,9 +104,14 @@ def plan_target(session: Session, user: int) -> PlanTarget:
     return PlanTarget.from_user_target(create_user_target(session, user, TargetReason.INITIAL, NOW))
 
 
-def htn_dm2_plan(session: Session, conn: Connection) -> tuple[int, MealPlan]:
-    """Targets case 2 with HYPERTENSION + DIABETES_T2 and a greedy_v1 plan for PLAN_DATE."""
+def htn_dm2_plan(
+    session: Session, conn: Connection, planner: PlannerName = "greedy"
+) -> tuple[int, MealPlan]:
+    """Targets case 2 with HYPERTENSION + DIABETES_T2 and a plan for PLAN_DATE.
+
+    The plan defaults to greedy_v1, the #88 baseline.
+    """
     user = case_2_user(conn)
     add_conditions(session, conn, user, "HYPERTENSION", "DIABETES_T2")
     plan_target(session, user)
-    return user, create_day_plan(session, user, PLAN_DATE, NOW)
+    return user, create_day_plan(session, user, PLAN_DATE, NOW, planner=planner)

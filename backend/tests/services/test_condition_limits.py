@@ -285,7 +285,7 @@ def test_conflict_writes_no_plan(slice_session: Session, integrity_conn: Connect
     user, _minimum, _maximum = _conflicting_user(slice_session, integrity_conn)
     plan_target(slice_session, user)
     with pytest.raises(ConditionConflictError):
-        create_day_plan(slice_session, user, PLAN_DATE, NOW)
+        create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
     assert slice_session.execute(select(func.count()).select_from(MealPlan)).scalar_one() == 0
     assert slice_session.execute(select(func.count()).select_from(MealPlanItem)).scalar_one() == 0
 

@@ -498,7 +498,7 @@ def _planned_day(
     build_ms, current, limits = _time_build(
         session, persona.user_id, plan_date, result.build_timings_ms
     )
-    plan = create_day_plan(session, persona.user_id, plan_date, now)
+    plan = create_day_plan(session, persona.user_id, plan_date, now, planner="greedy")
     items = _plan_items(session, plan.plan_id, _facts(session), nutrient_codes)
     return plan, items, current, limits, build_ms
 
@@ -858,7 +858,7 @@ def _run_p3(
     except UserNotEligibleError as exc:
         persona.target_error = str(exc)
     try:
-        create_day_plan(session, user, start_date, now0)
+        create_day_plan(session, user, start_date, now0, planner="greedy")
     except UserNotEligibleError as exc:
         persona.plan_error = str(exc)
     eaten = _slot_time(start_date, 0, MealSlot.BREAKFAST, 0)
