@@ -18,6 +18,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
     APP_ENV: Literal["development", "test", "production"] = "development"
+    CORS_ORIGINS: list[str] = []
 
     @field_validator("DATABASE_URL")
     @classmethod

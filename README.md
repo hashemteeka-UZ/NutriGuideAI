@@ -37,6 +37,23 @@ The optional `db_test` service (throwaway database, no persistent volume) is
 reserved for schema tests and is started with
 `docker compose --profile test up -d db_test`.
 
+### Run the API
+
+From `backend/`:
+
+```bash
+uv run uvicorn app.api.main:app --reload
+```
+
+Open `http://127.0.0.1:8000/api/docs` and `http://127.0.0.1:8000/api/v1/health`.
+
+Refresh the OpenAPI contract (writes `docs/api/openapi.json`):
+
+```bash
+uv run python -m scripts.export_openapi
+uv run python -m scripts.export_openapi --check
+```
+
 ## Tests
 
 Integrity tests prove the migrated schema on a real PostgreSQL database (CHECK,

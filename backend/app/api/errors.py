@@ -1,0 +1,229 @@
+"""Problem responses (RFC 9457) and the domain-exception to HTTP map (#126)."""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Mapping
+from http import HTTPStatus
+from typing import Any, Final, cast
+
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException
+
+from app.api.observability import API_LOGGER_NAME, request_id_var
+from app.api.schemas.common import ProblemDetail, ValidationIssue
+from app.services.common import InvalidTimezoneError, MealNotFoundError
+from app.services.condition_limits import ConditionConflictError
+from app.services.consumption import (
+    ClientUuidConflictError,
+    FoodNotFoundError,
+    IncompleteNutritionError,
+    LogNotFoundError,
+    PlanItemAlreadyLoggedError,
+    PlanItemNotFoundError,
+)
+from app.services.plan_swap import SwapRejectedError
+from app.services.planner import MissingTargetError, NoFeasiblePlanError
+from app.services.screening import ProfileNotFoundError
+from app.services.targets import MissingWeightError, TargetValidationError, UserNotEligibleError
+from app.services.weight import ClockSkewError
+
+logger = logging.getLogger(API_LOGGER_NAME)
+
+PROBLEM_MEDIA_TYPE: Final = "application/problem+json"
+
+# Most specific class wins: lookup walks the raised exception's MRO.
+SERVICE_ERRORS: Mapping[type[Exception], tuple[int, str]] = {
+    ProfileNotFoundError: (404, "PROFILE_NOT_FOUND"),
+    MealNotFoundError: (404, "MEAL_NOT_FOUND"),
+    FoodNotFoundError: (404, "FOOD_NOT_FOUND"),
+    LogNotFoundError: (404, "LOG_NOT_FOUND"),
+    PlanItemNotFoundError: (404, "PLAN_ITEM_NOT_FOUND"),
+    UserNotEligibleError: (409, "NOT_ELIGIBLE"),
+    MissingTargetError: (409, "NO_TARGET"),
+    MissingWeightError: (409, "NO_WEIGHT"),
+    ConditionConflictError: (409, "CONDITION_CONFLICT"),
+    PlanItemAlreadyLoggedError: (409, "PLAN_ITEM_ALREADY_LOGGED"),
+    ClientUuidConflictError: (409, "CLIENT_UUID_CONFLICT"),
+    NoFeasiblePlanError: (422, "NO_FEASIBLE_PLAN"),
+    IncompleteNutritionError: (422, "INCOMPLETE_NUTRITION"),
+    SwapRejectedError: (422, "SWAP_REJECTED"),
+    ClockSkewError: (422, "CLOCK_SKEW"),
+    TargetValidationError: (422, "TARGET_VALIDATION"),
+    InvalidTimezoneError: (422, "INVALID_TIMEZONE"),
+}
+
+_HTTP_CODES: Final[dict[int, str]] = {
+    401: "UNAUTHORIZED",
+    403: "FORBIDDEN",
+    404: "NOT_FOUND",
+    405: "METHOD_NOT_ALLOWED",
+    429: "RATE_LIMITED",
+    501: "NOT_IMPLEMENTED",
+    503: "SERVICE_UNAVAILABLE",
+}
+
+_PROBLEM_SCHEMA: Final[dict[str, Any]] = {
+    "application/problem+json": {"schema": {"$ref": "#/components/schemas/ProblemDetail"}}
+}
+
+PROBLEM_RESPONSES: dict[int | str, dict[str, Any]] = {
+    422: {
+        "model": ProblemDetail,
+        "description": "Validation error",
+        "content": _PROBLEM_SCHEMA,
+    },
+    "default": {
+        "model": ProblemDetail,
+        "description": "Problem",
+        "content": _PROBLEM_SCHEMA,
+    },
+}
+
+
+class ApiError(Exception):
+    def __init__(
+        self,
+        status: int,
+        code: str,
+        title: str,
+        detail: str | None = None,
+        reasons: list[str] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(title if detail is None else detail)
+        self.status = status
+        self.code = code
+        self.title = title
+        self.detail = detail
+        self.reasons = reasons
+        self.headers = headers
+
+
+def problem_response(
+    status: int,
+    code: str,
+    title: str,
+    detail: str | None = None,
+    *,
+    errors: list[ValidationIssue] | None = None,
+    reasons: list[str] | None = None,
+    headers: dict[str, str] | None = None,
+) -> JSONResponse:
+    body = ProblemDetail(
+        title=title,
+        status=status,
+        detail=detail,
+        code=code,
+        request_id=request_id_var.get(),
+        errors=errors,
+        reasons=reasons,
+    )
+    return JSONResponse(
+        status_code=status,
+        content=body.model_dump(mode="json", exclude_none=True),
+        media_type=PROBLEM_MEDIA_TYPE,
+        headers=headers,
+    )
+
+
+def _service_error(exc: Exception) -> tuple[int, str] | None:
+    table = cast("Mapping[type[BaseException], tuple[int, str]]", SERVICE_ERRORS)
+    for cls in type(exc).__mro__:
+        mapped = table.get(cls)
+        if mapped is not None:
+            return mapped
+    return None
+
+
+def _reasons(exc: Exception) -> list[str] | None:
+    if isinstance(exc, UserNotEligibleError):
+        return list(exc.reasons)
+    if isinstance(exc, SwapRejectedError):
+        return list(exc.exclusion_codes)
+    return None
+
+
+def _title(code: str) -> str:
+    return code.replace("_", " ").capitalize()
+
+
+def _validation_issues(exc: RequestValidationError) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    for error in exc.errors():
+        loc = error.get("loc", ())
+        issues.append(
+            ValidationIssue(
+                loc=[
+                    part if isinstance(part, int) and not isinstance(part, bool) else str(part)
+                    for part in loc
+                ],
+                msg=str(error.get("msg", "")),
+                type=str(error.get("type", "")),
+            )
+        )
+    return issues
+
+
+def _http_title(status: int) -> str:
+    try:
+        return HTTPStatus(status).phrase
+    except ValueError:
+        return "HTTP error"
+
+
+async def _api_error_handler(_request: Request, exc: Exception) -> JSONResponse:
+    if not isinstance(exc, ApiError):
+        return problem_response(500, "INTERNAL_ERROR", "Internal server error")
+    return problem_response(
+        exc.status,
+        exc.code,
+        exc.title,
+        exc.detail,
+        reasons=exc.reasons,
+        headers=exc.headers,
+    )
+
+
+async def _unhandled_handler(_request: Request, exc: Exception) -> JSONResponse:
+    mapped = _service_error(exc)
+    if mapped is not None:
+        status, code = mapped
+        return problem_response(status, code, _title(code), str(exc), reasons=_reasons(exc))
+    logger.exception("unhandled exception", exc_info=exc)
+    return problem_response(500, "INTERNAL_ERROR", "Internal server error")
+
+
+async def _validation_handler(_request: Request, exc: Exception) -> JSONResponse:
+    if not isinstance(exc, RequestValidationError):
+        return problem_response(500, "INTERNAL_ERROR", "Internal server error")
+    return problem_response(
+        422,
+        "VALIDATION_ERROR",
+        "Validation error",
+        errors=_validation_issues(exc),
+    )
+
+
+async def _http_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
+    if not isinstance(exc, HTTPException):
+        return problem_response(500, "INTERNAL_ERROR", "Internal server error")
+    detail = exc.detail if isinstance(exc.detail, str) else None
+    headers = dict(exc.headers) if exc.headers else None
+    code = _HTTP_CODES.get(exc.status_code, f"HTTP_{exc.status_code}")
+    return problem_response(
+        exc.status_code,
+        code,
+        _http_title(exc.status_code),
+        detail,
+        headers=headers,
+    )
+
+
+def register_exception_handlers(app: FastAPI) -> None:
+    app.add_exception_handler(ApiError, _api_error_handler)
+    app.add_exception_handler(Exception, _unhandled_handler)
+    app.add_exception_handler(RequestValidationError, _validation_handler)
+    app.add_exception_handler(HTTPException, _http_exception_handler)

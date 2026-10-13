@@ -70,6 +70,9 @@ jobs:
       - name: mypy
         run: uv run mypy
 
+      - name: OpenAPI contract
+        run: uv run python -m scripts.export_openapi --check
+
       - name: alembic upgrade head
         run: uv run alembic upgrade head
 
