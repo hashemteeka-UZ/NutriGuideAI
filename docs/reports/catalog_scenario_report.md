@@ -6,14 +6,14 @@ Generated from `run_f1_scenario` with `start_date` 2026-10-07 and `start_now` 20
 
 | field | value |
 | --- | --- |
-| dataset_version | f1_slice_v0, f1_slice_v1, team_recipes_v1 |
+| dataset_version | f1_slice_v0, f1_slice_v1, team_recipes_v1, team_recipes_v2 |
 | computation_version | calc_v1 |
 | tag_rules_version | tags_v2 |
 | planner_version | greedy_v1 |
 | formula_version | targets_v1 |
-| meals | 83 |
-| active meals | 75 |
-| inactive meals | 8 |
+| meals | 121 |
+| active meals | 110 |
+| inactive meals | 11 |
 | foods | 178 |
 
 ## 2. P1 profile, screening, targets, limits
@@ -101,15 +101,15 @@ Resolved limits: none (no target).
 | BREAKFAST | NG-B08 | فول بالطحينة | 1.5 | 582.3075 | 28.8345 | 99.792 | 699.9675 | 7.0815 | 19.2105 | 1.4835 | FITS_KCAL_TARGET, LOW_SATURATED_FAT, LOW_SUGAR |
 | LUNCH | F1-L04 | دجاج بالأرز المبهر والخضار | 1.5 | 811.7595 | 48.156 | 105.21 | 1093.3725 | 6.4725 | 5.895 | 3.906 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SATURATED_FAT, LOW_SUGAR |
 | DINNER | F1-L02 | مبكبكة بلحم الضأن | 1 | 580.44 | 29.128 | 82.713 | 657.655 | 6.445 | 4.842 | 3.178 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SATURATED_FAT, LOW_SUGAR |
-| SNACK | NG-B04 | زميطة بزيت الزيتون مع لبن | 1 | 340.9 | 11.87 | 46.84 | 298.8 | 11.12 | 5.05 | 2.868 | FITS_KCAL_TARGET, LOW_SATURATED_FAT, LOW_SODIUM, LOW_SUGAR |
+| SNACK | NG-D17 | تبولة | 2 | 342 | 9.046 | 41.83 | 589.706 | 6.49 | 10.326 | 2.582 | FITS_KCAL_TARGET, LOW_SATURATED_FAT, LOW_SUGAR |
 
 | quantity | plan_total | target_or_limit | basis |
 | --- | --- | --- | --- |
-| energy_kcal | 2315.407 | 2316 | target |
-| protein | 117.9885 | 126 | target |
-| carbohydrate | 334.555 | 279.3 | target |
-| fat | 58.2475 | 77.2 | target |
-| fiber | 34.9975 | 32 | soft target |
+| energy_kcal | 2316.507 | 2316 | target |
+| protein | 115.1645 | 126 | target |
+| carbohydrate | 329.545 | 279.3 | target |
+| fat | 63.6775 | 77.2 | target |
+| fiber | 40.2735 | 32 | soft target |
 
 kcal_within_10pct: True
 
@@ -122,15 +122,15 @@ unmet_minimums: none
 | BREAKFAST | NG-B08 | فول بالطحينة | 1.5 | 582.3075 | 28.8345 | 99.792 | 699.9675 | 7.0815 | 19.2105 | 1.4835 | FITS_KCAL_TARGET, LOW_SATURATED_FAT, LOW_SUGAR |
 | LUNCH | F1-D01 | شربة ليبية بلحم الضأن | 1.5 | 431.3925 | 24.7635 | 50.514 | 1047.4575 | 6.7845 | 5.9325 | 3.141 | HIGH_PROTEIN, LOW_SATURATED_FAT, LOW_SUGAR |
 | DINNER | F1-L02 | مبكبكة بلحم الضأن | 1 | 580.44 | 29.128 | 82.713 | 657.655 | 6.445 | 4.842 | 3.178 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SATURATED_FAT, LOW_SUGAR |
-| SNACK | NG-B04 | زميطة بزيت الزيتون مع لبن | 1 | 340.9 | 11.87 | 46.84 | 298.8 | 11.12 | 5.05 | 2.868 | FITS_KCAL_TARGET, LOW_SATURATED_FAT, LOW_SODIUM, LOW_SUGAR |
+| SNACK | NG-D17 | تبولة | 2 | 342 | 9.046 | 41.83 | 589.706 | 6.49 | 10.326 | 2.582 | FITS_KCAL_TARGET, LOW_SATURATED_FAT, LOW_SUGAR |
 
 | quantity | plan_total | target_or_limit | basis |
 | --- | --- | --- | --- |
-| energy_kcal | 1935.04 | 2316 | target |
-| protein | 94.596 | 126 | target |
-| carbohydrate | 279.859 | 279.3 | target |
-| fat | 52.63 | 77.2 | target |
-| fiber | 35.035 | 32 | soft target |
+| energy_kcal | 1936.14 | 2316 | target |
+| protein | 91.772 | 126 | target |
+| carbohydrate | 274.849 | 279.3 | target |
+| fat | 58.06 | 77.2 | target |
+| fiber | 40.311 | 32 | soft target |
 
 kcal_within_10pct: False
 
@@ -165,23 +165,23 @@ unmet_minimums: none
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | BREAKFAST | NG-B01 | عجة بالبقدونس | 1.5 | 421.5225 | 25.674 | 26.2095 | 868.38 | 4.3185 | 4.44 | 6.1185 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
 | LUNCH | NG-D06 | سلمون بالفرن مع بروكلي وجزر | 1.5 | 581.4795 | 46.2465 | 21.3765 | 818.6445 | 7.5705 | 6.909 | 7.3515 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
-| DINNER | F1-D05 | مجدرة بالبرغل | 0.5 | 234.1065 | 9.7095 | 38.4735 | 252.4675 | 2.2085 | 6.477 | 0.8085 | LOW_SATURATED_FAT, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
+| DINNER | NG-L25 | مجدرة مع زبادي | 0.5 | 264.2 | 11.966 | 39.0275 | 252.9975 | 7.507 | 4.014 | 1.6095 | LOW_SATURATED_FAT, LOW_SODIUM, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
 | SNACK | NG-S04 | لوز وجوز وزبيب | 2 | 394.2 | 10.382 | 33.004 | 8.5 | 21.382 | 6.44 | 2.394 | HIGH_FIBER, LOW_SODIUM, SUITS_CONDITION_HYPERTENSION |
 
 | quantity | plan_total | target_or_limit | basis |
 | --- | --- | --- | --- |
-| energy_kcal | 1631.3085 | 1738 | target |
-| protein | 92.012 | 70 | target |
-| carbohydrate | 119.0635 | 234.2 | target |
-| fat | 92.607 | 57.9 | target |
-| fiber | 24.266 | 24 | soft target |
-| max sodium | 1947.992 | 2000 | max_per_day |
-| max sugars | 35.4795 | 43.45 | max_per_day |
-| min fiber | 24.266 | 25 | min_per_day |
+| energy_kcal | 1661.402 | 1738 | target |
+| protein | 94.2685 | 70 | target |
+| carbohydrate | 119.6175 | 234.2 | target |
+| fat | 94.009 | 57.9 | target |
+| fiber | 21.803 | 24 | soft target |
+| max sodium | 1948.522 | 2000 | max_per_day |
+| max sugars | 40.778 | 43.45 | max_per_day |
+| min fiber | 21.803 | 25 | min_per_day |
 
 kcal_within_10pct: True
 
-unmet_minimums: fiber min 25 total 24.266
+unmet_minimums: fiber min 25 total 21.803
 
 ### P2 day 1 (2026-10-08)
 
@@ -189,23 +189,23 @@ unmet_minimums: fiber min 25 total 24.266
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | BREAKFAST | NG-B01 | عجة بالبقدونس | 1.5 | 421.5225 | 25.674 | 26.2095 | 868.38 | 4.3185 | 4.44 | 6.1185 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
 | LUNCH | F1-D07 | تبولة | 1.5 | 366.45 | 8.64 | 43.9515 | 639.495 | 6.5235 | 9.3375 | 2.853 | LOW_SATURATED_FAT, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
-| DINNER | F1-D05 | مجدرة بالبرغل | 0.5 | 234.1065 | 9.7095 | 38.4735 | 252.4675 | 2.2085 | 6.477 | 0.8085 | LOW_SATURATED_FAT, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
+| DINNER | NG-L25 | مجدرة مع زبادي | 0.5 | 264.2 | 11.966 | 39.0275 | 252.9975 | 7.507 | 4.014 | 1.6095 | LOW_SATURATED_FAT, LOW_SODIUM, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
 | SNACK | NG-S04 | لوز وجوز وزبيب | 2 | 394.2 | 10.382 | 33.004 | 8.5 | 21.382 | 6.44 | 2.394 | HIGH_FIBER, LOW_SODIUM, SUITS_CONDITION_HYPERTENSION |
 
 | quantity | plan_total | target_or_limit | basis |
 | --- | --- | --- | --- |
-| energy_kcal | 1416.279 | 1738 | target |
-| protein | 54.4055 | 70 | target |
-| carbohydrate | 141.6385 | 234.2 | target |
-| fat | 77.6445 | 57.9 | target |
-| fiber | 26.6945 | 24 | soft target |
-| max sodium | 1768.8425 | 2000 | max_per_day |
-| max sugars | 34.4325 | 43.45 | max_per_day |
-| min fiber | 26.6945 | 25 | min_per_day |
+| energy_kcal | 1446.3725 | 1738 | target |
+| protein | 56.662 | 70 | target |
+| carbohydrate | 142.1925 | 234.2 | target |
+| fat | 79.0465 | 57.9 | target |
+| fiber | 24.2315 | 24 | soft target |
+| max sodium | 1769.3725 | 2000 | max_per_day |
+| max sugars | 39.731 | 43.45 | max_per_day |
+| min fiber | 24.2315 | 25 | min_per_day |
 
 kcal_within_10pct: False
 
-unmet_minimums: none
+unmet_minimums: fiber min 25 total 24.2315
 
 ### P2 day 2 (2026-10-09)
 
@@ -213,23 +213,23 @@ unmet_minimums: none
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | BREAKFAST | NG-B01 | عجة بالبقدونس | 1.5 | 421.5225 | 25.674 | 26.2095 | 868.38 | 4.3185 | 4.44 | 6.1185 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
 | LUNCH | NG-D06 | سلمون بالفرن مع بروكلي وجزر | 1.5 | 581.4795 | 46.2465 | 21.3765 | 818.6445 | 7.5705 | 6.909 | 7.3515 | FITS_KCAL_TARGET, HIGH_PROTEIN, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
-| DINNER | F1-D05 | مجدرة بالبرغل | 0.5 | 234.1065 | 9.7095 | 38.4735 | 252.4675 | 2.2085 | 6.477 | 0.8085 | LOW_SATURATED_FAT, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
+| DINNER | NG-L25 | مجدرة مع زبادي | 0.5 | 264.2 | 11.966 | 39.0275 | 252.9975 | 7.507 | 4.014 | 1.6095 | LOW_SATURATED_FAT, LOW_SODIUM, LOW_SUGAR, SUITS_CONDITION_DIABETES_T2, SUITS_CONDITION_HYPERTENSION |
 | SNACK | NG-S04 | لوز وجوز وزبيب | 2 | 394.2 | 10.382 | 33.004 | 8.5 | 21.382 | 6.44 | 2.394 | HIGH_FIBER, LOW_SODIUM, SUITS_CONDITION_HYPERTENSION |
 
 | quantity | plan_total | target_or_limit | basis |
 | --- | --- | --- | --- |
-| energy_kcal | 1631.3085 | 1738 | target |
-| protein | 92.012 | 70 | target |
-| carbohydrate | 119.0635 | 234.2 | target |
-| fat | 92.607 | 57.9 | target |
-| fiber | 24.266 | 24 | soft target |
-| max sodium | 1947.992 | 2000 | max_per_day |
-| max sugars | 35.4795 | 43.45 | max_per_day |
-| min fiber | 24.266 | 25 | min_per_day |
+| energy_kcal | 1661.402 | 1738 | target |
+| protein | 94.2685 | 70 | target |
+| carbohydrate | 119.6175 | 234.2 | target |
+| fat | 94.009 | 57.9 | target |
+| fiber | 21.803 | 24 | soft target |
+| max sodium | 1948.522 | 2000 | max_per_day |
+| max sugars | 40.778 | 43.45 | max_per_day |
+| min fiber | 21.803 | 25 | min_per_day |
 
 kcal_within_10pct: True
 
-unmet_minimums: fiber min 25 total 24.266
+unmet_minimums: fiber min 25 total 21.803
 
 ## 3. P3 plans
 
@@ -246,7 +246,7 @@ No plan.
 | PLAN_ITEM | NG-B08 | 1.5 | ACTIVE |
 | PLAN_ITEM | F1-L04 | 1.5 | ACTIVE |
 | PLAN_ITEM | F1-L02 | 1 | ACTIVE |
-| PLAN_ITEM | NG-B04 | 1 | ACTIVE |
+| PLAN_ITEM | NG-D17 | 2 | ACTIVE |
 
 | field | value |
 | --- | --- |
@@ -300,7 +300,7 @@ Streak at last day: 1
 | --- | --- | --- | --- |
 | PLAN_ITEM | NG-B01 | 1.5 | ACTIVE |
 | PLAN_ITEM | NG-D06 | 1.5 | ACTIVE |
-| PLAN_ITEM | F1-D05 | 0.5 | ACTIVE |
+| PLAN_ITEM | NG-L25 | 0.5 | ACTIVE |
 | PLAN_ITEM | NG-S04 | 2 | ACTIVE |
 
 | field | value |
@@ -334,7 +334,7 @@ Streak at last day: 1
 | --- | --- | --- | --- |
 | PLAN_ITEM | NG-B01 | 1.5 | ACTIVE |
 | PLAN_ITEM | NG-D06 | 1.5 | ACTIVE |
-| PLAN_ITEM | F1-D05 | 0.5 | ACTIVE |
+| PLAN_ITEM | NG-L25 | 0.5 | ACTIVE |
 | PLAN_ITEM | NG-S04 | 2 | ACTIVE |
 
 | field | value |
@@ -369,14 +369,14 @@ Streak at last day: 0
 
 | persona | slot | survivors | evaluated | removing_codes |
 | --- | --- | --- | --- | --- |
-| P1 | BREAKFAST | 26 | 83 | INACTIVE 8, NO_OCCASION:BREAKFAST 57 |
-| P1 | LUNCH | 39 | 83 | INACTIVE 8, NO_OCCASION:LUNCH 38 |
-| P1 | DINNER | 41 | 83 | INACTIVE 8, NO_OCCASION:DINNER 38 |
-| P1 | SNACK | 24 | 83 | INACTIVE 8, NO_OCCASION:SNACK 57 |
-| P2 | BREAKFAST | 21 | 83 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 2, INACTIVE 8, MAX_PER_MEAL:carbohydrate 18, NO_OCCASION:BREAKFAST 57 |
-| P2 | LUNCH | 26 | 83 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 2, INACTIVE 8, MAX_PER_MEAL:carbohydrate 18, NO_OCCASION:LUNCH 38 |
-| P2 | DINNER | 34 | 83 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 2, INACTIVE 8, MAX_PER_MEAL:carbohydrate 18, NO_OCCASION:DINNER 38 |
-| P2 | SNACK | 21 | 83 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 2, INACTIVE 8, MAX_PER_MEAL:carbohydrate 18, NO_OCCASION:SNACK 57 |
+| P1 | BREAKFAST | 39 | 121 | INACTIVE 11, NO_OCCASION:BREAKFAST 81 |
+| P1 | LUNCH | 57 | 121 | INACTIVE 11, NO_OCCASION:LUNCH 56 |
+| P1 | DINNER | 62 | 121 | INACTIVE 11, NO_OCCASION:DINNER 53 |
+| P1 | SNACK | 31 | 121 | INACTIVE 11, NO_OCCASION:SNACK 87 |
+| P2 | BREAKFAST | 29 | 121 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 3, INACTIVE 11, MAX_PER_MEAL:carbohydrate 33, NO_OCCASION:BREAKFAST 81 |
+| P2 | LUNCH | 32 | 121 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 3, INACTIVE 11, MAX_PER_MEAL:carbohydrate 33, NO_OCCASION:LUNCH 56 |
+| P2 | DINNER | 49 | 121 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 3, INACTIVE 11, MAX_PER_MEAL:carbohydrate 33, NO_OCCASION:DINNER 53 |
+| P2 | SNACK | 27 | 121 | ALLERGEN:Peanut 2, AVOID_TAG:added_sugar 3, INACTIVE 11, MAX_PER_MEAL:carbohydrate 33, NO_OCCASION:SNACK 87 |
 
 P1 variety across three days: 7 distinct meals / 12 items.
 
@@ -385,24 +385,24 @@ P1 variety across three days: 7 distinct meals / 12 items.
 | statistic | ms |
 | --- | --- |
 | n | 6 |
-| min | 28.419 |
-| median | 64.518 |
-| max | 172.675 |
+| min | 31.733 |
+| median | 47.897 |
+| max | 74.039 |
 
 ## 7. Observations
 
-- P1 day 0 sodium total: 2749.795 mg; no limit applies (#69).
-- P1 day 1 sodium total: 2703.88 mg; no limit applies (#69).
+- P1 day 0 sodium total: 3040.701 mg; no limit applies (#69).
+- P1 day 1 sodium total: 2994.786 mg; no limit applies (#69).
 - P1 day 2 sodium total: 4211.6575 mg; no limit applies (#69).
 - The three P1 day plans share 1 of 7 meals.
 - P1 used 7 distinct meals across 12 planned items.
 - P1 day-2 plan uses reason WEIGHT_UPDATE; INITIAL target closed=True.
 - P2 day-2 weight 70.4 kg target_status=NOT_TRIGGERED.
-- P2 day 0 plan vs max_per_day: sodium 1947.992/2000; sugars 35.4795/43.45.
+- P2 day 0 plan vs max_per_day: sodium 1948.522/2000; sugars 40.778/43.45.
 - P2 day 0 kcal_within_10pct=True; unmet_minimums=1.
-- P2 day 1 plan vs max_per_day: sodium 1768.8425/2000; sugars 34.4325/43.45.
-- P2 day 1 kcal_within_10pct=False; unmet_minimums=0.
-- P2 day 2 plan vs max_per_day: sodium 1947.992/2000; sugars 35.4795/43.45.
+- P2 day 1 plan vs max_per_day: sodium 1769.3725/2000; sugars 39.731/43.45.
+- P2 day 1 kcal_within_10pct=False; unmet_minimums=1.
+- P2 day 2 plan vs max_per_day: sodium 1948.522/2000; sugars 40.778/43.45.
 - P2 day 2 kcal_within_10pct=True; unmet_minimums=1.
 - P1 day 0 kcal_within_10pct=True; adherence=ACHIEVED; completion=1.000.
 - P1 day 1 kcal_within_10pct=False; adherence=NOT_ACHIEVED; completion=0.500.

@@ -1,4 +1,4 @@
-"""catalog_v1 manifest matches the committed catalog and notices a changed meal file."""
+"""catalog_v2 manifest matches the committed catalog and notices a changed meal file."""
 
 from __future__ import annotations
 

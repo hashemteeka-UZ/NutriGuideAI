@@ -1,4 +1,4 @@
-"""Frozen catalog manifest (`catalog_v1`, Decision #99).
+"""Frozen catalog manifest (`catalog_v2`, Decision #99).
 
     uv run python -m app.pipeline.manifest --write
     uv run python -m app.pipeline.manifest --check
@@ -27,7 +27,7 @@ from app.services.meal_nutrition import COMPUTATION_VERSION
 from app.services.planner import PLANNER_VERSION
 from app.services.tag_rules import TAG_RULES_VERSION
 
-DATASET_VERSION = "catalog_v1"
+DATASET_VERSION = "catalog_v2"
 MANIFEST_FILE = "DATASET_MANIFEST.yaml"
 CHECK_MESSAGE = (
     'catalog files changed: run "uv run python -m app.pipeline.manifest --write" '
@@ -160,7 +160,7 @@ def check_manifest(data_dir: Path) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Write or check the catalog_v1 dataset manifest.")
+    parser = argparse.ArgumentParser(description="Write or check the catalog_v2 dataset manifest.")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--write", action="store_true", help="Write DATASET_MANIFEST.yaml.")
     group.add_argument(

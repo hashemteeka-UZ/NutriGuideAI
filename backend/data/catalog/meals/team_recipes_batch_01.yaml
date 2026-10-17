@@ -333,30 +333,6 @@ meals:
   - {code: OLIVE_OIL, grams: 10, label_ar: زيت زيتون}
   - {code: SALT, grams: 2, label_ar: ملح}
   - {code: WHOLE_WHEAT_PITA_BREAD, grams: 120, label_ar: خبز عربي أسمر}
-- ref_external: NG-D09
-  name_ar: سلطة عدس بالخضار
-  name_en: Lentil salad with vegetables
-  cuisine: GENERAL
-  servings: 4
-  weight_method: SUM_OF_INGREDIENTS
-  yield_factor: null
-  yield_factor_source: null
-  variant_group: null
-  occasion_tags: [lunch_suitable, dinner_suitable]
-  dietary_tags: [vegetarian, vegan]
-  reviewed_by: Hashem
-  ingredients:
-  - {code: LENTILS, grams: 150, label_ar: عدس}
-  - {code: WATER, grams: 350, label_ar: ماء}
-  - {code: TOMATO, grams: 150, label_ar: طماطم}
-  - {code: CUCUMBER, grams: 150, label_ar: خيار}
-  - {code: RED_BELL_PEPPER, grams: 100, label_ar: فلفل أحمر حلو}
-  - {code: PARSLEY, grams: 30, label_ar: بقدونس}
-  - {code: SCALLIONS, grams: 20, label_ar: بصل أخضر}
-  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
-  - {code: LEMON_JUICE, grams: 30, label_ar: عصير ليمون}
-  - {code: CUMIN, grams: 2, label_ar: كمون}
-  - {code: SALT, grams: 3, label_ar: ملح}
 - ref_external: NG-D11
   name_ar: شوربة دجاج بالخضار والشعير
   name_en: Chicken soup with vegetables and barley
@@ -548,31 +524,6 @@ meals:
   - {code: ROMAINE_LETTUCE, grams: 200, label_ar: خس}
   - {code: TOMATO, grams: 200, label_ar: طماطم}
   - {code: CUCUMBER, grams: 200, label_ar: خيار}
-- ref_external: NG-L12
-  name_ar: طاجين دجاج بالخضار والزيتون
-  name_en: Chicken tagine with vegetables and olives
-  cuisine: MAGHREBI
-  servings: 4
-  weight_method: SUM_OF_INGREDIENTS
-  yield_factor: null
-  yield_factor_source: null
-  variant_group: null
-  occasion_tags: [lunch_suitable, dinner_suitable]
-  dietary_tags: []
-  reviewed_by: Hashem
-  ingredients:
-  - {code: CHICKEN_DRUMSTICK_SKINLESS, grams: 600, label_ar: دبوس دجاج بدون جلد}
-  - {code: POTATO, grams: 400, label_ar: بطاطا}
-  - {code: CARROT, grams: 200, label_ar: جزر}
-  - {code: GREEN_PEAS, grams: 150, label_ar: بازلاء}
-  - {code: ONION, grams: 150, label_ar: بصل}
-  - {code: GREEN_OLIVES, grams: 50, label_ar: زيتون أخضر}
-  - {code: LEMON_JUICE, grams: 20, label_ar: عصير ليمون}
-  - {code: OLIVE_OIL, grams: 25, label_ar: زيت زيتون}
-  - {code: TURMERIC, grams: 2, label_ar: كركم}
-  - {code: GINGER_GROUND, grams: 2, label_ar: زنجبيل مطحون}
-  - {code: SALT, grams: 3, label_ar: ملح}
-  - {code: WATER, grams: 300, label_ar: ماء}
 - ref_external: NG-L13
   name_ar: لوبيا باللحم
   name_en: Black-eyed peas with lamb
@@ -644,8 +595,8 @@ meals:
   - {code: BLACK_PEPPER, grams: 2, label_ar: فلفل أسود}
   - {code: WATER, grams: 300, label_ar: ماء}
 - ref_external: NG-L16
-  name_ar: صدر دجاج مشوي مع كينوا وخضار
-  name_en: Grilled chicken breast with quinoa and vegetables
+  name_ar: صدر دجاج مشوي مع برغل وخضار
+  name_en: Grilled chicken breast with bulgur and vegetables
   cuisine: GENERAL
   servings: 4
   weight_method: SUM_OF_INGREDIENTS
@@ -657,7 +608,8 @@ meals:
   reviewed_by: Hashem
   ingredients:
   - {code: CHICKEN_BREAST_SKINLESS, grams: 500, label_ar: صدر دجاج بدون جلد}
-  - {code: QUINOA, grams: 500, label_ar: كينوا مطبوخة}
+  - {code: BULGUR, grams: 170, label_ar: برغل}
+  - {code: WATER, grams: 340, label_ar: ماء للبرغل}
   - {code: ZUCCHINI, grams: 200, label_ar: كوسا}
   - {code: RED_BELL_PEPPER, grams: 200, label_ar: فلفل أحمر حلو}
   - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
@@ -706,21 +658,6 @@ meals:
   ingredients:
   - {code: PLAIN_YOGURT_LOW_FAT, grams: 170, label_ar: زبادي قليل الدسم}
   - {code: DATES, grams: 25, label_ar: تمر}
-- ref_external: NG-S02
-  name_ar: شاي بالحليب بدون سكر
-  name_en: Tea with milk, no sugar
-  cuisine: GENERAL
-  servings: 1
-  weight_method: SUM_OF_INGREDIENTS
-  yield_factor: null
-  yield_factor_source: null
-  variant_group: null
-  occasion_tags: [snack_suitable, breakfast_suitable, beverage]
-  dietary_tags: [vegetarian]
-  reviewed_by: Hashem
-  ingredients:
-  - {code: BLACK_TEA_BREWED, grams: 150, label_ar: شاي أحمر}
-  - {code: LOW_FAT_MILK_1, grams: 100, label_ar: حليب قليل الدسم}
 - ref_external: NG-S03
   name_ar: قهوة بالحليب بدون سكر
   name_en: Coffee with milk, no sugar

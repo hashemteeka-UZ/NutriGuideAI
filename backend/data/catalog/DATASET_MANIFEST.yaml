@@ -8,24 +8,28 @@ counts:
     excluded: 0
     quarantine: 19
   meal_tiers:
-    GOLD: 36
-    SILVER: 4
+    GOLD: 68
+    SILVER: 7
   meals:
-    accepted: 40
+    accepted: 75
     excluded: 0
     quarantine: 0
 curated_files:
   ingredients.yaml: 9dfea1d0a769d038f9b448c5e734860c85fb52ae3b186a1310074cf85ce1e1d5
-  meals/team_recipes_batch_01.yaml: 91832e99fa30fd753935f4fd47b063d4d718b8d4a42bda83fd3719717f06f3f4
+  meals/team_recipes_batch_01.yaml: d8248ec09a928f5ebee3372a703c9642d42bd8256d6d9affdc3b354cd72a9aa0
+  meals/team_recipes_batch_02.yaml: 571fe29549a9f1a3640b95166a8e6614fe2eb81cd20f5b65eed4fde02408501d
   reference_seed.yaml: e6401e0387f6ae1c57b92e7e25e22d8e6a994726819a4f1b53d4ae180f873572
   sources/fndds_ingredient_subset.csv: 733f0c8a17d26ed6ecd820e6c716b67919d17a9b117d36aa4546b2d25185cf6e
   sources/source_manifest.yaml: 107f09d6c8f7975b7cb50643144dbf1f3305ac4f6ae9cfafec78e5c51725798f
   sources/sr_legacy_subset.csv: 9b8a1c09d0f79b8b99a4a8e4e2538c2e2b8a35fa83da3bec1b4e3f29d629c856
-dataset_version: catalog_v1
+dataset_version: catalog_v2
 meal_batches:
   meals/team_recipes_batch_01.yaml:
     dataset_version: team_recipes_v1
-    meal_count: 40
+    meal_count: 37
+  meals/team_recipes_batch_02.yaml:
+    dataset_version: team_recipes_v2
+    meal_count: 38
 raw_files:
 - download_page: https://fdc.nal.usda.gov/download-datasets
   name: FoodData_Central_sr_legacy_food_csv_2018-04.zip

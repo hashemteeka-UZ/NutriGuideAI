@@ -3,7 +3,8 @@
 ## Input files
 
 - `ingredients.yaml`: `9dfea1d0a769d038f9b448c5e734860c85fb52ae3b186a1310074cf85ce1e1d5`
-- `meals/team_recipes_batch_01.yaml`: `91832e99fa30fd753935f4fd47b063d4d718b8d4a42bda83fd3719717f06f3f4`
+- `meals/team_recipes_batch_01.yaml`: `d8248ec09a928f5ebee3372a703c9642d42bd8256d6d9affdc3b354cd72a9aa0`
+- `meals/team_recipes_batch_02.yaml`: `571fe29549a9f1a3640b95166a8e6614fe2eb81cd20f5b65eed4fde02408501d`
 - `reference_seed.yaml`: `e6401e0387f6ae1c57b92e7e25e22d8e6a994726819a4f1b53d4ae180f873572`
 - `sources/fndds_ingredient_subset.csv`: `733f0c8a17d26ed6ecd820e6c716b67919d17a9b117d36aa4546b2d25185cf6e`
 - `sources/source_manifest.yaml`: `107f09d6c8f7975b7cb50643144dbf1f3305ac4f6ae9cfafec78e5c51725798f`
@@ -33,11 +34,11 @@
 
 ## meals
 
-- total: 40
+- total: 75
 - by outcome:
-  - accepted: 40
+  - accepted: 75
 - by outcome and reason:
-  - accepted:accepted: 40
+  - accepted:accepted: 75
 
 ## Nutrient fills (#93)
 
@@ -47,23 +48,22 @@
 
 ## Meals by quality tier
 
-  - GOLD: 36
-  - SILVER: 4
+  - GOLD: 68
+  - SILVER: 7
 
 ## Meals per occasion tag
 
-  - breakfast_suitable: 16
-  - lunch_suitable: 18
-  - dinner_suitable: 23
-  - snack_suitable: 16
+  - breakfast_suitable: 29
+  - lunch_suitable: 36
+  - dinner_suitable: 44
+  - snack_suitable: 23
 
 ## Share per cuisine
 
-  - EGYPTIAN: 2 (5.0%)
-  - GENERAL: 22 (55.0%)
-  - LEVANTINE: 2 (5.0%)
-  - LIBYAN: 13 (32.5%)
-  - MAGHREBI: 1 (2.5%)
+  - EGYPTIAN: 5 (6.7%)
+  - GENERAL: 37 (49.3%)
+  - LEVANTINE: 7 (9.3%)
+  - LIBYAN: 26 (34.7%)
 
 ## Load counts (inserted / updated / unchanged / deactivated)
 
@@ -81,10 +81,10 @@
   ingredient_aliases             0 /    0 /  389 /    0
   ingredient_allergens           0 /    0 /   45 /    0
   ingredient_tags                0 /    0 /    4 /    0
-  meals                          0 /    0 /   40 /    0
-  meal_translations              0 /    0 /   40 /    0
-  meal_ingredients               0 /    0 /  285 /    0
-  meal_tags                      0 /    0 /  114 /    0
+  meals                          0 /    0 /   75 /    0
+  meal_translations              0 /    0 /   75 /    0
+  meal_ingredients               0 /    0 /  586 /    0
+  meal_tags                      0 /    0 /  199 /    0
 
 - deactivated meals: []
 - reactivated meals: []

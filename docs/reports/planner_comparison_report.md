@@ -10,7 +10,7 @@
 | greedy planner_version | greedy_v1 |
 | cpsat planner_version | cpsat_v1 |
 | ortools | 9.15.6755 |
-| dataset_version | catalog_v1 |
+| dataset_version | catalog_v2 |
 
 Solver parameters from optimizer._configure: num_workers=1, random_seed=0, max_deterministic_time=10.0, log_search_progress=False.
 Objective weights: W_KCAL=3, W_KCAL_RELAXED=50, W_MACRO=1, W_FIBER=1, W_SLOT=1, LIKED_BONUS=10.
@@ -135,91 +135,90 @@ the condition limits and the slice size alone already prevent the band
 
 | persona | planner | day | C1 | C2 | C3 | C4 | kcal (target) | protein g | sodium mg | fiber g | sat fat g | solver status | kcal_relaxed |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P1 | greedy | 0 | PASS | PASS | PASS | PASS | 2315.407 (2316) | 117.9885 | 2749.795 | 34.9975 | 11.4355 | n/a | n/a |
-| P1 | greedy | 1 | PASS | PASS | PASS | FAIL | 2315.407 (2316) | 117.9885 | 2749.795 | 34.9975 | 11.4355 | n/a | n/a |
-| P1 | greedy | 2 | PASS | PASS | PASS | FAIL | 2315.407 (2316) | 117.9885 | 2749.795 | 34.9975 | 11.4355 | n/a | n/a |
+| P1 | greedy | 0 | PASS | PASS | PASS | PASS | 2316.507 (2316) | 115.1645 | 3040.701 | 40.2735 | 11.1495 | n/a | n/a |
+| P1 | greedy | 1 | PASS | PASS | PASS | FAIL | 2316.507 (2316) | 115.1645 | 3040.701 | 40.2735 | 11.1495 | n/a | n/a |
+| P1 | greedy | 2 | PASS | PASS | PASS | FAIL | 2316.507 (2316) | 115.1645 | 3040.701 | 40.2735 | 11.1495 | n/a | n/a |
 | P1 | cpsat | 0 | PASS | PASS | PASS | PASS | 2317.979 (2316) | 126.3985 | 1983.287 | 32.934 | 15.6115 | OPTIMAL | false |
-| P1 | cpsat | 1 | PASS | PASS | PASS | PASS | 2314.646 (2316) | 128.7605 | 1992.061 | 37.08 | 12.726 | OPTIMAL | false |
+| P1 | cpsat | 1 | PASS | PASS | PASS | PASS | 2183.1055 (2316) | 129.178 | 1972.3585 | 33.775 | 8.5395 | FEASIBLE | false |
 | P1 | cpsat | 2 | PASS | PASS | PASS | PASS | 2317.979 (2316) | 126.3985 | 1983.287 | 32.934 | 15.6115 | OPTIMAL | false |
-| P2 | greedy | 0 | PASS | PASS | FAIL | PASS | 1631.3085 (1738) | 92.012 | 1947.992 | 24.266 | 16.6725 | n/a | n/a |
-| P2 | greedy | 1 | PASS | PASS | FAIL | FAIL | 1631.3085 (1738) | 92.012 | 1947.992 | 24.266 | 16.6725 | n/a | n/a |
-| P2 | greedy | 2 | PASS | PASS | FAIL | FAIL | 1631.3085 (1738) | 92.012 | 1947.992 | 24.266 | 16.6725 | n/a | n/a |
-| P2 | cpsat | 0 | PASS | PASS | PASS | PASS | 1744.715 (1738) | 82.921 | 1501.585 | 28.834 | 9.3165 | OPTIMAL | false |
-| P2 | cpsat | 1 | PASS | PASS | PASS | PASS | 1738.5035 (1738) | 100.61 | 1971.7555 | 46.194 | 10.228 | OPTIMAL | false |
-| P2 | cpsat | 2 | PASS | PASS | PASS | PASS | 1744.715 (1738) | 82.921 | 1501.585 | 28.834 | 9.3165 | OPTIMAL | false |
+| P2 | greedy | 0 | PASS | PASS | FAIL | PASS | 1661.402 (1738) | 94.2685 | 1948.522 | 21.803 | 17.4735 | n/a | n/a |
+| P2 | greedy | 1 | PASS | PASS | FAIL | FAIL | 1661.402 (1738) | 94.2685 | 1948.522 | 21.803 | 17.4735 | n/a | n/a |
+| P2 | greedy | 2 | PASS | PASS | FAIL | FAIL | 1661.402 (1738) | 94.2685 | 1948.522 | 21.803 | 17.4735 | n/a | n/a |
+| P2 | cpsat | 0 | PASS | PASS | PASS | PASS | 1724.5025 (1738) | 72.4455 | 1727.006 | 30.084 | 11.3205 | FEASIBLE | false |
+| P2 | cpsat | 1 | PASS | PASS | PASS | PASS | 1739.0295 (1738) | 102.753 | 1894.2915 | 34.183 | 9.4545 | OPTIMAL | false |
+| P2 | cpsat | 2 | PASS | PASS | PASS | PASS | 1737.46 (1738) | 79.6365 | 1437.7815 | 25.6305 | 12.453 | FEASIBLE | false |
 
 general limits #87 (informational; greedy is not required to meet them, cpsat is):
 
 | persona | planner | day | sodium mg | sodium limit mg | sodium within | sat fat g | sat fat limit g | sat fat within |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P1 | greedy | 0 | 2749.795 | 2000 | FAIL | 11.4355 | 25.7333 | PASS |
-| P1 | greedy | 1 | 2749.795 | 2000 | FAIL | 11.4355 | 25.7333 | PASS |
-| P1 | greedy | 2 | 2749.795 | 2000 | FAIL | 11.4355 | 25.7333 | PASS |
+| P1 | greedy | 0 | 3040.701 | 2000 | FAIL | 11.1495 | 25.7333 | PASS |
+| P1 | greedy | 1 | 3040.701 | 2000 | FAIL | 11.1495 | 25.7333 | PASS |
+| P1 | greedy | 2 | 3040.701 | 2000 | FAIL | 11.1495 | 25.7333 | PASS |
 | P1 | cpsat | 0 | 1983.287 | 2000 | PASS | 15.6115 | 25.7333 | PASS |
-| P1 | cpsat | 1 | 1992.061 | 2000 | PASS | 12.726 | 25.7333 | PASS |
+| P1 | cpsat | 1 | 1972.3585 | 2000 | PASS | 8.5395 | 25.7333 | PASS |
 | P1 | cpsat | 2 | 1983.287 | 2000 | PASS | 15.6115 | 25.7333 | PASS |
-| P2 | greedy | 0 | 1947.992 | 2000 | PASS | 16.6725 | 19.3111 | PASS |
-| P2 | greedy | 1 | 1947.992 | 2000 | PASS | 16.6725 | 19.3111 | PASS |
-| P2 | greedy | 2 | 1947.992 | 2000 | PASS | 16.6725 | 19.3111 | PASS |
-| P2 | cpsat | 0 | 1501.585 | 2000 | PASS | 9.3165 | 19.3111 | PASS |
-| P2 | cpsat | 1 | 1971.7555 | 2000 | PASS | 10.228 | 19.3111 | PASS |
-| P2 | cpsat | 2 | 1501.585 | 2000 | PASS | 9.3165 | 19.3111 | PASS |
+| P2 | greedy | 0 | 1948.522 | 2000 | PASS | 17.4735 | 19.3111 | PASS |
+| P2 | greedy | 1 | 1948.522 | 2000 | PASS | 17.4735 | 19.3111 | PASS |
+| P2 | greedy | 2 | 1948.522 | 2000 | PASS | 17.4735 | 19.3111 | PASS |
+| P2 | cpsat | 0 | 1727.006 | 2000 | PASS | 11.3205 | 19.3111 | PASS |
+| P2 | cpsat | 1 | 1894.2915 | 2000 | PASS | 9.4545 | 19.3111 | PASS |
+| P2 | cpsat | 2 | 1437.7815 | 2000 | PASS | 12.453 | 19.3111 | PASS |
 
 | persona | planner | day | slot | ref_external | multiplier | kcal |
 | --- | --- | --- | --- | --- | --- | --- |
 | P1 | greedy | 0 | BREAKFAST | NG-B08 | 1.5 | 582.3075 |
 | P1 | greedy | 0 | LUNCH | F1-L04 | 1.5 | 811.7595 |
 | P1 | greedy | 0 | DINNER | F1-L02 | 1 | 580.44 |
-| P1 | greedy | 0 | SNACK | NG-B04 | 1 | 340.9 |
+| P1 | greedy | 0 | SNACK | NG-D17 | 2 | 342 |
 | P1 | greedy | 1 | BREAKFAST | NG-B08 | 1.5 | 582.3075 |
 | P1 | greedy | 1 | LUNCH | F1-L04 | 1.5 | 811.7595 |
 | P1 | greedy | 1 | DINNER | F1-L02 | 1 | 580.44 |
-| P1 | greedy | 1 | SNACK | NG-B04 | 1 | 340.9 |
+| P1 | greedy | 1 | SNACK | NG-D17 | 2 | 342 |
 | P1 | greedy | 2 | BREAKFAST | NG-B08 | 1.5 | 582.3075 |
 | P1 | greedy | 2 | LUNCH | F1-L04 | 1.5 | 811.7595 |
 | P1 | greedy | 2 | DINNER | F1-L02 | 1 | 580.44 |
-| P1 | greedy | 2 | SNACK | NG-B04 | 1 | 340.9 |
+| P1 | greedy | 2 | SNACK | NG-D17 | 2 | 342 |
 | P1 | cpsat | 0 | BREAKFAST | NG-B05 | 2 | 586.64 |
 | P1 | cpsat | 0 | LUNCH | F1-L04 | 1.5 | 811.7595 |
 | P1 | cpsat | 0 | DINNER | NG-D06 | 1.5 | 581.4795 |
 | P1 | cpsat | 0 | SNACK | NG-S05 | 1 | 167.7 |
 | P1 | cpsat | 0 | SNACK | NG-S09 | 1 | 170.4 |
-| P1 | cpsat | 1 | BREAKFAST | NG-B10 | 2 | 560.62 |
-| P1 | cpsat | 1 | LUNCH | NG-L16 | 2 | 744.886 |
-| P1 | cpsat | 1 | DINNER | F1-L02 | 1 | 580.44 |
-| P1 | cpsat | 1 | SNACK | F1-S01 | 1.5 | 385.2 |
-| P1 | cpsat | 1 | SNACK | NG-S02 | 1 | 43.5 |
+| P1 | cpsat | 1 | BREAKFAST | NG-B16 | 1 | 304.4 |
+| P1 | cpsat | 1 | LUNCH | F1-D05 | 1.5 | 702.3195 |
+| P1 | cpsat | 1 | DINNER | NG-L28 | 2 | 1052.686 |
+| P1 | cpsat | 1 | SNACK | NG-S13 | 0.5 | 123.7 |
 | P1 | cpsat | 2 | BREAKFAST | NG-B05 | 2 | 586.64 |
 | P1 | cpsat | 2 | LUNCH | F1-L04 | 1.5 | 811.7595 |
 | P1 | cpsat | 2 | DINNER | NG-D06 | 1.5 | 581.4795 |
-| P1 | cpsat | 2 | SNACK | NG-S09 | 1 | 170.4 |
 | P1 | cpsat | 2 | SNACK | NG-S05 | 1 | 167.7 |
+| P1 | cpsat | 2 | SNACK | NG-S09 | 1 | 170.4 |
 | P2 | greedy | 0 | BREAKFAST | NG-B01 | 1.5 | 421.5225 |
 | P2 | greedy | 0 | LUNCH | NG-D06 | 1.5 | 581.4795 |
-| P2 | greedy | 0 | DINNER | F1-D05 | 0.5 | 234.1065 |
+| P2 | greedy | 0 | DINNER | NG-L25 | 0.5 | 264.2 |
 | P2 | greedy | 0 | SNACK | NG-S04 | 2 | 394.2 |
 | P2 | greedy | 1 | BREAKFAST | NG-B01 | 1.5 | 421.5225 |
 | P2 | greedy | 1 | LUNCH | NG-D06 | 1.5 | 581.4795 |
-| P2 | greedy | 1 | DINNER | F1-D05 | 0.5 | 234.1065 |
+| P2 | greedy | 1 | DINNER | NG-L25 | 0.5 | 264.2 |
 | P2 | greedy | 1 | SNACK | NG-S04 | 2 | 394.2 |
 | P2 | greedy | 2 | BREAKFAST | NG-B01 | 1.5 | 421.5225 |
 | P2 | greedy | 2 | LUNCH | NG-D06 | 1.5 | 581.4795 |
-| P2 | greedy | 2 | DINNER | F1-D05 | 0.5 | 234.1065 |
+| P2 | greedy | 2 | DINNER | NG-L25 | 0.5 | 264.2 |
 | P2 | greedy | 2 | SNACK | NG-S04 | 2 | 394.2 |
-| P2 | cpsat | 0 | BREAKFAST | NG-B10 | 1.5 | 420.465 |
-| P2 | cpsat | 0 | LUNCH | NG-L17 | 1 | 451.855 |
-| P2 | cpsat | 0 | DINNER | NG-L11 | 1 | 438.125 |
-| P2 | cpsat | 0 | SNACK | NG-S06 | 1 | 140.95 |
+| P2 | cpsat | 0 | BREAKFAST | NG-B17 | 0.5 | 252.8275 |
+| P2 | cpsat | 0 | LUNCH | NG-D01 | 2 | 444.6 |
+| P2 | cpsat | 0 | DINNER | NG-L17 | 1 | 451.855 |
 | P2 | cpsat | 0 | SNACK | NG-B05 | 1 | 293.32 |
-| P2 | cpsat | 1 | BREAKFAST | F1-B02 | 1 | 296.713 |
-| P2 | cpsat | 1 | LUNCH | NG-L16 | 1.5 | 558.6645 |
-| P2 | cpsat | 1 | DINNER | NG-D07 | 2 | 389.926 |
-| P2 | cpsat | 1 | SNACK | NG-B04 | 1 | 340.9 |
-| P2 | cpsat | 1 | SNACK | NG-B09 | 0.5 | 152.3 |
-| P2 | cpsat | 2 | BREAKFAST | NG-B10 | 1.5 | 420.465 |
+| P2 | cpsat | 0 | SNACK | NG-S06 | 2 | 281.9 |
+| P2 | cpsat | 1 | BREAKFAST | NG-B10 | 1.5 | 420.465 |
+| P2 | cpsat | 1 | LUNCH | NG-L16 | 1.5 | 551.6895 |
+| P2 | cpsat | 1 | DINNER | NG-L11 | 1 | 438.125 |
+| P2 | cpsat | 1 | SNACK | F1-S03 | 0.5 | 72.25 |
+| P2 | cpsat | 1 | SNACK | NG-D17 | 1.5 | 256.5 |
+| P2 | cpsat | 2 | BREAKFAST | NG-B04 | 1 | 340.9 |
 | P2 | cpsat | 2 | LUNCH | NG-L17 | 1 | 451.855 |
-| P2 | cpsat | 2 | DINNER | NG-L11 | 1 | 438.125 |
-| P2 | cpsat | 2 | SNACK | NG-S06 | 1 | 140.95 |
+| P2 | cpsat | 2 | DINNER | NG-L23 | 1 | 439.96 |
+| P2 | cpsat | 2 | SNACK | NG-S06 | 1.5 | 211.425 |
 | P2 | cpsat | 2 | SNACK | NG-B05 | 1 | 293.32 |
 
 greedy: criteria 1-4 passed on 1/6 persona-days (0 days C2 N/A, proven infeasible)
@@ -229,51 +228,51 @@ cpsat: criteria 1-4 passed on 6/6 persona-days (0 days C2 N/A, proven infeasible
 
 ### F.1 benchmark
 
-greedy: n=6, median=24.556 ms, max=33.140 ms
-cpsat: n=6, median=1355.218 ms, max=5572.004 ms
+greedy: n=6, median=32.917 ms, max=51.184 ms
+cpsat: n=6, median=1524.869 ms, max=5816.041 ms
 
 | persona | planner | day | ms | solver status | kcal_relaxed |
 | --- | --- | --- | --- | --- | --- |
-| P1 | greedy | 0 | 33.140 | n/a | n/a |
-| P1 | greedy | 1 | 21.153 | n/a | n/a |
-| P1 | greedy | 2 | 21.643 | n/a | n/a |
-| P1 | cpsat | 0 | 3057.076 | OPTIMAL | false |
-| P1 | cpsat | 1 | 5572.004 | OPTIMAL | false |
-| P1 | cpsat | 2 | 2224.864 | OPTIMAL | false |
-| P2 | greedy | 0 | 25.298 | n/a | n/a |
-| P2 | greedy | 1 | 23.814 | n/a | n/a |
-| P2 | greedy | 2 | 25.638 | n/a | n/a |
-| P2 | cpsat | 0 | 283.364 | OPTIMAL | true |
-| P2 | cpsat | 1 | 485.571 | OPTIMAL | true |
-| P2 | cpsat | 2 | 129.116 | OPTIMAL | true |
+| P1 | greedy | 0 | 51.184 | n/a | n/a |
+| P1 | greedy | 1 | 29.981 | n/a | n/a |
+| P1 | greedy | 2 | 25.988 | n/a | n/a |
+| P1 | cpsat | 0 | 3550.443 | OPTIMAL | false |
+| P1 | cpsat | 1 | 5816.041 | OPTIMAL | false |
+| P1 | cpsat | 2 | 2505.418 | OPTIMAL | false |
+| P2 | greedy | 0 | 34.794 | n/a | n/a |
+| P2 | greedy | 1 | 33.772 | n/a | n/a |
+| P2 | greedy | 2 | 32.062 | n/a | n/a |
+| P2 | cpsat | 0 | 307.016 | OPTIMAL | true |
+| P2 | cpsat | 1 | 544.319 | OPTIMAL | true |
+| P2 | cpsat | 2 | 142.347 | OPTIMAL | true |
 
 Diagnostic solves (not included in the planner medians):
 
 | persona | planner | day | ms |
 | --- | --- | --- | --- |
-| P2 | cpsat | 0 | 331.284 |
-| P2 | cpsat | 1 | 217.720 |
-| P2 | cpsat | 2 | 103.343 |
+| P2 | cpsat | 0 | 354.921 |
+| P2 | cpsat | 1 | 342.242 |
+| P2 | cpsat | 2 | 107.099 |
 
 ### Full catalog
 
-greedy: n=6, median=38.543 ms, max=48.790 ms
-cpsat: n=6, median=3828.499 ms, max=12937.402 ms
+greedy: n=6, median=53.975 ms, max=61.093 ms
+cpsat: n=6, median=16956.158 ms, max=22924.627 ms
 
 | persona | planner | day | ms | solver status | kcal_relaxed |
 | --- | --- | --- | --- | --- | --- |
-| P1 | greedy | 0 | 48.790 | n/a | n/a |
-| P1 | greedy | 1 | 35.599 | n/a | n/a |
-| P1 | greedy | 2 | 34.789 | n/a | n/a |
-| P1 | cpsat | 0 | 1655.371 | OPTIMAL | false |
-| P1 | cpsat | 1 | 7020.857 | OPTIMAL | false |
-| P1 | cpsat | 2 | 2021.897 | OPTIMAL | false |
-| P2 | greedy | 0 | 40.120 | n/a | n/a |
-| P2 | greedy | 1 | 37.314 | n/a | n/a |
-| P2 | greedy | 2 | 39.771 | n/a | n/a |
-| P2 | cpsat | 0 | 5183.645 | OPTIMAL | false |
-| P2 | cpsat | 1 | 12937.402 | OPTIMAL | false |
-| P2 | cpsat | 2 | 2473.354 | OPTIMAL | false |
+| P1 | greedy | 0 | 61.093 | n/a | n/a |
+| P1 | greedy | 1 | 50.327 | n/a | n/a |
+| P1 | greedy | 2 | 46.600 | n/a | n/a |
+| P1 | cpsat | 0 | 12385.870 | OPTIMAL | false |
+| P1 | cpsat | 1 | 18281.508 | FEASIBLE | false |
+| P1 | cpsat | 2 | 11146.264 | OPTIMAL | false |
+| P2 | greedy | 0 | 56.664 | n/a | n/a |
+| P2 | greedy | 1 | 52.308 | n/a | n/a |
+| P2 | greedy | 2 | 55.641 | n/a | n/a |
+| P2 | cpsat | 0 | 17992.017 | FEASIBLE | false |
+| P2 | cpsat | 1 | 22924.627 | OPTIMAL | false |
+| P2 | cpsat | 2 | 15920.300 | FEASIBLE | false |
 
 ## 4. Verdict
 
