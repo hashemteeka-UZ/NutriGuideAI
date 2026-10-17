@@ -1,0 +1,30 @@
+You are implementing **Step H, pass H.2: make `cpsat_v1` the default planner** (Decision #122). Pass H.1 is closed and committed (CI green): `docs/reports/planner_comparison_report.md` shows `cpsat_v1 meets all #88 criteria` = YES on the F.1 benchmark (under Decision #121) and on the catalog. This pass is a small code change plus test updates. Read `app/services/planner.py` (`DEFAULT_PLANNER`, `create_day_plan`, module docstring), `tests/scenario/f1_scenario.py`, `tests/services/conftest.py` and every test file that calls `create_day_plan` first (`grep -rn create_day_plan backend/tests backend/scripts`).
+
+## Hard rules
+1. No migration, no model change, no data file change. `uv run alembic check` stays clean.
+2. Do not change `optimizer.py`, `plan_swap.py`, the optimizer constants, the solver parameters or the greedy algorithm.
+3. `greedy_v1` stays the fixed #88 baseline: `docs/reports/f1_scenario_report.md`, `docs/reports/catalog_scenario_report.md` and `docs/reports/catalog_coverage_report.md` stay byte-identical (timing lines only may differ; restore if only those differ). `backend/data/catalog/DATASET_MANIFEST.yaml` stays byte-identical and `uv run python -m app.pipeline.manifest --check` passes: the manifest keeps recording `planner.PLANNER_VERSION` (`greedy_v1`), the planner version the `catalog_v1` freeze was checked against; do not change `app/pipeline/manifest.py`.
+4. `docs/reports/planner_comparison_report.md` must give the same criteria tables and verdicts as now (it passes `planner=` explicitly, so the default must not affect it).
+5. Do not commit anything.
+
+## A. Default switch (#122)
+- `DEFAULT_PLANNER: Final[PlannerName] = "cpsat"`.
+- Update the planner.py module docstring: `create_day_plan` uses the CP-SAT optimizer (`cpsat_v1`, with the #87 general limits) by default; `greedy_v1` is kept as the #88 baseline and is selected with `planner="greedy"`.
+- `PLANNER_VERSION` / `GENERATED_BY` in planner.py keep their greedy values (they name the greedy algorithm, not the default).
+
+## B. Keep the baseline and existing tests on greedy explicitly
+- `tests/scenario/f1_scenario.py`: every `create_day_plan` call passes `planner="greedy"` explicitly (this is the #88 baseline scenario; its reports must stay byte-identical). Same for `_time_build` if it calls `build_day_plan` (it already uses greedy directly; leave it).
+- Existing tests whose assertions depend on greedy's specific picks (specific meals, reason codes, `generated_by="greedy"`, swap/adherence/consumption fixtures, the `tests/services/conftest.py` helpers): pass `planner="greedy"` explicitly. Do not change any expected value in those tests. If a helper in conftest creates plans, give it a `planner` parameter defaulting to `"greedy"`.
+- Replace the H.1 test "default planner unchanged (stores greedy)" with: a call without `planner` stores `generated_by="cpsat"`, `algorithm_version="cpsat_v1"`, and a snapshot with GENERAL_POPULATION sources and the `"solver"` key.
+- Add one end-to-end test on the F.1 slice with the default planner: plan two consecutive days for P1, then log the day-0 items with the existing consumption helpers and run adherence for day 0 (same calls the scenario uses). Assert adherence works on a cpsat plan (status computed, no exception) and the day-1 plan shares no meal with day 0.
+
+## C. Report check
+- Re-run `uv run python -m scripts.planner_comparison_report`. Confirm the criteria tables, summaries and verdict lines are identical to the committed version (only the timing section may differ; if only timing differs, restore the committed file).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `uv run python -m app.pipeline.manifest --check`, scenario/coverage/comparison report diff results, `git status --short`.
+
+## Report back
+1. Files changed, and the list of test call sites you switched to `planner="greedy"` (file:function).
+2. Test counts and every check output; each report's diff result.
+3. Findings (one line each) and assumptions. Do not commit anything.

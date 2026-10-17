@@ -1,0 +1,1 @@
+cd /mnt/project-files/knowledge/claude/ui/prototype_v3 && { sed '1,2d;/<head>/d;/<meta charset/d;/<meta name="viewport"/d;/<\/head>/d;/^<body>$/d' 1_head.html; echo '<script>'; cat 2_fe.js 3_core.js 4_data.js 4b_persona.js 5_ui.js 6_onb.js 7_home.js 8_screens.js 9_tabs.js 10_main.js; echo '</script>'; } > index.html

@@ -1,0 +1,48 @@
+You are implementing **Step G.0 (schema prerequisites for the Step G catalog)**. Step F.1 is closed (last commits `6e1e5d7`, `eba40b0`). Step G.0 is the **only** schema change of Step G (Decision #90): no catalog data, no pipeline code in this pass. The user has just placed these files in the repository (do not edit their content; if one is wrong, report it):
+
+- `docs/PROJECT_CONTEXT_v4_16.md` (replaces v4_15; it is the single source of truth). Read its CHANGELOG v4.15 → v4.16 first, then §9.5c, §9.10, §14, §17, §19, §20.1, §31.7.
+- `backend/data/f1_slice/reference_seed.yaml` (`f1_seed_v2`: every `condition_tag_restrictions` entry now has `source_reference`).
+- `backend/data/f1_slice/slice_foods.yaml` (every food now has `ingredient_code`, upper snake case of `ingredient_en`; no other change).
+
+## Hard rules
+1. Migrations `0001`–`0003` are never edited (the hash test must stay green for them). Add **one** new revision `0004`, reviewed by hand, and add its SHA-256 to `tests/test_migration_files.py` in the same change.
+2. No other schema change. No nutrient value, recipe, gram, tag or limit changes anywhere.
+3. The F.1 benchmark must not move (Decision #88): `docs/reports/f1_scenario_report.md` regenerated after this pass must be byte-identical to the committed file (`git diff` empty); if a line differs, stop and report it.
+4. Everything the loader does stays in one transaction; idempotent; all gate failures reported together. Missing ≠ zero (§9.8) stays in force.
+5. Do not commit anything.
+
+## 1. Models and migration `0004` (Decision #91)
+- `ingredients.code`: `TEXT NOT NULL`, `UNIQUE` (convention name), and `CHECK (code ~ '^[A-Z][A-Z0-9_]*$')` named `code_format` under the naming convention. In the migration: add nullable; backfill existing rows with
+  `upper(btrim(regexp_replace(btrim(canonical_name), '[^A-Za-z0-9]+', '_', 'g'), '_'))`;
+  then set NOT NULL and add the unique and check constraints. (This is the same rule that produced `ingredient_code` in `slice_foods.yaml`, so existing dev rows already match the file.)
+- `condition_tag_restrictions.source_reference`: `TEXT NOT NULL`. In the migration: add nullable; backfill existing rows with `'backfilled by migration 0004; reloaded from the reference seed'`; then set NOT NULL.
+- `downgrade()` removes both columns and their constraints. `uv run alembic check` must report no drift; the existing round-trip test must pass with `0004`.
+- Integrity suite (§19): the CHECK / UNIQUE / NOT NULL registries must fail until the new constraints are covered. Add a positive and a negative test for `code_format` (e.g. `EGG` and `LOW_FAT_MILK_1` pass; `egg`, `1EGG`, `EGG-1`, `''` fail), a duplicate-code negative test for the UNIQUE, and NOT NULL tests for both columns. Update the documented constraint counts.
+
+## 2. Seed file models and gates (`app/seed/`)
+- `f1_files.py`: `SliceFood.ingredient_code` required, validated against `^[A-Z][A-Z0-9_]*$`, unique across the file; `ConditionTagRestrictionSeed.source_reference` required, non-empty.
+- Gate G4 also checks that no two foods share an `ingredient_code`.
+
+## 3. Loader changes (`app/seed/f1_loader.py`)
+- Ingredients: upsert by `code` (the natural key) instead of `default_food_id`; `default_food_id` becomes a written attribute. Remove the §9.10 / #77 text from `STATIC_FINDINGS`.
+- Condition tag restrictions: write `source_reference` (insert and update).
+- Alias source is now `f1_seed_v2`; the existing rule that replaces this seed's aliases across seed versions must handle it (no duplicate aliases after the reload).
+
+## 4. Tests
+Update existing seed, loader and service tests to the new files and seed version, and add:
+- Loader on the real files: 62 ingredients, each with the code from the file; the four restrictions carry the file's `source_reference`.
+- Upgrade path on the dev database: with the F.1 rows loaded under `0003`, `alembic upgrade head` backfills codes that equal the file's codes, and the next loader run reports `ingredients` 0 inserted (only updates where needed) and no duplicate rows.
+- Changing an ingredient's food in a copy of the files keeps the same `ingredient_id` (matched by code).
+- Idempotency: the second load reports every table and the recompute unchanged.
+- Every F.1 service and scenario test passes unchanged in its expectations.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic upgrade head` on the dev database, `uv run alembic check`, `uv run pytest -q` with `CI=true` (0 skipped), `uv run python -m app.seed.f1_loader` twice on the dev database, then regenerate the scenario report with `uv run python -m scripts.f1_scenario_report` and run `git diff --stat docs/reports/f1_scenario_report.md` plus `git diff docs/reports/f1_scenario_report.md | head -40`.
+
+## Report back
+1. Files created/changed.
+2. The `0004` migration body (upgrade and downgrade) as written, and its SHA-256.
+3. Loader report from both dev runs (counts per table).
+4. Scenario report diff (expected: empty).
+5. Test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions.

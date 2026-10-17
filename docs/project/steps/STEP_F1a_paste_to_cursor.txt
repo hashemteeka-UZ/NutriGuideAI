@@ -1,0 +1,81 @@
+You are implementing **Step F.1, pass F.1-a (slice data loading)** of this project. Read `docs/PROJECT_CONTEXT_v4_13.md` first; it is the single source of truth. Sections you need: §9 (reference tables), §10.1–§10.2 and §10.6 (meals, ingredients, translations), §14, §15.9 (search normalization), §20.1 (post-freeze policy), §31.3 (quality gates), §31.4 (LLM-drafted recipes), §31.6 (excluded ingredients). If this message and the document disagree, the document wins; report the disagreement instead of guessing.
+
+## Context
+
+The schema is frozen at tag `schema-v1` (migrations `0001` + `0002`). Step F.1 is a vertical slice: about 30 real meals pushed once through the whole path (data → nutrient calculation → hard filtering → one daily plan → consumption logging → adherence → weight/target recompute), to reveal integration problems before Step G. It is split into passes; the assistant reviews each pass before the next one starts. **This pass only loads data.** No nutrient calculation, no derived tags/allergens, no targets, no planning.
+
+The user has already placed these files in the repository (do not edit their content; if one is wrong, report it):
+
+- `backend/data/f1_slice/reference_seed.yaml` — categories (Arabic names keyed by FDC food-category code), cuisines, allergens, dietary tags, nutrients (with FDC nutrient numbers in `source_code`), health conditions, condition nutrient limits, condition tag restrictions, excluded keywords.
+- `backend/data/f1_slice/slice_foods.yaml` — 60 USDA SR Legacy foods selected by NDB number, each with ingredient names (en/ar), `state`, allergens and ingredient tags. Nutrient values are deliberately NOT in this file.
+- `backend/data/f1_slice/slice_meals.yaml` — 30 meals with grams per ingredient (by NDB number), servings, weight method, yield factor, occasion and dietary tags, and `reviewed_by` (currently null).
+- `backend/data/raw/FoodData_Central_sr_legacy_food_csv_*.zip` (exact date suffix may differ; there is exactly one such file) — the official USDA FDC SR Legacy CSV release, downloaded by the user. This raw file must NOT be committed.
+
+## Hard rules
+
+1. **No schema change.** No model edits, no new migration, no change to `backend/alembic/versions/`. `tests/test_migration_files.py` must stay green. If something cannot be stored without a schema change, stop and report it as a finding.
+2. Missing ≠ zero (§9.8): a nutrient absent from the source is an absent `food_nutrients` row, never 0.
+3. Do not compute `meal_nutrients`, `meal_allergens` or `DERIVED` `meal_tags` in this pass (that is pass F.1-b).
+4. Everything loads in one transaction; any gate failure rolls back everything and reports every failure (not only the first).
+5. The loader is idempotent: running it twice produces the same rows, no duplicates, no errors.
+6. Do not commit anything. The user reviews and commits.
+
+## What to build
+
+### 1. Dependency and ignore rules
+- Add `pyyaml` as a runtime dependency and `types-PyYAML` as a dev dependency with `uv add` (update `uv.lock`).
+- Add `backend/data/raw/` to `.gitignore`.
+
+### 2. `app/core/text.py` — `normalize_search_text(text: str) -> str`
+The single implementation required by §15.9, rules v1 exactly: lowercase Latin; strip Arabic diacritics (tashkeel, U+064B–U+0652 and U+0670) and tatweel (U+0640); `أ إ آ ٱ → ا`; `ة → ه`; `ى → ي`; `ؤ → و`; `ئ → ي`; Arabic-Indic digits (U+0660–U+0669) and Eastern Arabic-Indic digits (U+06F0–U+06F9) → ASCII; collapse whitespace and strip. Unit tests for every rule, including a mixed Arabic/English string.
+
+### 3. `backend/scripts/f1_extract_fdc.py` — extract the subset from the official zip
+- Input: the zip above. Find `food.csv`, `food_nutrient.csv`, `nutrient.csv`, `food_category.csv`, `sr_legacy_food.csv` inside it by file name (do not hard-code the folder name).
+- Map each NDB number in `slice_foods.yaml` to its `fdc_id` through `sr_legacy_food.csv`. Map nutrients by **`nutrient.nutrient_nbr`** matching `source_code` in `reference_seed.yaml` (do not hard-code FDC `nutrient.id` values).
+- Output (committed): `backend/data/f1_slice/fdc_sr_legacy_subset.csv` with columns `ndb_number, fdc_id, description, food_category_code, food_category_description, nutrient_nbr, amount_per_100g`, one row per food per nutrient that exists in the source (skip absent ones; never write 0 for an absent value). Sorted, stable, UTF-8, LF line endings.
+- Output (committed): `backend/data/f1_slice/fdc_source_manifest.yaml` with the zip file name, its SHA-256, the official download page `https://fdc.nal.usda.gov/download-datasets`, the extraction date, the script name, and the row count.
+- The script fails with a clear message if an NDB number is not found.
+
+### 4. `app/seed/` — file models, gates and loader
+- `app/seed/f1_files.py`: pydantic models that validate the three YAML files and the subset CSV (types, required keys, enum values matching the schema's CHECK sets). `label_ar` in meal ingredients is informational and ignored.
+- `app/seed/quality_gates.py`: pure functions, each returning a list of failures, unit-tested without a database:
+  - G1 mandatory nutrients: every food has every `is_mandatory` nutrient (§9.7, §31.3).
+  - G2 energy consistency: `calc = 4·protein + 4·(carbohydrate − fiber) + 2·fiber + 9·total_fat`. Fail if `energy_kcal ≥ 50` and `|calc − energy_kcal| / energy_kcal > 0.20`, or if `energy_kcal < 50` and `|calc − energy_kcal| > 15`. (Carbohydrate in SR Legacy is "by difference" and includes fiber.)
+  - G3 excluded ingredients (§31.6): whole-word, case-insensitive match of every `excluded_keywords` entry against the FDC description and the ingredient names.
+  - G4 references: every meal ingredient NDB exists in `slice_foods.yaml`; every allergen, tag, cuisine, condition and nutrient reference exists in the seed.
+  - G5 tag groups: meal `occasion_tags` must be `OCCASION`; meal `dietary_tags` must be `DIETARY`; `ingredient_tags` must not be `OCCASION`; every meal has at least one occasion tag; `condition_tag_restrictions` tags must be `CONDITION`.
+  - G6 weight method: `YIELD_FACTOR` needs `0 < yield_factor <= 3` and a `yield_factor_source`; `SUM_OF_INGREDIENTS` needs `yield_factor` null; `WEIGHED` is not used in F.1.
+  - G7 limits: `PERCENT_ENERGY` only for `total_fat`, `saturated_fat`, `carbohydrate`, `sugars`, `protein` (§9.5b).
+- `app/seed/f1_loader.py`: `load_f1_slice(session: Session, data_dir: Path) -> LoadReport`, plus a CLI `uv run python -m app.seed.f1_loader` that loads into `DATABASE_URL` and prints the report. Mapping:
+  - `categories`: one row per FDC food category used; `name_en` = FDC `food_category.description`, `name_ar` from `categories_ar`.
+  - `cuisines`, `allergens`: from the seed. These tables have **no unique/code column**; for idempotency match on `name_en` inside the loader, and list this in the report as a finding (do not add a constraint).
+  - `dietary_tags`, `health_conditions`, `nutrients`: upsert by `code`.
+  - `condition_nutrient_limits`: upsert by `(condition_id, nutrient_id, limit_basis)`. `condition_tag_restrictions`: upsert by `(condition_id, tag_id)`.
+  - `foods`: `external_source = 'FDC'`, `external_code` = NDB number, `fdc_id`, `description` = FDC description, `data_type = 'sr_legacy_food'`, `category_id`, `basis_grams = 100`, `state` from the YAML, `source_reference = 'USDA FoodData Central, SR Legacy (2018-04); FDC ID <fdc_id>; NDB <ndb>'`. Upsert by `(external_source, external_code)`.
+  - `food_nutrients`: from the subset CSV only; replace the rows of each loaded food.
+  - `ingredients`: one per food (`canonical_name` = `ingredient_en`, `canonical_name_ar` = `ingredient_ar`, `default_food_id` = that food, `review_status = 'PENDING'`). Idempotent by `default_food_id`.
+  - `ingredient_aliases`: the Arabic name (`lang 'ar'`) and the English name (`lang 'en'`), `alias_normalized = normalize_search_text(...)`, `confidence = 1.0`, `source = 'f1_seed_v0'`.
+  - `ingredient_allergens`, `ingredient_tags`: from the YAML.
+  - `meals`: `ref_external` from the YAML, `name` = `name_ar`, `default_lang = 'ar'`, `name_normalized`, `servings`, `weight_method`, `total_grams` = Σ grams × `yield_factor` (or Σ grams for `SUM_OF_INGREDIENTS`), `cuisine_id`, `source`, `source_license`, `quality_tier`, `is_verified = (reviewed_by is not null)`, `is_active = true`, `dataset_version`. Upsert by `(source, ref_external)`.
+  - `meal_translations`: one `en` row (`name` = `name_en`, normalized).
+  - `meal_ingredients`: replaced per meal; `position` 1..n in YAML order, `ingredient_id`, `food_id`, `grams`, `mapping_confidence = 1.0`.
+  - `meal_tags`: occasion and dietary tags with `source = 'MANUAL'`; do not touch `DERIVED` rows.
+  - `LoadReport`: counts per table (inserted / updated / unchanged), gate results, unverified meal count, findings.
+
+### 5. Tests (real PostgreSQL, same conventions as the integrity suite)
+Reuse the existing migrated test database fixtures in `tests/conftest.py` (`integrity_engine` / `integrity_conn`, each test rolled back). Put new tests under `tests/seed/`.
+- Gate unit tests: one failing case and one passing case per gate, using small in-memory fixtures (not the real files).
+- Loader on the real files: loads without gate failures; 30 meals, 60 foods, 60 ingredients, 9 mandatory nutrients present for every food; spot checks: food NDB `17039` has `fdc_id` from the subset and its sodium equals the CSV value; meal `F1-B01` has `total_grams = 810.05` (953 g × 0.85); every meal has `is_verified = false` while `reviewed_by` is null; no `meal_nutrients`, `meal_allergens` or `DERIVED` `meal_tags` rows exist after this pass.
+- Idempotency: running the loader twice inside the same test yields identical row counts and reports everything unchanged on the second run.
+- Rollback: a deliberately broken input (e.g. a meal referencing an unknown NDB) leaves the database without any F.1 rows.
+
+## Checks before you report
+Run and paste the outputs: `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `uv run pytest -q` (0 skipped), then `uv run python -m app.seed.f1_loader` against the dev database, run twice.
+
+## Report back (the user pastes it to the assistant)
+1. Files created/changed (list).
+2. Extraction: zip SHA-256, subset row count, any NDB number or mandatory nutrient that failed on the official release (do not substitute foods yourself).
+3. Gate results and the loader report from both runs.
+4. Test counts.
+5. Findings: anything in the schema, the document or the YAML files that made this pass awkward, ambiguous or impossible without guessing (one line each, with the section number).
+6. Assumptions you made.

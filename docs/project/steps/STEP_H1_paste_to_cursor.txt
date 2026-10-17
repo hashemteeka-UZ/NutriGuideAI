@@ -1,0 +1,74 @@
+You are implementing **Step H, pass H.1: wire the CP-SAT optimizer to the database and write the planner comparison report**. Pass H.0 is closed (pure `optimize_day` in `app/services/optimizer.py`, `apply_general_limits` in `app/services/condition_limits.py`, committed and CI green). Read `docs/PROJECT_CONTEXT_v4_17.md` §11.7, §28.4, §28.4b, §30.1, §30.5 and decisions #72, #81, #87, #88, #89 first, then `app/services/optimizer.py`, `app/services/planner.py` (`build_day_plan`, `target_snapshot`, `create_day_plan`, `current_plan_id`), `app/services/plan_swap.py`, `app/services/adherence.py`, `scripts/f1_scenario_report.py` (bench database helpers, `write_scenario_report`) and `tests/scenario/f1_scenario.py` (`_run_p1`, `_run_p2`, `_time_build`, `_plan_items`, `_totals`).
+
+The decisions for this pass (#117-#120) are written in full below; follow them exactly.
+
+## Hard rules
+1. No migration, no model change, no data file change. `uv run alembic check` stays clean.
+2. `greedy_v1` behaviour does not change. The default planner stays greedy: every existing caller of `create_day_plan` / `build_day_plan` gets exactly the same plans and the same `target_snapshot` as before. `PLANNER_VERSION` in planner.py stays `greedy_v1`. `greedy_v1` still does NOT get the general limits.
+3. `docs/reports/f1_scenario_report.md`, `docs/reports/catalog_scenario_report.md`, `docs/reports/catalog_coverage_report.md` and `backend/data/catalog/DATASET_MANIFEST.yaml` stay byte-identical (the scenario reports may differ only in planner timing lines; restore them if only those differ). `uv run python -m app.pipeline.manifest --check` passes.
+4. Reports read and write only inside transactions that are always rolled back; the dev database row counts are unchanged after every script run (print before/after like `write_scenario_report`).
+5. Do not change the optimizer model, its constants or its objective. If you find a bug in `optimizer.py`, stop and report it under Findings with a minimal reproduction instead of fixing it.
+6. Do not commit anything.
+
+## A. Planner selection in the DB layer (#117)
+In `app/services/planner.py` (additive only; greedy code paths unchanged):
+- `PlannerName = Literal["greedy", "cpsat"]` and `DEFAULT_PLANNER: Final[PlannerName] = "greedy"`.
+- `target_snapshot(target, limits, planner_version: str = PLANNER_VERSION, solver: Mapping[str, Any] | None = None)`. With the defaults it returns exactly the same dict as today (no new key). When `solver` is given it adds key `"solver"` with that mapping.
+- `create_day_plan(session, user_id, plan_date, now, planner: PlannerName = DEFAULT_PLANNER) -> MealPlan`. Screening, target and `resolve_condition_limits` are shared. Then:
+  - `"greedy"`: exactly the current code.
+  - `"cpsat"`: `limits = apply_general_limits(limits)`; `excluded` = the `meal_id`s of the items of `current_plan_id(session, user_id, plan_date - timedelta(days=1))` (empty frozenset when there is none); call a new `build_optimized_day_plan(session, user_id, limits, target, plan_date, excluded) -> OptimizedDay` (put it in `optimizer.py`, it mirrors `build_day_plan`: same `load_meal_facts`, `load_user_preferences`, nutrient codes ordered by `nutrient_id`). Store `generated_by=optimizer.GENERATED_BY`, `algorithm_version=optimizer.PLANNER_VERSION`, `target_snapshot=target_snapshot(target, limits, optimizer.PLANNER_VERSION, {"solver_status": ..., "kcal_relaxed": ..., "objective": ..., "excluded_meal_ids": sorted(...)})`. The snapshot limits are the merged limits (with GENERAL_POPULATION sources), so the plan records what it was built against (§11.7).
+  - Items are stored exactly like greedy (`day_index=0`, slot, meal_id, multiplier, `reason_codes`).
+- Avoid an import cycle: optimizer.py already imports from planner.py, so planner.py imports optimizer lazily inside the `"cpsat"` branch (a local import with a one-line comment why), or move the dispatch into a small new module `app/services/plan_generation.py` if you judge that cleaner. Either way `create_day_plan(..., planner=...)` is the single public entry point.
+
+## B. Swap consistency (#118)
+`plan_swap` must not let a swap break the limits the plan was built against. In `app/services/plan_swap.py`, when the plan's `algorithm_version` is `optimizer.PLANNER_VERSION`, wrap the resolved limits with `apply_general_limits` before evaluating candidates. Greedy plans keep the current behaviour. Test: on a cpsat plan, a swap candidate that would push the day's sodium over 2000 mg (but under any condition limit) is rejected with the same rejection code greedy uses for a day max; on a greedy plan the same candidate is accepted.
+
+## C. Comparison report (#119)
+New script `scripts/planner_comparison_report.py` (`uv run python -m scripts.planner_comparison_report`), writes `docs/reports/planner_comparison_report.md`. Reuse the bench helpers from `scripts/f1_scenario_report.py` (`f1_bench_name`, `setup_f1_bench`, `drop_f1_bench`); do not copy them. Flags: `--keep-db` like the scenario report.
+
+Personas: P1 and P2 exactly as the F.1 scenario builds them. Extract the user/profile/condition/target setup part of `_run_p1` and `_run_p2` into public helpers in `tests/scenario/f1_scenario.py` (e.g. `setup_p1(session, conn, start_date, start_now) -> int` returning the user id) and make `_run_p1` / `_run_p2` call them, so the F.1 scenario report stays byte-identical. No weight events, no consumption logs, no swaps in the comparison: targets stay fixed for the three days.
+
+Procedure, run twice (section 1 on the isolated F.1 bench database, section 2 on the dev database = full catalog), each inside one outer transaction that is always rolled back:
+- Create P1 and P2 once.
+- For each planner in (`greedy`, `cpsat`): open a SAVEPOINT (`session.begin_nested()`), plan days 0, 1, 2 (START_DATE + offset, `now` = START_NOW + offset days) with `create_day_plan(..., planner=planner)`, measure each call with `time.perf_counter()`, collect the results, then roll the SAVEPOINT back so the second planner never sees the first planner's plans (`current_plan_id` must only see the same planner's previous day).
+- A day where `create_day_plan` raises `NoFeasiblePlanError` is reported as "no feasible plan" with its slot and reasons; it does not stop the run.
+
+Independent verification (do NOT trust flags stored by the planner; recompute from the stored items with `load_meal_facts` and exact `Decimal` amounts × `servings_multiplier`). Put the criteria in a pure function `evaluate_criteria(...)` in the script so it can be unit-tested. For every persona × planner × day:
+1. Layer 1 + upper limits: every item passes `evaluate_meal(meal, preferences, slot, limits, multiplier)` with the limits the plan was built against (read them back from `target_snapshot["limits"]` or re-resolve the same way, your choice, state which), and every `max_per_day` day total is <= its limit. Also report, for BOTH planners, the day sodium and saturated fat against the #87 general limits (informational row "general limits #87": greedy is not required to meet them, cpsat is).
+2. Day kcal within ±10% of target (`KCAL_TOLERANCE`).
+3. Every `min_per_day` met (`unmet_minimums` empty, recomputed).
+4. No `meal_id` shared between day d and day d-1 of the same persona and planner.
+5. Planning time per day in ms (reported, never asserted).
+
+Report layout (deterministic except the timing lines; put all timings in one section at the end, like the scenario report's timing section, so diffs stay readable):
+- Section 0: versions (`TAG_RULES_VERSION`, `COMPUTATION_VERSION`, `FORMULA_VERSION`, both planner versions, ortools version, dataset version from the manifest), solver parameters (workers, seed, deterministic time) and the objective weights read from the optimizer constants.
+- Section 1 (F.1 bench, the #88 benchmark) and Section 2 (full catalog), each with:
+  - a criteria table: `persona | planner | day | C1 | C2 | C3 | C4 | kcal (target) | protein g | sodium mg | fiber g | sat fat g | solver status | kcal_relaxed`, PASS/FAIL per criterion;
+  - a per-day item table for both planners (slot, ref_external, multiplier, kcal);
+  - a summary line per planner: "criteria 1-4 passed on n/N persona-days".
+- Section 3: planning time per planner (median, max) for both sections.
+- Section 4: verdict: `cpsat_v1 meets all #88 criteria on the F.1 benchmark: YES/NO` and the same for the catalog, computed, not hand-written. If NO, list the failing persona/day/criterion.
+
+## D. Tests (#120)
+- `create_day_plan(..., planner="cpsat")` integration test on the F.1 slice (same fixture style as `tests/scenario/test_f1_scenario.py`): plan stored with `generated_by="cpsat"`, `algorithm_version="cpsat_v1"`, snapshot has GENERAL_POPULATION sources and the `"solver"` key; a second day excludes the first day's meals; `planner="greedy"` gives the same snapshot as before this pass (no `"solver"` key, `planner_version` greedy_v1).
+- Default planner unchanged: an existing-style call without `planner` stores `generated_by="greedy"`.
+- The swap test from B.
+- Unit tests for `evaluate_criteria` on hand-built inputs: one PASS case and one FAIL case per criterion (C1 upper limit exceeded, C2 out of band, C3 minimum unmet, C4 repeated meal).
+- Script test: running the comparison on the test database writes the file, row counts are unchanged, and two runs give identical output once the timing section is stripped.
+
+## Run
+1. `uv run python -m scripts.planner_comparison_report` (keep the generated `docs/reports/planner_comparison_report.md`; it will be committed).
+2. `uv run python -m scripts.f1_scenario_report` and `uv run python -m scripts.f1_scenario_report --catalog`; confirm hard rule 3. `uv run python -m scripts.catalog_coverage_report`; confirm byte-identical. `uv run python -m app.pipeline.manifest --check`.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `git status --short`.
+
+## Report back
+1. Files created/changed.
+2. Where the planner dispatch lives (planner.py lazy import or plan_generation.py) and why.
+3. The full criteria tables and the Section 4 verdict lines of the generated report, copied verbatim, plus the timing section.
+4. For any FAIL of cpsat: the persona/day/criterion and your diagnosis (data shortage, model limitation, or bug), without changing the optimizer.
+5. Test counts and every check output; scenario/coverage report diff results; manifest check result.
+6. `uv run pytest tests/services/test_optimizer.py --collect-only -q` output (the H.0 test names).
+7. Findings (one line each, with the section letter) and assumptions.
+8. Do not commit anything.

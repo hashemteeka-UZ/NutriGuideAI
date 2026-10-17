@@ -1,0 +1,128 @@
+You are implementing **Step H, pass H.0: the Layer 3 CP-SAT optimizer as a pure function (no database wiring yet)**. Step G is closed (commit `f5e10f0`, tag `dataset-v1`). Read `docs/PROJECT_CONTEXT_v4_17.md` §28.2, §28.4, §28.4b, §30.1, §30.4b and decisions #81, #87, #88, #89 first, then `app/services/planner.py` (all of it: `plan_day`, `_rejections`, `_Day`, `reason_codes`, `unmet_minimums`, `slot_target_kcal`, the constants), `app/services/meal_filter.py` (`MealFacts`, `UserPreferences`, `evaluate_meal`, `SLOT_OCCASION`) and `app/services/condition_limits.py` (`ResolvedLimits`, `ResolvedLimit`, `LimitSource`, `_grams`, `_resolve`, `KCAL_PER_GRAM`).
+
+The decisions for this step (#108-#116) are written in full below; follow them exactly.
+
+## Hard rules
+1. No migration, no model change, no data file change. `uv run alembic check` stays clean.
+2. `app/services/planner.py` behaviour does not change: `PLANNER_VERSION` stays `greedy_v1`, `create_day_plan` and `plan_day` are untouched (you may only import from planner, never edit its logic). `greedy_v1` does NOT get the general limits (#111).
+3. `docs/reports/f1_scenario_report.md`, `docs/reports/catalog_scenario_report.md` and `backend/data/catalog/DATASET_MANIFEST.yaml` stay byte-identical (the scenario reports may differ only in planner timing lines; restore them if only those differ).
+4. No database access in the new code of this pass. Tests of this pass are pure (no DB fixtures).
+5. Do not commit anything.
+
+## A. Dependency (#108)
+- Add `ortools>=9.12,<10` to `[project] dependencies` in `backend/pyproject.toml`, run `uv lock` / `uv sync`.
+- If `uv run mypy` complains about missing type information for `ortools`, add a `[[tool.mypy.overrides]]` block `module = "ortools.*"` with `ignore_missing_imports = true` (same style as the `openpyxl.*` block). Do not weaken `strict` anywhere else.
+
+## B. General population limits (#111, implements #87)
+In `app/services/condition_limits.py` add a pure function:
+
+```python
+GENERAL_POPULATION: Final = "GENERAL_POPULATION"
+GENERAL_SODIUM_MG_PER_DAY: Final = Decimal(2000)          # WHO 2012, adults
+GENERAL_SATURATED_FAT_PERCENT_ENERGY: Final = Decimal(10)  # WHO 2023, "< 10%" applied as <= 10%
+
+def apply_general_limits(limits: ResolvedLimits) -> ResolvedLimits: ...
+```
+
+- Adds one `LimitSource` per nutrient to `max_per_day`: sodium (`limit_basis` ABSOLUTE, stated 2000, value 2000) and saturated_fat (`limit_basis` PERCENT_ENERGY, stated 10, value = `_grams("saturated_fat", 10, limits.target_kcal)`), `condition_code = GENERAL_POPULATION`, `source_reference` = the WHO citation strings (sodium: `WHO (2012). Guideline: Sodium intake for adults and children. < 2 g sodium/day`; saturated fat: `WHO (2023). Saturated fatty acid and trans-fatty acid intake for adults and children. < 10% of total energy`).
+- Merges with the existing sources by the same strictest-wins rule (`_resolve(..., maximum_wins=False)` over the combined source lists), so the resolved value is the minimum and `sources` lists every contributor sorted as `_resolve` does.
+- Re-runs the min > max conflict check and raises `ConditionConflictError` exactly like `resolve_condition_limits` does.
+- Returns a new `ResolvedLimits` (dataclasses.replace); `conditions`, tags, per-meal limits and `min_per_day` are unchanged. It is idempotent: applying it twice gives an equal object (do not add a second GENERAL_POPULATION source).
+- Update the module docstring line "A user without a condition gets no limit at all (§30.1, #69)" to say this holds for `resolve_condition_limits`, and that `apply_general_limits` adds the #87 general limits for the Layer 3 optimizer.
+- Tests in `tests/services/test_condition_limits.py` (pure, build `ResolvedLimits` by hand): empty limits get both general limits; a stricter condition sodium limit (e.g. 1500) wins and keeps both sources; a looser one (2300) loses to 2000; saturated fat grams at 2000 kcal = 22.222… g (compare with `_grams`); idempotence; conflict raised when a min_per_day above the new max exists (synthetic).
+
+## C. The optimizer `app/services/optimizer.py` (#109, #110, #112-#115)
+Public API:
+
+```python
+PLANNER_VERSION: Final = "cpsat_v1"
+GENERATED_BY: Final = "cpsat"
+
+@dataclass(frozen=True)
+class OptimizedDay:
+    plan: DayPlan               # planner.DayPlan with planner_version="cpsat_v1"
+    solver_status: str          # "OPTIMAL" or "FEASIBLE"
+    kcal_relaxed: bool          # True when phase 2 (soft energy) was needed
+    objective: int
+    solve_seconds: float        # wall time of all solve calls (reported only, never asserted)
+
+def optimize_day(
+    meals: Sequence[MealFacts],
+    preferences: UserPreferences,
+    limits: ResolvedLimits,
+    target: PlanTarget,
+    plan_date: date,
+    nutrient_codes: Sequence[str],
+    excluded_meal_ids: frozenset[int] = frozenset(),
+) -> OptimizedDay: ...
+```
+
+`optimize_day` does NOT call `apply_general_limits`; the caller passes the limits it wants (H.1 will pass the merged ones). Reuse from planner: `MAIN_SLOTS`, `SLOT_ENERGY_SHARE`, `SNACK_ENERGY_SHARE`, `MULTIPLIERS`, `MAX_SNACKS`, `KCAL_TOLERANCE`, `PlanItem`, `DayPlan`, `PlanTarget`, `NoFeasiblePlanError`, `reason_codes`, `slot_target_kcal`, `unmet_minimums`, `PROTEIN_NUTRIENT`. Do not duplicate them.
+
+### C.1 Candidates (#109, #110)
+- Positions: `breakfast`, `lunch`, `dinner`, `snack_1`, `snack_2` (`MAX_SNACKS` = 2 snack positions, both use slot `MealSlot.SNACK` for Layer 1 and in the output).
+- For every position, every meal (sorted by `sort_key`) and every step in `MULTIPLIERS`, create a boolean `x[position, meal, step]` only when ALL hold:
+  - `evaluate_meal(meal, preferences, slot, limits, step).eligible` (Layer 1 is never re-modelled);
+  - `meal.meal_id not in excluded_meal_ids` (previous day, #88 criterion 4);
+  - energy and every nutrient in `limits.max_per_day` and `limits.min_per_day` are known for the meal (`amount(...)` is not None). A missing amount is never treated as zero (§9.8, same meaning as greedy).
+- If a main position has no candidate, raise `NoFeasiblePlanError(slot, reasons, candidates)` with the same counting idea as greedy (count per rule how many (meal, step) pairs were removed; use the Layer 1 exclusion codes plus `PREVIOUS_DAY` and `UNKNOWN_AMOUNT:<nutrient>`). Define these two rule names as constants in optimizer.py.
+
+### C.2 Hard constraints (#110)
+- Each main position: exactly one selected variable.
+- Each snack position: at most one; `sum(snack_2) <= sum(snack_1)` (symmetry breaking).
+- Each meal at most once in the day over all positions and steps.
+- Each non-null `variant_group` at most once in the day.
+- Every `max_per_day` nutrient: day total <= limit.
+- Every `min_per_day` nutrient: day total >= minimum (hard, #81).
+- Every LIMIT tag with a non-null weekly number: sum of steps of selected meals carrying the tag <= weekly number (within the day, #89). Model steps as integers in half-servings (step × 2).
+- Phase 1 only: day kcal within [target × (1 - KCAL_TOLERANCE), target × (1 + KCAL_TOLERANCE)].
+
+### C.3 Integer scaling (#114)
+- `SCALE: Final = 1000`. Coefficients of upper-bound constraints use ceil(amount × SCALE) and the bound uses floor(limit × SCALE); lower-bound constraints use floor for coefficients and ceil for the bound. Use `Decimal` with explicit rounding, never float, when building coefficients.
+- After solving, recompute every hard constraint with exact `Decimal` amounts on the chosen items (a private `_verify(...)`), including the kcal band in phase 1. Any failure raises `AssertionError` with the rule name (a programming error, never hidden).
+
+### C.4 Objective (#113)
+All terms in integer "kcal-equivalent × 10" units (use the scaled totals and divide consistently, or scale weights; document the unit in a comment). Minimize:
+- `W_KCAL = 3` × |day kcal - target.kcal|
+- `W_MACRO = 1` × (|protein - target.protein_g| × 4 + |carbohydrate - target.carb_g| × 4 + |total_fat - target.fat_g| × 9)  (use the nutrient codes the planner and targets use; check `targets.py`/`nutrients` codes, do not guess)
+- `W_FIBER = 1` × max(0, target.fiber_g - fiber) × 4
+- `W_SLOT = 1` × sum over main slots of |slot kcal - SLOT_ENERGY_SHARE[slot] × target.kcal|
+- minus `LIKED_BONUS = 10` per selected item whose `ingredient_ids` intersect `preferences.liked_ingredient_ids` (Layer 2).
+- Phase 2 only: `W_KCAL_RELAXED = 50` replaces `W_KCAL`.
+Absolute values via auxiliary IntVars with two inequalities each (standard linearisation). Macro nutrients that are unknown for a candidate: exclude that candidate (add those codes to the "must be known" list of C.1) so totals are always exact.
+
+### C.5 Phases (#112) and determinism (#115)
+- Phase 1 (hard kcal band). If the status is INFEASIBLE, phase 2: same model without the kcal band, `kcal_relaxed=True`. If phase 2 is INFEASIBLE, raise `NoFeasiblePlanError` for slot `"day"` with reasons naming the binding rule family where known (at least `{"INFEASIBLE": 1}`); no limit is ever relaxed, no slot dropped.
+- Accept `OPTIMAL` or `FEASIBLE`; anything else (UNKNOWN, MODEL_INVALID) raises `PlanError` with the status name.
+- Solver parameters: `num_workers = 1`, `random_seed = 0`, `max_deterministic_time = 10.0`, `log_search_progress = False`. Create variables in a fixed order (position order, then `sort_key`, then step).
+- Output: items in position order breakfast, lunch, dinner, snack_1, snack_2 (unused snacks omitted), each a `PlanItem` built exactly like `plan_day` builds it (same `nutrients` dict rule and `reason_codes(meal, step, slot_target_kcal(slot, target.kcal, snack_count), limits, preferences)`). `totals`, `kcal_within_10pct` (computed from the exact Decimal kcal, not from the phase) and `unmet_minimums` computed as in `plan_day`; `unmet_minimums` must be empty by construction (assert it in `_verify`).
+
+## D. Tests `tests/services/test_optimizer.py` (pure)
+Build `MealFacts` by hand with a small helper (tags must include the `SLOT_OCCASION` tag of each slot the meal may fill; `is_active=True`, `is_nutritionally_complete=True`; per_serving with energy, protein, carbohydrate, total_fat, fiber, sodium, saturated_fat and sugars using the real nutrient codes). Build `ResolvedLimits` and `PlanTarget` by hand. Cover at least:
+1. Healthy case: 3 main items, kcal within ±10%, `solver_status` OPTIMAL, `planner_version == "cpsat_v1"`.
+2. A case where greedy-style early choice would fail but the optimizer succeeds: construct meals so the kcal-closest breakfast uses most of a sodium budget and leaves no valid dinner; assert `optimize_day` returns a plan within the sodium limit. (Also call `planner.plan_day` on the same input and assert it raises `NoFeasiblePlanError` or misses the kcal band; keep the assertion to what actually happens and comment why.)
+3. Every hard rule: max_per_day, min_per_day met (fiber minimum reached when a combination exists), meal used once, variant_group once, LIMIT tag servings, Layer 1 exclusion (allergen / AVOID tag) never selected.
+4. `excluded_meal_ids` are never selected.
+5. Unknown amount: a meal missing sodium while sodium has a max_per_day is never selected.
+6. Phase 2: a catalog that cannot reach ±10% returns `kcal_relaxed=True`, `kcal_within_10pct=False`, hard limits still met.
+7. Infeasible minimum (no combination reaches it): raises `NoFeasiblePlanError`.
+8. Empty main position (no breakfast candidates): raises `NoFeasiblePlanError` with slot `breakfast` and the reason counts.
+9. Determinism: two calls on the same input give equal `plan` objects; shuffling the input meal order gives the same plan.
+10. Liked-ingredient bonus breaks a tie between two otherwise identical meals.
+11. `snack_2` never used without `snack_1`.
+12. Decimal verification: a hand-checked case where the exact total equals the limit is accepted.
+
+## Run
+1. `uv run python -m scripts.f1_scenario_report` and `uv run python -m scripts.f1_scenario_report --catalog`; confirm the diff rule (hard rule 3).
+2. `uv run python -m app.pipeline.manifest --check` passes.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `git status --short`.
+
+## Report back
+1. Files created/changed, and the `ortools` version locked.
+2. The optimizer's public API as implemented (signatures) and the objective unit you chose.
+3. For test 2: the greedy result vs the optimizer result (items and day totals).
+4. Test counts and every check output; F.1/catalog report diff result; manifest check result.
+5. Findings (one line each, with the section letter) and assumptions.
+6. Do not commit anything.

@@ -1,0 +1,12 @@
+Pass F.1-b review: accepted. One change before the user commits (finding §30.4, logging). Do not commit.
+
+## Fix: no health data in application logs
+
+The carbohydrate-minimum warning in `app/services/targets.py` currently logs the user's inputs (age, weight, height). Personal health values must never go to application logs (they are health data; logs are not access-controlled like the database). Change it as follows:
+
+1. `compute_targets` (pure) logs nothing. Add a field to `TargetResult`, e.g. `carb_minimum_unmet: bool`, set to True when step (c) of the 130 g procedure is reached (it may already be inferable from the reported steps; expose it explicitly anyway).
+2. `create_user_target` emits the warning when `carb_minimum_unmet` is True, containing only: `user_id`, `formula_version`, `goal_type`, `activity_level`, and the achieved carbohydrate grams. No age, sex, height, weight, BMI, target weight, kcal, or condition codes.
+3. Tests: update the existing test for case (c) so it asserts `carb_minimum_unmet` on the pure result, and add one test with `caplog` on `create_user_target` asserting the warning is emitted and that the record's message and args contain none of the user's height, weight or age values.
+4. Re-run: `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run pytest -q` (0 skipped).
+
+Report back only: the diff summary (files and functions changed) and the check outputs.

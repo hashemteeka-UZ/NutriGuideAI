@@ -1,0 +1,75 @@
+You are implementing **Step G, pass G.1 (catalog pipeline foundation)**. Step G.0 is closed (commit `b6c5e4e`, migration `0004`, CI green). This pass is **code only**: no schema change, no real catalog data (ingredients and recipes come in G.2/G.3). Read `docs/PROJECT_CONTEXT_v4_16.md` first: CHANGELOG v4.15 → v4.16, then §9.6–§9.13, §10.1–§10.5, §13, §14, §15.8, §21, §22, §31.3, §31.6, §31.7.
+
+Before you start, the user has placed the five official FNDDS 2021–2023 files in `backend/data/raw/fndds/` (`FNDDS Ingredients.xlsx`, `FNDDS Nutrient Values.xlsx`, `Foods and Beverages.xlsx`, `Ingredient Nutrient Values.xlsx`, `Portions and Weights.xlsx`). The SR Legacy zip from Step F.1 is already in `backend/data/raw/`. `backend/data/raw/` is git-ignored; keep it that way. If a file is missing or named differently, stop and report it.
+
+## Hard rules
+1. No migration, no model change. `uv run alembic check` must stay clean.
+2. Nothing under `backend/data/f1_slice/`, `app/seed/f1_*.py`, `scripts/f1_*.py` or the F.1 tests changes behaviour. Shared helpers may be extracted from `f1_loader.py` only if every F.1 test passes unchanged and the scenario numbers do not move.
+3. Missing ≠ zero (§9.8): the pipeline never writes a value the source does not publish. A published 0 is a known zero.
+4. Everything the loader writes happens in one transaction; reruns are idempotent; reports are deterministic (no timestamps, stable ordering) so they can be committed and diffed.
+5. Do not commit anything.
+
+## 1. Dependencies
+Add `pandas`, `pandera` and `openpyxl` to `[project].dependencies` with `uv add` (and `pandas-stubs` to the dev group). `uv run mypy` must stay strict-clean; add a `[[tool.mypy.overrides]]` with `ignore_missing_imports = true` only for a module that ships no types, and list it in your report.
+
+## 2. Package `app/pipeline/` (Decision #92)
+Modules (names may vary, responsibilities may not):
+- `files.py` — pydantic models and readers for the catalog directory (default `backend/data/catalog/`, overridable with `--data-dir`):
+  - `reference_seed.yaml`: the same schema as `app.seed.f1_files.ReferenceSeed` (reuse it), plus a new list `uncertain_keywords` (§31.6: matches go to quarantine, not exclusion).
+  - `ingredients.yaml`: `dataset_version`, then `ingredients:` entries with `code` (`^[A-Z][A-Z0-9_]*$`, unique), `name_en`, `name_ar`, `aliases_en: []`, `aliases_ar: []`, `food: {source: SR_LEGACY | MANUAL, code: <NDB number or manual code>}`, `state` (`raw` / `cooked` / `as_purchased`), `allergens` (allergen **codes**), `ingredient_tags` (tag codes), `review_status` (`PENDING` / `APPROVED`).
+  - `manual_foods.yaml` (optional file): foods absent from USDA (#93 step 4): `code`, `description`, `category` (FDC category code present in `categories_ar`), `state`, `source_reference` (non-empty, full citation), `nutrients: {<nutrient code>: <amount per 100 g>}`.
+  - `meals/*.yaml` (any number of batch files, read in file-name order): file header `dataset_version`, `source`, `source_license`, `default_lang`; each meal like `SliceMeal` but ingredients reference `code` (ingredient code) instead of `ndb_number`, `ref_external` must start with `NG-`, and a new field `yield_factor_kind: PUBLISHED | TEAM_ESTIMATE` (required when `weight_method = YIELD_FACTOR`, forbidden otherwise). Optional `cross_check: {status: PASS | FAIL_REVIEWED, note: <text>}` (filled in G.5).
+  - `sources/source_manifest.yaml` + `sources/sr_legacy_subset.csv` + `sources/fndds_ingredient_subset.csv`: written by the extractor (§3), read by the build.
+  - Authoring errors (schema violations, unknown codes, duplicate `ref_external` or ingredient codes, a subset file whose SHA-256 differs from the manifest) fail the whole run with every error listed. They are bugs in the files, not data-quality outcomes.
+- `extract.py` — CLI `uv run python -m app.pipeline.extract [--profile-only]` (§3).
+- `profile.py` — `pandera` schemas for the raw tables used: SR `food.csv`, `food_nutrient.csv`, `nutrient.csv`; FNDDS `Ingredient Nutrient Values`, `FNDDS Nutrient Values`, `Portions and Weights`, `Foods and Beverages`. Check columns, dtypes, non-null keys, non-negative amounts, key uniqueness; collect all errors lazily.
+- `gates.py` — record-level gates (§31.3). Reuse the F.1 gate functions where they fit (energy consistency G2, weight method G6, percent-energy limits G7, optional ingredients G8, variant groups G9). New gates:
+  - **G10** manual threshold tags: `high_sodium` / `high_sugar` may not appear in `ingredient_tags` or a meal's manual tags (they are derived per meal, §10.5, #74).
+  - **G11** yield-factor kind: `PUBLISHED` requires a non-empty `yield_factor_source`.
+  - **G12** manual foods carry every mandatory nutrient and a non-empty `source_reference`.
+- `classify.py` — one outcome per record, with a reason code:
+  - **excluded**: an excluded keyword (whole word, case-insensitive) in a food description, ingredient name or alias → `non_permissible_ingredient`; a meal using an excluded ingredient → `uses_excluded_ingredient`.
+  - **quarantine**: `uncertain_keywords` match → `ingredient_status_uncertain`; a mandatory nutrient still missing after the fill of §4 → `missing_mandatory_nutrient`; energy inconsistent (G2) → `energy_inconsistent`; a meal using a quarantined ingredient → `uses_quarantined_ingredient`; a meal with no `reviewed_by` → `not_reviewed` (catalog rule: every recipe is reviewed before loading, §31.4, #95); a meal failing G6/G8/G10/G11 → the gate name.
+  - **accepted**: everything else. Only accepted records are loaded.
+- `load.py` — idempotent single-transaction load of accepted records (§5).
+- `report.py` — writes `reports/run_report.md` and `reports/records.csv` (§6).
+- `build.py` — CLI `uv run python -m app.pipeline.build [--data-dir PATH] [--load]`: read → validate → fill → gate → classify → report; with `--load` also writes the database. Exit code non-zero on authoring errors.
+
+## 3. Extraction (`app.pipeline.extract`)
+- Locate the raw files (SR zip as in `scripts/f1_extract_fdc.py`; FNDDS by the five names above), compute SHA-256, and record file name, size, SHA-256, download page and extraction date in `sources/source_manifest.yaml`, plus the SHA-256 and row count of each subset written.
+- Run the `pandera` profiles on every raw table and write `reports/raw_profile.md`: rows, columns, null counts of key columns, schema errors (expected: none), and duplicate keys.
+- **#93 feasibility (always runs, also with `--profile-only`)**: in the same report, for the whole SR Legacy food set, count foods missing at least one mandatory nutrient (use the nutrient numbers in `reference_seed.yaml` → `nutrients[].source_code`), and how many of those gaps the FNDDS *Ingredient Nutrient Values* file fills for the same code (FNDDS ingredient code = SR NDB number as an integer). Show the per-nutrient table and these two cases from F.1 finding F-03: NDB 17013 (lamb) and 20028 (dry couscous) — which nutrients SR lacks and the FNDDS values for them. Also report how many FNDDS values for nutrients SR *does* publish differ by more than 5% (agreement check).
+- Without `--profile-only`: read `ingredients.yaml`, and write `sources/sr_legacy_subset.csv` (same columns as `data/f1_slice/fdc_sr_legacy_subset.csv`, rows only for the referenced SR codes, absent values never written) and `sources/fndds_ingredient_subset.csv` (`ndb_number,nutrient_nbr,amount_per_100g` for the same codes and the seed's nutrients).
+- `--profile-only` must work when `ingredients.yaml` does not exist yet (the case in this pass).
+
+## 4. Nutrient source order (#93)
+For each SR food: values come from the SR subset. For each nutrient of the seed missing in SR, take the FNDDS ingredient value for the same code if present (a published FNDDS 0 counts); record every fill as `(ndb, nutrient code, value, "FNDDS 2021-2023 Ingredient Nutrient Values")` in the run report and append a sentence to `foods.source_reference`, e.g. `USDA FDC SR Legacy (April 2018), NDB 17013; sugars from FNDDS 2021-2023 Ingredient Nutrient Values`. Still missing → quarantine `missing_mandatory_nutrient` (an optional nutrient may stay absent). `MANUAL` foods use their file values only (`foods.external_source = 'MANUAL'`, `external_code = code`, `fdc_id` NULL). Run G1 and G2 on the filled values.
+
+## 5. Loading
+- Reference rows from `reference_seed.yaml` upsert by their natural keys exactly as `f1_loader` does (categories by `name_en`, cuisines/allergens/tags/conditions/nutrients by `code`, limits by their unique key, restrictions by `(condition, tag)` with `source_reference`).
+- Foods upsert by `(external_source, external_code)` (`FDC` for SR foods, as in F.1); `food_nutrients` synced to exactly the filled values. Ingredients upsert by `code` with `default_food_id`, `review_status`, allergens, tags; aliases with `source = <ingredients dataset_version>` replaced to match the file.
+- Meals upsert by `(source, ref_external)`; `dataset_version` from the batch header; `quality_tier` **computed**, never read from the file (#96): `GOLD` when reviewed and (`WEIGHED`, or `SUM_OF_INGREDIENTS`, or `YIELD_FACTOR` with `PUBLISHED`) and `cross_check.status` is not `FAIL_REVIEWED`; otherwise `SILVER`. `is_verified = reviewed_by is not null`. Meal ingredients reference `ingredient_id` and the ingredient's default `food_id`.
+- Deactivation (#79): active meals with the catalog's `dataset_version` that are not accepted in this run (removed, quarantined or excluded) become `is_active = false`; never deleted. Meals of any other `dataset_version` (e.g. the F.1 slice) are never touched.
+- After loading, run `compute_meal_nutrients` then `recompute_meal_derived` for every accepted meal, in the same transaction.
+
+## 6. Reports
+`reports/run_report.md` (deterministic): input file list with SHA-256; counts per outcome and reason for foods, ingredients and meals; the fill table; meals by quality tier; meals per occasion tag (breakfast/lunch/dinner/snack); share per cuisine; and with `--load`, the per-table insert/update/unchanged/deactivate counts. `reports/records.csv`: `record_type,key,outcome,reason,detail`, sorted.
+
+## 7. Tests (CI has no raw files: every test uses committed fixtures or files generated in `tmp_path`)
+- A mini catalog fixture under `tests/fixtures/catalog_mini/` (small reference seed, ≈8 ingredients, subset CSVs, one manual food, ≈7 meals) that exercises: an accepted GOLD meal, an accepted SILVER meal (`TEAM_ESTIMATE`), a food whose missing sugars are filled from the FNDDS subset (meal accepted), a food missing sodium in both sources (ingredient and its meal quarantined), an ingredient named with an excluded keyword (excluded, and its meal excluded), an `uncertain_keywords` match (quarantined), an unreviewed meal (quarantined), and a meal with a manual `high_sodium` tag (G10).
+- Authoring errors: unknown ingredient code, duplicate `ref_external`, `ref_external` without `NG-`, `yield_factor_kind` missing for `YIELD_FACTOR`, edited subset with a stale manifest hash — each fails the run and all are reported together.
+- Load: expected rows and computed tiers; second load reports everything unchanged; removing a meal from the fixture deactivates it and restoring it reactivates it; a quarantined meal that was loaded earlier is deactivated.
+- Isolation: load the F.1 slice, then the mini catalog: every F.1 `meal_nutrients` row and F.1 meal flag is unchanged.
+- Extraction: build a tiny SR zip and tiny FNDDS xlsx files in `tmp_path` (openpyxl) and check the subsets, the manifest hashes, `--profile-only` without `ingredients.yaml`, the feasibility counts, and a `pandera` failure (e.g. a negative amount) reported with its row.
+- Report determinism: two builds produce byte-identical `run_report.md` and `records.csv`.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), then on the user's machine with the real raw files: `uv run python -m app.pipeline.extract --profile-only` and show `reports/raw_profile.md`. Then `git status --short`.
+
+## Report back
+1. Files created/changed, and the dependency versions added.
+2. The full `backend/data/catalog/reports/raw_profile.md` (this is the #93 evidence).
+3. A short tree of `app/pipeline/` with one line per module.
+4. The mini-catalog run report (`run_report.md`) from the test fixture.
+5. Test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions.

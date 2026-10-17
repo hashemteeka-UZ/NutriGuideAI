@@ -1,0 +1,15 @@
+Step F.1: record the recipe review. Data-only change plus test updates. No schema change, no model edits, no new migration. Do not commit.
+
+## Context
+A team member (Hashem) reviewed all 30 meals in `backend/data/f1_slice/slice_meals.yaml` on 2026-10-05 and approved every one without changes (§31.4: an LLM-drafted recipe becomes verified only after a named team member reviews it).
+
+## Changes
+1. In `backend/data/f1_slice/slice_meals.yaml`, set `reviewed_by: Hashem` for all 30 meals. Change nothing else in the file (no grams, tags, names or comments).
+2. Run the loader on the dev database (`uv run python -m app.seed.f1_loader`), then `uv run python -m app.services.recompute_meals --all`. Expected: 30 meals updated (is_verified false -> true), unverified meal count 0; recompute reports no changes. Run the loader a second time: everything unchanged.
+3. Tests: any test that asserts `is_verified = false` for the real slice must now assert `is_verified = (reviewed_by is not null)` for every meal and that all 30 are verified on the real files. Keep one test (with a small in-memory or modified copy of the input) proving that a meal with `reviewed_by: null` loads with `is_verified = false`, so that rule stays covered.
+
+## Checks
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run pytest -q` (0 skipped).
+
+## Report back
+Files changed, the loader report from both runs (meals line and unverified count), the recompute output, and the check outputs.

@@ -1,0 +1,175 @@
+You are implementing **Step I, pass I.0: the FastAPI foundation** of NutriGuideAI. Step H is closed (commit `8f67629`, docs v4.18). This pass builds only the API skeleton and its cross-cutting pieces; no business endpoint is added yet.
+
+Read first: `docs/PROJECT_CONTEXT_v4_18.md` §17, §33.4, §34.1-§34.5, §34.7; then `backend/app/core/config.py`, `backend/app/db/session.py`, `backend/app/services/planner.py` (only `DEFAULT_PLANNER`, `PlannerName` and the exception classes), every exception class in `backend/app/services/*.py`, `backend/tests/conftest.py` (`integrity_engine`, `integrity_conn`) and `backend/tests/services/conftest.py`.
+
+The decisions for Step I are #123-#140. The ones this pass implements are written in full below; follow them exactly.
+
+## Hard rules
+1. No migration, no model change, no change to any file under `app/services/`, `app/pipeline/`, `app/seed/`, `app/db/` or `data/`. `uv run alembic check` stays clean.
+2. `docs/reports/*.md` and `backend/data/catalog/DATASET_MANIFEST.yaml` stay byte-identical.
+3. All endpoints are synchronous `def` functions (not `async def`) using the existing synchronous `Session` (#123).
+4. No new runtime dependency in this pass. Add `httpx` to the `dev` dependency group only (needed by `fastapi.testclient`). Run `uv lock` / `uv sync`.
+5. `ruff check`, `ruff format --check`, `mypy` (strict, files = app, alembic, scripts) and the full `pytest` suite must pass with 0 skipped.
+6. Do not commit anything.
+
+## A. Package layout (#124)
+Create:
+
+```
+backend/app/api/__init__.py
+backend/app/api/main.py            # create_app() and module-level `app = create_app()`
+backend/app/api/deps.py            # get_db, get_now, DbSession, Now
+backend/app/api/errors.py          # ApiError, problem responses, service-exception map, handlers
+backend/app/api/observability.py   # JSON logging, request_id context + middleware
+backend/app/api/routers/__init__.py
+backend/app/api/routers/health.py
+backend/app/api/schemas/__init__.py
+backend/app/api/schemas/common.py  # ProblemDetail, ValidationIssue
+backend/app/api/schemas/health.py  # HealthResponse
+backend/scripts/export_openapi.py
+docs/api/openapi.json              # generated, committed
+backend/tests/api/__init__.py
+backend/tests/api/conftest.py
+backend/tests/api/test_health.py
+backend/tests/api/test_errors.py
+backend/tests/api/test_observability.py
+backend/tests/api/test_openapi_contract.py
+```
+
+Routers contain no business rule; they call services and translate results (#124).
+
+## B. `app/api/main.py`
+- `API_PREFIX: Final = "/api/v1"`, `API_VERSION: Final = "0.1.0"`.
+- `create_app() -> FastAPI`:
+  - `FastAPI(title="NutriGuideAI API", version=API_VERSION, openapi_url="/api/openapi.json", docs_url="/api/docs", redoc_url=None)`.
+  - Calls `configure_logging()` (section E) once (idempotent).
+  - Adds the request-id middleware (section E).
+  - CORS (#140): add `CORSMiddleware` only when `settings.CORS_ORIGINS` is non-empty; allow those origins, methods `GET, POST, PUT, PATCH, DELETE`, headers `Authorization, Content-Type, Accept-Language, X-Request-ID`, expose `X-Request-ID`. No wildcard.
+  - Registers the exception handlers (section D).
+  - Includes `health.router` with `prefix=API_PREFIX`.
+- Module-level `app = create_app()` so `uv run uvicorn app.api.main:app --reload` works from `backend/`.
+- Settings: add to `app/core/config.py` `Settings` exactly one new field: `CORS_ORIGINS: list[str] = []` (pydantic-settings parses a JSON list from the env var). Add `CORS_ORIGINS=[]` with a one-line comment to `.env.example`. JWT settings come in I.2, not now.
+
+## C. `app/api/deps.py` (#123, #127)
+```python
+def get_db() -> Iterator[Session]:
+    """One session per request. Write endpoints call session.commit() themselves before
+    returning; on any exception the session is rolled back. Always closed."""
+
+def get_now() -> datetime:
+    """Server time, timezone-aware UTC. Overridden in tests."""
+
+DbSession = Annotated[Session, Depends(get_db)]
+Now = Annotated[datetime, Depends(get_now)]
+```
+- `get_db` uses `SessionLocal` from `app/db/session.py`; structure: `session = SessionLocal()`, `try: yield session` / `except BaseException: session.rollback(); raise` / `finally: session.close()`. It never commits (explicit commits only, so a commit failure is always reported in the response, whatever FastAPI's yield-dependency timing is).
+
+## D. Errors: `app/api/errors.py` (#126)
+Problem details per RFC 9457, media type `application/problem+json`.
+
+`schemas/common.py`:
+```python
+class ValidationIssue(BaseModel):
+    loc: list[str | int]
+    msg: str
+    type: str
+
+class ProblemDetail(BaseModel):
+    type: str = "about:blank"
+    title: str
+    status: int
+    detail: str | None = None
+    code: str              # stable UPPER_SNAKE_CASE, the app maps it to an Arabic message
+    request_id: str | None = None
+    errors: list[ValidationIssue] | None = None
+    reasons: list[str] | None = None   # screening reasons / swap exclusion codes
+```
+
+`errors.py`:
+- `class ApiError(Exception)` with `status: int`, `code: str`, `title: str`, `detail: str | None`, `reasons: list[str] | None`, `headers: dict[str, str] | None`.
+- `problem_response(status, code, title, detail=None, *, errors=None, reasons=None, headers=None) -> JSONResponse` that fills `request_id` from the request-id context (section E) and sets the media type.
+- `SERVICE_ERRORS: Mapping[type[Exception], tuple[int, str]]` - the single table that maps domain exceptions to HTTP. Fill it with every one of these classes, importing each from where it is really defined (verify every name and module; if one does not exist, stop and report it instead of inventing it):
+
+| exception | status | code |
+|---|---|---|
+| `ProfileNotFoundError` | 404 | `PROFILE_NOT_FOUND` |
+| `MealNotFoundError` | 404 | `MEAL_NOT_FOUND` |
+| `FoodNotFoundError` | 404 | `FOOD_NOT_FOUND` |
+| `LogNotFoundError` | 404 | `LOG_NOT_FOUND` |
+| `PlanItemNotFoundError` | 404 | `PLAN_ITEM_NOT_FOUND` |
+| `UserNotEligibleError` | 409 | `NOT_ELIGIBLE` |
+| `MissingTargetError` | 409 | `NO_TARGET` |
+| `MissingWeightError` | 409 | `NO_WEIGHT` |
+| `ConditionConflictError` | 409 | `CONDITION_CONFLICT` |
+| `PlanItemAlreadyLoggedError` | 409 | `PLAN_ITEM_ALREADY_LOGGED` |
+| `ClientUuidConflictError` | 409 | `CLIENT_UUID_CONFLICT` |
+| `NoFeasiblePlanError` | 422 | `NO_FEASIBLE_PLAN` |
+| `IncompleteNutritionError` | 422 | `INCOMPLETE_NUTRITION` |
+| `SwapRejectedError` | 422 | `SWAP_REJECTED` |
+| `ClockSkewError` | 422 | `CLOCK_SKEW` |
+| `TargetValidationError` | 422 | `TARGET_VALIDATION` |
+| `InvalidTimezoneError` | 422 | `INVALID_TIMEZONE` |
+
+- Lookup walks the raised exception's MRO and uses the first class found in the table, so a subclass maps by its most specific entry (e.g. `PlanItemNotFoundError` is also a `LookupError`; it must map to `PLAN_ITEM_NOT_FOUND`).
+- `reasons`: `UserNotEligibleError.reasons` and `SwapRejectedError.exclusion_codes` go into `reasons`. `detail` for mapped service errors = `str(exc)`.
+- Handlers registered by `register_exception_handlers(app)`:
+  1. `ApiError` -> its fields.
+  2. One handler for `Exception` that first tries `SERVICE_ERRORS`; if the exception is mapped it returns that problem; otherwise it logs the exception with stack trace (`logger.exception`) and returns 500 `INTERNAL_ERROR`, title "Internal server error", no detail (never leak internals).
+  3. `RequestValidationError` -> 422 `VALIDATION_ERROR`, `errors` = one `ValidationIssue` per pydantic error (`loc`, `msg`, `type`).
+  4. `starlette.exceptions.HTTPException` -> same status, code from a small map: 401 `UNAUTHORIZED`, 403 `FORBIDDEN`, 404 `NOT_FOUND`, 405 `METHOD_NOT_ALLOWED`, 429 `RATE_LIMITED`, 501 `NOT_IMPLEMENTED`, 503 `SERVICE_UNAVAILABLE`, otherwise `HTTP_<status>`; keep its headers.
+- Also export `PROBLEM_RESPONSES: dict[int | str, dict[str, Any]]` - an OpenAPI `responses=` fragment declaring `ProblemDetail` with media type `application/problem+json` for 422 and `default`, so every router documents the error shape in the contract. Use it on the health router.
+
+## E. Observability: `app/api/observability.py` (#133)
+- `request_id_var: ContextVar[str | None]`.
+- `RequestIdMiddleware` as a pure ASGI middleware (not `BaseHTTPMiddleware`): reads `X-Request-ID`; accepts it only if it matches `^[A-Za-z0-9._-]{1,64}$`, otherwise generates `uuid4().hex`; sets the context var; adds `X-Request-ID` to every response (including error responses); after the response, logs one access line with `method`, `path` (no query string), `status`, `duration_ms` (2 decimals) and `request_id`. Never logs headers, bodies, passwords or tokens.
+- `JsonFormatter(logging.Formatter)`: one JSON object per line with `ts` (UTC ISO 8601), `level`, `logger`, `msg`, `request_id` (from the context var), any `extra` fields passed by the access log, and `exc_info` text when present. `ensure_ascii=False`.
+- `configure_logging(level: str = "INFO")`: installs the formatter on a stdout handler of the `nutriguide` logger (named loggers `nutriguide.api`, `nutriguide.api.access`), sets `propagate = False`, idempotent (calling twice does not add a second handler). Do not reconfigure the root logger and do not touch uvicorn's loggers.
+
+## F. Health endpoint: `routers/health.py`
+`GET /api/v1/health` -> `HealthResponse`:
+```python
+class HealthResponse(BaseModel):
+    status: Literal["ok"]
+    api_version: str
+    database: Literal["ok"]
+    dataset_version: str | None
+    default_planner: str
+```
+- Runs `SELECT 1`, then `SELECT DISTINCT dataset_version FROM meals WHERE is_active` (ORM `select`). Exactly one value -> that value; none -> `None`; more than one -> `None` and a warning log line (by #72 there must be one).
+- If the database raises `sqlalchemy.exc.OperationalError` (or `DBAPIError`), respond 503 `DATABASE_UNAVAILABLE` via `ApiError`.
+- `default_planner` = `planner.DEFAULT_PLANNER`.
+- No authentication on this endpoint.
+
+## G. OpenAPI contract (#125, P-07)
+`backend/scripts/export_openapi.py`:
+- Builds the schema from `create_app().openapi()` and writes `docs/api/openapi.json` at the repository root as `json.dumps(schema, indent=2, ensure_ascii=False, sort_keys=True) + "\n"`.
+- `--check`: does not write; exits 1 with a one-line message if the file is missing or differs, 0 otherwise.
+- `main(argv: list[str] | None = None) -> int`, same style as the other scripts; typed for mypy strict.
+- Generate and include the file `docs/api/openapi.json` in this pass.
+
+`tests/api/test_openapi_contract.py`: the committed file equals the freshly generated schema (fail message: "docs/api/openapi.json is stale: run `uv run python -m scripts.export_openapi` from backend/"); every path starts with `/api/v1/`; `ProblemDetail` is in `components.schemas`.
+
+## H. Tests: `tests/api/` (#139)
+`conftest.py`:
+- `NOW = datetime(2026, 10, 12, 9, 0, tzinfo=UTC)`.
+- `api_session` fixture: `Session(bind=integrity_conn, join_transaction_mode="create_savepoint")` so an explicit `session.commit()` inside an endpoint only releases a SAVEPOINT and the test's outer transaction still rolls everything back.
+- `client` fixture: `app = create_app()`, `app.dependency_overrides[get_db] = lambda: (yield api_session)` written as a proper generator function, `app.dependency_overrides[get_now] = lambda: NOW`; yields `TestClient(app, raise_server_exceptions=False)` (so the 500 handler is exercised); clears overrides after.
+
+Tests (each name says what it proves):
+- `test_health.py`: 200 with the exact keys; `default_planner == "cpsat"`; `dataset_version` is `None` on the empty integrity DB and equals the inserted value after inserting one active meal with the existing builders in `tests/builders.py`; two distinct active versions -> `None`; a `get_db` override whose session raises `OperationalError` on execute -> 503 `DATABASE_UNAVAILABLE` problem.
+- `test_errors.py`: build an app with `create_app()` plus a test-only router (added in the test, never in production code) whose routes raise: `ApiError`; one instance of EVERY class in `SERVICE_ERRORS` (parametrized over the table; construct each with the arguments its `__init__` needs) -> expected status, code and `application/problem+json`; `UserNotEligibleError` and `SwapRejectedError` -> `reasons` filled; a `RuntimeError` -> 500 `INTERNAL_ERROR` with no detail; a body that fails validation -> 422 `VALIDATION_ERROR` with `errors`; an unknown path -> 404 `NOT_FOUND`; wrong method -> 405. Also a test that every value in `SERVICE_ERRORS` has a unique `code`.
+- `test_observability.py`: a safe incoming `X-Request-ID` is echoed in the response header and in a problem body; an unsafe one (e.g. 100 chars, or with a space) is replaced by a 32-hex id; a missing one is generated; one access log line is valid JSON with `method`, `path`, `status`, `duration_ms`, `request_id` (use `caplog` or a handler attached to `nutriguide.api.access`); the query string is not in `path`; `configure_logging()` twice leaves one handler.
+- `test_db_session_commit_rolls_back_in_tests` in `conftest`-level test file or `test_health.py`: inside a test, a row written and committed through `api_session` is visible in the same test, and a second test proves the table is back to its previous count (rollback works with explicit commits).
+
+## I. README
+Add a short "Run the API" section under "Local development": `cd backend && uv run uvicorn app.api.main:app --reload`, then open `http://127.0.0.1:8000/api/docs` and `http://127.0.0.1:8000/api/v1/health`; plus how to refresh the contract: `uv run python -m scripts.export_openapi` (and `--check`). Keep the rest of the README unchanged.
+
+## J. CI
+In `.github/workflows/ci.yml` add one step after `mypy` and before `alembic upgrade head`: `uv run python -m scripts.export_openapi --check`. Change nothing else in the workflow.
+
+## Report back (paste all of it)
+1. Gates: output summary of `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `uv run python -m scripts.export_openapi --check`, `uv run pytest -q` (total passed, 0 skipped) - all run from `backend/`.
+2. The final `SERVICE_ERRORS` table as implemented, with the module each exception was imported from, and any exception from the list that did not exist (if any).
+3. Output of `curl -s -i http://127.0.0.1:8000/api/v1/health` with uvicorn running against your dev database, and one JSON access-log line it printed.
+4. `git status` and `git diff --stat`.
+5. Any assumption you had to make, and anything in this file you could not follow exactly, with the reason.

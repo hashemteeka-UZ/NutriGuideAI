@@ -1,0 +1,248 @@
+# Step F.1 reference seed (f1_seed_v0). Authored by the project assistant from published guidelines.
+# Every condition limit is PENDING dietitian review before any pilot with users (PROJECT_CONTEXT §30).
+# Data, not schema: loading this file does not reopen the schema freeze (§20.1).
+seed_version: f1_seed_v0
+categories_ar:
+  '0100': الألبان والبيض
+  '0200': التوابل والأعشاب
+  '0400': الدهون والزيوت
+  '0500': الدواجن
+  0800: حبوب الإفطار
+  0900: الفواكه وعصائرها
+  '1100': الخضروات
+  '1200': المكسرات والبذور
+  '1400': المشروبات
+  '1500': الأسماك والمأكولات البحرية
+  '1600': البقوليات
+  '1700': لحم الضأن والعجل
+  '1800': المخبوزات
+  '1900': الحلويات والمحليات
+  '2000': الحبوب والمعكرونة
+  '1300': لحم البقر
+cuisines:
+- key: LIBYAN
+  name_en: Libyan
+  name_ar: ليبي
+- key: LEVANTINE
+  name_en: Levantine
+  name_ar: شامي
+- key: GENERAL
+  name_en: General
+  name_ar: عام
+allergens:
+- name_en: Gluten
+  name_ar: الغلوتين
+- name_en: Milk
+  name_ar: الحليب
+- name_en: Egg
+  name_ar: البيض
+- name_en: Fish
+  name_ar: السمك
+- name_en: Shellfish
+  name_ar: المحار والقشريات
+- name_en: Peanut
+  name_ar: الفول السوداني
+- name_en: Tree nuts
+  name_ar: المكسرات الشجرية
+- name_en: Sesame
+  name_ar: السمسم
+- name_en: Soy
+  name_ar: الصويا
+dietary_tags:
+- code: breakfast_suitable
+  tag_group: OCCASION
+  name_en: Suitable for breakfast
+  name_ar: مناسب للفطور
+- code: lunch_suitable
+  tag_group: OCCASION
+  name_en: Suitable for lunch
+  name_ar: مناسب للغداء
+- code: dinner_suitable
+  tag_group: OCCASION
+  name_en: Suitable for dinner
+  name_ar: مناسب للعشاء
+- code: snack_suitable
+  tag_group: OCCASION
+  name_en: Suitable as a snack
+  name_ar: مناسب كوجبة خفيفة
+- code: beverage
+  tag_group: OCCASION
+  name_en: Beverage
+  name_ar: مشروب
+- code: nuts_seeds_snack
+  tag_group: OCCASION
+  name_en: Nuts or seeds snack
+  name_ar: وجبة خفيفة من المكسرات أو البذور
+- code: vegetarian
+  tag_group: DIETARY
+  name_en: Vegetarian
+  name_ar: نباتي
+- code: vegan
+  tag_group: DIETARY
+  name_en: Vegan
+  name_ar: نباتي صرف
+- code: high_sodium
+  tag_group: CONDITION
+  name_en: High in sodium
+  name_ar: مرتفع الصوديوم
+- code: high_sugar
+  tag_group: CONDITION
+  name_en: High in sugars
+  name_ar: مرتفع السكريات
+- code: added_sugar
+  tag_group: CONDITION
+  name_en: Contains added sugar
+  name_ar: يحتوي سكرًا مضافًا
+nutrients:
+- code: energy_kcal
+  source_code: '208'
+  name: Energy
+  unit: kcal
+  is_mandatory: true
+- code: protein
+  source_code: '203'
+  name: Protein
+  unit: g
+  is_mandatory: true
+- code: total_fat
+  source_code: '204'
+  name: Total lipid (fat)
+  unit: g
+  is_mandatory: true
+- code: carbohydrate
+  source_code: '205'
+  name: Carbohydrate, by difference
+  unit: g
+  is_mandatory: true
+- code: fiber
+  source_code: '291'
+  name: Fiber, total dietary
+  unit: g
+  is_mandatory: true
+- code: sugars
+  source_code: '269'
+  name: Sugars, total
+  unit: g
+  is_mandatory: true
+- code: saturated_fat
+  source_code: '606'
+  name: Fatty acids, total saturated
+  unit: g
+  is_mandatory: true
+- code: cholesterol
+  source_code: '601'
+  name: Cholesterol
+  unit: mg
+  is_mandatory: true
+- code: sodium
+  source_code: '307'
+  name: Sodium, Na
+  unit: mg
+  is_mandatory: true
+- code: potassium
+  source_code: '306'
+  name: Potassium, K
+  unit: mg
+  is_mandatory: false
+health_conditions:
+- code: DIABETES_T2
+  name_en: Type 2 diabetes (not insulin-treated)
+  name_ar: السكري من النوع الثاني (بدون إنسولين)
+  is_supported: true
+  fluid_goal_requires_clinician: false
+- code: HYPERTENSION
+  name_en: Hypertension
+  name_ar: ارتفاع ضغط الدم
+  is_supported: true
+  fluid_goal_requires_clinician: false
+- code: HEART_DISEASE
+  name_en: Heart disease
+  name_ar: أمراض القلب
+  is_supported: true
+  fluid_goal_requires_clinician: true
+- code: CKD
+  name_en: Chronic kidney disease
+  name_ar: مرض الكلى المزمن
+  is_supported: false
+  fluid_goal_requires_clinician: true
+- code: DIABETES_INSULIN
+  name_en: Insulin-treated diabetes
+  name_ar: السكري المعالج بالإنسولين
+  is_supported: false
+  fluid_goal_requires_clinician: false
+condition_nutrient_limits:
+- condition: HYPERTENSION
+  nutrient: sodium
+  limit_basis: ABSOLUTE
+  max_per_day: 2000
+  source_reference: 'WHO (2012). Guideline: Sodium intake for adults and children. < 2 g sodium/day'
+  severity_note: PENDING dietitian review (PROJECT_CONTEXT §30, Expert validation)
+- condition: HEART_DISEASE
+  nutrient: sodium
+  limit_basis: ABSOLUTE
+  max_per_day: 2300
+  source_reference: AHA (2021). Dietary Guidance to Improve Cardiovascular Health. <= 2300 mg sodium/day
+  severity_note: PENDING dietitian review (PROJECT_CONTEXT §30, Expert validation)
+- condition: HEART_DISEASE
+  nutrient: saturated_fat
+  limit_basis: PERCENT_ENERGY
+  max_per_day: 6
+  source_reference: AHA/ACC (2013). Guideline on Lifestyle Management to Reduce Cardiovascular Risk. 5-6% of energy from saturated fat
+  severity_note: PENDING dietitian review (PROJECT_CONTEXT §30, Expert validation)
+- condition: HEART_DISEASE
+  nutrient: cholesterol
+  limit_basis: ABSOLUTE
+  max_per_day: 200
+  source_reference: NCEP ATP III (2002). Therapeutic Lifestyle Changes diet. < 200 mg cholesterol/day
+  severity_note: PENDING dietitian review (PROJECT_CONTEXT §30, Expert validation)
+- condition: DIABETES_T2
+  nutrient: carbohydrate
+  limit_basis: ABSOLUTE
+  max_per_meal: 60
+  source_reference: 'ADA carbohydrate-counting education: 45-60 g carbohydrate per meal for most adults'
+  severity_note: PENDING dietitian review (PROJECT_CONTEXT §30, Expert validation)
+- condition: DIABETES_T2
+  nutrient: sugars
+  limit_basis: PERCENT_ENERGY
+  max_per_day: 10
+  source_reference: 'WHO (2015). Guideline: Sugars intake for adults and children. < 10% of energy (free sugars; applied here to total sugars, which is stricter - see Decision #69)'
+  severity_note: PENDING dietitian review (PROJECT_CONTEXT §30, Expert validation)
+- condition: DIABETES_T2
+  nutrient: fiber
+  limit_basis: ABSOLUTE
+  min_per_day: 25
+  source_reference: 'ADA Standards of Care in Diabetes (2024), section 5: at least 14 g fiber per 1000 kcal (about 25 g/day)'
+  severity_note: PENDING dietitian review (PROJECT_CONTEXT §30, Expert validation)
+condition_tag_restrictions:
+- condition: HYPERTENSION
+  tag: high_sodium
+  restriction_type: LIMIT
+  max_servings_per_week: 3
+- condition: HEART_DISEASE
+  tag: high_sodium
+  restriction_type: LIMIT
+  max_servings_per_week: 3
+- condition: DIABETES_T2
+  tag: high_sugar
+  restriction_type: LIMIT
+  max_servings_per_week: 3
+- condition: DIABETES_T2
+  tag: added_sugar
+  restriction_type: AVOID
+excluded_keywords:
+- pork
+- bacon
+- ham
+- lard
+- prosciutto
+- salami
+- pepperoni
+- gelatin
+- wine
+- beer
+- alcohol
+- liqueur
+- rum
+- vodka
+- whiskey
+- blood

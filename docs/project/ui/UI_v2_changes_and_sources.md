@@ -1,0 +1,162 @@
+# توثيق تغييرات الواجهات في النسخة 2 مع مصادرها
+
+التاريخ: 2026-10-13. هذا الملف مرجع للجزء النظري من التقرير. لكل تغيير: ما هو، ولماذا، وأثره على الخادم، ومصدره.
+
+**ملاحظة للجزء النظري:** المصادر مكتوبة ببياناتها الببليوغرافية كما أعرفها. قبل وضعها في قائمة المراجع، يجب فتح كل مصدر والتأكد من السنة والصفحات، لأن التقرير يُحاسَب على دقة المراجع. المصادر الموسومة بـ «يُتحقق منه» أقل يقينًا من غيرها.
+
+**رابط النموذج:** [النموذج الثاني](https://claude.ai/artifact/9VTgfqE9h9fVzPruBQ2Go3) (النسخة 2). مصدر الكود محفوظ في ⁨prototype_v2/⁩ بجانب هذا الملف.
+
+## 1. طابع صحي وليس علاجيًا
+- **التغيير:** حذف كلمات «مريض» و«غير مؤهل» من الواجهة. الحالات الصحية تظهر بصيغة «ما نراعيه في أكلك». تنبيه ثابت بأن التطبيق لا يغني عن الطبيب.
+- **السبب:** التطبيق أداة تغذية صحية تراعي الحالة ولا تعالجها. الصياغة العلاجية تعطي انطباعًا بأنه جهاز طبي، وهذا غير صحيح وغير مطلوب.
+- **الأثر على الخادم:** لا شيء. قواعد السلامة باقية كما هي.
+- **المصدر:** ⁨U.S. Food and Drug Administration. *General Wellness: Policy for Low Risk Devices*. Guidance for Industry, 2016 (updated 2019).⁩ يعرّف تطبيقات «العافية العامة» منخفضة الخطورة التي تدعم نمط حياة صحيًا دون ادعاء علاج.
+
+## 2. إعداد متكيف حسب بيانات المستخدم
+- **التغيير:** الأسئلة تظهر حسب الإجابات السابقة، فيتغير عدد الخطوات من مستخدم لآخر:
+  - سؤال الوزن المستهدف والسرعة يظهر فقط إذا كان الهدف إنقاص الوزن أو زيادته.
+  - سؤال البروتين يظهر فقط للنشاط العالي والرياضي.
+  - سؤال الإنسولين يظهر فقط لمن اختار سكر الدم.
+  - سؤال الحمل والرضاعة يظهر فقط للأنثى بين 18 و50 سنة.
+  - سؤال كمية السوائل من الطبيب يظهر فقط لمن اختار صحة القلب.
+- **السبب:** تقليل الأسئلة غير الضرورية يقلل الإرهاق ويزيد إكمال التسجيل، وكل مستخدم يرى ما يخصه فقط.
+- **الأثر على الخادم:** لا شيء في قاعدة البيانات. واجهة الملف الشخصي في الـ ⁨API⁩ تقبل الحقول الاختيارية.
+- **المصادر:**
+  - المرجع: ⁨Nielsen, J. *Progressive Disclosure*. Nielsen Norman Group, 2006.⁩
+  - المرجع: ⁨Dillman, D. A., Smyth, J. D., Christian, L. M. *Internet, Phone, Mail, and Mixed-Mode Surveys: The Tailored Design Method*. 4th ed., Wiley, 2014.⁩ (منطق تخطي الأسئلة حسب الإجابة: skip logic).
+
+## 3. أسئلة السلامة بصيغة لطيفة و«الوضع العام»
+- **التغيير:** أسئلة الكلى والإنسولين والحمل في خطوة واحدة بعنوان «سؤال أخير للاطمئنان». من يجيب بنعم يدخل «الوضع العام» بدل شاشة «غير مؤهل»: يتصفح الوجبات ويسجل أكله وماءه ويتابع تقدمه، دون خطة سعرات شخصية.
+- **السبب:** معادلات الاحتياج عندنا لا تغطي هذه الحالات (القرار #27، الفقرة §30.1)، لكن حرمان المستخدم من التطبيق كله غير ضروري.
+- **الأثر على الخادم:** لا شيء جديد. الفحص موجود في ⁨screen_user⁩، والـ ⁨API⁩ يعيد سبب عدم الأهلية فتعرض الواجهة الوضع العام.
+- **المصادر:**
+  - المرجع: ⁨Ikizler, T. A., et al. KDOQI Clinical Practice Guideline for Nutrition in CKD: 2020 Update. *American Journal of Kidney Diseases*, 76(3 Suppl 1), S1–S107, 2020.⁩
+  - المرجع: ⁨Institute of Medicine. *Weight Gain During Pregnancy: Reexamining the Guidelines*. National Academies Press, 2009.⁩
+  - المرجع: ⁨American Diabetes Association. *Standards of Care in Diabetes* (الإصدار السنوي الأحدث)، قسم نقص سكر الدم مع الإنسولين.⁩
+
+## 4. تفضيل البروتين للنشطين
+- **التغيير:** للنشاط العالي والرياضي ثلاثة خيارات: حسب الهدف، رياضي 1.8 غ لكل كغ، مرتفع 2.0 غ لكل كغ. للرياضي لا يظهر الخيار المكرر لأن قاعدته أصلًا 1.8.
+- **السبب:** احتياج البروتين لمن يتمرن بانتظام أعلى من غيره، والمدى الموصى به يسمح بالاختيار.
+- **الأثر على الخادم:** عمود جديد ⁨protein_preference⁩ في ⁨user_profiles⁩، وتحديث صيغة الأهداف إلى إصدار جديد (⁨formula_version⁩). تغيير ⁨schema⁩، يُنفذ في مرور مستقل بـ ⁨migration⁩ خاص.
+- **المصادر:**
+  - المرجع: ⁨Jäger, R., et al. International Society of Sports Nutrition Position Stand: protein and exercise. *Journal of the International Society of Sports Nutrition*, 14, 20, 2017.⁩ (المدى 1.4 إلى 2.0 غ لكل كغ يوميًا).
+  - المرجع: ⁨Thomas, D. T., Erdman, K. A., Burke, L. M. Nutrition and Athletic Performance (ACSM, Academy of Nutrition and Dietetics, Dietitians of Canada joint position). *Medicine & Science in Sports & Exercise*, 48(3), 543–568, 2016.⁩
+
+## 5. مواعيد الوجبات حسب الاستيقاظ والنوم
+- **التغيير:** المستخدم يدخل موعد استيقاظه ونومه. النظام يحسب نافذة زمنية لكل وجبة:
+  - الفطور: بعد الاستيقاظ بنصف ساعة إلى ساعتين ونصف.
+  - الغداء: بعد 6 إلى 8 ساعات من الاستيقاظ.
+  - الوجبة الخفيفة: بعد 9.5 إلى 10.5 ساعة.
+  - العشاء: ينتهي قبل النوم بساعتين ونصف على الأقل.
+- **التنبيهات:** تذكير عند بداية النافذة، وتنبيه لطيف إذا انتهت دون تسجيل. إشعارات محلية على الجهاز.
+- **السبب:** يحول الخطة من قائمة أكل إلى جدول يومي شخصي. الأكل المتأخر قرب النوم مرتبط بنتائج أسوأ في إنقاص الوزن واضطرابات الهضم.
+- **الأثر على الخادم:** عمودان جديدان ⁨wake_time⁩ و ⁨sleep_time⁩ في ⁨user_profiles⁩ (تغيير ⁨schema⁩ في مرور مستقل). حساب النوافذ في خدمة جديدة، وتعيدها واجهة اليوم.
+- **المصادر:**
+  - المرجع: ⁨St-Onge, M.-P., et al. Meal Timing and Frequency: Implications for Cardiovascular Disease Prevention. A Scientific Statement From the American Heart Association. *Circulation*, 135(9), e96–e121, 2017.⁩
+  - المرجع: ⁨Garaulet, M., et al. Timing of food intake predicts weight loss effectiveness. *International Journal of Obesity*, 37(4), 604–611, 2013.⁩
+  - المرجع: ⁨Fujiwara, Y., et al. Association between dinner-to-bed time and gastro-esophageal reflux disease. *American Journal of Gastroenterology*, 100(12), 2633–2636, 2005.⁩
+  - المرجع: ⁨Fry, J. P., Neff, R. A. Periodic prompts and reminders in health promotion and health behavior interventions: systematic review. *Journal of Medical Internet Research*, 11(2), e16, 2009.⁩
+
+## 6. جلسات شرب الماء
+- **التغيير:**
+  - الهدف اليومي يُقسّم على جلسات كل ساعتين تقريبًا بين الاستيقاظ وقبل النوم بساعة.
+  - أزرار سريعة 150 و250 و500 مل، وكمية مخصصة بشريط من 50 إلى 1000 مل.
+  - ملاحظة لطيفة إذا تجاوزت الجلسة 500 مل.
+- **السبب:** توزيع الشرب على اليوم أسهل للالتزام، والكميات الكبيرة دفعة واحدة لا يُنصح بها.
+- **الأثر على الخادم:** لا ⁨schema⁩ جديد. الجلسات تُحسب من الهدف (الفقرة §30.7) ومواعيد اليوم.
+- **المصادر:**
+  - المرجع: ⁨EFSA Panel on Dietetic Products, Nutrition, and Allergies. Scientific Opinion on Dietary Reference Values for water. *EFSA Journal*, 8(3), 1459, 2010.⁩ (مصدر الهدف اليومي، موجود في المشروع).
+  - المرجع: ⁨Hew-Butler, T., et al. Statement of the Third International Exercise-Associated Hyponatremia Consensus Development Conference, Carlsbad, California, 2015. *Clinical Journal of Sport Medicine*, 25(4), 303–320, 2015. **يُتحقق منه:** لدعم أن شرب كميات كبيرة بسرعة يتجاوز قدرة الكلى على التخلص من الماء. حد 500 مل للجلسة قرار تصميمي منا، وليس رقمًا من المصدر.⁩
+
+## 7. عرض الحصة بالغرام ورسم الطبق
+- **التغيير:** بدل «1.5 حصة» نعرض «طبق ونصف · نحو 460 غ» مع رسم أطباق، وشرح بأننا عدّلنا الكمية لتناسب السعرات.
+- **السبب:** كثير من الناس لا يفهمون معنى «الحصة» على الملصقات الغذائية، والوزن والصورة أوضح.
+- **الأثر على الخادم:** حقل ⁨portion_grams⁩ في استجابة الـ ⁨API⁩، يُحسب من أوزان مكونات الوصفة × المضاعف. لا ⁨schema⁩ جديد.
+- **المصدر:** ⁨Rothman, R. L., et al. Patient understanding of food labels: the role of literacy and numeracy. *American Journal of Preventive Medicine*, 31(5), 391–398, 2006.⁩
+
+## 8. شاشة بناء الخطة تعرض المحرك
+- **التغيير:** بدل شاشة تحميل، تعرض الشاشة مراحل المحرك الحقيقية بالترتيب:
+  1. حساب الاحتياج: ⁨BMR⁩ ثم ⁨TDEE⁩ ثم العجز أو الفائض.
+  2. استبعاد الوجبات غير المناسبة مع السبب: حساسية، ملح، ما لا يحبه المستخدم.
+  3. المحسّن ⁨CP-SAT⁩ يملأ خانات الوجبات، ومؤشرات القيود تتحول للأخضر.
+  4. بناء الأيام يومًا بعد يوم، مع حالة الحل وزمنه وعدد الوجبات المرشحة.
+- **السبب:** شرح سبب التوصية يزيد ثقة المستخدم بها، ويظهر قيمة المحرك عند المناقشة.
+- **الأثر على الخادم:** استجابة ⁨POST⁩ /⁨plans/days⁩ تضيف ⁨solver_status⁩ و ⁨solve_ms⁩ و ⁨candidate_count⁩. يُضاف في عقد ⁨I.1⁩. التقدم بين الأيام حقيقي لأن كل يوم طلب مستقل (القرار #131)، أما الحركة داخل اليوم الواحد فعرض بصري.
+- **المصادر:**
+  - المرجع: ⁨Tintarev, N., Masthoff, J. A Survey of Explanations in Recommender Systems. *IEEE 23rd International Conference on Data Engineering Workshop*, 801–810, 2007.⁩
+  - المرجع: ⁨Perron, L., Furnon, V. *OR-Tools* (CP-SAT solver). Google, 2023.⁩ (موجود في المشروع).
+
+## 9. وجبات مفضلة ووجبات لا أحبها
+- **التغيير:** زر قلب في كل وجبة، وزر «لا أحب هذه الوجبة»، وقائمة لكل منهما في الحساب.
+- **السبب:** احترام ذوق المستخدم يزيد التزامه بالخطة.
+- **الأثر على الخادم:** جدول جديد لتفضيلات الوجبات (مستخدم، وجبة، إعجاب أو رفض). «لا أحبها» استبعاد صارم في الطبقة الأولى، و«مفضلة» مكافأة خفيفة في دالة الهدف للمحسّن. تغيير ⁨schema⁩ في مرور مستقل.
+- **المصدر:** ⁨Trattner, C., Elsweiler, D. Food Recommender Systems: Important Contributions, Challenges and Future Research Directions. arXiv:1711.02760, 2017.⁩
+
+## 10. قائمة المشتريات من خطة الأسبوع
+- **التغيير:** قائمة تُولد تلقائيًا من مكونات وجبات الأسبوع، مجمعة حسب الفئة، بكميات بالغرام، مع علامة شراء ومشاركة.
+- **السبب:** التخطيط المسبق للوجبات مرتبط بجودة غذاء أفضل وتنوع أكبر.
+- **الأثر على الخادم:** واجهة جديدة تحسب القائمة من ⁨meal_ingredients⁩ للخطة الحالية. لا ⁨schema⁩ جديد.
+- **المصدر:** ⁨Ducrot, P., et al. Meal planning is associated with food variety, diet quality and body weight status in a large sample of French adults. *International Journal of Behavioral Nutrition and Physical Activity*, 14, 12, 2017.⁩
+
+## 11. التقرير الأسبوعي
+- **التغيير:** تبويب في «تقدمي» يعرض:
+  - نسبة الالتزام.
+  - أفضل يوم، والمغذي الذي نقص أكثر.
+  - متوسط الماء.
+  - السعرات مقابل الهدف مع نطاق ±10%.
+  - توزيع الطاقة.
+  - تقويم الشهر.
+- **السبب:** المتابعة الذاتية والتغذية الراجعة من أقوى عوامل النجاح في إنقاص الوزن.
+- **الأثر على الخادم:** واجهة تقرير تُحسب من ⁨adherence_range⁩ و ⁨consumption_logs⁩ الموجودة. لا ⁨schema⁩ جديد.
+- **المصادر:**
+  - المرجع: ⁨Burke, L. E., Wang, J., Sevick, M. A. Self-monitoring in weight loss: a systematic review of the literature. *Journal of the American Dietetic Association*, 111(1), 92–102, 2011.⁩
+  - المرجع: ⁨Michie, S., et al. The behavior change technique taxonomy (v1) of 93 hierarchically clustered techniques. *Annals of Behavioral Medicine*, 46(1), 81–95, 2013.⁩
+
+## 12. الإنجازات والأيام المتتالية
+- **التغيير:** 9 شارات (أول وجبة، 3 أيام متتالية، بطل الماء، أسبوع كامل، وغيرها)، وعداد أيام متتالية في الرأس، واحتفال عند تسجيل الوجبة أو إكمال اليوم.
+- **السبب:** عناصر اللعب (⁨gamification⁩) والمكافآت تدعم الاستمرار في السلوك الصحي.
+- **الأثر على الخادم:** تُحسب الشارات عند الطلب من البيانات الموجودة. لا جدول جديد في هذه المرحلة.
+- **المصادر:**
+  - المرجع: ⁨Deterding, S., Dixon, D., Khaled, R., Nacke, L. From game design elements to gamefulness: defining "gamification". *Proceedings of the 15th International Academic MindTrek Conference*, 9–15, 2011.⁩
+  - المرجع: ⁨Michie, S., et al. 2013 (أعلاه)، تقنيات المكافأة والتغذية الراجعة.⁩
+
+## 13. شاشة نتيجة الإعداد «كيف حسبناها؟»
+- **التغيير:** بعد الإعداد تظهر السعرات والمغذيات مع شرح خطوة بخطوة للحساب.
+- **السبب:** الشفافية في الحساب تزيد الثقة، وتربط الواجهة بالجزء النظري مباشرة.
+- **الأثر على الخادم:** لا شيء جديد. الأرقام من ⁨targets_v1⁩.
+- **المصادر:** (موجودة في المشروع)
+  - المرجع: ⁨Mifflin, M. D., St Jeor, S. T., et al. A new predictive equation for resting energy expenditure in healthy individuals. *American Journal of Clinical Nutrition*, 51(2), 241–247, 1990.⁩
+  - المرجع: ⁨Institute of Medicine. *Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids*. National Academies Press, 2005.⁩ (الألياف 14 غ لكل 1000 سعرة).
+
+## 14. التصميم البصري والحركة واللغتان
+- **التغيير:**
+  - بطاقات ملونة لكل نوع من البيانات.
+  - رسومات ⁨Fluent Emoji⁩ من ⁨Microsoft⁩ برخصة ⁨MIT⁩.
+  - انتقالات بين الشاشات، وأرقام وحلقات متحركة.
+  - ثلاثة أوضاع: فاتح وليلي وتلقائي.
+  - العربية من اليمين لليسار، والرسوم الزمنية معكوسة فيها.
+  - احترام إعداد «تقليل الحركة» في الجهاز.
+- **السبب:** الحركة تشرح التغيير وتجعل الواجهة حية، بشرط ألا تزعج من يفضل حركة أقل.
+- **المصادر:**
+  - المرجع: ⁨W3C. *Web Content Accessibility Guidelines (WCAG) 2.2*, Success Criterion 2.3.3 Animation from Interactions, 2023.⁩
+  - المرجع: ⁨W3C Internationalization. *Structural markup and right-to-left text in HTML*.⁩
+  - المرجع: ⁨Google. *Material Design 3*: Motion, and Dark theme guidelines.⁩
+  - المرجع: ⁨Microsoft. *Fluent Emoji* (GitHub: microsoft/fluentui-emoji), MIT License.⁩
+
+## قرارات مقترحة للمشروع (تُسجل في ⁨STEP_I_plan⁩ ثم ⁨PROJECT_CONTEXT⁩)
+| القرار | الوصف | يحتاج ⁨schema⁩؟ |
+|---|---|---|
+| #141 | طابع صحي ولغة الواجهة (النقطة 1) | لا |
+| #142 | إعداد متكيف (النقطة 2) | لا |
+| #143 | الوضع العام بدل «غير مؤهل» (النقطة 3) | لا |
+| #144 | تفضيل البروتين وإصدار صيغة جديد (النقطة 4) | نعم |
+| #145 | مواعيد الاستيقاظ والنوم ونوافذ الوجبات (النقطة 5) | نعم |
+| #146 | جلسات الماء (النقطة 6) | لا |
+| #147 | الحصة بالغرام (النقطة 7) | لا |
+| #148 | إحصاءات المحسّن في استجابة الخطة (النقطة 8) | لا |
+| #149 | المفضلة والمرفوضة في المحرك (النقطة 9) | نعم |
+| #150 | قائمة المشتريات (النقطة 10) | لا |
+| #151 | التقرير الأسبوعي (النقطة 11) | لا |
+| #152 | الشارات المحسوبة (النقطة 12) | لا |
+
+**ترتيب التنفيذ المقترح:** تغييرات الـ ⁨schema⁩ الثلاثة (#144 و#145 و#149) تُجمع في مرور قاعدة بيانات واحد قبل عقد ⁨I.1⁩، بـ ⁨migration⁩ واحد ومعه اختباراته، ثم يُكتب العقد شاملًا كل الحقول الجديدة.

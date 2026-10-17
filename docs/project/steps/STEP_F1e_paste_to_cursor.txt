@@ -1,0 +1,62 @@
+You are implementing **Step F.1, pass F.1-e (end-to-end scenario and results report)**, the last pass of Step F.1. Passes F.1-a, F.1-b, F.1-r, F.1-c and F.1-d are committed: the slice loader, calc_v1, derived data, `screening.py`, `targets.py`, `condition_limits.py`, `meal_filter.py`, `planner.py`, `consumption.py`, `plan_swap.py`, `adherence.py` and `weight.py`. Read `docs/PROJECT_CONTEXT_v4_14.md` first; it is the single source of truth. Sections you need: §28.1, §28.2, §28.5, §28.6, §30.1–§30.6, §11.7–§11.11.
+
+## Scope of this pass
+
+Tests, one report script and its generated report. **No new service behaviour, no schema change**: no model edits, no new migration; `tests/test_migration_files.py` stays green. If the scenario exposes a bug in a service, fix it minimally, add a regression test, and list it in the report. Do not commit anything.
+
+## 1. Scenario module `tests/scenario/f1_scenario.py`
+
+One deterministic function `run_f1_scenario(session, conn, start_date, start_now) -> ScenarioResult` that drives only the public services, never raw SQL writes (except the existing test builders for users and profiles). Fixed clock: every call gets an explicit `now` derived from `start_now` (no `datetime.now()`). Three personas, all with timezone `Africa/Tripoli`:
+
+**P1 healthy, goal LOSE** (male, 30 y, 175 cm, 90 kg, MODERATE activity, target weight 80 kg, weekly rate 0.5 kg, no condition, no preference):
+- Day 0 morning: first weight row 90 kg, `create_user_target(..., INITIAL, now)`.
+- Days 0, 1, 2: `create_day_plan` each morning (one plan per day).
+- Day 0: log every plan item in full at its slot time (breakfast 08:00, lunch 13:00, dinner 19:00, snacks 16:00 / 21:00).
+- Day 1: log breakfast at 0.5 of its multiplier, then `correct_log` it to the full multiplier; swap the lunch item to another eligible lunch meal before logging it (pick the first eligible meal by `ref_external` that `swap_plan_item` accepts), then log it; skip dinner; add an off-plan food log of 30 g of dates (NDB 09087) as a snack.
+- Day 2 morning, before the plan: weight 88.9 kg (≥ 1 kg below 90) so a `WEIGHT_UPDATE` target is created; then create the day-2 plan, which must reference the new `target_id`; log every item.
+
+**P2 HYPERTENSION + DIABETES_T2** (female, 55 y, 160 cm, 70 kg, LIGHT activity, goal MAINTAIN, allergy Peanut, `DISLIKE` on garlic (NDB 11215), `LIKE` on canned chickpeas (NDB 16358)):
+- Same three-day pattern as P1 (day 0 all logged; day 1 partial + correction + swap + off-plan 20 g of garlic; day 2 a weight of 70.4 kg that must **not** trigger a new target, then plan and log everything).
+
+**P3 CKD** (male, 60 y, 170 cm, 80 kg, condition CKD):
+- `screen_user` is not eligible with reason `UNSUPPORTED_CONDITION:CKD`; `create_user_target` raises and writes nothing; `create_day_plan` raises and writes nothing.
+- Logging still works (§30.1 "may allow logging"): log one off-plan meal (`F1-B01`, 1 serving) and record a weight; `daily_adherence` returns `status = None` with reason `NO_TARGET`.
+
+`ScenarioResult` keeps, per persona and day: the plan (items with slot, ref_external, Arabic name, multiplier, reason codes), the target used (kcal, protein, carb, fat, fiber, `target_id`, reason), the resolved limits, the plan day totals, the logs written, and the `daily_adherence` result; plus the weight/target events and the elapsed time of each `build_day_plan` call (`time.perf_counter`, reported only, never asserted).
+
+## 2. Tests `tests/scenario/test_f1_scenario.py` (real PostgreSQL, rolled back)
+
+Run the scenario once per module (module-scoped fixture inside the rolled-back connection is fine if the existing conftest allows it; otherwise per test) and assert invariants, computing expectations from the database, never from hard-coded nutrient values:
+- Every plan has exactly one BREAKFAST, LUNCH, DINNER and 0–2 SNACK items; no repeated meal and no two meals of one `variant_group` in a day; every multiplier is allowed.
+- Every plan item passes Layer 1 for its persona at its multiplier (`evaluate_meal` returns eligible), including the swapped items.
+- For P2, every day's plan totals respect every resolved `max_per_day`, no item exceeds the 60 g carbohydrate per meal, no item carries `added_sugar`, no item contains Peanut; the target snapshot's limits equal a fresh `resolve_condition_limits` for that target's kcal.
+- `target_snapshot` of every plan has the keys of F.1-c and its `target.kcal` equals the referenced `user_targets.target_kcal`.
+- P1 day-2 plan references the new `WEIGHT_UPDATE` target and the previous target is closed; exactly one current target per user at the end. P2 keeps its INITIAL target.
+- Logs: every active log's snapshot has every mandatory nutrient; the corrected breakfast leaves exactly one tombstoned and one active row; the swapped item has `was_swapped = true`.
+- Adherence: day-0 completion 1.000 for P1 and P2; day-1 completion = logged items / plan items; day-1 status is consistent with its energy and limits (recompute the rule in the test from the returned totals); day-2 completion 1.000; the streak at day 2 equals what the three statuses imply.
+- P3 assertions as listed above; no `user_targets`, `meal_plans` or `meal_plan_items` rows for P3.
+- Determinism: running `build_day_plan` again for P1 day 0 with the same inputs gives the identical item list.
+
+## 3. Report script `backend/scripts/f1_scenario_report.py`
+
+`uv run python -m scripts.f1_scenario_report` (or the module path that fits the existing `scripts/` layout) runs `run_f1_scenario` on the **dev** database inside one transaction that is **always rolled back**, and writes `docs/reports/f1_scenario_report.md` (create the folder). The report is generated text, deterministic for a fixed `start_date` 2026-10-07 and `start_now` 2026-10-07T05:00:00Z, and contains, in English, compact Markdown tables:
+1. Data and versions: dataset_version, computation_version, tag rules version, planner version, formula version, meal and food counts, active vs inactive meals.
+2. Per persona: profile summary, screening result, targets (initial and any update with reason and `was_floor_applied`), resolved limits with their sources.
+3. Per persona and day: the plan table (slot, meal ref, Arabic name, multiplier, kcal, protein, carbohydrate, sodium, sugars, fiber, saturated fat, reason codes), day totals vs target and limits, `kcal_within_10pct`, `unmet_minimums`.
+4. Per persona and day: logs (kind, item, amount, status), adherence status, completion, exceeded limits; the streak.
+5. Layer 1 survivors per slot at multiplier 1.0 for P1 and P2 (counts and removing codes), and for P1 the variety across the three days (distinct meals / total items).
+6. Planner timing (min / median / max ms).
+7. Observations: one line each, stated as measured facts only (for example "P1 day sodium total: … mg; no limit applies (#69)", "the three P1 day plans share N of M meals"). No recommendations in the report.
+
+The script must not leave any row behind (verify by counting `users`, `meal_plans` and `consumption_logs` before and after) and must print the output path.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `uv run python -m app.seed.f1_loader` once on the dev database (no changes), then the report script twice: the two generated files must be byte-identical except the timing section (state whether they are).
+
+## Report back
+1. Files created/changed.
+2. The full content of `docs/reports/f1_scenario_report.md`.
+3. Test counts and check outputs; the before/after row counts from the report script.
+4. Any service bug found and fixed (with the regression test name), or "none".
+5. Findings: anything in the schema or the document that made this pass ambiguous or impossible without guessing (one line each, with the section number).
+6. Assumptions.

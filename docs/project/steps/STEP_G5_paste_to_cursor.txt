@@ -1,0 +1,37 @@
+You are implementing **Step G, pass G.5 (coverage + freeze), the last pass of Step G**. Pass G.3b is closed (commit `6a09ea9`, CI green). Step G scope was reduced: G.4 (FNDDS ready foods), the FNDDS cross-check and the weighed sample are postponed to future work and are NOT part of this pass. This pass is code + generated reports only. Read `docs/PROJECT_CONTEXT_v4_16.md` §13, §28.4, §30.5 and the Step G plan decisions #99 (dataset freeze) and #100 (coverage), plus `app/services/meal_filter.py` (`evaluate_meals`), `app/services/screening.py`, `targets.py`, `condition_limits.py`, `scripts/f1_scenario_report.py` (how the personas are built and `_layer1_section`), `app/pipeline/files.py` and `app/pipeline/build.py` first.
+
+## Hard rules
+1. No migration, no model change. `uv run alembic check` stays clean.
+2. No data file changes: nothing under `backend/data/f1_slice/`, `backend/data/catalog/*.yaml`, `backend/data/catalog/meals/`, `backend/data/catalog/sources/` changes.
+3. `docs/reports/f1_scenario_report.md` stays byte-identical except the planner timing lines (restore it if only those differ).
+4. Reports read the database inside one transaction that is always rolled back; nothing is written.
+5. Do not commit anything.
+
+## A. Coverage report (Decision #100)
+New script `scripts/catalog_coverage_report.py` (`uv run python -m scripts.catalog_coverage_report`), dev database, read-only as above. Writes `docs/reports/catalog_coverage_report.md` (deterministic, no timings, no dates other than a fixed reference date).
+- Five synthetic profiles inside the rolled-back transaction, all with the same body data (adult, moderate activity; reuse the P2 persona's body data) and different conditions: `NONE`, `DIABETES_T2`, `HYPERTENSION`, `HEART_DISEASE`, `HYPERTENSION + DIABETES_T2`. Build them through the same screening → targets → limits code path the scenario report uses (no hand-written limits).
+- For each profile and each slot (breakfast, lunch, dinner, snack): run `evaluate_meals(..., multiplier=1.0)` over all active meals and report `profile | slot | eligible | evaluated | removing codes (code count)`.
+- Below the table, one line per profile and main slot (breakfast, lunch, dinner): `PASS` if eligible ≥ 8, else `BELOW TARGET (n)`. Then a short section listing eligible meals per profile and main slot by `ref_external` (so the shortfall can be fixed with targeted recipes later).
+- Section 1 states the dataset versions, tag_rules_version, active meals and foods seen.
+- Test: the script writes the file, the dev/test database row counts are unchanged, and two runs give byte-identical output (skip/fail rules as in `conftest.py`).
+
+## B. Dataset manifest + CI test (Decision #99)
+- New module `app/pipeline/manifest.py` with a CLI: `uv run python -m app.pipeline.manifest --write` writes `backend/data/catalog/DATASET_MANIFEST.yaml`; `--check` exits non-zero and prints every mismatch.
+- Manifest content (sorted keys, deterministic): `dataset_version: catalog_v1`; `rule_versions` read from the code constants (calculation version, `TAG_RULES_VERSION`, planner version); `curated_files`: path (relative to `backend/data/catalog/`) → sha256 for every curated file (`reference_seed.yaml`, `ingredients.yaml`, `manual_foods.yaml` if present, every `meals/*.yaml`, `sources/source_manifest.yaml`, `sources/*.csv`); `raw_files`: copied from `sources/source_manifest.yaml` (name, sha256, download page); `counts`: the accepted / quarantine / excluded counts per record type and the meal tier counts, taken from the same classification the build uses (not parsed from the markdown report); `meal_batches`: per meal file its `dataset_version` and meal count.
+- Generated reports (`reports/*.md`, `records.csv`) are NOT in `curated_files`.
+- Test in `tests/pipeline/` that runs the check against the real committed catalog and fails with the message `catalog files changed: run "uv run python -m app.pipeline.manifest --write" and review the diff` when a curated file's hash differs (same idea as the migration fingerprint test). Plus a unit test on a `tmp_path` copy of the mini fixture: changing one byte of a meal file makes `--check` fail and list that file; `--write` then `--check` passes.
+- Run `--write` once and keep the generated manifest (it will be committed).
+
+## Run
+1. `uv run python -m app.pipeline.build --load` (expect every table unchanged), then the coverage script, then `uv run python -m app.pipeline.manifest --write` and `--check`.
+2. `uv run python -m scripts.f1_scenario_report` and the diff check from rule 3.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `git status --short`.
+
+## Report back
+1. Files created/changed.
+2. `docs/reports/catalog_coverage_report.md` in full.
+3. `backend/data/catalog/DATASET_MANIFEST.yaml` in full.
+4. Load counts, F.1 diff result, test counts and check outputs.
+5. Findings (one line each, with the section number) and assumptions.

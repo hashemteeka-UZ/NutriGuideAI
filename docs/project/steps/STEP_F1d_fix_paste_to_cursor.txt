@@ -1,0 +1,10 @@
+Review of pass F.1-d: the services and the worked day are accepted. One gap before commit: the test counts (3 swap tests, 7 weight tests) look smaller than the cases section 5 of the F.1-d message listed. Do not change any service unless a new test exposes a bug. Do not commit.
+
+1. Map every bullet case of section 5 (Snapshot, log_date, Plan item, Idempotency, Corrections, Swap, Adherence, Weight) to the test function that covers it, as a table: case → test name (or "missing").
+2. Add a test for every missing case. In particular check these are each covered by an assertion:
+   - Swap: (a) eligible lunch swap sets was_swapped, keeps target_snapshot, recomputes reason_codes; (b) allergen of the user → SwapRejectedError with the ALLERGEN code; (c) breakfast-only meal into lunch → NO_OCCASION code; (d) the other member of a variant_group already in the day → rejected; (e) already-logged item → PlanItemAlreadyLoggedError; (f) HYPERTENSION + DIABETES_T2 swap that would push day sodium above 2000 mg → rejected.
+   - Weight: CREATED; UPDATED with newer updated_at; STALE_IGNORED with older and with equal updated_at; updated_at beyond now + 5 min raises; ≥ 1 kg on the latest day creates WEIGHT_UPDATE and leaves one current row; 0.9 kg creates none; back-dated entry 3 kg lower creates none; user without a current target gets none; goal_reached within ±1 kg; INELIGIBLE path keeps the weight row and the old target.
+   - Adherence: target changed at 15:00 local time applies to the whole day; a newer plan for the same day replaces the old one in completion; streak 3 then 0.
+3. Run `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, and `CI=true uv run pytest -q` (0 skipped).
+
+Report: the mapping table, the tests you added, any bug found (with the fix), and the new test count.

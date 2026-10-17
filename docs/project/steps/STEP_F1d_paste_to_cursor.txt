@@ -1,0 +1,75 @@
+You are implementing **Step F.1, pass F.1-d (consumption logging, daily adherence, weight log and target recompute)**. Passes F.1-a, F.1-b, F.1-r and F.1-c are committed: the slice (35 meals) loads with `app/seed/f1_loader.py`, and `app/services/` has calc_v1 (`meal_nutrition.py`), derived data, `screening.py`, `targets.py` (`create_user_target`), `condition_limits.py`, `meal_filter.py` and `planner.py` (`create_day_plan`). Read `docs/PROJECT_CONTEXT_v4_14.md` first; it is the single source of truth. Sections you need: §9.7, §9.8, §10.3, §11.7, §11.8, §11.9, §11.10, §11.11, §15.10, §28.1, §28.2, §30.1, §30.5, §30.6, §33.4. If this message and the document disagree, the document wins, **except for the rules marked "F.1-d decision"** below, which the assistant took for Step F.1 and will record in the next document version.
+
+## Scope of this pass
+
+Services and tests only. No API, no auth, no sync endpoint, no water logs. **No schema change**: no model edits, no new migration; `tests/test_migration_files.py` stays green. Do not commit anything. Same conventions as before: business logic in `app/services/`, every DB service takes a SQLAlchemy `Session` and an explicit `now: datetime` (timezone-aware, never `datetime.now()` inside a service), pure functions where no DB is needed, constants in one module-level block with the section number in a comment, exact `Decimal` arithmetic, rounding only with the existing helpers.
+
+## 1. `app/services/consumption.py` — logging (§11.9, §33.4)
+
+Shared rules:
+- `log_date` = the local date of `consumed_at` in `user_profiles.timezone` (zoneinfo). An unknown timezone raises `InvalidTimezoneError`.
+- `created_at = now` (server receive time). `client_uuid` is required by these services (F.1-d decision: every log behaves like a synced device log).
+- **Idempotency by `client_uuid`** (F.1-d decision): if a row with that `client_uuid` already exists and its user, target (`meal_id`/`food_id`/`plan_item_id`), amount, `consumed_at` and `slot` are identical, return it with status `DUPLICATE` and write nothing; if any of these differ, raise `ClientUuidConflictError`. Otherwise status `CREATED`. Return a small result dataclass `(log, status)`.
+- **`nutrients_snapshot`** (§11.9): JSON object `{"computation_version": "calc_v1", "nutrients": {<nutrient code>: "<exact Decimal string>", ...}}` with one key for **every** mandatory nutrient (`nutrients.is_mandatory`, §9.7), nothing else.
+  - Meal: `amount_per_serving × servings_consumed` from the current `meal_nutrients`. If the meal is not nutritionally complete (`is_meal_nutritionally_complete`), raise `IncompleteNutritionError` (F.1-d decision: missing ≠ zero, §9.8, so a log never stores a guessed zero).
+  - Food: `food_nutrients.amount × grams_consumed / 100`. A food missing any mandatory nutrient raises `IncompleteNutritionError` (same reason; every slice food passes G1, so this is only reachable in tests).
+  - The snapshot is computed once at log time and never rewritten (a later recompute of the meal must not change it).
+
+Services:
+- `log_plan_item(session, user_id, plan_item_id, servings_consumed, consumed_at, client_uuid, now)`: the plan item must belong to a plan of this user (else `PlanItemNotFoundError`); `meal_id` = the plan item's `meal_id`, `slot` = the plan item's slot; `servings_consumed > 0` (partial or more than the planned multiplier are both allowed, e.g. 0.75 of a 1.5 item). A plan item that already has an **active** log raises `PlanItemAlreadyLoggedError` (F.1-d decision: one active log per plan item; a correction goes through `correct_log`).
+- `log_meal(session, user_id, meal_id, servings_consumed, consumed_at, slot, client_uuid, now)`: off-plan catalog meal; `plan_item_id = NULL`; `slot` optional; inactive meals are allowed (the user ate it; F.1-d decision).
+- `log_food(session, user_id, food_id, grams_consumed, consumed_at, slot, client_uuid, now)`: off-catalog food; `grams_consumed > 0`.
+- `correct_log(session, user_id, log_id, *, servings_consumed=None, grams_consumed=None, consumed_at=None, slot=None, new_client_uuid, now)`: in one transaction, tombstone the old row (`deleted_at = now`, server time, §33.4 #72) and insert a new row that copies the old target (`plan_item_id`, `meal_id` or `food_id`) with the given changes and a fresh snapshot. Changing the target (another meal or food) is not a correction: the caller deletes and logs again (F.1-d decision). The old row's other columns are **never updated** (immutable rows, §11.9).
+- `delete_log(session, user_id, log_id, now)`: tombstone only. Tombstoning a row that is already tombstoned, or a row of another user, raises `LogNotFoundError`.
+- `active_logs(session, user_id, log_date)`: rows with `deleted_at IS NULL`, ordered by `consumed_at`, then `id`.
+
+## 2. `app/services/plan_swap.py` — swapping a plan item (§11.8, §11.9 application rule)
+
+`swap_plan_item(session, user_id, plan_item_id, new_meal_id, now) -> MealPlanItem`:
+- Refuse (`PlanItemAlreadyLoggedError`) if the item has an active log, because that log points at the old meal.
+- Re-resolve the user's condition limits with the plan's frozen `target_snapshot` kcal (`resolve_condition_limits`), load the user's preferences, and require the new meal to pass every Layer 1 rule for the item's slot at the item's multiplier (`evaluate_meal`); otherwise raise `SwapRejectedError(exclusion_codes)`.
+- Within the plan day: no repeated meal and no second meal of the same `variant_group`; the day totals after the swap must stay within every resolved `max_per_day`; limit-tag servings must stay within their numbers. Reuse the planner's helpers; do not copy their logic.
+- Update `meal_id`, set `was_swapped = true`, recompute `reason_codes` with the planner's function, set `updated_at = now`. The plan's `target_snapshot` is not changed.
+
+## 3. `app/services/adherence.py` — daily adherence (§30.5)
+
+`daily_adherence(session, user_id, log_date) -> DayAdherence` (frozen dataclass, read-only):
+- Totals: sum of the active logs' `nutrients_snapshot` values for that `log_date`, per mandatory nutrient (exact Decimals).
+- Target: the `user_targets` row valid on that date (§30.5 #72: the latest row whose `valid_from` is before the end of that local day in the user's timezone). No such row → `status = None`, reason `NO_TARGET`.
+- Limits: `resolve_condition_limits` for the user's current conditions with that target's kcal (F.1-d decision: condition history is not stored, so past days use the current conditions; note it in the docstring).
+- Status: `ACHIEVED` if energy within ±10% of `target_kcal` **and** no resolved `max_per_day` is exceeded; `PARTIAL` if energy within ±25%; otherwise `NOT_ACHIEVED`. A day with no active log is `NOT_ACHIEVED` with zero totals. Boundaries are inclusive (exactly 10% is within). Also return `exceeded_max_per_day` (nutrient code, total, limit) and `unmet_minimums` (information only, not part of the status, §30.4b) and `fiber_target_g` with the day's fiber (information only).
+- Plan completion: the **current** plan covering that day (§11.7 #72: newest `created_at`, ties broken by larger `plan_id`, as F.1-c did); items of that day (`day_index = log_date − date_from`); consumed = items with at least one active log; `completion = consumed / total` as a Decimal rounded to 3 places; `None` if no plan covers the day. Water does not affect anything here.
+- `adherence_range(session, user_id, date_from, date_to)` returns the list per day and the current streak of consecutive `ACHIEVED` days ending at `date_to` (§30.5: streaks are derived, never stored).
+
+## 4. `app/services/weight.py` — weight log and recompute trigger (§11.10, §30.6)
+
+Constants (F.1-d decisions): `CLOCK_SKEW_TOLERANCE = timedelta(minutes=5)`; `WEIGHT_RECOMPUTE_DELTA_KG = Decimal("1")` (§30.6); `GOAL_REACHED_DELTA_KG = Decimal("1")` (§30.3).
+
+`record_weight(session, user_id, measured_on, weight_kg, updated_at, now) -> WeightResult`:
+- `updated_at` (device time) must not be later than `now + CLOCK_SKEW_TOLERANCE` (else `ClockSkewError`); `weight_kg` range is enforced by the CHECK, but validate first and raise `ValueError` with a clear message.
+- Upsert on `(user_id, measured_on)` (§11.10): no row → insert (`source = 'MANUAL'`, `created_at = now`); existing row with older `updated_at` → update `weight_kg` and `updated_at`; existing row with equal or newer `updated_at` → keep it and report `STALE_IGNORED` (last-write-wins, §33.4). Statuses: `CREATED`, `UPDATED`, `STALE_IGNORED`.
+- Recompute trigger (§30.6): only if the written row is now the user's **latest** `measured_on`, the user has a current target, and `|weight_kg − based_on_weight_kg| ≥ 1 kg`: call `create_user_target(session, user_id, "WEIGHT_UPDATE", now)`. A back-dated weight that is not the latest never triggers. If the user has no current target, nothing is created (onboarding owns `INITIAL`; F.1-d decision). If screening now fails (for example the user turned pregnant), `create_user_target` raises; catch it, keep the weight row, and report `target_status = "INELIGIBLE"` (the old target stays; F.1-d decision, note it as a finding for §30.1).
+- Result also carries `new_target_id` (or None) and `goal_reached: bool` (latest weight within ±1 kg of `user_profiles.target_weight_kg`, when that is set; information only, nothing is written, §30.3).
+
+## 5. Tests (`tests/services/`, real PostgreSQL, rolled back)
+
+Use the existing builders and personas (`case_1_user`, `case_2_user`, `create_day_plan`). Compute expected nutrient values from the database inside the test, not hard-coded.
+- Snapshot: logging 0.5 serving of `F1-B01` stores exactly half of each `amount_per_serving`, every mandatory code present, values as strings, `computation_version` calc_v1; logging 150 g of a slice food stores `amount × 1.5`. After deleting one `meal_nutrients` row of the meal and recomputing, the earlier snapshot is unchanged and a new log of that meal raises `IncompleteNutritionError`.
+- `log_date`: a user in `Africa/Tripoli` (UTC+2) logging at 2026-10-07 23:30 UTC gets `log_date = 2026-10-08`; the same instant for a `UTC` user gets 2026-10-07. Unknown timezone raises.
+- Plan item: logging a plan item sets `meal_id` and `slot` from it; a second log of the same item raises; after `delete_log` it can be logged again; a plan item of another user raises.
+- Idempotency: the same call twice returns `DUPLICATE` and one row; same `client_uuid` with another amount raises `ClientUuidConflictError`.
+- Corrections: `correct_log` leaves the old row identical except `deleted_at = now`, inserts one new row with the new values and a new snapshot; `delete_log` twice raises; the exactly-one-target and amount CHECKs still reject a meal log with grams (integrity test already exists; add one service-level negative case).
+- Swap: swapping a lunch item to another eligible lunch meal sets `was_swapped`, keeps the snapshot, recomputes reason codes; swapping to a meal with an allergen of the user, to a breakfast-only meal, to the other member of the same `variant_group` already in the day, or for an already-logged item each raises with the right error/codes; for the HYPERTENSION + DIABETES_T2 persona, a swap that would push day sodium above 2000 mg is rejected.
+- Adherence: build the case_2 persona's plan for a day, log all its items exactly → `ACHIEVED`, completion 1.000; log only breakfast → completion 0.250 (or 1/n for the plan's item count) and the right status from energy; add an off-plan food that pushes sodium above 2000 mg while energy stays within 10% → not `ACHIEVED` (`PARTIAL` or `NOT_ACHIEVED` by energy) with sodium in `exceeded_max_per_day`; tombstoned logs are ignored; a day with no logs → `NOT_ACHIEVED`; boundary: energy exactly 110% of target → `ACHIEVED` when no limit is exceeded (use a synthetic pure-function test for exact boundaries 90/110/75/125%). Target valid on the date: with a target changed at 15:00 local time, the earlier part of that day uses the new target. A newer plan for the same day replaces the old one in completion. Streak: three `ACHIEVED` days then one `PARTIAL` → streak 0 at the last day, 3 at the day before.
+- Weight: first entry `CREATED`; same day with newer `updated_at` → `UPDATED`; with older or equal `updated_at` → `STALE_IGNORED`, value unchanged; `updated_at` beyond now + 5 min raises; a change ≥ 1 kg on the latest day creates a `WEIGHT_UPDATE` target and closes the previous one (one current row); a 0.9 kg change creates none; a back-dated entry 3 kg lower creates none; a user without a current target gets no target; `goal_reached` true within ±1 kg of `target_weight_kg`.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `uv run pytest -q` with `CI=true` (0 skipped), then on the dev database `uv run python -m app.seed.f1_loader` once (it must report no changes).
+
+## Report back
+1. Files created/changed.
+2. One worked day for the HYPERTENSION + DIABETES_T2 persona (run inside a rolled-back transaction on the dev database): the plan, the logs you wrote (one partial plan item, one swap, one off-plan food, one correction), the stored snapshot of one log, and the `daily_adherence` result (totals vs target and limits, status, completion, unmet minimums).
+3. One weight sequence for the same persona (three entries, one of them stale, one triggering a new target): statuses, the old and new target rows (kcal, protein, based_on_weight_kg, reason).
+4. Test counts and check outputs.
+5. Findings: anything in the schema or the document that made this pass ambiguous or impossible without guessing (one line each, with the section number).
+6. Assumptions.

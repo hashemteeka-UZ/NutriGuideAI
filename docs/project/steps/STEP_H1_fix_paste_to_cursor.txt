@@ -1,0 +1,36 @@
+Step H, pass H.1 continuation: report-only fix to `scripts/planner_comparison_report.py` (and its tests). Your H.1 work is accepted otherwise; keep every other file exactly as it is now. Do not change `optimizer.py`, `planner.py`, `plan_swap.py`, the optimizer constants or the solver parameters. Do not commit anything.
+
+## Why
+Decision #88 says "kcal within ±10% on every **feasible** day". For cpsat, `kcal_relaxed=True` happens only when phase 1 (all hard limits + the ±10% kcal band) returned INFEASIBLE, which is a solver proof that no plan within the band exists under those hard limits and that day's previous-day exclusions. Such a day is not a feasible day in the #88 sense. Greedy gives no such proof, so greedy days keep the plain PASS/FAIL. This is Decision #121.
+
+## A. C2 classification (#121)
+- In `evaluate_criteria` add a third C2 outcome `N/A (proven infeasible)` used only when the plan's `target_snapshot["solver"]["kcal_relaxed"]` is true AND the day kcal is outside the band. A cpsat day with `kcal_relaxed` true but kcal inside the band is still PASS. Greedy days never get N/A.
+- Criteria tables show `N/A*` in the C2 cell for those days, with a footnote: "* phase 1 (hard limits + ±10% kcal band) proven INFEASIBLE by CP-SAT; not a feasible day under #88 (Decision #121)".
+- Summary line per planner becomes: "criteria 1-4 passed on n/N persona-days (k days C2 N/A, proven infeasible)".
+- Section 4 verdict: keep the existing line but compute it with #121 (N/A counts as not failing), and add a second, strict line right under it, computed, for transparency: `strict reading (N/A counted as FAIL): YES/NO`.
+
+## B. Diagnostic for proven-infeasible days
+For every cpsat persona-day with C2 = N/A, add a subsection "Why no plan reaches the band" (pure calls, no database writes, inside the same rolled-back transaction, using the same meals/preferences/target/excluded ids the stored plan used):
+1. Re-run `optimize_day` with the condition limits only (`resolve_condition_limits`, WITHOUT `apply_general_limits`). Report: solver status, `kcal_relaxed`, day kcal, sodium mg, saturated fat g.
+2. State which #87 general cap the stored plan is at (day total / limit and percent for sodium and saturated fat).
+3. One computed sentence: if run 1 is inside the band with `kcal_relaxed=False`, "the #87 general cap is the binding constraint on this slice"; otherwise "the condition limits and the slice size alone already prevent the band".
+Put the timing of these diagnostic solves in the timing section only, labelled separately; they are not part of the planner timing medians.
+
+## C. Small report additions
+- Make sure each criteria section has the informational "general limits #87" rows for BOTH planners (day sodium vs 2000 mg and saturated fat vs 10% energy, PASS/FAIL, not part of C1 for greedy). If they already exist, leave them.
+- In the timing section, list every planner call per persona and day (ms) with the planner, `solver status` and `kcal_relaxed`, under the existing median/max lines.
+
+## D. Tests
+- `evaluate_criteria`: a cpsat day with `kcal_relaxed=True` and kcal outside the band gives C2 N/A; the same day for greedy gives FAIL; a cpsat day with `kcal_relaxed=True` inside the band gives PASS.
+- Verdict: a hand-built result set with one N/A day gives YES for the #121 line and NO for the strict line.
+- The existing two-runs-identical test still holds (strip the timing section as before).
+
+## Run and check
+`uv run python -m scripts.planner_comparison_report` (keep the regenerated `docs/reports/planner_comparison_report.md`), then `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `uv run python -m app.pipeline.manifest --check`, `git status --short`. The scenario and coverage reports must still be byte-identical apart from timing lines (restore them if only those differ).
+
+## Report back
+1. The new F.1 and catalog summary lines and both verdict lines per section, verbatim.
+2. The full "Why no plan reaches the band" subsections, verbatim.
+3. The per-call timing list.
+4. Test counts and every check output, `git status --short`.
+5. Findings (one line each) and assumptions. Do not commit anything.

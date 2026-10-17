@@ -1,0 +1,35 @@
+You are implementing **Step G, pass G.3a (code before the recipe batches)**. Pass G.2 is closed (commit `aad2ca7`, CI green). This pass is **code only**, two independent parts: (A) the `tags_v2` drink thresholds (Decision #97) and (B) an isolated database for the F.1 benchmark report (finding G-04). No schema change, no catalog data. Read `docs/PROJECT_CONTEXT_v4_16.md` CHANGELOG #97, §10.5, §28.4b, §28.6, and the code in `app/services/tag_rules.py`, `app/services/meal_derived.py`, `app/services/planner.py` (§28.6 reason codes), `scripts/f1_scenario_report.py`, `tests/conftest.py` (`integrity_engine`) first.
+
+## Hard rules
+1. No migration, no model change. `uv run alembic check` stays clean.
+2. Missing ≠ zero (§9.8) stays in force: an absent per-100 g value never produces a tag or a reason code.
+3. Nothing under `backend/data/f1_slice/` changes. F.1 tests keep their expectations except where this file names a change.
+4. Do not commit anything.
+
+## A. `tags_v2` drink thresholds (Decision #97)
+- `app/services/tag_rules.py`: `TAG_RULES_VERSION = "tags_v2"`. Keep `THRESHOLD_TAGS` (food thresholds, unchanged) and add `BEVERAGE_TAG = "beverage"` and `BEVERAGE_THRESHOLD_TAGS = {"high_sodium": ("sodium", 300), "high_sugar": ("sugars", 11.25)}` (UK FSA drinks "high", per 100 ml; 100 ml ≈ 100 g assumed for water/milk-based drinks, state this in the module docstring with the source).
+- One pure helper decides the thresholds for a meal: a meal that carries the `beverage` tag (manual occasion tag) uses `BEVERAGE_THRESHOLD_TAGS`, every other meal `THRESHOLD_TAGS`. `meal_derived.recompute_meal_derived` uses it; the rule-check at start-up validates the tags and nutrients of both tables.
+- `app/services/planner.py` §28.6 reason codes: for beverage meals `LOW_SUGAR` ≤ 2.5 g and `LOW_SATURATED_FAT` ≤ 0.75 g per 100 g (FSA drinks "low"); `LOW_SODIUM` stays 120 mg; other meals unchanged. Constants next to the existing ones, with the source in a comment.
+- Tests: food vs beverage meal at values just below/above each threshold (both tables, both reason codes); a beverage meal with sugars missing gets no `high_sugar` and no `LOW_SUGAR`; derived rows record `rule_version = "tags_v2"`; recompute after the version change updates old `tags_v1` DERIVED rows (counted as updated, no duplicates). Update the tests that read `TAG_RULES_VERSION` only through the constant (no literal changes needed elsewhere; leave `tests/integrity/check_cases.py` literals as they are unless a test fails, and say so).
+
+## B. Isolated benchmark database for `scripts/f1_scenario_report.py`
+The report currently reads the dev database, so the catalog load changed section 1 (foods 63 → 177) and catalog meals would enter the planner. The #88 benchmark must be measured on the F.1 slice alone.
+- `main()`: create a sibling database of the dev database named `{dev_db_name}_f1_bench` (drop it first if it exists, `WITH (FORCE)`; validate the name like `_require_db_name` in `tests/conftest.py`), run `alembic upgrade head` on it, load the F.1 slice with `app.seed.f1_loader` (the same function the loader CLI uses), run the scenario exactly as today (one transaction, rolled back), write the report, then drop the database in a `finally`. The dev database is never written. Reuse code instead of copying where possible; if a shared helper is extracted from `tests/conftest.py`, the tests must still pass unchanged.
+- Add `--keep-db` (keeps the bench database for inspection) and print the bench database name.
+- Test: a test that runs the bench setup function against the test server (skip/fail rules as in `conftest.py`) and checks that the bench database has exactly the slice counts (35 meals, 62 foods) and that the dev/test database it started from is unchanged.
+
+## Run and compare
+1. `cd backend && uv run python -m scripts.f1_scenario_report`, then `git diff docs/reports/f1_scenario_report.md`.
+2. Expected differences, and only these: the planner timing lines (§6), `tag_rules_version` tags_v1 → tags_v2, and any change caused by `tags_v2` on beverage meals (the slice has one: `F1-S05` glass of milk with dates; its sugars per 100 g are close to 11.25). For every other line, stop and report.
+3. Do **not** restore the file this time. Keep the regenerated report, list each changed line with its cause, and the assistant decides whether it becomes the new #88 baseline.
+4. Also run `uv run python -m app.pipeline.build --load` on the dev database (recompute with `tags_v2`): report the counts (expected: only `meal_tags`/derived updates if any; the catalog has no meals yet, so most likely nothing changes).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `git status --short`. Also `chmod 644 backend/data/catalog/ingredients.yaml` (committed as 100755 from a Windows copy).
+
+## Report back
+1. Files created/changed.
+2. The full `git diff docs/reports/f1_scenario_report.md`, each changed line with its cause.
+3. F1-S05: sugars, sodium and saturated fat per 100 g, and its tags and reason codes under tags_v1 vs tags_v2.
+4. Build/load counts, test counts and check outputs.
+5. Findings (one line each, with the section number) and assumptions.

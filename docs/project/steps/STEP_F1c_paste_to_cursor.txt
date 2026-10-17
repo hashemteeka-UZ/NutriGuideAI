@@ -1,0 +1,85 @@
+You are implementing **Step F.1, pass F.1-c (hard filtering, condition-limit resolution, one-day plan)**. Passes F.1-a, F.1-b and F.1-r are committed: the slice (35 meals, f1_slice_v1) loads with `app/seed/f1_loader.py`, and `app/services/` has calc_v1, derived tags (rule R1), screening and targets_v1. The loader already recomputes meal nutrients and derived data (pass F.1-r). Read `docs/PROJECT_CONTEXT_v4_14.md` first; it is the single source of truth. Sections you need: §9.4b, §9.5b, §9.5c, §11.4, §11.5, §11.7, §11.8, §28.1, §28.2, §28.4 (only the last sentence: greedy is the accepted baseline), §28.6, §30.1. If this message and the document disagree, the document wins, **except for the planner rules in section 3 below**, which are decisions the assistant took for Step F.1 and will record in the next document version.
+
+## Scope of this pass
+
+Services and tests only. No API, no auth, no consumption logging or adherence (pass F.1-d). **No schema change**: no model edits, no new migration; `tests/test_migration_files.py` stays green. Do not commit anything. Same conventions as F.1-b: business logic in `app/services/`, every DB service takes a SQLAlchemy `Session`, pure functions where no DB is needed, all constants in one module-level block with the section number in a comment.
+
+## 1. `app/services/condition_limits.py` — resolution (§28.2)
+
+`resolve_condition_limits(session, user_id, target_kcal) -> ResolvedLimits` (frozen dataclass):
+- Collect `condition_nutrient_limits` rows for all of the user's conditions (`user_health_conditions`). A user with no condition gets an empty result (no limits, §30.1 known limitation #69).
+- Per nutrient, per kind:
+  - **max_per_day**: convert `PERCENT_ENERGY` to grams with the user's `target_kcal` (fat and saturated fat 9 kcal/g; carbohydrate, sugars, protein 4 kcal/g), then take the **minimum** of all maxima (strictest wins).
+  - **min_per_day**: the **maximum** of all minima (same conversion).
+  - **max_per_meal**: keep `ABSOLUTE` maxima as amounts (minimum wins); keep `PERCENT_ENERGY` per-meal maxima as a percentage of **that meal's own energy** (§9.5b), minimum percentage wins. Do not convert per-meal percentages with the daily target.
+- Keep, for every resolved value, the list of `(condition_code, source_reference)` it came from (needed for the snapshot and the report).
+- **Conflict**: if for any nutrient effective min_per_day > effective max_per_day, raise `ConditionConflictError` naming the nutrient, both values and the conditions involved. Never relax a limit.
+- Tag restrictions (`condition_tag_restrictions`): `avoid_tags` = union of `AVOID` tag codes; `limit_tags` = for each `LIMIT` tag, the smallest non-null `max_servings_per_week` (a `LIMIT` row with NULL contributes no number; if all rows for that tag are NULL, record the tag with `None`).
+- Provide `to_snapshot() -> dict` (JSON-serialisable: numbers as strings of the exact Decimal, never floats).
+
+## 2. `app/services/meal_filter.py` — Layer 1 (§28.1, §9.4b)
+
+`SLOT_OCCASION = {"BREAKFAST": "breakfast_suitable", "LUNCH": "lunch_suitable", "DINNER": "dinner_suitable", "SNACK": "snack_suitable"}` (decision: `beverage` and `nuts_seeds_snack` alone do not make a meal a snack candidate; every slice snack also carries `snack_suitable`).
+
+`evaluate_meals(session, user_id, slot, limits: ResolvedLimits, servings_multiplier=Decimal("1.0")) -> list[MealEvaluation]` returns **every** meal (active or not) with `eligible: bool` and `exclusion_codes: list[str]`. A meal is excluded if any rule is true; collect **all** failing rules, not only the first:
+1. `INACTIVE` (`is_active = false`) or `INCOMPLETE_NUTRIENTS` (`is_meal_nutritionally_complete` is false).
+2. `ALLERGEN:<allergen name_en>` for each `meal_allergens` row matching `user_allergen_prefs` (any severity).
+3. `EXCLUDED_INGREDIENT:<ingredient_id>` for each `meal_ingredients.ingredient_id` with stance `EXCLUDE` in `user_ingredient_prefs`. `DISLIKE` and `LIKE` never exclude.
+4. `AVOID_TAG:<tag code>` for each meal tag (MANUAL or DERIVED) in `limits.avoid_tags`.
+5. `MAX_PER_MEAL:<nutrient code>` when the amount for `servings_multiplier` servings (`amount_per_serving × multiplier`) exceeds a resolved absolute `max_per_meal`, or its energy share exceeds a resolved percentage `max_per_meal` (kcal factors as in §1).
+6. `NO_OCCASION:<slot>` when the meal lacks the slot's occasion tag.
+
+`eligible_meal_ids(...)` is a thin helper over the same function. The exclusion codes are for tests and the report; they are not stored.
+
+## 3. `app/services/planner.py` — greedy one-day plan (assistant decisions for F.1)
+
+`PLANNER_VERSION = "greedy_v1"`. Deterministic: same inputs, same plan.
+
+Constants (one block, comment "Step F.1 planner decision, to be recorded in the next doc version"):
+- Slot energy shares of `target_kcal`: `BREAKFAST 0.25`, `LUNCH 0.35`, `DINNER 0.25`; the remaining 0.15 is for snacks.
+- `MULTIPLIERS = (0.5, 1.0, 1.5, 2.0)` (§11.8).
+- `MAX_SNACKS = 2`; snacks are added while day energy < `0.90 × target_kcal`, and never past `1.10 × target_kcal`.
+
+`build_day_plan(session, user_id, limits, target, plan_date) -> DayPlan` (no writes):
+1. Main slots in order BREAKFAST, LUNCH, DINNER. For each slot, consider every pair (eligible meal for that slot at that multiplier, multiplier). Pair rules: re-run rule 5 at that multiplier; a meal already used in this day is not allowed, and neither is a meal whose `variant_group` (§10.1, #76) is already used in this day; adding the pair must not push any running daily total above a resolved `max_per_day`; **lookahead**: running total + pair + the sum, over the main slots still to fill, of the smallest amount any eligible meal for that slot could add (at multiplier 0.5) must also stay within every `max_per_day`; the count of servings (sum of multipliers) of each `limit_tags` tag in the day must not exceed its weekly number (a one-day plan only counts its own day; weekly accounting across plans is out of F.1 scope, note it in the docstring).
+2. Choose the pair minimising `|pair_kcal − slot_target_kcal|`; ties broken by smaller `|pair_protein − slot_share × target_protein_g|`, then `meals.ref_external`, then smaller multiplier.
+3. If a main slot has no valid pair, raise `NoFeasiblePlanError(slot, reasons)` where `reasons` summarises how many candidates each rule removed. Never relax a limit and never drop a main slot.
+4. Snacks: while fewer than `MAX_SNACKS` snacks and day energy < 0.90 × target, add the SNACK pair (same rules, no repeated meal or `variant_group` within the day) minimising `|remaining_gap − pair_kcal|` with day energy staying ≤ 1.10 × target; stop when no pair qualifies.
+5. Result: items (slot, meal_id, multiplier, per-item nutrient amounts), day totals for every nutrient, `kcal_within_10pct: bool`, and `unmet_minimums` (each resolved `min_per_day` the day does not reach, with the gap). Energy precision and minimums are **soft** in greedy_v1: they are reported, not enforced. Every `max` rule and every Layer-1 rule is **hard**.
+
+`reason_codes` per item (§28.6), deterministic, thresholds as constants:
+- `FITS_KCAL_TARGET`: item energy within ±15% of its slot target (snacks: of the snack share split evenly by the number of snacks).
+- `HIGH_PROTEIN`: protein energy (4 kcal/g) ≥ 20% of item energy.
+- `LOW_SODIUM`: sodium ≤ 120 mg per 100 g; `LOW_SUGAR`: sugars ≤ 5 g per 100 g; `LOW_SATURATED_FAT`: saturated fat ≤ 1.5 g per 100 g (UK FSA "low" per 100 g); `HIGH_FIBER`: fiber ≥ 6 g per 100 g (EU "high fibre" claim). Use `meal_nutrients.amount_per_100g`.
+- `SUITS_CONDITION_<CODE>`: one per user condition when the item respects every per-meal limit of that condition and carries none of its AVOID or LIMIT tags.
+- `MATCHES_LIKED_INGREDIENT`: the meal contains an ingredient with stance `LIKE`.
+- `NEW_FOR_VARIETY` is not emitted in F.1 (needs history).
+Codes are stored sorted, as a JSON list of strings.
+
+`create_day_plan(session, user_id, plan_date, now) -> MealPlan` (writes):
+- `screen_user` must be eligible (raise otherwise); a current `user_targets` row must exist (raise otherwise); `resolve_condition_limits` with its `target_kcal` (conflict raises, no plan written).
+- Insert `meal_plans` with `date_from = date_to = plan_date`, `generated_by = "greedy"`, `algorithm_version = "greedy_v1"`, `target_id` = current target, and `target_snapshot` = `{"formula_version", "target": {kcal, protein_g, carb_g, fat_g, fiber_g}, "limits": ResolvedLimits.to_snapshot(), "tag_rules_version": "tags_v1", "planner_version": "greedy_v1", "computation_version": "calc_v1"}` (exact Decimal strings). Insert one `meal_plan_items` row per item (`day_index = 0`, `was_swapped = false`, `reason_codes`).
+- Never delete or update an older plan covering the same day (§11.7 current-plan rule #72). A second call creates a second plan; the newest is current.
+
+## 4. Tests (`tests/services/`, real PostgreSQL, rolled back)
+
+Build users with the existing builders. Compute expectations from the database inside the test, never from hard-coded nutrient values, except where stated.
+- Limit resolution: no condition → empty; HYPERTENSION + HEART_DISEASE → sodium max_per_day 2000 (strictest of 2000 and 2300) with both sources listed; HEART_DISEASE saturated fat 6% at 2000 kcal → 13.333… g/day (compare with 0.001 tolerance); DIABETES_T2 → carbohydrate max_per_meal 60 g ABSOLUTE, sugars 10% → grams, fiber min 25; avoid_tags = {added_sugar} for DIABETES_T2; limit_tags high_sodium 3, high_sugar 3. Conflict: create two test-only conditions with fiber min 30 and fiber max 20 → `ConditionConflictError`, and `create_day_plan` writes nothing.
+- Layer 1, one test per rule with the exact code: allergen Gluten → every meal whose `meal_allergens` contains Gluten is excluded with `ALLERGEN:Gluten` and no other meal gets that code; Peanut → `F1-B08`; an `EXCLUDE` ingredient (pick the ingredient of NDB 11215, garlic) excludes exactly the meals containing it, `DISLIKE` on the same ingredient excludes none; DIABETES_T2 → `AVOID_TAG:added_sugar` exactly on `F1-B07` and `F1-S02`, and `MAX_PER_MEAL:carbohydrate` exactly on the meals whose carbohydrate per serving > 60 g (assert the rule over all 35; the assistant's offline estimate is B03, L01, L01-CH, L02, L02-CH, L03, L03-CH, L04, L08, D05; report any difference); slot rule: `F1-L03` is `NO_OCCASION:BREAKFAST`; an inactive meal gets `INACTIVE`; a meal with a deleted mandatory `meal_nutrients` row gets `INCOMPLETE_NUTRIENTS`; multiple failing rules are all listed.
+- Planner, healthy adult (targets case 1 of F.1-b, no condition, no preference): plan has exactly one BREAKFAST, LUNCH and DINNER, 0–2 SNACK items, no repeated meal and no two meals of one `variant_group`, every item passes Layer 1 at its multiplier, every multiplier is in the allowed set; calling `build_day_plan` twice gives identical results.
+- Planner, HYPERTENSION + DIABETES_T2 female (targets case 2 of F.1-b): plan is built; day sodium ≤ 2000 mg; day sugars ≤ 10% of energy in grams; no item has carbohydrate > 60 g at its multiplier; no item carries `added_sugar`; `high_sodium` and `high_sugar` servings ≤ 3; every item has `SUITS_CONDITION_HYPERTENSION` and `SUITS_CONDITION_DIABETES_T2`. Fiber min 25 may be unmet: assert that `unmet_minimums` reports it correctly either way (do not force it).
+- Infeasible: a user allergic to every allergen in the seed plus `EXCLUDE` on every ingredient of the remaining breakfast meals → `NoFeasiblePlanError("BREAKFAST", …)`, nothing written.
+- `create_day_plan`: writes one `meal_plans` row with the snapshot keys above and the items; `target_id` is the current target; reason codes are sorted lists of known codes; a second call for the same day leaves the first plan and its items untouched and creates a newer plan; an ineligible user (screening) and a user without a current target both raise and write nothing; the partial unique index on `(plan_id, day_index, slot)` holds (no duplicate main slot).
+- Variants: with `EXCLUDE` preferences leaving only `F1-L01` and `F1-L01-CH` for lunch and dinner, the plan never contains both; it raises `NoFeasiblePlanError` instead.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `uv run pytest -q` with `CI=true` (0 skipped), then on the dev database `uv run python -m app.seed.f1_loader` once (it must report no changes).
+
+## Report back
+1. Files created/changed.
+2. The two planner test personas: print each generated day (slot, meal ref and Arabic name, multiplier, kcal, protein, carbohydrate, sodium, sugars, fiber, reason codes) and the day totals vs the target and the resolved limits, plus `kcal_within_10pct` and `unmet_minimums`.
+3. For the HYPERTENSION + DIABETES_T2 persona: how many meals per slot survived Layer 1 and which codes removed the others (a compact count table).
+4. For a HEART_DISEASE user: which lamb/chicken variant pairs differ in eligibility or in the daily saturated-fat check, and why.
+5. Test counts and check outputs.
+6. Findings: anything in the schema or the document that made this pass ambiguous or impossible without guessing (one line each, with the section number).
+7. Assumptions.

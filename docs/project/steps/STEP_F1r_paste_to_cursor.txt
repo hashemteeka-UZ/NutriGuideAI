@@ -1,0 +1,63 @@
+You are implementing **Step F.1, pass F.1-r (recipe revision and the first post-freeze schema change)**. Passes F.1-a and F.1-b are committed. The user has just placed these files in the repository (do not edit their content; if one is wrong, report it):
+
+- `docs/PROJECT_CONTEXT_v4_14.md` (replaces v4_13; it is the single source of truth). Read its CHANGELOG v4.13 → v4.14 first, then §9.1–§9.3, §9.13, §9.5c, §10.1, §10.2, §10.5, §15.8, §19, §20.1.
+- `backend/data/f1_slice/reference_seed.yaml` (f1_seed_v1: `code` for cuisines (was `key`) and allergens).
+- `backend/data/f1_slice/slice_foods.yaml` (62 foods: adds NDB 02030, 02031, 11165; removes 09326; two Arabic ingredient names changed).
+- `backend/data/f1_slice/slice_meals.yaml` (f1_slice_v1, 35 meals: S07 removed, four recipes changed, six chicken variants `-CH`, new keys `variant_group` and per-ingredient `optional`).
+
+## Hard rules
+1. Migrations `0001` and `0002` are never edited (the hash test must stay green for them). Add **one** new revision `0003`, reviewed by hand, and add its SHA-256 to the migration-hash test in the same change.
+2. Missing ≠ zero (§9.8) and every rule of passes F.1-a/F.1-b stay in force.
+3. Everything the loader does stays in one transaction; idempotent; all gate failures reported together.
+4. Do not commit anything.
+
+## 1. Models and migration `0003` (decisions #75–#78)
+Add exactly these, following the naming convention and the enum/NUMERIC rules of §17:
+- `cuisines.code` and `allergens.code`: `VARCHAR NOT NULL`, `UNIQUE`. In the migration: add nullable, backfill existing rows with `upper(replace(name_en, ' ', '_'))`, then set NOT NULL and add the unique constraint.
+- `categories`: `UNIQUE (name_en)`.
+- `meals.variant_group` `VARCHAR NULL` with a plain index; `meals.yield_factor` `NUMERIC(12,3) NULL` with `CHECK (yield_factor IS NULL OR (yield_factor > 0 AND yield_factor <= 3))` and `CHECK (weight_method = 'YIELD_FACTOR' OR yield_factor IS NULL)`; `meals.yield_factor_source` `TEXT NULL`; `meals.reviewed_by` `TEXT NULL`.
+- `meal_ingredients.is_optional` `BOOLEAN NOT NULL` with server default `false`.
+- `meal_tags.rule_version` `VARCHAR NULL` with `CHECK (source = 'DERIVED' OR rule_version IS NULL)`.
+- `downgrade()` removes all of it. `uv run alembic check` must report no drift; the existing round-trip test must pass with `0003`.
+- Integrity suite (§19): the CHECK / UNIQUE / index registries must fail until the new constraints are covered; add a positive and a negative test for each new CHECK and UNIQUE, and a default test for `is_optional`. Update the documented counts.
+
+## 2. Seed file models and gates (`app/seed/`)
+- `f1_files.py`: cuisines and allergens have `code` (upper snake case, unique); meals may have `variant_group` (lower snake case or null); meal ingredients may have `optional: bool = False`; `label_ar` is now loaded (see §3).
+- New gate **G8 optional ingredients** (#75): water (14555), salt (02047) and olive oil (04053) are never optional; a meal must keep at least one non-optional ingredient.
+- New gate **G9 variant groups** (#76): every `variant_group` value has at least 2 meals; meals of one group share `cuisine`, `servings` and `occasion_tags`.
+- Gate G4 now resolves cuisines and allergens by `code`.
+
+## 3. Loader changes (`app/seed/f1_loader.py`)
+- Cuisines and allergens: upsert by `code`. Categories: upsert by `name_en` (now unique). Remove the F-01 finding text for these tables from the report.
+- Meals: write `variant_group`, `yield_factor`, `yield_factor_source`, `reviewed_by`; `is_verified = (reviewed_by is not null)`.
+- Meal ingredients: write `is_optional` and `text_original = label_ar`.
+- Ingredient aliases: the aliases of each loaded ingredient with this seed's `source` are replaced to match the file exactly (an ingredient renamed in the file loses its old seed alias).
+- **Deactivation (#79):** active meals with the file's `source` whose `ref_external` is not in the file are set `is_active = false` (never deleted, §15.8); a meal that reappears in a later file is set active again. Report the count. Foods that are no longer used stay as they are (foods have no active flag).
+- **Recompute (moved here from F.1-c):** at the end of the transaction run `compute_meal_nutrients` then `recompute_meal_derived` for every active meal of the file, and add the recompute row changes to `LoadReport`.
+- `recompute_meal_derived` writes `rule_version = TAG_RULES_VERSION` (`tags_v1`) on every `DERIVED` row and leaves it NULL on `MANUAL` rows.
+
+## 4. FDC subset
+Re-run `backend/scripts/f1_extract_fdc.py` against the same official zip (already in `backend/data/raw/`) to regenerate `fdc_sr_legacy_subset.csv` and `fdc_source_manifest.yaml` for the 62 foods. Report the new row count and confirm that 02030, 02031 and 11165 pass gates G1 and G2.
+
+## 5. Tests
+Update the existing seed and service tests to the new files, and add:
+- Loader on the real files: 35 active meals, 62 foods; all 35 verified (the user reviewed the ten changed or new recipes on 2026-10-06: `F1-L01-CH`, `F1-L02`, `F1-L02-CH`, `F1-L03-CH`, `F1-L05-CH`, `F1-L06-CH`, `F1-L08`, `F1-D01`, `F1-D01-CH`, `F1-D06`); every meal nutritionally complete right after the loader with no separate recompute call; `F1-B01` `total_grams` still 810.05.
+- Optional and wording: in `F1-B02` the lemon juice, tomato and parsley rows have `is_optional = true` and the other rows false; in `F1-D01` the pasta row (NDB 20120) has `text_original = 'حبوب الشربة (لسان العصفور)'`; `F1-L02` has no chickpeas (16358).
+- Variants: group `couscous` contains exactly `F1-L01` and `F1-L01-CH`; six groups in total.
+- Deactivation: load a copy of the data that still contains an extra meal, then the real files: the extra meal is `is_active = false` and still in the table; loading the copy again reactivates it.
+- `rule_version`: every `DERIVED` row has `tags_v1`, every `MANUAL` row NULL.
+- Gates G8 and G9: one failing and one passing in-memory case each.
+- Idempotency: the second load reports every table and the recompute unchanged.
+- The F.1-b expectations on `F1-S06`, `F1-S01`, `F1-B07`, `F1-S02`, `F1-D04`, `F1-S04`, `F1-B08` still hold.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic upgrade head` on the dev database, `uv run alembic check`, `uv run pytest -q` with `CI=true` (0 skipped), then `uv run python -m app.seed.f1_loader` twice on the dev database.
+
+## Report back
+1. Files created/changed.
+2. The `0003` migration body (upgrade and downgrade) as written.
+3. Extraction: new subset row count and the three new foods' gate results.
+4. Loader report from both dev runs (counts per table, deactivated meals (expected: `F1-S07`), verified/unverified, recompute lines).
+5. Derived tags and allergens for the ten changed or new meals (a compact table).
+6. Test counts and check outputs.
+7. Findings (one line each, with the section number) and assumptions.

@@ -1,0 +1,34 @@
+You are implementing **Step G, pass G.3b (the one recipe batch)**. Pass G.3a is closed (commit `bf214ff`, CI green). Step G scope was reduced: this is the only recipe batch, G.4 (FNDDS ready foods) is dropped, G.5 will be a short coverage + freeze pass. This pass is **data first** plus one small report option. No migration, no model change. Read `docs/PROJECT_CONTEXT_v4_16.md` §9.8, §10.1, §10.2, §10.5, §31.4, and `app/pipeline/files.py` (`CatalogMeal`), `app/pipeline/classify.py`, `scripts/f1_scenario_report.py` first.
+
+The user has placed `backend/data/catalog/meals/team_recipes_batch_01.yaml`: 40 meals (`NG-B01`…`NG-S09`, numbering has gaps where the user removed recipes), `dataset_version: team_recipes_v1`, every ingredient code one of the 177 APPROVED ingredients, grams for the whole recipe (all servings), `reviewed_by: Hashem` (the user reviewed the list).
+
+## Hard rules
+1. No migration, no model change. `uv run alembic check` stays clean.
+2. Nothing under `backend/data/f1_slice/` changes, and `docs/reports/f1_scenario_report.md` must stay byte-identical except the planner timing lines (it runs on the isolated bench DB since G.3a, so catalog meals must not reach it). If anything else moves, stop and report.
+3. Missing ≠ zero (§9.8). Never type a nutrient value.
+4. Do not edit the recipe file yourself (names, grams, tags, codes). If a meal fails a gate or looks wrong, report it; the assistant changes the file.
+5. Do not commit anything.
+
+## 1. Build and load (dev database)
+- `uv run python -m app.pipeline.build`, then `uv run python -m app.pipeline.build --load` twice on the dev database: the second run reports every table unchanged.
+- Expected: 40 meals accepted, 0 quarantined, 0 excluded. Any meal quarantined or excluded: list it with its gate/reason.
+
+## 2. Per-meal sanity table (report only, not committed)
+From the loaded dev database, one row per catalog meal, sorted by ref_external:
+`ref | name_ar | servings | grams per serving | kcal per serving | protein g | carbohydrate g | fat g | fiber g | sugars g | sodium mg (per serving) | derived tags | allergens`
+Flag (one line each, below the table): kcal per serving < 80 or > 900; sodium per serving > 800 mg; any meal with `high_sodium` or `high_sugar`; any meal whose derived allergens do not match what its name suggests (e.g. a vegetarian meal with FISH).
+
+## 3. Catalog scenario report (small code addition)
+Add `--catalog` to `scripts/f1_scenario_report.py`: it runs the **same three scenario users (P1, P2, P3)** on the **dev database** (no bench DB, one transaction, always rolled back, nothing written) and writes `docs/reports/catalog_scenario_report.md` instead of the F.1 file. Section 1 states the dataset versions it sees. Reuse the existing code path; the default (no flag) behaviour does not change. Test: `--catalog` writes the other file and leaves the dev database row counts unchanged (skip/fail rules as in `conftest.py`). This report is evidence for the graduation report that the system works on the real catalog; it is not the #88 benchmark.
+Run it and keep the generated file (it will be committed).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `git status --short`. Then `uv run python -m scripts.f1_scenario_report` and `git diff docs/reports/f1_scenario_report.md` (only timing lines; restore the file with `git checkout -- docs/reports/f1_scenario_report.md` if only timings differ).
+
+## Report back
+1. Files created/changed.
+2. `reports/run_report.md` from the real build and the load counts of both dev runs.
+3. The sanity table and its flags (section 2).
+4. `docs/reports/catalog_scenario_report.md` in full: for each scenario user (P1, P2, P3), the chosen meals per slot, kcal vs target, and whether any slot failed.
+5. F.1 report diff result, test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions.

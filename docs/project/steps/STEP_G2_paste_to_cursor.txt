@@ -1,0 +1,49 @@
+You are implementing **Step G, pass G.2 (reference layer: real ingredients)**. Pass G.1 is closed (commit `93a9615`, CI green). This pass is **data first**: the real `ingredients.yaml`, two small reference-seed additions, one small report added to the extractor, then a real extract → build → load on the dev database. No recipes yet (they come in G.3). Read `docs/PROJECT_CONTEXT_v4_16.md` §9.8, §9.10, §13, §31.6, §31.7 and the G.1 code in `app/pipeline/` first.
+
+The user has placed `backend/data/catalog/ingredients.yaml` (196 ingredients). The first 62 are the Step F.1 ingredients with unchanged codes, names and NDB numbers (`review_status: APPROVED`). The other 134 are new candidates (`review_status: PENDING`) whose NDB numbers must be checked against the real SR Legacy files in this pass. Raw files are already in `backend/data/raw/` (SR zip) and `backend/data/raw/fndds/`.
+
+## Hard rules
+1. No migration, no model change. `uv run alembic check` stays clean.
+2. Nothing under `backend/data/f1_slice/`, `app/seed/f1_*.py`, `scripts/f1_*.py` or the F.1 tests changes. The F.1 scenario numbers must not move.
+3. Missing ≠ zero (§9.8). Never type a nutrient value anywhere; values come only from the SR subset and the FNDDS fill (#93).
+4. Never change the first 62 ingredients. Never change any `review_status` (the assistant flips PENDING → APPROVED after reviewing your lookup report).
+5. Do not commit anything.
+
+## 1. Reference seed (`backend/data/catalog/reference_seed.yaml` only)
+- Add cuisines `EGYPTIAN` (`Egyptian`, `مصري`) and `MAGHREBI` (`Maghrebi`, `مغاربي`). The proposed dish list uses them.
+- Add category `'2500': الوجبات الخفيفة` (SR food group "Snacks"; air-popped popcorn is in it).
+- If any other selected SR food has a category code missing from `categories_ar`, do not invent a translation: list it in your findings.
+- `git` shows `reference_seed.yaml` (catalog and `tests/fixtures/catalog_mini/`) with mode `100755`. Set both to `644` (`chmod 644`), no content change for the fixture.
+
+## 2. Ingredient lookup report (small code addition in `app/pipeline/extract.py` or a helper module)
+Without `--profile-only`, before writing the subsets, write `reports/ingredient_lookup.md` (deterministic, sorted by ingredient code). For every `SR_LEGACY` ingredient, one row:
+`code | name_en | NDB | SR description | SR category | missing mandatory nutrients in SR | filled from FNDDS | status`
+where status is `COMPLETE` (every mandatory nutrient present after the #93 FNDDS fill), `INCOMPLETE` (still missing one) or `NOT_FOUND`.
+For every `INCOMPLETE` or `NOT_FOUND` row, list up to 5 candidate SR foods below it: only foods that are COMPLETE after the fill, ranked by how many words of `name_en` (lower-case, punctuation removed, words of ≤ 2 letters and the words `and`, `with`, `fresh`, `raw` dropped, a trailing `s` stripped on both sides) occur in the SR description, ties broken by NDB ascending; show `NDB | description | category`.
+The report is written even when some NDB numbers are not found; after writing it, the extractor still fails on unknown NDB numbers exactly as today (every unknown number listed together).
+Tests (committed fixtures or `tmp_path` only, nothing written into the repo): a complete ingredient has no candidates; an incomplete one and an unknown one each get ranked candidates that are all complete; two runs give byte-identical reports.
+
+## 3. Fix the candidate NDB numbers (data edit, new ingredients only)
+Run `uv run python -m app.pipeline.extract` and read the lookup report. For each of the 134 new ingredients:
+- `NOT_FOUND`, or `INCOMPLETE`, or `COMPLETE` but the SR description is clearly a different food from `name_en` (e.g. a different animal, cut, or a prepared dish): replace `food.code` with a COMPLETE SR food that is the same food in the same `state` (raw stays raw; prefer no added salt and plain/unsweetened forms). Search the SR food table yourself if the 5 candidates are not good enough.
+- If no COMPLETE SR food is the same food, leave the entry unchanged (it will be quarantined with `missing_mandatory_nutrient` and the assistant decides).
+- Do not rename codes, do not add or remove ingredients, do not touch allergens, tags or names. If you think an allergen or a name is wrong, say so in your findings.
+Re-run the extractor until it succeeds, then commit nothing; list every replacement in your report.
+
+## 4. Build and load (dev database)
+- `uv run python -m app.pipeline.build` (no meals yet: `meals/` may be absent; the build must accept zero meals. If it does not, make the smallest fix and add a test).
+- `uv run python -m app.pipeline.build --load` twice on the dev database: the second run reports every table unchanged. F.1 rows stay untouched (shared ingredient codes with the slice are expected to be updated to identical values only, i.e. 0 changes for the 62).
+- Then `uv run python -m scripts.f1_scenario_report` and `git diff docs/reports/f1_scenario_report.md`: only the planner timing lines may differ; if so, restore the committed file (`git checkout -- docs/reports/f1_scenario_report.md`). Any other difference: stop and report it.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `git status --short` (no file written by the tests), and:
+`grep -c "review_status: PENDING" backend/data/catalog/ingredients.yaml` (expected 134) and `grep -c "review_status: APPROVED" backend/data/catalog/ingredients.yaml` (expected 62).
+
+## Report back
+1. Files created/changed.
+2. The full `backend/data/catalog/reports/ingredient_lookup.md` from the final run.
+3. A replacement table: `code | old NDB – SR description | new NDB – SR description | reason` (one row per changed ingredient).
+4. The ingredients still `INCOMPLETE`/`NOT_FOUND` after your fixes, each with one line on why no SR food fits.
+5. `reports/run_report.md` from the real build, and the load counts of both dev runs.
+6. Scenario report diff result, test counts and check outputs.
+7. Findings (one line each, with the section number) and assumptions.

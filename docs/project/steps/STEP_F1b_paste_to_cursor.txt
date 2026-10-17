@@ -1,0 +1,93 @@
+You are implementing **Step F.1, pass F.1-b (calculation services)**. Pass F.1-a is committed: the slice (30 meals, 60 FDC foods, reference seed) loads through `app/seed/f1_loader.py`. Read `docs/PROJECT_CONTEXT_v4_13.md` first; it is the single source of truth. Sections you need: §9.5b, §9.7–§9.8, §9.13, §10.3–§10.5, §11.2, §11.10–§11.11, §15.6, §30.1–§30.4b, §30.6. If this message and the document disagree, the document wins, **except for rule R1 below**, which is a decision the assistant took in Step F.1 (finding F-02) and will record in the next document version.
+
+## Scope of this pass
+
+Pure application logic plus the database writes it owns. No API, no planning, no filtering, no consumption logging (those are passes F.1-c and F.1-d). **No schema change**: no model edits, no new migration; `tests/test_migration_files.py` stays green. Do not commit anything.
+
+Put the code in a new package `app/services/` (business logic, no HTTP). Every service takes a SQLAlchemy `Session` (or plain values for pure functions) so it can run inside the test transaction fixtures in `tests/conftest.py`.
+
+## 1. `app/services/meal_nutrition.py` — calc_v1 (§10.3)
+
+- `COMPUTATION_VERSION = "calc_v1"`.
+- `compute_meal_nutrients(session, meal_id, now) -> MealNutritionResult`: for **every** nutrient in `nutrients` (mandatory and not):
+  - `total(n) = Σ over meal_ingredients (grams / 100) × food_nutrients.amount_per_100g(food_id, n)`.
+  - If **any** ingredient has `food_id IS NULL`, or its food has no `food_nutrients` row for `n`, the total for `n` is **unknown**: write no `meal_nutrients` row for `n` (missing ≠ zero, §9.8). Never treat a missing value as 0.
+  - `amount_per_serving = total / meals.servings`; `amount_per_100g = total / meals.total_grams × 100`.
+  - Replace the meal's `meal_nutrients` rows (delete then insert, or diff), with `computed_at = now`, `computation_version = 'calc_v1'`.
+  - Return which mandatory nutrients are missing; `is_complete` = none missing.
+- `is_meal_nutritionally_complete(session, meal_id) -> bool`: true iff a `meal_nutrients` row exists for every `is_mandatory` nutrient (used by Layer 1 rule 1 in pass F.1-c).
+- Rounding: keep full precision in Python (`Decimal` or float), let `NUMERIC(12,3)` round on insert; tests compare with a 0.001 tolerance.
+
+## 2. `app/services/meal_derived.py` — `recompute_meal_derived(session, meal_id)` (§10.4, §10.5, rule R1)
+
+- `meal_allergens`: fully rebuilt as the union of `ingredient_allergens` of the meal's ingredients.
+- `meal_tags` with `source = 'DERIVED'`: delete and rebuild **only** `DERIVED` rows; never touch `MANUAL` rows except as stated below. The derived set is:
+  1. **Ingredient union (presence properties):** the union of the ingredients' `ingredient_tags` whose tag has `tag_group = 'CONDITION'` (e.g. `added_sugar`). `DIETARY` ingredient tags are **not** unioned (a vegan ingredient does not make a meal vegan).
+  2. **Rule R1, meal-level thresholds (decision for finding F-02):** threshold tags are derived from the meal's own `meal_nutrients.amount_per_100g`, not from ingredients, because a pinch of salt would otherwise tag every savoury meal `high_sodium`. Define them as code constants in `app/services/tag_rules.py`:
+     ```python
+     TAG_RULES_VERSION = "tags_v1"
+     # UK Food Standards Agency front-of-pack "high" thresholds per 100 g.
+     THRESHOLD_TAGS = {"high_sodium": ("sodium", 600), "high_sugar": ("sugars", 22.5)}
+     ```
+     A meal gets the tag when `amount_per_100g > threshold`. If the nutrient is unknown for the meal, the tag is **not** derived and the result reports it.
+  - If a `MANUAL` row exists for a tag that is also derived, it is replaced by the `DERIVED` row (§10.5).
+  - A threshold tag code must never appear in `ingredient_tags`; if it does, raise an error (data error, not a silent skip).
+- Run order for a meal: `compute_meal_nutrients` first, then `recompute_meal_derived`.
+
+## 3. CLI `app/services/recompute_meals.py`
+
+`uv run python -m app.services.recompute_meals [--all | --meal-id N]`: runs both services for active meals in one transaction against `DATABASE_URL` and prints, per meal, completeness and derived tags. Idempotent.
+
+## 4. `app/services/screening.py` (§30.1)
+
+`screen_user(session, user_id, as_of: date) -> ScreeningResult(eligible: bool, reasons: list[str])`. Not eligible when: age < 18 at `as_of` (full years from `birth_date`), `physiological_status` in (`PREGNANT`, `LACTATING`), or the user has any condition with `health_conditions.is_supported = false`. The multi-condition limit conflict check belongs to pass F.1-c, not here. Reasons are stable codes (`UNDER_18`, `PREGNANT_OR_LACTATING`, `UNSUPPORTED_CONDITION:<code>`).
+
+## 5. `app/services/targets.py` — targets_v1 (§30.2–§30.4b, §30.6)
+
+- `FORMULA_VERSION = "targets_v1"`. All constants in one module-level block with the section number in a comment.
+- Pure function `compute_targets(inputs: TargetInputs) -> TargetResult` (no DB). Inputs: sex, age (years), height_cm, weight_kg, activity_level, goal_type, weekly_rate_kg (nullable), target_weight_kg (nullable).
+  1. BMR (Mifflin-St Jeor): men `10W + 6.25H − 5A + 5`, women `10W + 6.25H − 5A − 161`.
+  2. TDEE = BMR × PAL (`SEDENTARY 1.2, LIGHT 1.375, MODERATE 1.55, HIGH 1.725, ATHLETE 1.9`).
+  3. `LOSE`: effective rate = min(weekly_rate_kg, 0.01 × W); deficit = min(rate × 7700 / 7, 1000); target = TDEE − deficit. `GAIN`: effective rate = min(weekly_rate_kg, 0.5); surplus = min(rate × 7700 / 7, 500); target = TDEE + surplus. `MAINTAIN`: target = TDEE. Report `rate_was_capped`.
+  4. Floor: women 1200, men 1500; if applied, `was_floor_applied = True`.
+  5. Round `target_kcal` to the nearest whole kcal **before** the macros.
+  6. Protein (§30.4): g/kg = `LOSE 1.4`, `MAINTAIN 1.0`, `GAIN 1.8`; `ATHLETE` activity → 1.8 whatever the goal. Reference weight: `BMI = W / (H/100)²`; BMI < 30 → W; else `IBW = 25 × (H/100)²` and reference = `IBW + 0.4 × (W − IBW)`. protein_g = g/kg × reference.
+  7. Fat 30% of energy (fat_g = 0.30 × kcal / 9). Carbohydrate = (kcal − 4·protein − 9·fat) / 4.
+  8. Minimum 130 g carbohydrate (§30.4, #67). If below: (a) lower fat **only as much as needed**, but not below 25% of energy; (b) if still below, lower protein only as much as needed, but not below the low end of its range (`LOSE 1.2`, `GAIN`/`ATHLETE 1.6` g/kg × reference; `MAINTAIN` has no range, so no change); (c) if still below, keep the result and log a warning with the user inputs (no exception). Report which steps were applied.
+  9. Fiber (§30.4b) is returned (`round(14 × kcal / 1000)`) but **not stored**.
+  10. Stored precision: `bmr_kcal`, `tdee_kcal` to 1 decimal; `target_kcal` whole; protein/fat/carb grams to 1 decimal.
+- DB service `create_user_target(session, user_id, reason, now) -> UserTarget`: reads the profile and the **latest** `weight_logs` row (by `measured_on`); computes age at `now`'s date in `user_profiles.timezone`; closes the current row (`valid_to = now`) and inserts the new one (`valid_from = now`, `valid_to = NULL`, `based_on_weight_kg`, `formula_version`, `reason`, `was_floor_applied`) in the same transaction, so the partial unique index (one current target per user) always holds. Raises a clear error if there is no weight row or the user fails screening (targets are only for eligible users).
+- Validation (application logic, §11.2): `LOSE` requires target_weight < current weight; `GAIN` requires target_weight > current weight. Raise a clear error otherwise.
+
+## 6. Tests (real PostgreSQL where the DB is involved; pure tests for pure functions)
+
+Put them under `tests/services/`. Load the F.1 slice with the F.1-a loader inside the test transaction where needed.
+
+- calc_v1:
+  - For meal `F1-B03` (oat porridge: NDB 08120 50 g, 01082 200 g, 09087 25 g, 02010 1 g; 1 serving; `total_grams` = 276 × 0.95 = 262.2), compute the expected values **inside the test** from `fdc_sr_legacy_subset.csv` and compare every nutrient (per serving and per 100 g).
+  - Missing ≠ zero: delete one `food_nutrients` row (e.g. sugars of one ingredient) inside the test, recompute, and assert there is no `meal_nutrients` row for sugars and the meal is not complete. Same for an ingredient with `food_id = NULL`.
+  - All 30 slice meals are complete after recompute.
+- Derived data (rule R1), on the real slice after recompute:
+  - `F1-S06` (roasted chickpeas) has `high_sodium`; `F1-S01` (dates and almonds) has `high_sugar`; `F1-B07` (asida) and `F1-S02` (yogurt with honey) have `added_sugar`.
+  - No other meal has `high_sodium` or `high_sugar` unless the test proves its `amount_per_100g` exceeds the threshold (assert the rule over all 30 meals rather than hard-coding the list).
+  - `F1-D04` has allergens Gluten only; `F1-S04` has Sesame; `F1-B08` has Gluten and Peanut.
+  - MANUAL occasion tags are unchanged by recompute; running recompute twice gives identical rows.
+  - A threshold tag placed in `ingredient_tags` raises.
+- Screening: one case per reason, plus an eligible adult.
+- Targets, pure function, exact expected values:
+  1. Male, 30 y, 180 cm, 90 kg, `MODERATE`, `LOSE` 0.5 kg/week: BMR 1880.0, TDEE 2914.0, target 2364, protein 126.0, fat 78.8, carb 287.7, fiber 33, floor not applied.
+  2. Female, 25 y, 155 cm, 50 kg, `SEDENTARY`, `LOSE` 0.5: BMR 1182.8, TDEE 1419.3, raw target 869 → floor 1200 applied; protein 70.0, fat 40.0, carb 140.0.
+  3. Female, 40 y, 160 cm, 95 kg, `SEDENTARY`, `LOSE` 1.0: rate capped to 0.95, deficit capped to 1000, floor 1200 applied; BMI ≥ 30 → reference 76.4 kg; fat lowered to 25% (33.3 g), protein lowered only as needed to 95.0 g, carb exactly 130.0.
+  4. `ATHLETE` with `MAINTAIN` uses 1.8 g/kg; `GAIN` 0.8 kg/week is capped to 0.5.
+- `create_user_target`: first call inserts one current row; a second call with reason `WEIGHT_UPDATE` closes the first (`valid_to` = the second `valid_from`) and leaves exactly one current row; missing weight row and an ineligible user both raise.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run alembic check`, `uv run pytest -q` (0 skipped; start `db_test` with `docker compose --profile test up -d db_test` if needed), then on the dev database: `uv run python -m app.seed.f1_loader` and `uv run python -m app.services.recompute_meals --all`, the latter twice.
+
+## Report back
+1. Files created/changed.
+2. Recompute output: per-meal completeness, derived tags and allergens (a compact table), and the second run showing no changes.
+3. The four targets test cases with the computed values.
+4. Test counts and check outputs.
+5. Findings: anything in the schema or the document that made this pass ambiguous or impossible without guessing (one line each, with the section number).
+6. Assumptions.

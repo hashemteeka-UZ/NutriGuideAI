@@ -1,0 +1,816 @@
+# Step G.3 recipe batch 01. Grams drafted by the assistant (team estimate), reviewed by the team.
+# quality_tier is computed by the loader (#96), never read from this file.
+dataset_version: team_recipes_v1
+source: team_catalog
+source_license: Team-authored recipes, project internal use
+default_lang: ar
+meals:
+- ref_external: NG-B01
+  name_ar: عجة بالبقدونس
+  name_en: Omelette with parsley
+  cuisine: GENERAL
+  servings: 2
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, dinner_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: EGG, grams: 200, label_ar: بيض}
+  - {code: PARSLEY, grams: 30, label_ar: بقدونس}
+  - {code: ONION, grams: 50, label_ar: بصل}
+  - {code: OLIVE_OIL, grams: 10, label_ar: زيت زيتون}
+  - {code: SALT, grams: 1.5, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 1, label_ar: فلفل أسود}
+  - {code: TURMERIC, grams: 1, label_ar: كركم}
+  - {code: WHOLE_WHEAT_BREAD, grams: 60, label_ar: خبز أسمر}
+- ref_external: NG-B02
+  name_ar: عجة بالبطاطا
+  name_en: Potato omelette
+  cuisine: GENERAL
+  servings: 2
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, dinner_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: EGG, grams: 150, label_ar: بيض}
+  - {code: POTATO, grams: 200, label_ar: بطاطا}
+  - {code: ONION, grams: 50, label_ar: بصل}
+  - {code: OLIVE_OIL, grams: 15, label_ar: زيت زيتون}
+  - {code: SALT, grams: 1.5, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 1, label_ar: فلفل أسود}
+- ref_external: NG-B03
+  name_ar: كبدة ضأن بالثوم والكمون
+  name_en: Lamb liver with garlic and cumin
+  cuisine: LIBYAN
+  servings: 2
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: LAMB_LIVER, grams: 250, label_ar: كبدة ضأن}
+  - {code: GARLIC, grams: 10, label_ar: ثوم}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: CHILI_POWDER, grams: 1, label_ar: فلفل حار مطحون}
+  - {code: OLIVE_OIL, grams: 10, label_ar: زيت زيتون}
+  - {code: LEMON_JUICE, grams: 10, label_ar: عصير ليمون}
+  - {code: SALT, grams: 1.5, label_ar: ملح}
+  - {code: WHOLE_WHEAT_PITA_BREAD, grams: 60, label_ar: خبز عربي أسمر}
+- ref_external: NG-B04
+  name_ar: زميطة بزيت الزيتون مع لبن
+  name_en: Zummita (roasted barley flour) with olive oil and buttermilk
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, snack_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: BARLEY_FLOUR, grams: 50, label_ar: دقيق شعير}
+  - {code: OLIVE_OIL, grams: 10, label_ar: زيت زيتون}
+  - {code: WATER, grams: 30, label_ar: ماء}
+  - {code: BUTTERMILK_LOW_FAT, grams: 200, label_ar: لبن رائب}
+- ref_external: NG-B05
+  name_ar: بسيسة بالتمر
+  name_en: Bsisa with dates
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, snack_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: BARLEY_FLOUR, grams: 40, label_ar: دقيق شعير}
+  - {code: DATES, grams: 30, label_ar: تمر}
+  - {code: OLIVE_OIL, grams: 8, label_ar: زيت زيتون}
+- ref_external: NG-B06
+  name_ar: تمر مع لبن
+  name_en: Dates with buttermilk
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, snack_suitable, beverage]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: BUTTERMILK_LOW_FAT, grams: 250, label_ar: لبن رائب}
+  - {code: DATES, grams: 40, label_ar: تمر}
+- ref_external: NG-B07
+  name_ar: جبن أبيض طري بالطماطم والخيار مع خبز أسمر
+  name_en: Soft white cheese (low-fat cottage cheese) with tomato, cucumber and wholewheat pita
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, dinner_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: COTTAGE_CHEESE_LOW_FAT, grams: 100, label_ar: جبن أبيض طري قليل الدسم}
+  - {code: TOMATO, grams: 80, label_ar: طماطم}
+  - {code: CUCUMBER, grams: 80, label_ar: خيار}
+  - {code: OLIVE_OIL, grams: 5, label_ar: زيت زيتون}
+  - {code: WHOLE_WHEAT_PITA_BREAD, grams: 60, label_ar: خبز عربي أسمر}
+- ref_external: NG-B08
+  name_ar: فول بالطحينة
+  name_en: Fava beans with tahini
+  cuisine: EGYPTIAN
+  servings: 2
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, dinner_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: CANNED_FAVA_BEANS, grams: 300, label_ar: فول مطبوخ}
+  - {code: TAHINI, grams: 20, label_ar: طحينة}
+  - {code: LEMON_JUICE, grams: 15, label_ar: عصير ليمون}
+  - {code: GARLIC, grams: 4, label_ar: ثوم}
+  - {code: CUMIN, grams: 1, label_ar: كمون}
+  - {code: SALT, grams: 1, label_ar: ملح}
+  - {code: WHOLE_WHEAT_PITA_BREAD, grams: 120, label_ar: خبز عربي أسمر}
+- ref_external: NG-B09
+  name_ar: شوفان بالزبادي والتوت
+  name_en: Oats with yogurt and blueberries
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, snack_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: ROLLED_OATS, grams: 40, label_ar: شوفان}
+  - {code: PLAIN_YOGURT_LOW_FAT, grams: 150, label_ar: زبادي قليل الدسم}
+  - {code: BLUEBERRIES, grams: 60, label_ar: توت أزرق}
+  - {code: CHIA_SEEDS, grams: 5, label_ar: بذور الشيا}
+- ref_external: NG-B10
+  name_ar: خبز أسمر بزيت الزيتون والزعتر مع طماطم
+  name_en: Wholewheat bread with olive oil, thyme and tomato
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, snack_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: WHOLE_WHEAT_BREAD, grams: 60, label_ar: خبز أسمر}
+  - {code: OLIVE_OIL, grams: 10, label_ar: زيت زيتون}
+  - {code: THYME_DRIED, grams: 2, label_ar: زعتر مجفف}
+  - {code: SESAME_SEEDS, grams: 3, label_ar: سمسم}
+  - {code: TOMATO, grams: 100, label_ar: طماطم}
+- ref_external: NG-B11
+  name_ar: توست أسمر بالموزاريلا والخضار
+  name_en: Wholewheat toast with mozzarella and vegetables
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [breakfast_suitable, snack_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: WHOLE_WHEAT_BREAD, grams: 60, label_ar: خبز أسمر}
+  - {code: MOZZARELLA_PART_SKIM, grams: 30, label_ar: جبن موزاريلا}
+  - {code: TOMATO, grams: 80, label_ar: طماطم}
+  - {code: CUCUMBER, grams: 60, label_ar: خيار}
+- ref_external: NG-D01
+  name_ar: سلطة بطاطا بالبيض
+  name_en: Potato salad with egg
+  cuisine: GENERAL
+  servings: 3
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [dinner_suitable, lunch_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: POTATO, grams: 400, label_ar: بطاطا}
+  - {code: EGG, grams: 100, label_ar: بيض}
+  - {code: ONION, grams: 50, label_ar: بصل}
+  - {code: PARSLEY, grams: 20, label_ar: بقدونس}
+  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
+  - {code: LEMON_JUICE, grams: 20, label_ar: عصير ليمون}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: SALT, grams: 3, label_ar: ملح}
+- ref_external: NG-D02
+  name_ar: سندويتش تن ليبي بالهريسة والزيتون
+  name_en: Libyan tuna sandwich with harissa and olives
+  cuisine: LIBYAN
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [dinner_suitable, breakfast_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: WHOLE_WHEAT_BREAD, grams: 80, label_ar: خبز أسمر}
+  - {code: CANNED_TUNA_IN_WATER_DRAINED, grams: 80, label_ar: تونة معلبة بالماء مصفاة}
+  - {code: EGG, grams: 50, label_ar: بيض}
+  - {code: BLACK_OLIVES, grams: 10, label_ar: زيتون أسود}
+  - {code: CHILI_POWDER, grams: 2, label_ar: فلفل حار مطحون}
+  - {code: GARLIC, grams: 3, label_ar: ثوم}
+  - {code: OLIVE_OIL, grams: 10, label_ar: زيت زيتون}
+  - {code: TOMATO, grams: 50, label_ar: طماطم}
+- ref_external: NG-D03
+  name_ar: سلطة جزر بالكمون
+  name_en: Carrot salad with cumin
+  cuisine: LIBYAN
+  servings: 3
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [dinner_suitable, snack_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: CARROT, grams: 300, label_ar: جزر}
+  - {code: LEMON_JUICE, grams: 20, label_ar: عصير ليمون}
+  - {code: OLIVE_OIL, grams: 15, label_ar: زيت زيتون}
+  - {code: GARLIC, grams: 3, label_ar: ثوم}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: SALT, grams: 1.5, label_ar: ملح}
+  - {code: PARSLEY, grams: 10, label_ar: بقدونس}
+- ref_external: NG-D04
+  name_ar: شوربة خضار بالشعير
+  name_en: Vegetable soup with barley
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.8
+  yield_factor_source: team estimate (cooking water evaporates)
+  yield_factor_kind: TEAM_ESTIMATE
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: PEARL_BARLEY, grams: 100, label_ar: شعير مقشور}
+  - {code: CARROT, grams: 150, label_ar: جزر}
+  - {code: ZUCCHINI, grams: 150, label_ar: كوسا}
+  - {code: POTATO, grams: 150, label_ar: بطاطا}
+  - {code: ONION, grams: 100, label_ar: بصل}
+  - {code: CELERY, grams: 50, label_ar: كرفس}
+  - {code: TOMATO_PASTE_NO_ADDED_SALT, grams: 20, label_ar: معجون طماطم بدون ملح مضاف}
+  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: TURMERIC, grams: 1, label_ar: كركم}
+  - {code: CORIANDER_LEAVES, grams: 15, label_ar: كزبرة خضراء}
+  - {code: WATER, grams: 1500, label_ar: ماء}
+- ref_external: NG-D06
+  name_ar: سلمون بالفرن مع بروكلي وجزر
+  name_en: Baked salmon with broccoli and carrots
+  cuisine: GENERAL
+  servings: 3
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: SALMON_ATLANTIC_FARMED, grams: 400, label_ar: سلمون}
+  - {code: BROCCOLI, grams: 300, label_ar: بروكلي}
+  - {code: CARROT, grams: 200, label_ar: جزر}
+  - {code: OLIVE_OIL, grams: 15, label_ar: زيت زيتون}
+  - {code: LEMON_JUICE, grams: 20, label_ar: عصير ليمون}
+  - {code: GARLIC, grams: 5, label_ar: ثوم}
+  - {code: SALT, grams: 3, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 1, label_ar: فلفل أسود}
+- ref_external: NG-D07
+  name_ar: متبل باذنجان مع خبز أسمر
+  name_en: Mutabbal (eggplant with tahini) with wholewheat pita
+  cuisine: LEVANTINE
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [dinner_suitable, snack_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: EGGPLANT, grams: 500, label_ar: باذنجان}
+  - {code: TAHINI, grams: 40, label_ar: طحينة}
+  - {code: LEMON_JUICE, grams: 30, label_ar: عصير ليمون}
+  - {code: GARLIC, grams: 5, label_ar: ثوم}
+  - {code: OLIVE_OIL, grams: 10, label_ar: زيت زيتون}
+  - {code: SALT, grams: 2, label_ar: ملح}
+  - {code: WHOLE_WHEAT_PITA_BREAD, grams: 120, label_ar: خبز عربي أسمر}
+- ref_external: NG-D09
+  name_ar: سلطة عدس بالخضار
+  name_en: Lentil salad with vegetables
+  cuisine: GENERAL
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: LENTILS, grams: 150, label_ar: عدس}
+  - {code: WATER, grams: 350, label_ar: ماء}
+  - {code: TOMATO, grams: 150, label_ar: طماطم}
+  - {code: CUCUMBER, grams: 150, label_ar: خيار}
+  - {code: RED_BELL_PEPPER, grams: 100, label_ar: فلفل أحمر حلو}
+  - {code: PARSLEY, grams: 30, label_ar: بقدونس}
+  - {code: SCALLIONS, grams: 20, label_ar: بصل أخضر}
+  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
+  - {code: LEMON_JUICE, grams: 30, label_ar: عصير ليمون}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: SALT, grams: 3, label_ar: ملح}
+- ref_external: NG-D11
+  name_ar: شوربة دجاج بالخضار والشعير
+  name_en: Chicken soup with vegetables and barley
+  cuisine: GENERAL
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.8
+  yield_factor_source: team estimate (cooking water evaporates)
+  yield_factor_kind: TEAM_ESTIMATE
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: CHICKEN_BREAST_SKINLESS, grams: 300, label_ar: صدر دجاج بدون جلد}
+  - {code: PEARL_BARLEY, grams: 80, label_ar: شعير مقشور}
+  - {code: CARROT, grams: 150, label_ar: جزر}
+  - {code: CELERY, grams: 100, label_ar: كرفس}
+  - {code: ONION, grams: 100, label_ar: بصل}
+  - {code: POTATO, grams: 150, label_ar: بطاطا}
+  - {code: OLIVE_OIL, grams: 15, label_ar: زيت زيتون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 1, label_ar: فلفل أسود}
+  - {code: PARSLEY, grams: 15, label_ar: بقدونس}
+  - {code: WATER, grams: 1500, label_ar: ماء}
+- ref_external: NG-L01
+  name_ar: كسكسي بالحوت
+  name_en: Couscous with fish
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate (cooking water evaporates)
+  yield_factor_kind: TEAM_ESTIMATE
+  variant_group: null
+  occasion_tags: [lunch_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: COUSCOUS_COOKED, grams: 600, label_ar: كسكسي مطبوخ}
+  - {code: TILAPIA_FILLET, grams: 500, label_ar: فيليه سمك البلطي}
+  - {code: ONION, grams: 150, label_ar: بصل}
+  - {code: PUMPKIN, grams: 300, label_ar: قرع}
+  - {code: POTATO, grams: 200, label_ar: بطاطا}
+  - {code: CANNED_CHICKPEAS_DRAINED, grams: 150, label_ar: حمص معلب مصفى, optional: true}
+  - {code: TOMATO_PASTE_NO_ADDED_SALT, grams: 30, label_ar: معجون طماطم بدون ملح مضاف}
+  - {code: OLIVE_OIL, grams: 30, label_ar: زيت زيتون}
+  - {code: SALT, grams: 5, label_ar: ملح}
+  - {code: TURMERIC, grams: 2, label_ar: كركم}
+  - {code: PAPRIKA, grams: 3, label_ar: فلفل أحمر حلو مطحون}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: WATER, grams: 500, label_ar: ماء}
+- ref_external: NG-L02
+  name_ar: كسكسي بالخضار
+  name_en: Vegetable couscous
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: YIELD_FACTOR
+  yield_factor: 0.85
+  yield_factor_source: team estimate (cooking water evaporates)
+  yield_factor_kind: TEAM_ESTIMATE
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: COUSCOUS_COOKED, grams: 600, label_ar: كسكسي مطبوخ}
+  - {code: CANNED_CHICKPEAS_DRAINED, grams: 200, label_ar: حمص معلب مصفى}
+  - {code: ONION, grams: 150, label_ar: بصل}
+  - {code: PUMPKIN, grams: 300, label_ar: قرع}
+  - {code: CARROT, grams: 200, label_ar: جزر}
+  - {code: ZUCCHINI, grams: 200, label_ar: كوسا}
+  - {code: POTATO, grams: 200, label_ar: بطاطا}
+  - {code: TOMATO_PASTE_NO_ADDED_SALT, grams: 30, label_ar: معجون طماطم بدون ملح مضاف}
+  - {code: OLIVE_OIL, grams: 30, label_ar: زيت زيتون}
+  - {code: SALT, grams: 5, label_ar: ملح}
+  - {code: TURMERIC, grams: 2, label_ar: كركم}
+  - {code: PAPRIKA, grams: 3, label_ar: فلفل أحمر حلو مطحون}
+  - {code: WATER, grams: 500, label_ar: ماء}
+- ref_external: NG-L05
+  name_ar: رز بالخضار
+  name_en: Rice with vegetables
+  cuisine: GENERAL
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: WHITE_RICE, grams: 300, label_ar: أرز أبيض}
+  - {code: CARROT, grams: 150, label_ar: جزر}
+  - {code: GREEN_PEAS, grams: 150, label_ar: بازلاء}
+  - {code: ONION, grams: 100, label_ar: بصل}
+  - {code: OLIVE_OIL, grams: 25, label_ar: زيت زيتون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: TURMERIC, grams: 2, label_ar: كركم}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: WATER, grams: 600, label_ar: ماء}
+- ref_external: NG-L06
+  name_ar: دجاج مشوي بالثوم والليمون مع بطاطا
+  name_en: Grilled chicken with garlic and lemon and potatoes
+  cuisine: GENERAL
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: CHICKEN_THIGH_SKINLESS, grams: 600, label_ar: لحم فخذ الدجاج بدون جلد وعظم}
+  - {code: POTATO, grams: 400, label_ar: بطاطا}
+  - {code: GARLIC, grams: 15, label_ar: ثوم}
+  - {code: CUMIN, grams: 4, label_ar: كمون}
+  - {code: PAPRIKA, grams: 3, label_ar: فلفل أحمر حلو مطحون}
+  - {code: LEMON_JUICE, grams: 30, label_ar: عصير ليمون}
+  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 2, label_ar: فلفل أسود}
+- ref_external: NG-L08
+  name_ar: ملوخية بالدجاج والأرز
+  name_en: Molokhia with chicken and rice
+  cuisine: EGYPTIAN
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: JUTE_LEAVES, grams: 500, label_ar: ملوخية مطبوخة}
+  - {code: CHICKEN_BREAST_SKINLESS, grams: 400, label_ar: صدر دجاج بدون جلد}
+  - {code: WHITE_RICE, grams: 250, label_ar: أرز أبيض}
+  - {code: GARLIC, grams: 20, label_ar: ثوم}
+  - {code: CORIANDER_LEAVES, grams: 20, label_ar: كزبرة خضراء}
+  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: WATER, grams: 900, label_ar: ماء}
+- ref_external: NG-L10
+  name_ar: مقلوبة بالدجاج والباذنجان
+  name_en: Maqluba with chicken and eggplant
+  cuisine: LEVANTINE
+  servings: 5
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: WHITE_RICE, grams: 300, label_ar: أرز أبيض}
+  - {code: CHICKEN_THIGH_SKINLESS, grams: 500, label_ar: لحم فخذ الدجاج بدون جلد وعظم}
+  - {code: EGGPLANT, grams: 400, label_ar: باذنجان}
+  - {code: ONION, grams: 100, label_ar: بصل}
+  - {code: SUNFLOWER_OIL, grams: 30, label_ar: زيت دوار الشمس}
+  - {code: SALT, grams: 5, label_ar: ملح}
+  - {code: TURMERIC, grams: 2, label_ar: كركم}
+  - {code: CINNAMON, grams: 1, label_ar: قرفة}
+  - {code: BLACK_PEPPER, grams: 2, label_ar: فلفل أسود}
+  - {code: WATER, grams: 700, label_ar: ماء}
+- ref_external: NG-L11
+  name_ar: سمك قاروص مشوي مع رز بني وسلطة
+  name_en: Grilled sea bass with brown rice and salad
+  cuisine: GENERAL
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: SEA_BASS, grams: 500, label_ar: قاروص}
+  - {code: BROWN_RICE, grams: 250, label_ar: رز بني}
+  - {code: WATER, grams: 550, label_ar: ماء}
+  - {code: LEMON_JUICE, grams: 30, label_ar: عصير ليمون}
+  - {code: OLIVE_OIL, grams: 25, label_ar: زيت زيتون}
+  - {code: GARLIC, grams: 10, label_ar: ثوم}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: ROMAINE_LETTUCE, grams: 200, label_ar: خس}
+  - {code: TOMATO, grams: 200, label_ar: طماطم}
+  - {code: CUCUMBER, grams: 200, label_ar: خيار}
+- ref_external: NG-L12
+  name_ar: طاجين دجاج بالخضار والزيتون
+  name_en: Chicken tagine with vegetables and olives
+  cuisine: MAGHREBI
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: CHICKEN_DRUMSTICK_SKINLESS, grams: 600, label_ar: دبوس دجاج بدون جلد}
+  - {code: POTATO, grams: 400, label_ar: بطاطا}
+  - {code: CARROT, grams: 200, label_ar: جزر}
+  - {code: GREEN_PEAS, grams: 150, label_ar: بازلاء}
+  - {code: ONION, grams: 150, label_ar: بصل}
+  - {code: GREEN_OLIVES, grams: 50, label_ar: زيتون أخضر}
+  - {code: LEMON_JUICE, grams: 20, label_ar: عصير ليمون}
+  - {code: OLIVE_OIL, grams: 25, label_ar: زيت زيتون}
+  - {code: TURMERIC, grams: 2, label_ar: كركم}
+  - {code: GINGER_GROUND, grams: 2, label_ar: زنجبيل مطحون}
+  - {code: SALT, grams: 3, label_ar: ملح}
+  - {code: WATER, grams: 300, label_ar: ماء}
+- ref_external: NG-L13
+  name_ar: لوبيا باللحم
+  name_en: Black-eyed peas with lamb
+  cuisine: LIBYAN
+  servings: 5
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: BLACK_EYED_PEAS, grams: 300, label_ar: لوبيا جافة}
+  - {code: LAMB_SHOULDER_LEAN, grams: 300, label_ar: لحم ضأن}
+  - {code: ONION, grams: 150, label_ar: بصل}
+  - {code: TOMATO_PASTE_NO_ADDED_SALT, grams: 40, label_ar: معجون طماطم بدون ملح مضاف}
+  - {code: GARLIC, grams: 10, label_ar: ثوم}
+  - {code: OLIVE_OIL, grams: 25, label_ar: زيت زيتون}
+  - {code: SALT, grams: 5, label_ar: ملح}
+  - {code: PAPRIKA, grams: 3, label_ar: فلفل أحمر حلو مطحون}
+  - {code: CUMIN, grams: 2, label_ar: كمون}
+  - {code: WATER, grams: 900, label_ar: ماء}
+- ref_external: NG-L14
+  name_ar: محشي كوسا بالأرز واللحم
+  name_en: Zucchini stuffed with rice and beef
+  cuisine: LIBYAN
+  servings: 5
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: ZUCCHINI, grams: 800, label_ar: كوسا}
+  - {code: WHITE_RICE, grams: 200, label_ar: أرز أبيض}
+  - {code: GROUND_BEEF_90_LEAN, grams: 250, label_ar: لحم بقر مفروم 90% صافٍ}
+  - {code: ONION, grams: 100, label_ar: بصل}
+  - {code: PARSLEY, grams: 30, label_ar: بقدونس}
+  - {code: TOMATO_PASTE_NO_ADDED_SALT, grams: 40, label_ar: معجون طماطم بدون ملح مضاف}
+  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
+  - {code: SALT, grams: 5, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 2, label_ar: فلفل أسود}
+  - {code: CINNAMON, grams: 1, label_ar: قرفة}
+  - {code: WATER, grams: 500, label_ar: ماء}
+- ref_external: NG-L15
+  name_ar: فاصوليا خضراء باللحم
+  name_en: Green beans with beef
+  cuisine: LIBYAN
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: GREEN_BEANS, grams: 600, label_ar: فاصوليا خضراء}
+  - {code: BEEF_ROUND_LEAN, grams: 300, label_ar: لحم بقري هبرة}
+  - {code: ONION, grams: 150, label_ar: بصل}
+  - {code: TOMATO, grams: 300, label_ar: طماطم}
+  - {code: TOMATO_PASTE_NO_ADDED_SALT, grams: 20, label_ar: معجون طماطم بدون ملح مضاف}
+  - {code: GARLIC, grams: 10, label_ar: ثوم}
+  - {code: OLIVE_OIL, grams: 25, label_ar: زيت زيتون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 2, label_ar: فلفل أسود}
+  - {code: WATER, grams: 300, label_ar: ماء}
+- ref_external: NG-L16
+  name_ar: صدر دجاج مشوي مع كينوا وخضار
+  name_en: Grilled chicken breast with quinoa and vegetables
+  cuisine: GENERAL
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: CHICKEN_BREAST_SKINLESS, grams: 500, label_ar: صدر دجاج بدون جلد}
+  - {code: QUINOA, grams: 500, label_ar: كينوا مطبوخة}
+  - {code: ZUCCHINI, grams: 200, label_ar: كوسا}
+  - {code: RED_BELL_PEPPER, grams: 200, label_ar: فلفل أحمر حلو}
+  - {code: OLIVE_OIL, grams: 20, label_ar: زيت زيتون}
+  - {code: LEMON_JUICE, grams: 20, label_ar: عصير ليمون}
+  - {code: GARLIC, grams: 10, label_ar: ثوم}
+  - {code: SALT, grams: 3, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 2, label_ar: فلفل أسود}
+  - {code: OREGANO_DRIED, grams: 1, label_ar: أوريجانو}
+- ref_external: NG-L17
+  name_ar: لحم بقري مع خضار سوتيه ورز بني
+  name_en: Beef with sauteed vegetables and brown rice
+  cuisine: GENERAL
+  servings: 4
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [lunch_suitable, dinner_suitable]
+  dietary_tags: []
+  reviewed_by: Hashem
+  ingredients:
+  - {code: BEEF_ROUND_LEAN, grams: 400, label_ar: لحم بقري هبرة}
+  - {code: BROWN_RICE, grams: 250, label_ar: رز بني}
+  - {code: WATER, grams: 550, label_ar: ماء}
+  - {code: BROCCOLI, grams: 200, label_ar: بروكلي}
+  - {code: CARROT, grams: 150, label_ar: جزر}
+  - {code: MUSHROOMS, grams: 150, label_ar: فطر}
+  - {code: ONION, grams: 100, label_ar: بصل}
+  - {code: SUNFLOWER_OIL, grams: 20, label_ar: زيت دوار الشمس}
+  - {code: GARLIC, grams: 10, label_ar: ثوم}
+  - {code: GINGER_GROUND, grams: 2, label_ar: زنجبيل مطحون}
+  - {code: SALT, grams: 4, label_ar: ملح}
+  - {code: BLACK_PEPPER, grams: 2, label_ar: فلفل أسود}
+- ref_external: NG-S01
+  name_ar: زبادي بالتمر
+  name_en: Yogurt with dates
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable, breakfast_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: PLAIN_YOGURT_LOW_FAT, grams: 170, label_ar: زبادي قليل الدسم}
+  - {code: DATES, grams: 25, label_ar: تمر}
+- ref_external: NG-S02
+  name_ar: شاي بالحليب بدون سكر
+  name_en: Tea with milk, no sugar
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable, breakfast_suitable, beverage]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: BLACK_TEA_BREWED, grams: 150, label_ar: شاي أحمر}
+  - {code: LOW_FAT_MILK_1, grams: 100, label_ar: حليب قليل الدسم}
+- ref_external: NG-S03
+  name_ar: قهوة بالحليب بدون سكر
+  name_en: Coffee with milk, no sugar
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable, breakfast_suitable, beverage]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: COFFEE_BREWED, grams: 120, label_ar: قهوة}
+  - {code: LOW_FAT_MILK_1, grams: 80, label_ar: حليب قليل الدسم}
+- ref_external: NG-S04
+  name_ar: لوز وجوز وزبيب
+  name_en: Almonds, walnuts and raisins
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable, nuts_seeds_snack]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: ALMONDS, grams: 15, label_ar: لوز}
+  - {code: WALNUTS, grams: 10, label_ar: جوز}
+  - {code: RAISINS, grams: 15, label_ar: زبيب}
+- ref_external: NG-S05
+  name_ar: تفاح بزبدة الفول السوداني
+  name_en: Apple with peanut butter
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: APPLE, grams: 150, label_ar: تفاح}
+  - {code: PEANUT_BUTTER_UNSALTED, grams: 15, label_ar: زبدة الفول السوداني بدون ملح}
+- ref_external: NG-S06
+  name_ar: فشار بزيت الزيتون
+  name_en: Air-popped popcorn with olive oil
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: POPCORN_AIR_POPPED, grams: 25, label_ar: فشار}
+  - {code: OLIVE_OIL, grams: 5, label_ar: زيت زيتون}
+  - {code: SALT, grams: 0.25, label_ar: ملح}
+- ref_external: NG-S08
+  name_ar: تين مجفف مع جوز
+  name_en: Dried figs with walnuts
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable, nuts_seeds_snack]
+  dietary_tags: [vegetarian, vegan]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: DRIED_FIGS, grams: 30, label_ar: تين مجفف}
+  - {code: WALNUTS, grams: 15, label_ar: جوز}
+- ref_external: NG-S09
+  name_ar: زبادي يوناني بالفراولة والموز
+  name_en: Greek yogurt with strawberries and banana
+  cuisine: GENERAL
+  servings: 1
+  weight_method: SUM_OF_INGREDIENTS
+  yield_factor: null
+  yield_factor_source: null
+  variant_group: null
+  occasion_tags: [snack_suitable, breakfast_suitable]
+  dietary_tags: [vegetarian]
+  reviewed_by: Hashem
+  ingredients:
+  - {code: GREEK_YOGURT_NONFAT, grams: 170, label_ar: زبادي يوناني خالي الدسم}
+  - {code: STRAWBERRIES, grams: 80, label_ar: فراولة}
+  - {code: BANANA, grams: 50, label_ar: موز}

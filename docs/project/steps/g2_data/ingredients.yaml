@@ -1,0 +1,1968 @@
+# Step G catalog ingredients (Decisions #91, #93, #94). Natural key = code.
+# food.code = USDA SR Legacy NDB number (April 2018). Nutrient values are never written here:
+# they come from the extracted SR subset (and the FNDDS fill of #93 step 2).
+# The first 62 entries are the Step F.1 ingredients with unchanged codes, names and foods (reviewed in F.1).
+# The rest are new in G.2, checked against the real SR files (reports/ingredient_lookup.md) and reviewed by the assistant.
+# review_status PENDING = quarantined by the pipeline (missing a mandatory nutrient or energy-inconsistent): not used in recipes.
+dataset_version: ingredients_v1
+ingredients:
+- code: FETA_CHEESE
+  name_en: 'Feta cheese'
+  name_ar: جبن فيتا
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01019'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LOW_FAT_MILK_1
+  name_en: 'Low-fat milk (1%)'
+  name_ar: حليب قليل الدسم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01082'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: EGG
+  name_en: 'Egg'
+  name_ar: بيض
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01123'}
+  state: raw
+  allergens: [EGG]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: UNSALTED_BUTTER
+  name_en: 'Unsalted butter'
+  name_ar: زبدة غير مملحة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01145'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEK_YOGURT_NONFAT
+  name_en: 'Greek yogurt, nonfat'
+  name_ar: زبادي يوناني خالي الدسم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01256'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CINNAMON
+  name_en: 'Cinnamon'
+  name_ar: قرفة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02010'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CUMIN
+  name_en: 'Cumin'
+  name_ar: كمون
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02014'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PAPRIKA
+  name_en: 'Paprika'
+  name_ar: فلفل أحمر حلو مطحون
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02028'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BLACK_PEPPER
+  name_en: 'Black pepper'
+  name_ar: فلفل أسود
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02030'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GROUND_RED_HOT_PEPPER_CAYENNE
+  name_en: 'Ground red hot pepper (cayenne)'
+  name_ar: فلفل مرحي (فلفل أحمر حار مطحون)
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02031'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: TURMERIC
+  name_en: 'Turmeric'
+  name_ar: كركم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02043'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SALT
+  name_en: 'Salt'
+  name_ar: ملح
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02047'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: OLIVE_OIL
+  name_en: 'Olive oil'
+  name_ar: زيت زيتون
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '04053'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CHICKEN_BREAST_SKINLESS
+  name_en: 'Chicken breast, skinless'
+  name_ar: صدر دجاج بدون جلد
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '05062'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CHICKEN_THIGH_SKINLESS
+  name_en: 'Chicken thigh, skinless'
+  name_ar: لحم فخذ الدجاج بدون جلد وعظم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '05096'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ROLLED_OATS
+  name_en: 'Rolled oats'
+  name_ar: شوفان
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '08120'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: APPLE
+  name_en: 'Apple'
+  name_ar: تفاح
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09003'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BANANA
+  name_en: 'Banana'
+  name_ar: موز
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09040'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DATES
+  name_en: 'Dates'
+  name_ar: تمر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09087'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GRAPES
+  name_en: 'Grapes'
+  name_ar: عنب
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09132'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LEMON_JUICE
+  name_en: 'Lemon juice'
+  name_ar: عصير ليمون
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09152'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BLACK_OLIVES
+  name_en: 'Black olives'
+  name_ar: زيتون أسود
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09193'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ORANGE
+  name_en: 'Orange'
+  name_ar: برتقال
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09200'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: STRAWBERRIES
+  name_en: 'Strawberries'
+  name_ar: فراولة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09316'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CARROT
+  name_en: 'Carrot'
+  name_ar: جزر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11124'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CORIANDER_LEAVES
+  name_en: 'Coriander leaves'
+  name_ar: كزبرة خضراء
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11165'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CUCUMBER
+  name_en: 'Cucumber'
+  name_ar: خيار
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11205'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GARLIC
+  name_en: 'Garlic'
+  name_ar: ثوم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11215'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ROMAINE_LETTUCE
+  name_en: 'Romaine lettuce'
+  name_ar: خس
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11251'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: OKRA
+  name_en: 'Okra'
+  name_ar: بامية
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11278'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ONION
+  name_en: 'Onion'
+  name_ar: بصل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11282'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PARSLEY
+  name_en: 'Parsley'
+  name_ar: بقدونس
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11297'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEN_PEAS
+  name_en: 'Green peas'
+  name_ar: بازلاء
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11304'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEN_BELL_PEPPER
+  name_en: 'Green bell pepper'
+  name_ar: فلفل أخضر حلو
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11333'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: POTATO
+  name_en: 'Potato'
+  name_ar: بطاطا
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11352'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PUMPKIN
+  name_en: 'Pumpkin'
+  name_ar: قرع
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11422'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: TOMATO
+  name_en: 'Tomato'
+  name_ar: طماطم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11529'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANNED_TOMATOES
+  name_en: 'Canned tomatoes'
+  name_ar: طماطم معلبة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11531'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: TOMATO_PASTE_NO_ADDED_SALT
+  name_en: 'Tomato paste, no added salt'
+  name_ar: معجون طماطم بدون ملح مضاف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11546'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEN_CHILI_PEPPER
+  name_en: 'Green chili pepper'
+  name_ar: فلفل حار أخضر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11670'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ALMONDS
+  name_en: 'Almonds'
+  name_ar: لوز
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12061'}
+  state: raw
+  allergens: [TREE_NUTS]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WALNUTS
+  name_en: 'Walnuts'
+  name_ar: جوز
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12155'}
+  state: raw
+  allergens: [TREE_NUTS]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: TAHINI
+  name_en: 'Tahini'
+  name_ar: طحينة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12166'}
+  state: as_purchased
+  allergens: [SESAME]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WATER
+  name_en: 'Water'
+  name_ar: ماء
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '14555'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANNED_TUNA_IN_WATER_DRAINED
+  name_en: 'Canned tuna in water, drained'
+  name_ar: تونة معلبة بالماء مصفاة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '15121'}
+  state: as_purchased
+  allergens: [FISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: TILAPIA_FILLET
+  name_en: 'Tilapia fillet'
+  name_ar: فيليه سمك البلطي
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '15261'}
+  state: raw
+  allergens: [FISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANNED_WHITE_BEANS
+  name_en: 'Canned white beans'
+  name_ar: فاصوليا بيضاء معلبة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16051'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DRIED_FAVA_BEANS
+  name_en: 'Dried fava beans'
+  name_ar: فول مجفف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16052'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LENTILS
+  name_en: 'Lentils'
+  name_ar: عدس
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16069'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANNED_CHICKPEAS_DRAINED
+  name_en: 'Canned chickpeas, drained'
+  name_ar: حمص معلب مصفى
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16358'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PEANUT_BUTTER_UNSALTED
+  name_en: 'Peanut butter, unsalted'
+  name_ar: زبدة الفول السوداني بدون ملح
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16398'}
+  state: as_purchased
+  allergens: [PEANUT]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LAMB_SHOULDER_LEAN
+  name_en: 'Lamb shoulder, lean'
+  name_ar: لحم ضأن
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '17039'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHOLE_WHEAT_PITA_BREAD
+  name_en: 'Whole-wheat pita bread'
+  name_ar: خبز عربي أسمر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '18042'}
+  state: as_purchased
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHOLE_WHEAT_BREAD
+  name_en: 'Whole-wheat bread'
+  name_ar: خبز أسمر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '18075'}
+  state: as_purchased
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: HONEY
+  name_en: 'Honey'
+  name_ar: عسل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '19296'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: [added_sugar]
+  review_status: APPROVED
+- code: BULGUR
+  name_en: 'Bulgur'
+  name_ar: برغل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20012'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: COUSCOUS_COOKED
+  name_en: 'Couscous, cooked'
+  name_ar: كسكسي مطبوخ
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20029'}
+  state: cooked
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHITE_RICE
+  name_en: 'White rice'
+  name_ar: أرز أبيض
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20044'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHITE_WHEAT_FLOUR
+  name_en: 'White wheat flour'
+  name_ar: دقيق قمح أبيض
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20081'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PASTA
+  name_en: 'Pasta'
+  name_ar: معكرونة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20120'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BARLEY_FLOUR
+  name_en: 'Barley flour'
+  name_ar: دقيق شعير
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20130'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GROUND_BEEF_90_LEAN
+  name_en: 'Ground beef, 90% lean'
+  name_ar: لحم بقر مفروم 90% صافٍ
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '23562'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHOLE_MILK
+  name_en: 'Whole milk (3.25%)'
+  name_ar: حليب كامل الدسم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01077'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PLAIN_YOGURT_WHOLE
+  name_en: 'Plain yogurt, whole milk'
+  name_ar: زبادي كامل الدسم
+  aliases_en: []
+  aliases_ar: [روب]
+  food: {source: SR_LEGACY, code: '01116'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PLAIN_YOGURT_LOW_FAT
+  name_en: 'Plain yogurt, low-fat'
+  name_ar: زبادي قليل الدسم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01117'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEK_YOGURT_WHOLE
+  name_en: 'Greek yogurt, whole milk (labneh base)'
+  name_ar: زبادي يوناني كامل الدسم
+  aliases_en: []
+  aliases_ar: [لبنة]
+  food: {source: SR_LEGACY, code: '01293'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BUTTERMILK_LOW_FAT
+  name_en: 'Buttermilk, low-fat'
+  name_ar: لبن رائب
+  aliases_en: []
+  aliases_ar: [لبن]
+  food: {source: SR_LEGACY, code: '01088'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: COTTAGE_CHEESE_LOW_FAT
+  name_en: 'Cottage cheese, low-fat (1%)'
+  name_ar: جبن قريش
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01016'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: MOZZARELLA_PART_SKIM
+  name_en: 'Mozzarella, part-skim'
+  name_ar: جبن موزاريلا
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01028'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: RICOTTA_PART_SKIM
+  name_en: 'Ricotta, part-skim'
+  name_ar: جبن ريكوتا
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01037'}
+  state: as_purchased
+  allergens: [MILK]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: EGG_WHITE
+  name_en: 'Egg white'
+  name_ar: بياض البيض
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '01124'}
+  state: raw
+  allergens: [EGG]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ALLSPICE
+  name_en: 'Allspice, ground'
+  name_ar: بهار حلو
+  aliases_en: []
+  aliases_ar: [بهارات]
+  food: {source: SR_LEGACY, code: '02001'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: BAY_LEAF
+  name_en: 'Bay leaf'
+  name_ar: ورق الغار
+  aliases_en: []
+  aliases_ar: [ورق رند]
+  food: {source: SR_LEGACY, code: '02004'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: CARAWAY
+  name_en: 'Caraway seed'
+  name_ar: كراوية
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02005'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CARDAMOM
+  name_en: 'Cardamom'
+  name_ar: هيل
+  aliases_en: []
+  aliases_ar: [حبهان]
+  food: {source: SR_LEGACY, code: '02006'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: CHILI_POWDER
+  name_en: 'Chili powder'
+  name_ar: فلفل حار مطحون
+  aliases_en: []
+  aliases_ar: [شطة]
+  food: {source: SR_LEGACY, code: '02009'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CLOVES
+  name_en: 'Cloves, ground'
+  name_ar: قرنفل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02011'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: CORIANDER_SEED
+  name_en: 'Coriander seed'
+  name_ar: كزبرة يابسة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02013'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: FENNEL_SEED
+  name_en: 'Fennel seed'
+  name_ar: شمر
+  aliases_en: []
+  aliases_ar: [حبة حلوة]
+  food: {source: SR_LEGACY, code: '02018'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: GARLIC_POWDER
+  name_en: 'Garlic powder'
+  name_ar: ثوم مجفف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02020'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GINGER_GROUND
+  name_en: 'Ginger, ground'
+  name_ar: زنجبيل مطحون
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02021'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: NUTMEG
+  name_en: 'Nutmeg, ground'
+  name_ar: جوزة الطيب
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02025'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ONION_POWDER
+  name_en: 'Onion powder'
+  name_ar: بصل مجفف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02026'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: OREGANO_DRIED
+  name_en: 'Oregano, dried'
+  name_ar: أوريجانو
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02027'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SAFFRON
+  name_en: 'Saffron'
+  name_ar: زعفران
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02037'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: THYME_DRIED
+  name_en: 'Thyme, dried'
+  name_ar: زعتر مجفف
+  aliases_en: []
+  aliases_ar: [زعتر]
+  food: {source: SR_LEGACY, code: '02042'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BASIL_FRESH
+  name_en: 'Basil, fresh'
+  name_ar: ريحان
+  aliases_en: []
+  aliases_ar: [حبق]
+  food: {source: SR_LEGACY, code: '02044'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DILL_FRESH
+  name_en: 'Dill weed, fresh'
+  name_ar: شبت
+  aliases_en: []
+  aliases_ar: [شبث]
+  food: {source: SR_LEGACY, code: '02045'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: SPEARMINT_FRESH
+  name_en: 'Spearmint, fresh'
+  name_ar: نعناع طازج
+  aliases_en: []
+  aliases_ar: [نعناع]
+  food: {source: SR_LEGACY, code: '02065'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: SPEARMINT_DRIED
+  name_en: 'Spearmint, dried'
+  name_ar: نعناع مجفف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02066'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: VINEGAR
+  name_en: 'Vinegar, distilled'
+  name_ar: خل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '02053'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: MUSTARD
+  name_en: 'Mustard, prepared, yellow'
+  name_ar: خردل
+  aliases_en: []
+  aliases_ar: [مسطردة]
+  food: {source: SR_LEGACY, code: '02046'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SUNFLOWER_OIL
+  name_en: 'Sunflower oil'
+  name_ar: زيت دوار الشمس
+  aliases_en: []
+  aliases_ar: [زيت عباد الشمس]
+  food: {source: SR_LEGACY, code: '04506'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANOLA_OIL
+  name_en: 'Canola oil'
+  name_ar: زيت الكانولا
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '04582'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CORN_OIL
+  name_en: 'Corn oil'
+  name_ar: زيت الذرة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '04518'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHOLE_CHICKEN
+  name_en: 'Chicken, meat and skin'
+  name_ar: دجاج كامل بالجلد
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '05006'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CHICKEN_DRUMSTICK_SKINLESS
+  name_en: 'Chicken drumstick, meat only'
+  name_ar: دبوس دجاج بدون جلد
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '05071'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CHICKEN_LIVER
+  name_en: 'Chicken liver'
+  name_ar: كبدة دجاج
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '05027'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GROUND_CHICKEN
+  name_en: 'Ground chicken'
+  name_ar: دجاج مفروم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '05332'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BEEF_LIVER
+  name_en: 'Beef liver'
+  name_ar: كبدة بقري
+  aliases_en: []
+  aliases_ar: [كبدة]
+  food: {source: SR_LEGACY, code: '13325'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BEEF_ROUND_LEAN
+  name_en: 'Beef round, lean'
+  name_ar: لحم بقري هبرة
+  aliases_en: []
+  aliases_ar: [لحم بقري]
+  food: {source: SR_LEGACY, code: '23354'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GROUND_LAMB
+  name_en: 'Ground lamb'
+  name_ar: لحم ضأن مفروم
+  aliases_en: []
+  aliases_ar: [لحم مفروم]
+  food: {source: SR_LEGACY, code: '17224'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LAMB_LIVER
+  name_en: 'Lamb liver'
+  name_ar: كبدة ضأن
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '17369'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SALMON_ATLANTIC_FARMED
+  name_en: 'Atlantic salmon, farmed'
+  name_ar: سلمون
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '15236'}
+  state: raw
+  allergens: [FISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SARDINES_CANNED_IN_OIL
+  name_en: 'Sardines, canned in oil, drained'
+  name_ar: سردين معلب
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '15088'}
+  state: as_purchased
+  allergens: [FISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SHRIMP
+  name_en: 'Shrimp'
+  name_ar: جمبري
+  aliases_en: []
+  aliases_ar: [روبيان]
+  food: {source: SR_LEGACY, code: '15149'}
+  state: raw
+  allergens: [SHELLFISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: MACKEREL
+  name_en: 'Atlantic mackerel'
+  name_ar: سمك الماكريل
+  aliases_en: []
+  aliases_ar: [إسقمري]
+  food: {source: SR_LEGACY, code: '15046'}
+  state: raw
+  allergens: [FISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SEA_BASS
+  name_en: 'Sea bass'
+  name_ar: قاروص
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '15091'}
+  state: raw
+  allergens: [FISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: COD
+  name_en: 'Atlantic cod'
+  name_ar: سمك القد
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '15015'}
+  state: raw
+  allergens: [FISH]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DRIED_CHICKPEAS
+  name_en: 'Chickpeas, dried'
+  name_ar: حمص حب جاف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16056'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: RED_LENTILS
+  name_en: 'Red lentils'
+  name_ar: عدس أحمر
+  aliases_en: []
+  aliases_ar: [عدس مجروش]
+  food: {source: SR_LEGACY, code: '16144'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: DRIED_WHITE_BEANS
+  name_en: 'White beans, dried'
+  name_ar: فاصوليا بيضاء جافة
+  aliases_en: []
+  aliases_ar: [فاصوليا]
+  food: {source: SR_LEGACY, code: '16049'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANNED_RED_KIDNEY_BEANS
+  name_en: 'Red kidney beans, canned'
+  name_ar: فاصوليا حمراء معلبة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16034'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANNED_FAVA_BEANS
+  name_en: 'Fava beans, cooked (canned substitute)'
+  name_ar: فول مطبوخ
+  aliases_en: []
+  aliases_ar: [فول مدمس]
+  food: {source: SR_LEGACY, code: '16053'}
+  state: cooked
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BLACK_EYED_PEAS
+  name_en: 'Black-eyed peas, dried'
+  name_ar: لوبيا جافة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16062'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SPLIT_PEAS
+  name_en: 'Split peas, dried'
+  name_ar: بازلاء مجروشة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16085'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: HUMMUS
+  name_en: 'Hummus, commercial'
+  name_ar: حمص بالطحينة جاهز
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '16158'}
+  state: as_purchased
+  allergens: [SESAME]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PEANUTS_DRY_ROASTED_UNSALTED
+  name_en: 'Peanuts, dry-roasted, unsalted'
+  name_ar: فول سوداني محمص بدون ملح
+  aliases_en: []
+  aliases_ar: [كاكاوية]
+  food: {source: SR_LEGACY, code: '16390'}
+  state: as_purchased
+  allergens: [PEANUT]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: MEDJOOL_DATES
+  name_en: 'Medjool dates'
+  name_ar: تمر مجهول
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09421'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: FIGS
+  name_en: 'Figs, fresh'
+  name_ar: تين طازج
+  aliases_en: []
+  aliases_ar: [كرموس]
+  food: {source: SR_LEGACY, code: '09089'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DRIED_FIGS
+  name_en: 'Figs, dried'
+  name_ar: تين مجفف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09094'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WATERMELON
+  name_en: 'Watermelon'
+  name_ar: بطيخ
+  aliases_en: []
+  aliases_ar: [دلاع]
+  food: {source: SR_LEGACY, code: '09326'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CANTALOUPE
+  name_en: 'Cantaloupe melon'
+  name_ar: شمام
+  aliases_en: []
+  aliases_ar: [بطيخ أصفر]
+  food: {source: SR_LEGACY, code: '09181'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: POMEGRANATE
+  name_en: 'Pomegranate'
+  name_ar: رمان
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09286'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: APRICOT
+  name_en: 'Apricot'
+  name_ar: مشمش
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09021'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DRIED_APRICOTS
+  name_en: 'Apricots, dried'
+  name_ar: مشمش مجفف
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09032'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PEACH
+  name_en: 'Peach'
+  name_ar: خوخ
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09236'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PEAR
+  name_en: 'Pear'
+  name_ar: كمثرى
+  aliases_en: []
+  aliases_ar: [إجاص]
+  food: {source: SR_LEGACY, code: '09252'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: RAISINS
+  name_en: 'Raisins'
+  name_ar: زبيب
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09298'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PRICKLY_PEAR
+  name_en: 'Prickly pear'
+  name_ar: هندي (تين شوكي)
+  aliases_en: []
+  aliases_ar: [تين شوكي]
+  food: {source: SR_LEGACY, code: '09287'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: MANGO
+  name_en: 'Mango'
+  name_ar: مانجو
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09176'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: KIWI
+  name_en: 'Kiwifruit'
+  name_ar: كيوي
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09148'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GUAVA
+  name_en: 'Guava'
+  name_ar: جوافة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09139'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LEMON
+  name_en: 'Lemon'
+  name_ar: ليمون
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09150'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LIME_JUICE
+  name_en: 'Lime juice'
+  name_ar: عصير ليمون أخضر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09160'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ORANGE_JUICE
+  name_en: 'Orange juice, fresh'
+  name_ar: عصير برتقال طازج
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09206'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BLUEBERRIES
+  name_en: 'Blueberries'
+  name_ar: توت أزرق
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09050'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PLUM
+  name_en: 'Plum'
+  name_ar: برقوق
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09279'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SWEET_CHERRIES
+  name_en: 'Sweet cherries'
+  name_ar: كرز
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09070'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEN_OLIVES
+  name_en: 'Green olives'
+  name_ar: زيتون أخضر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '09195'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ZUCCHINI
+  name_en: 'Zucchini'
+  name_ar: كوسا
+  aliases_en: []
+  aliases_ar: [قرعة]
+  food: {source: SR_LEGACY, code: '11477'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: EGGPLANT
+  name_en: 'Eggplant'
+  name_ar: باذنجان
+  aliases_en: []
+  aliases_ar: [بدنجان]
+  food: {source: SR_LEGACY, code: '11209'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CABBAGE
+  name_en: 'Cabbage'
+  name_ar: ملفوف
+  aliases_en: []
+  aliases_ar: [كرنب]
+  food: {source: SR_LEGACY, code: '11109'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CAULIFLOWER
+  name_en: 'Cauliflower'
+  name_ar: قرنبيط
+  aliases_en: []
+  aliases_ar: [زهرة]
+  food: {source: SR_LEGACY, code: '11135'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BROCCOLI
+  name_en: 'Broccoli'
+  name_ar: بروكلي
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11090'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SPINACH
+  name_en: 'Spinach'
+  name_ar: سبانخ
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11457'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SWISS_CHARD
+  name_en: 'Swiss chard'
+  name_ar: سلق
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11147'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEN_BEANS
+  name_en: 'Green beans'
+  name_ar: فاصوليا خضراء
+  aliases_en: []
+  aliases_ar: [لوبيا خضراء]
+  food: {source: SR_LEGACY, code: '11052'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CELERY
+  name_en: 'Celery'
+  name_ar: كرفس
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11143'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: LEEK
+  name_en: 'Leek'
+  name_ar: كراث
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11246'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BEETS
+  name_en: 'Beets'
+  name_ar: شمندر
+  aliases_en: []
+  aliases_ar: [بنجر]
+  food: {source: SR_LEGACY, code: '11080'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SWEET_POTATO
+  name_en: 'Sweet potato'
+  name_ar: بطاطا حلوة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11507'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: RED_BELL_PEPPER
+  name_en: 'Red bell pepper'
+  name_ar: فلفل أحمر حلو
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11821'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: MUSHROOMS
+  name_en: 'White mushrooms'
+  name_ar: فطر
+  aliases_en: []
+  aliases_ar: [مشروم]
+  food: {source: SR_LEGACY, code: '11260'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ARTICHOKE
+  name_en: 'Artichoke'
+  name_ar: خرشوف
+  aliases_en: []
+  aliases_ar: [أرضي شوكي]
+  food: {source: SR_LEGACY, code: '11007'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: JUTE_LEAVES
+  name_en: 'Jute leaves (molokhia), cooked'
+  name_ar: ملوخية مطبوخة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11232'}
+  state: cooked
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SWEET_CORN
+  name_en: 'Sweet corn'
+  name_ar: ذرة حلوة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11167'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SCALLIONS
+  name_en: 'Scallions'
+  name_ar: بصل أخضر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11291'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: RADISH
+  name_en: 'Radish'
+  name_ar: فجل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11429'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: TURNIP
+  name_en: 'Turnip'
+  name_ar: لفت
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11564'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: ARUGULA
+  name_en: 'Arugula'
+  name_ar: جرجير
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11959'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: FENNEL_BULB
+  name_en: 'Fennel bulb'
+  name_ar: شمر طازج
+  aliases_en: []
+  aliases_ar: [بسباس]
+  food: {source: SR_LEGACY, code: '11957'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GRAPE_LEAVES
+  name_en: 'Grape leaves'
+  name_ar: ورق عنب
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11974'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BUTTERNUT_SQUASH
+  name_en: 'Butternut squash'
+  name_ar: قرع عسلي
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11485'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PURSLANE
+  name_en: 'Purslane'
+  name_ar: رجلة
+  aliases_en: []
+  aliases_ar: [بقلة]
+  food: {source: SR_LEGACY, code: '11427'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: DILL_PICKLES
+  name_en: 'Pickled cucumber'
+  name_ar: مخلل خيار
+  aliases_en: []
+  aliases_ar: [طرشي]
+  food: {source: SR_LEGACY, code: '11937'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: FROZEN_MIXED_VEGETABLES
+  name_en: 'Mixed vegetables, frozen'
+  name_ar: خضار مشكلة مجمدة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11583'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: TOMATO_SAUCE_CANNED
+  name_en: 'Tomato sauce, canned'
+  name_ar: صلصة طماطم معلبة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '11549'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PISTACHIOS
+  name_en: 'Pistachios'
+  name_ar: فستق حلبي
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12151'}
+  state: raw
+  allergens: [TREE_NUTS]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PINE_NUTS
+  name_en: 'Pine nuts'
+  name_ar: صنوبر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12147'}
+  state: raw
+  allergens: [TREE_NUTS]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SESAME_SEEDS
+  name_en: 'Sesame seeds'
+  name_ar: سمسم
+  aliases_en: []
+  aliases_ar: [جلجلان]
+  food: {source: SR_LEGACY, code: '12023'}
+  state: raw
+  allergens: [SESAME]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CASHEWS
+  name_en: 'Cashews'
+  name_ar: كاجو
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12087'}
+  state: raw
+  allergens: [TREE_NUTS]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: HAZELNUTS
+  name_en: 'Hazelnuts'
+  name_ar: بندق
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12120'}
+  state: raw
+  allergens: [TREE_NUTS]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SUNFLOWER_SEEDS
+  name_en: 'Sunflower seeds'
+  name_ar: بذر دوار الشمس
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12036'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PUMPKIN_SEEDS
+  name_en: 'Pumpkin seeds'
+  name_ar: بذر اليقطين
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12014'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: FLAXSEED
+  name_en: 'Flaxseed'
+  name_ar: بذر الكتان
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12220'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: CHIA_SEEDS
+  name_en: 'Chia seeds'
+  name_ar: بذور الشيا
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '12006'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BROWN_RICE
+  name_en: 'Brown rice'
+  name_ar: رز بني
+  aliases_en: []
+  aliases_ar: [أرز بني]
+  food: {source: SR_LEGACY, code: '20036'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SEMOLINA
+  name_en: 'Semolina'
+  name_ar: سميد
+  aliases_en: []
+  aliases_ar: [سميد القمح]
+  food: {source: SR_LEGACY, code: '20466'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: PENDING
+- code: WHOLE_WHEAT_FLOUR
+  name_en: 'Whole-wheat flour'
+  name_ar: دقيق قمح كامل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20080'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: QUINOA
+  name_en: 'Quinoa, cooked'
+  name_ar: كينوا مطبوخة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20137'}
+  state: cooked
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: PEARL_BARLEY
+  name_en: 'Pearled barley'
+  name_ar: شعير مقشور
+  aliases_en: []
+  aliases_ar: [شعير]
+  food: {source: SR_LEGACY, code: '20005'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: OAT_BRAN
+  name_en: 'Oat bran'
+  name_ar: نخالة الشوفان
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20033'}
+  state: raw
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: WHOLE_WHEAT_PASTA
+  name_en: 'Whole-wheat pasta'
+  name_ar: معكرونة قمح كامل
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '20124'}
+  state: raw
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: WHITE_PITA_BREAD
+  name_en: 'White pita bread'
+  name_ar: خبز عربي أبيض
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '18041'}
+  state: as_purchased
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: FRENCH_BREAD
+  name_en: 'French bread (Libyan khubza)'
+  name_ar: خبز فرنسي (خبزة)
+  aliases_en: []
+  aliases_ar: [خبزة]
+  food: {source: SR_LEGACY, code: '18029'}
+  state: as_purchased
+  allergens: [GLUTEN]
+  ingredient_tags: []
+  review_status: APPROVED
+- code: POPCORN_AIR_POPPED
+  name_en: 'Popcorn, air-popped'
+  name_ar: فشار
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '19034'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: SUGAR
+  name_en: 'Sugar, granulated'
+  name_ar: سكر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '19335'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: [added_sugar]
+  review_status: APPROVED
+- code: MOLASSES
+  name_en: 'Molasses'
+  name_ar: دبس
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '19304'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: [added_sugar]
+  review_status: APPROVED
+- code: JAM
+  name_en: 'Jam'
+  name_ar: مربى
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '19297'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: [added_sugar]
+  review_status: APPROVED
+- code: BLACK_TEA_BREWED
+  name_en: 'Black tea, brewed'
+  name_ar: شاي أحمر
+  aliases_en: []
+  aliases_ar: [شاي]
+  food: {source: SR_LEGACY, code: '14355'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: GREEN_TEA_BREWED
+  name_en: 'Green tea, brewed'
+  name_ar: شاي أخضر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '14278'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: COFFEE_BREWED
+  name_en: 'Coffee, brewed'
+  name_ar: قهوة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '14209'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: BAKING_POWDER
+  name_en: 'Baking powder'
+  name_ar: بيكنج باودر
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '18369'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: PENDING
+- code: BAKING_SODA
+  name_en: 'Baking soda'
+  name_ar: بيكربونات الصوديوم
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '18372'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED
+- code: DRY_YEAST
+  name_en: 'Yeast, active dry'
+  name_ar: خميرة جافة
+  aliases_en: []
+  aliases_ar: []
+  food: {source: SR_LEGACY, code: '18375'}
+  state: as_purchased
+  allergens: []
+  ingredient_tags: []
+  review_status: APPROVED

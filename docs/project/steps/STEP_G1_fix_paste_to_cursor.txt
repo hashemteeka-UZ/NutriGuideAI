@@ -1,0 +1,17 @@
+Review of pass G.1: the pipeline design, the #93 evidence and the test results are accepted. Before the user commits, fix these test-quality and code-hygiene items. No behaviour change, no schema change, nothing under `data/f1_slice/` or the F.1 code. Do not commit.
+
+1. **No vacuous assertions.** Remove every assertion that cannot fail (e.g. `assert ... or True`). Each one becomes a real check or is deleted:
+   - report determinism: two builds into two different `tmp_path` folders produce byte-identical `run_report.md` and `records.csv`, AND they equal the committed golden files `tests/fixtures/catalog_mini/reports/run_report.md` and `records.csv`;
+   - manifest test: assert the exact subset file names and that each recorded SHA-256 equals the file's real SHA-256.
+2. **Tests never write into the repository.** No test may create or modify files under `tests/fixtures/` or `backend/data/catalog/`. Builds and loads in tests write their reports to `tmp_path` (copy the fixture there first if the build writes next to its inputs). The golden reports in the fixture are regenerated only by a documented command, e.g. `uv run python -m app.pipeline.build --data-dir tests/fixtures/catalog_mini`, never by pytest.
+3. **Dead code.** Remove leftovers such as `... if False else ...` branches, `__import__("yaml")`, unused imports and unused helpers in `app/pipeline/` and `tests/pipeline/`.
+4. **Fixture honesty.** The mini fixture's FNDDS subset fills sugars for 17013, but the official file has no row for 17013. Keep the fill case, but give it a synthetic NDB number that is not a real SR code used elsewhere (or add a comment in the fixture CSV header and in the test stating that the value is synthetic test data, not FNDDS). Update the golden reports.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `CI=true uv run pytest -q` (0 skipped), then run pytest a second time and `git status --short` (expected: no new or modified files caused by the test run), and:
+`grep -rnE "or True|if False|__import__" app/pipeline tests/pipeline` (expected: no output).
+
+## Report back
+1. Files changed.
+2. The replaced assertions (before → after, one line each).
+3. Test count, check outputs, the grep output, and `git status --short` after the second pytest run.
