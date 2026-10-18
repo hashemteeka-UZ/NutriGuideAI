@@ -1,4 +1,8 @@
-"""catalog_v2 manifest matches the committed catalog and notices a changed meal file."""
+"""catalog_v3 manifest matches the committed catalog and notices a changed meal file.
+
+`catalog_v3` is a new frozen catalog version. `catalog_v2` stays reachable through the
+`dataset-v2` git tag.
+"""
 
 from __future__ import annotations
 
