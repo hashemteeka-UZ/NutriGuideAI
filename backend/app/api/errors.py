@@ -102,6 +102,49 @@ class ApiError(Exception):
         self.headers = headers
 
 
+def not_implemented() -> ApiError:
+    """Raised by every route this pass only declares. Not part of the lasting contract."""
+    return ApiError(501, "NOT_IMPLEMENTED", "Not implemented")
+
+
+def error_codes(*codes: str) -> str:
+    """Last line of an operation description. 501 is never listed."""
+    return "Error codes: " + ", ".join(codes)
+
+
+# Every code named by an operation description, sorted. Later passes raise the ones
+# that are not in SERVICE_ERRORS yet: EMAIL_TAKEN, INVALID_CREDENTIALS, TOKEN_INVALID,
+# TOKEN_REUSED, UNKNOWN_CODE, PLANNER_BUSY, RATE_LIMITED, UNAUTHORIZED.
+PLANNED_ERROR_CODES: Final[tuple[str, ...]] = (
+    "CLIENT_UUID_CONFLICT",
+    "CLOCK_SKEW",
+    "CONDITION_CONFLICT",
+    "EMAIL_TAKEN",
+    "FOOD_NOT_FOUND",
+    "INCOMPLETE_NUTRITION",
+    "INVALID_CREDENTIALS",
+    "INVALID_TIMEZONE",
+    "LOG_NOT_FOUND",
+    "MEAL_NOT_FOUND",
+    "NOT_ELIGIBLE",
+    "NO_FEASIBLE_PLAN",
+    "NO_TARGET",
+    "NO_WEIGHT",
+    "PLANNER_BUSY",
+    "PLAN_ITEM_ALREADY_LOGGED",
+    "PLAN_ITEM_NOT_FOUND",
+    "PROFILE_NOT_FOUND",
+    "RATE_LIMITED",
+    "SWAP_REJECTED",
+    "TARGET_VALIDATION",
+    "TOKEN_INVALID",
+    "TOKEN_REUSED",
+    "UNAUTHORIZED",
+    "UNKNOWN_CODE",
+    "VALIDATION_ERROR",
+)
+
+
 def problem_response(
     status: int,
     code: str,

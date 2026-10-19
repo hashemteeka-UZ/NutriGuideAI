@@ -1,7 +1,1300 @@
 {
   "components": {
     "schemas": {
+      "Account": {
+        "example": {
+          "created_at": "2026-10-01T09:00:00Z",
+          "email": "user@example.com",
+          "has_profile": true,
+          "user_id": 1
+        },
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "has_profile": {
+            "title": "Has Profile",
+            "type": "boolean"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "user_id",
+          "email",
+          "created_at",
+          "has_profile"
+        ],
+        "title": "Account",
+        "type": "object"
+      },
+      "ActivityLevel": {
+        "enum": [
+          "SEDENTARY",
+          "LIGHT",
+          "MODERATE",
+          "HIGH",
+          "ATHLETE"
+        ],
+        "title": "ActivityLevel",
+        "type": "string"
+      },
+      "AdherenceRangeOut": {
+        "example": {
+          "days": [
+            {
+              "completion": 1,
+              "date": "2026-10-20",
+              "exceeded_limits": [],
+              "fiber_target_g": 30,
+              "log_count": 4,
+              "plan_items_consumed": 4,
+              "plan_items_total": 4,
+              "status": "ACHIEVED",
+              "target_kcal": 1800,
+              "totals": {
+                "carb_g": 195,
+                "fat_g": 60,
+                "fiber_g": 22,
+                "kcal": 1800,
+                "protein_g": 120,
+                "saturated_fat_g": 14,
+                "sodium_mg": 1550,
+                "sugars_g": 36
+              },
+              "unmet_minimums": [
+                {
+                  "minimum": 30,
+                  "nutrient": "fiber",
+                  "total": 22
+                }
+              ]
+            }
+          ],
+          "streak": 4
+        },
+        "properties": {
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayAdherenceOut"
+            },
+            "title": "Days",
+            "type": "array"
+          },
+          "streak": {
+            "title": "Streak",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "days",
+          "streak"
+        ],
+        "title": "AdherenceRangeOut",
+        "type": "object"
+      },
+      "AllergenChoice": {
+        "additionalProperties": false,
+        "example": {
+          "code": "GLUTEN",
+          "severity": "AVOID"
+        },
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/AllergenSeverity"
+          }
+        },
+        "required": [
+          "code",
+          "severity"
+        ],
+        "title": "AllergenChoice",
+        "type": "object"
+      },
+      "AllergenSeverity": {
+        "enum": [
+          "AVOID",
+          "SEVERE"
+        ],
+        "title": "AllergenSeverity",
+        "type": "string"
+      },
+      "Alternative": {
+        "example": {
+          "kcal": 272,
+          "kcal_delta": -38.0,
+          "meal": {
+            "allergens": [
+              "EGG"
+            ],
+            "carb_g": 28,
+            "cuisine": "LIBYAN",
+            "dish_form": "ONE_DISH",
+            "fat_g": 8,
+            "kcal": 272,
+            "meal_id": 46,
+            "name": "بيض بالطماطم",
+            "protein_g": 22,
+            "serving_grams": 230,
+            "tags": [
+              "breakfast_suitable"
+            ]
+          },
+          "servings_multiplier": 1
+        },
+        "properties": {
+          "kcal": {
+            "title": "Kcal",
+            "type": "number"
+          },
+          "kcal_delta": {
+            "title": "Kcal Delta",
+            "type": "number"
+          },
+          "meal": {
+            "$ref": "#/components/schemas/MealSummary"
+          },
+          "servings_multiplier": {
+            "title": "Servings Multiplier",
+            "type": "number"
+          }
+        },
+        "required": [
+          "meal",
+          "servings_multiplier",
+          "kcal",
+          "kcal_delta"
+        ],
+        "title": "Alternative",
+        "type": "object"
+      },
+      "CatalogSnapshot": {
+        "example": {
+          "dataset_version": "catalog_v3",
+          "generated_at": "2026-10-19T12:00:00Z",
+          "meals": [
+            {
+              "allergens": [
+                "EGG"
+              ],
+              "carb_g": 30,
+              "cuisine": "LIBYAN",
+              "dataset_version": "catalog_v3",
+              "dish_form": "ONE_DISH",
+              "fat_g": 10,
+              "ingredients": [
+                {
+                  "grams_per_serving": 120,
+                  "ingredient_id": 18,
+                  "is_optional": false,
+                  "name": "طماطم"
+                },
+                {
+                  "grams_per_serving": 100,
+                  "ingredient_id": 19,
+                  "is_optional": false,
+                  "name": "بيض"
+                },
+                {
+                  "grams_per_serving": 30,
+                  "ingredient_id": 20,
+                  "is_optional": false,
+                  "name": "فلفل أحمر"
+                }
+              ],
+              "kcal": 310,
+              "meal_id": 42,
+              "name": "شكشوكة",
+              "nutrients": [
+                {
+                  "code": "energy_kcal",
+                  "per_100g": 124,
+                  "per_serving": 310,
+                  "unit": "kcal"
+                },
+                {
+                  "code": "protein",
+                  "per_100g": 10,
+                  "per_serving": 25,
+                  "unit": "g"
+                },
+                {
+                  "code": "carbohydrate",
+                  "per_100g": 12,
+                  "per_serving": 30,
+                  "unit": "g"
+                },
+                {
+                  "code": "total_fat",
+                  "per_100g": 4,
+                  "per_serving": 10,
+                  "unit": "g"
+                },
+                {
+                  "code": "fiber",
+                  "per_100g": 2.4,
+                  "per_serving": 6,
+                  "unit": "g"
+                },
+                {
+                  "code": "sodium",
+                  "per_100g": 168,
+                  "per_serving": 420,
+                  "unit": "mg"
+                }
+              ],
+              "protein_g": 25,
+              "serving_grams": 250,
+              "servings": 2,
+              "source": "NutriGuide catalog",
+              "steps": [
+                "سخّن الزيت في المقلاة.",
+                "أضف الطماطم واتركها حتى تتكثف.",
+                "اكسر البيض واطبخه حتى ينضج."
+              ],
+              "tags": [
+                "breakfast_suitable",
+                "vegetarian"
+              ],
+              "total_grams": 500
+            }
+          ]
+        },
+        "properties": {
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "meals": {
+            "items": {
+              "$ref": "#/components/schemas/SnapshotMeal"
+            },
+            "title": "Meals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "dataset_version",
+          "generated_at",
+          "meals"
+        ],
+        "title": "CatalogSnapshot",
+        "type": "object"
+      },
+      "CodeName": {
+        "example": {
+          "code": "GLUTEN",
+          "name": "الغلوتين"
+        },
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "CodeName",
+        "type": "object"
+      },
+      "ConditionChoice": {
+        "additionalProperties": false,
+        "example": {
+          "code": "HYPERTENSION",
+          "severity": "MODERATE"
+        },
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConditionSeverity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "title": "ConditionChoice",
+        "type": "object"
+      },
+      "ConditionRef": {
+        "example": {
+          "code": "HYPERTENSION",
+          "fluid_goal_requires_clinician": false,
+          "is_supported": true,
+          "name": "ارتفاع ضغط الدم"
+        },
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "fluid_goal_requires_clinician": {
+            "title": "Fluid Goal Requires Clinician",
+            "type": "boolean"
+          },
+          "is_supported": {
+            "title": "Is Supported",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "is_supported",
+          "fluid_goal_requires_clinician"
+        ],
+        "title": "ConditionRef",
+        "type": "object"
+      },
+      "ConditionSeverity": {
+        "enum": [
+          "MILD",
+          "MODERATE",
+          "SEVERE"
+        ],
+        "title": "ConditionSeverity",
+        "type": "string"
+      },
+      "ConsumptionLogOut": {
+        "example": {
+          "consumed_at": "2026-10-20T08:15:00Z",
+          "grams_consumed": 250,
+          "kind": "PLAN_ITEM",
+          "log_date": "2026-10-20",
+          "log_id": 21,
+          "meal_id": 42,
+          "name": "شكشوكة",
+          "nutrients": {
+            "carb_g": 30,
+            "fat_g": 10,
+            "fiber_g": 6,
+            "kcal": 310,
+            "protein_g": 25,
+            "saturated_fat_g": 3,
+            "sodium_mg": 420,
+            "sugars_g": 8
+          },
+          "plan_item_id": 5,
+          "servings_consumed": 1,
+          "slot": "BREAKFAST",
+          "status": "CREATED"
+        },
+        "properties": {
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          },
+          "food_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Food Id"
+          },
+          "grams_consumed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grams Consumed"
+          },
+          "kind": {
+            "enum": [
+              "PLAN_ITEM",
+              "MEAL",
+              "FOOD"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "log_date": {
+            "format": "date",
+            "title": "Log Date",
+            "type": "string"
+          },
+          "log_id": {
+            "title": "Log Id",
+            "type": "integer"
+          },
+          "meal_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meal Id"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "nutrients": {
+            "$ref": "#/components/schemas/NutrientTotals"
+          },
+          "plan_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Item Id"
+          },
+          "servings_consumed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Servings Consumed"
+          },
+          "slot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MealSlot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "CREATED",
+              "DUPLICATE"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "log_id",
+          "kind",
+          "log_date",
+          "consumed_at",
+          "name",
+          "nutrients",
+          "status"
+        ],
+        "title": "ConsumptionLogOut",
+        "type": "object"
+      },
+      "DayAdherenceOut": {
+        "example": {
+          "completion": 1,
+          "date": "2026-10-20",
+          "exceeded_limits": [],
+          "fiber_target_g": 30,
+          "log_count": 4,
+          "plan_items_consumed": 4,
+          "plan_items_total": 4,
+          "status": "ACHIEVED",
+          "target_kcal": 1800,
+          "totals": {
+            "carb_g": 195,
+            "fat_g": 60,
+            "fiber_g": 22,
+            "kcal": 1800,
+            "protein_g": 120,
+            "saturated_fat_g": 14,
+            "sodium_mg": 1550,
+            "sugars_g": 36
+          },
+          "unmet_minimums": [
+            {
+              "minimum": 30,
+              "nutrient": "fiber",
+              "total": 22
+            }
+          ]
+        },
+        "properties": {
+          "completion": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completion"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "exceeded_limits": {
+            "items": {
+              "$ref": "#/components/schemas/ExceededLimitOut"
+            },
+            "title": "Exceeded Limits",
+            "type": "array"
+          },
+          "fiber_target_g": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fiber Target G"
+          },
+          "log_count": {
+            "title": "Log Count",
+            "type": "integer"
+          },
+          "plan_items_consumed": {
+            "title": "Plan Items Consumed",
+            "type": "integer"
+          },
+          "plan_items_total": {
+            "title": "Plan Items Total",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ACHIEVED",
+                  "PARTIAL",
+                  "NOT_ACHIEVED"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "target_kcal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Kcal"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/NutrientTotals"
+          },
+          "unmet_minimums": {
+            "items": {
+              "$ref": "#/components/schemas/UnmetMinimumOut"
+            },
+            "title": "Unmet Minimums",
+            "type": "array"
+          }
+        },
+        "required": [
+          "date",
+          "totals",
+          "log_count",
+          "exceeded_limits",
+          "unmet_minimums",
+          "plan_items_total",
+          "plan_items_consumed"
+        ],
+        "title": "DayAdherenceOut",
+        "type": "object"
+      },
+      "DayPlanOut": {
+        "example": {
+          "algorithm_version": "cpsat_v1",
+          "created_at": "2026-10-19T21:05:00Z",
+          "date": "2026-10-20",
+          "items": [
+            {
+              "carb_g": 30,
+              "fat_g": 10,
+              "grams": 250,
+              "kcal": 310,
+              "logged": true,
+              "meal": {
+                "allergens": [
+                  "EGG"
+                ],
+                "carb_g": 30,
+                "cuisine": "LIBYAN",
+                "dish_form": "ONE_DISH",
+                "fat_g": 10,
+                "kcal": 310,
+                "meal_id": 42,
+                "my_stance": "LIKE",
+                "name": "شكشوكة",
+                "protein_g": 25,
+                "serving_grams": 250,
+                "tags": [
+                  "breakfast_suitable",
+                  "vegetarian"
+                ]
+              },
+              "plan_item_id": 5,
+              "protein_g": 25,
+              "reason_codes": [
+                "HIGH_PROTEIN"
+              ],
+              "servings_multiplier": 1,
+              "slot": "BREAKFAST",
+              "was_swapped": false
+            },
+            {
+              "carb_g": 50,
+              "fat_g": 20,
+              "grams": 380,
+              "kcal": 500,
+              "logged": true,
+              "meal": {
+                "allergens": [],
+                "carb_g": 50,
+                "cuisine": "LIBYAN",
+                "dish_form": "ONE_DISH",
+                "fat_g": 20,
+                "kcal": 500,
+                "meal_id": 43,
+                "name": "ملوخية",
+                "protein_g": 30,
+                "serving_grams": 380,
+                "tags": [
+                  "lunch_suitable"
+                ]
+              },
+              "plan_item_id": 6,
+              "protein_g": 30,
+              "reason_codes": [
+                "HIGH_PROTEIN"
+              ],
+              "servings_multiplier": 1,
+              "slot": "LUNCH",
+              "was_swapped": false
+            },
+            {
+              "carb_g": 70,
+              "fat_g": 20,
+              "grams": 450,
+              "kcal": 640,
+              "logged": true,
+              "meal": {
+                "allergens": [
+                  "GLUTEN"
+                ],
+                "carb_g": 70,
+                "cuisine": "LIBYAN",
+                "dish_form": "PLATE",
+                "fat_g": 20,
+                "kcal": 640,
+                "meal_id": 44,
+                "name": "كسكس بالدجاج",
+                "protein_g": 45,
+                "serving_grams": 450,
+                "tags": [
+                  "dinner_suitable"
+                ]
+              },
+              "plan_item_id": 7,
+              "protein_g": 45,
+              "reason_codes": [
+                "HIGH_PROTEIN"
+              ],
+              "servings_multiplier": 1,
+              "slot": "DINNER",
+              "was_swapped": false
+            },
+            {
+              "carb_g": 45,
+              "fat_g": 10,
+              "grams": 200,
+              "kcal": 350,
+              "logged": true,
+              "meal": {
+                "allergens": [
+                  "MILK"
+                ],
+                "carb_g": 45,
+                "cuisine": "LEVANTINE",
+                "dish_form": "ONE_DISH",
+                "fat_g": 10,
+                "kcal": 350,
+                "meal_id": 45,
+                "name": "لبنة بالزيت",
+                "protein_g": 20,
+                "serving_grams": 200,
+                "tags": [
+                  "snack_suitable"
+                ]
+              },
+              "plan_item_id": 8,
+              "protein_g": 20,
+              "reason_codes": [
+                "HIGH_PROTEIN"
+              ],
+              "servings_multiplier": 1,
+              "slot": "SNACK",
+              "was_swapped": false
+            }
+          ],
+          "kcal_within_10pct": true,
+          "plan_id": 15,
+          "stats": {
+            "candidate_meals": 86,
+            "kcal_relaxed": false,
+            "solve_seconds": 0.842,
+            "solver_status": "FEASIBLE"
+          },
+          "target": {
+            "carb_g": 195,
+            "fat_g": 60,
+            "fiber_g": 30,
+            "kcal": 1800,
+            "protein_g": 120
+          },
+          "totals": {
+            "carb_g": 195.0,
+            "fat_g": 60.0,
+            "fiber_g": 22,
+            "kcal": 1800.0,
+            "protein_g": 120.0,
+            "saturated_fat_g": 14,
+            "sodium_mg": 1550,
+            "sugars_g": 36
+          },
+          "unmet_minimums": [
+            {
+              "minimum": 30,
+              "nutrient": "fiber",
+              "total": 22
+            }
+          ]
+        },
+        "properties": {
+          "algorithm_version": {
+            "title": "Algorithm Version",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlanItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "kcal_within_10pct": {
+            "title": "Kcal Within 10Pct",
+            "type": "boolean"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "integer"
+          },
+          "stats": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanStats"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "target": {
+            "$ref": "#/components/schemas/PlanTargetOut"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/NutrientTotals"
+          },
+          "unmet_minimums": {
+            "items": {
+              "$ref": "#/components/schemas/UnmetMinimumOut"
+            },
+            "title": "Unmet Minimums",
+            "type": "array"
+          }
+        },
+        "required": [
+          "plan_id",
+          "date",
+          "algorithm_version",
+          "created_at",
+          "target",
+          "items",
+          "totals",
+          "kcal_within_10pct",
+          "unmet_minimums"
+        ],
+        "title": "DayPlanOut",
+        "type": "object"
+      },
+      "DayView": {
+        "example": {
+          "adherence": {
+            "completion": 1,
+            "date": "2026-10-20",
+            "exceeded_limits": [],
+            "fiber_target_g": 30,
+            "log_count": 4,
+            "plan_items_consumed": 4,
+            "plan_items_total": 4,
+            "status": "ACHIEVED",
+            "target_kcal": 1800,
+            "totals": {
+              "carb_g": 195,
+              "fat_g": 60,
+              "fiber_g": 22,
+              "kcal": 1800,
+              "protein_g": 120,
+              "saturated_fat_g": 14,
+              "sodium_mg": 1550,
+              "sugars_g": 36
+            },
+            "unmet_minimums": [
+              {
+                "minimum": 30,
+                "nutrient": "fiber",
+                "total": 22
+              }
+            ]
+          },
+          "date": "2026-10-20",
+          "meal_windows": [
+            {
+              "end": "10:00",
+              "slot": "BREAKFAST",
+              "start": "07:00"
+            },
+            {
+              "end": "15:00",
+              "slot": "LUNCH",
+              "start": "12:00"
+            },
+            {
+              "end": "21:00",
+              "slot": "DINNER",
+              "start": "18:00"
+            },
+            {
+              "end": "17:30",
+              "slot": "SNACK",
+              "start": "16:00"
+            }
+          ],
+          "plan": {
+            "algorithm_version": "cpsat_v1",
+            "created_at": "2026-10-19T21:05:00Z",
+            "date": "2026-10-20",
+            "items": [
+              {
+                "carb_g": 30,
+                "fat_g": 10,
+                "grams": 250,
+                "kcal": 310,
+                "logged": true,
+                "meal": {
+                  "allergens": [
+                    "EGG"
+                  ],
+                  "carb_g": 30,
+                  "cuisine": "LIBYAN",
+                  "dish_form": "ONE_DISH",
+                  "fat_g": 10,
+                  "kcal": 310,
+                  "meal_id": 42,
+                  "my_stance": "LIKE",
+                  "name": "شكشوكة",
+                  "protein_g": 25,
+                  "serving_grams": 250,
+                  "tags": [
+                    "breakfast_suitable",
+                    "vegetarian"
+                  ]
+                },
+                "plan_item_id": 5,
+                "protein_g": 25,
+                "reason_codes": [
+                  "HIGH_PROTEIN"
+                ],
+                "servings_multiplier": 1,
+                "slot": "BREAKFAST",
+                "was_swapped": false
+              },
+              {
+                "carb_g": 50,
+                "fat_g": 20,
+                "grams": 380,
+                "kcal": 500,
+                "logged": true,
+                "meal": {
+                  "allergens": [],
+                  "carb_g": 50,
+                  "cuisine": "LIBYAN",
+                  "dish_form": "ONE_DISH",
+                  "fat_g": 20,
+                  "kcal": 500,
+                  "meal_id": 43,
+                  "name": "ملوخية",
+                  "protein_g": 30,
+                  "serving_grams": 380,
+                  "tags": [
+                    "lunch_suitable"
+                  ]
+                },
+                "plan_item_id": 6,
+                "protein_g": 30,
+                "reason_codes": [
+                  "HIGH_PROTEIN"
+                ],
+                "servings_multiplier": 1,
+                "slot": "LUNCH",
+                "was_swapped": false
+              },
+              {
+                "carb_g": 70,
+                "fat_g": 20,
+                "grams": 450,
+                "kcal": 640,
+                "logged": true,
+                "meal": {
+                  "allergens": [
+                    "GLUTEN"
+                  ],
+                  "carb_g": 70,
+                  "cuisine": "LIBYAN",
+                  "dish_form": "PLATE",
+                  "fat_g": 20,
+                  "kcal": 640,
+                  "meal_id": 44,
+                  "name": "كسكس بالدجاج",
+                  "protein_g": 45,
+                  "serving_grams": 450,
+                  "tags": [
+                    "dinner_suitable"
+                  ]
+                },
+                "plan_item_id": 7,
+                "protein_g": 45,
+                "reason_codes": [
+                  "HIGH_PROTEIN"
+                ],
+                "servings_multiplier": 1,
+                "slot": "DINNER",
+                "was_swapped": false
+              },
+              {
+                "carb_g": 45,
+                "fat_g": 10,
+                "grams": 200,
+                "kcal": 350,
+                "logged": true,
+                "meal": {
+                  "allergens": [
+                    "MILK"
+                  ],
+                  "carb_g": 45,
+                  "cuisine": "LEVANTINE",
+                  "dish_form": "ONE_DISH",
+                  "fat_g": 10,
+                  "kcal": 350,
+                  "meal_id": 45,
+                  "name": "لبنة بالزيت",
+                  "protein_g": 20,
+                  "serving_grams": 200,
+                  "tags": [
+                    "snack_suitable"
+                  ]
+                },
+                "plan_item_id": 8,
+                "protein_g": 20,
+                "reason_codes": [
+                  "HIGH_PROTEIN"
+                ],
+                "servings_multiplier": 1,
+                "slot": "SNACK",
+                "was_swapped": false
+              }
+            ],
+            "kcal_within_10pct": true,
+            "plan_id": 15,
+            "stats": {
+              "candidate_meals": 86,
+              "kcal_relaxed": false,
+              "solve_seconds": 0.842,
+              "solver_status": "FEASIBLE"
+            },
+            "target": {
+              "carb_g": 195,
+              "fat_g": 60,
+              "fiber_g": 30,
+              "kcal": 1800,
+              "protein_g": 120
+            },
+            "totals": {
+              "carb_g": 195.0,
+              "fat_g": 60.0,
+              "fiber_g": 22,
+              "kcal": 1800.0,
+              "protein_g": 120.0,
+              "saturated_fat_g": 14,
+              "sodium_mg": 1550,
+              "sugars_g": 36
+            },
+            "unmet_minimums": [
+              {
+                "minimum": 30,
+                "nutrient": "fiber",
+                "total": 22
+              }
+            ]
+          },
+          "water": {
+            "date": "2026-10-20",
+            "goal": {
+              "goal_ml": 2500,
+              "reminders_default_off": false,
+              "requires_clinician": false,
+              "source": "USER"
+            },
+            "logs": [
+              {
+                "amount_ml": 250,
+                "consumed_at": "2026-10-20T09:00:00Z",
+                "log_id": 3
+              },
+              {
+                "amount_ml": 500,
+                "consumed_at": "2026-10-20T13:00:00Z",
+                "log_id": 4
+              }
+            ],
+            "total_ml": 750
+          }
+        },
+        "properties": {
+          "adherence": {
+            "$ref": "#/components/schemas/DayAdherenceOut"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "meal_windows": {
+            "items": {
+              "$ref": "#/components/schemas/MealWindow"
+            },
+            "title": "Meal Windows",
+            "type": "array"
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DayPlanOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "water": {
+            "$ref": "#/components/schemas/WaterDay"
+          }
+        },
+        "required": [
+          "date",
+          "meal_windows",
+          "adherence",
+          "water"
+        ],
+        "title": "DayView",
+        "type": "object"
+      },
+      "DishForm": {
+        "enum": [
+          "ONE_DISH",
+          "PLATE"
+        ],
+        "title": "DishForm",
+        "type": "string"
+      },
+      "ExceededLimitOut": {
+        "example": {
+          "limit": 2000,
+          "nutrient": "sodium",
+          "total": 2400
+        },
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "number"
+          },
+          "nutrient": {
+            "title": "Nutrient",
+            "type": "string"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          }
+        },
+        "required": [
+          "nutrient",
+          "limit"
+        ],
+        "title": "ExceededLimitOut",
+        "type": "object"
+      },
+      "FoodLog": {
+        "additionalProperties": false,
+        "properties": {
+          "client_uuid": {
+            "format": "uuid",
+            "title": "Client Uuid",
+            "type": "string"
+          },
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          },
+          "food_id": {
+            "title": "Food Id",
+            "type": "integer"
+          },
+          "grams_consumed": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 3000.0,
+            "title": "Grams Consumed",
+            "type": "number"
+          },
+          "kind": {
+            "const": "FOOD",
+            "title": "Kind",
+            "type": "string"
+          },
+          "slot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MealSlot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "client_uuid",
+          "food_id",
+          "grams_consumed",
+          "consumed_at"
+        ],
+        "title": "FoodLog",
+        "type": "object"
+      },
+      "GoalType": {
+        "enum": [
+          "LOSE",
+          "MAINTAIN",
+          "GAIN"
+        ],
+        "title": "GoalType",
+        "type": "string"
+      },
       "HealthResponse": {
+        "example": {
+          "api_version": "0.2.0",
+          "database": "ok",
+          "dataset_version": "catalog_v3",
+          "default_planner": "cpsat",
+          "status": "ok"
+        },
         "properties": {
           "api_version": {
             "title": "Api Version",
@@ -41,6 +1334,1247 @@
           "default_planner"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "IngredientChoice": {
+        "additionalProperties": false,
+        "example": {
+          "ingredient_id": 18,
+          "stance": "LIKE"
+        },
+        "properties": {
+          "ingredient_id": {
+            "title": "Ingredient Id",
+            "type": "integer"
+          },
+          "stance": {
+            "$ref": "#/components/schemas/IngredientStance"
+          }
+        },
+        "required": [
+          "ingredient_id",
+          "stance"
+        ],
+        "title": "IngredientChoice",
+        "type": "object"
+      },
+      "IngredientHit": {
+        "example": {
+          "code": "FOUL_MEDAMES",
+          "food_id": 18,
+          "ingredient_id": 18,
+          "name": "فول مدمس"
+        },
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "food_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Food Id"
+          },
+          "ingredient_id": {
+            "title": "Ingredient Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ingredient_id",
+          "code",
+          "name"
+        ],
+        "title": "IngredientHit",
+        "type": "object"
+      },
+      "IngredientPage": {
+        "example": {
+          "items": [
+            {
+              "code": "FOUL_MEDAMES",
+              "food_id": 18,
+              "ingredient_id": 18,
+              "name": "فول مدمس"
+            }
+          ],
+          "total": 1
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IngredientHit"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "IngredientPage",
+        "type": "object"
+      },
+      "IngredientStance": {
+        "enum": [
+          "LIKE",
+          "DISLIKE",
+          "EXCLUDE"
+        ],
+        "title": "IngredientStance",
+        "type": "string"
+      },
+      "InteractionCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "client_uuid": {
+            "format": "uuid",
+            "title": "Client Uuid",
+            "type": "string"
+          },
+          "event_type": {
+            "enum": [
+              "IMPRESSION",
+              "VIEW",
+              "SAVE",
+              "RATE",
+              "COOK",
+              "SKIP"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          },
+          "plan_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Item Id"
+          },
+          "screen": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Screen"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "client_uuid",
+          "meal_id",
+          "event_type"
+        ],
+        "title": "InteractionCreate",
+        "type": "object"
+      },
+      "InteractionOut": {
+        "example": {
+          "interaction_id": 9,
+          "status": "CREATED"
+        },
+        "properties": {
+          "interaction_id": {
+            "title": "Interaction Id",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "CREATED",
+              "DUPLICATE"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "interaction_id",
+          "status"
+        ],
+        "title": "InteractionOut",
+        "type": "object"
+      },
+      "LogCorrection": {
+        "additionalProperties": false,
+        "properties": {
+          "consumed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consumed At"
+          },
+          "grams_consumed": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 3000.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grams Consumed"
+          },
+          "new_client_uuid": {
+            "format": "uuid",
+            "title": "New Client Uuid",
+            "type": "string"
+          },
+          "servings_consumed": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 10.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Servings Consumed"
+          },
+          "slot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MealSlot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "new_client_uuid"
+        ],
+        "title": "LogCorrection",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "format": "email",
+            "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "MealDetail": {
+        "example": {
+          "allergens": [
+            "EGG"
+          ],
+          "carb_g": 30,
+          "cuisine": "LIBYAN",
+          "dataset_version": "catalog_v3",
+          "dish_form": "ONE_DISH",
+          "fat_g": 10,
+          "ingredients": [
+            {
+              "grams_per_serving": 120,
+              "ingredient_id": 18,
+              "is_optional": false,
+              "name": "طماطم"
+            },
+            {
+              "grams_per_serving": 100,
+              "ingredient_id": 19,
+              "is_optional": false,
+              "name": "بيض"
+            },
+            {
+              "grams_per_serving": 30,
+              "ingredient_id": 20,
+              "is_optional": false,
+              "name": "فلفل أحمر"
+            }
+          ],
+          "kcal": 310,
+          "meal_id": 42,
+          "my_stance": "LIKE",
+          "name": "شكشوكة",
+          "nutrients": [
+            {
+              "code": "energy_kcal",
+              "per_100g": 124,
+              "per_serving": 310,
+              "unit": "kcal"
+            },
+            {
+              "code": "protein",
+              "per_100g": 10,
+              "per_serving": 25,
+              "unit": "g"
+            },
+            {
+              "code": "carbohydrate",
+              "per_100g": 12,
+              "per_serving": 30,
+              "unit": "g"
+            },
+            {
+              "code": "total_fat",
+              "per_100g": 4,
+              "per_serving": 10,
+              "unit": "g"
+            },
+            {
+              "code": "fiber",
+              "per_100g": 2.4,
+              "per_serving": 6,
+              "unit": "g"
+            },
+            {
+              "code": "sodium",
+              "per_100g": 168,
+              "per_serving": 420,
+              "unit": "mg"
+            }
+          ],
+          "protein_g": 25,
+          "serving_grams": 250,
+          "servings": 2,
+          "source": "NutriGuide catalog",
+          "steps": [
+            "سخّن الزيت في المقلاة.",
+            "أضف الطماطم واتركها حتى تتكثف.",
+            "اكسر البيض واطبخه حتى ينضج."
+          ],
+          "tags": [
+            "breakfast_suitable",
+            "vegetarian"
+          ],
+          "total_grams": 500
+        },
+        "properties": {
+          "allergens": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allergens",
+            "type": "array"
+          },
+          "carb_g": {
+            "title": "Carb G",
+            "type": "number"
+          },
+          "cuisine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cuisine"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "dish_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DishForm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fat_g": {
+            "title": "Fat G",
+            "type": "number"
+          },
+          "ingredients": {
+            "items": {
+              "$ref": "#/components/schemas/MealIngredientOut"
+            },
+            "title": "Ingredients",
+            "type": "array"
+          },
+          "kcal": {
+            "title": "Kcal",
+            "type": "number"
+          },
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          },
+          "my_stance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MealStance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "nutrients": {
+            "items": {
+              "$ref": "#/components/schemas/NutrientAmount"
+            },
+            "title": "Nutrients",
+            "type": "array"
+          },
+          "protein_g": {
+            "title": "Protein G",
+            "type": "number"
+          },
+          "serving_grams": {
+            "title": "Serving Grams",
+            "type": "number"
+          },
+          "servings": {
+            "title": "Servings",
+            "type": "integer"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Steps",
+            "type": "array"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "total_grams": {
+            "title": "Total Grams",
+            "type": "number"
+          }
+        },
+        "required": [
+          "meal_id",
+          "name",
+          "serving_grams",
+          "kcal",
+          "protein_g",
+          "carb_g",
+          "fat_g",
+          "allergens",
+          "tags",
+          "servings",
+          "total_grams",
+          "nutrients",
+          "ingredients",
+          "steps",
+          "source",
+          "dataset_version"
+        ],
+        "title": "MealDetail",
+        "type": "object"
+      },
+      "MealIngredientOut": {
+        "example": {
+          "grams_per_serving": 120,
+          "ingredient_id": 18,
+          "is_optional": false,
+          "name": "طماطم"
+        },
+        "properties": {
+          "grams_per_serving": {
+            "title": "Grams Per Serving",
+            "type": "number"
+          },
+          "ingredient_id": {
+            "title": "Ingredient Id",
+            "type": "integer"
+          },
+          "is_optional": {
+            "title": "Is Optional",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ingredient_id",
+          "name",
+          "grams_per_serving",
+          "is_optional"
+        ],
+        "title": "MealIngredientOut",
+        "type": "object"
+      },
+      "MealLog": {
+        "additionalProperties": false,
+        "properties": {
+          "client_uuid": {
+            "format": "uuid",
+            "title": "Client Uuid",
+            "type": "string"
+          },
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          },
+          "kind": {
+            "const": "MEAL",
+            "title": "Kind",
+            "type": "string"
+          },
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          },
+          "servings_consumed": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 10.0,
+            "title": "Servings Consumed",
+            "type": "number"
+          },
+          "slot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MealSlot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "client_uuid",
+          "meal_id",
+          "servings_consumed",
+          "consumed_at"
+        ],
+        "title": "MealLog",
+        "type": "object"
+      },
+      "MealPage": {
+        "example": {
+          "items": [
+            {
+              "allergens": [
+                "EGG"
+              ],
+              "carb_g": 30,
+              "cuisine": "LIBYAN",
+              "dish_form": "ONE_DISH",
+              "fat_g": 10,
+              "kcal": 310,
+              "meal_id": 42,
+              "my_stance": "LIKE",
+              "name": "شكشوكة",
+              "protein_g": 25,
+              "serving_grams": 250,
+              "tags": [
+                "breakfast_suitable",
+                "vegetarian"
+              ]
+            },
+            {
+              "allergens": [],
+              "carb_g": 50,
+              "cuisine": "LIBYAN",
+              "dish_form": "ONE_DISH",
+              "fat_g": 20,
+              "kcal": 500,
+              "meal_id": 43,
+              "name": "ملوخية",
+              "protein_g": 30,
+              "serving_grams": 380,
+              "tags": [
+                "lunch_suitable"
+              ]
+            }
+          ],
+          "total": 2
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MealSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "MealPage",
+        "type": "object"
+      },
+      "MealPref": {
+        "example": {
+          "meal_id": 42,
+          "stance": "LIKE",
+          "updated_at": "2026-10-19T18:30:00Z"
+        },
+        "properties": {
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          },
+          "stance": {
+            "$ref": "#/components/schemas/MealStance"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "meal_id",
+          "stance",
+          "updated_at"
+        ],
+        "title": "MealPref",
+        "type": "object"
+      },
+      "MealPrefUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "stance": {
+            "$ref": "#/components/schemas/MealStance"
+          }
+        },
+        "required": [
+          "stance"
+        ],
+        "title": "MealPrefUpdate",
+        "type": "object"
+      },
+      "MealSlot": {
+        "enum": [
+          "BREAKFAST",
+          "LUNCH",
+          "DINNER",
+          "SNACK"
+        ],
+        "title": "MealSlot",
+        "type": "string"
+      },
+      "MealStance": {
+        "enum": [
+          "LIKE",
+          "DISLIKE"
+        ],
+        "title": "MealStance",
+        "type": "string"
+      },
+      "MealSummary": {
+        "example": {
+          "allergens": [
+            "EGG"
+          ],
+          "carb_g": 30,
+          "cuisine": "LIBYAN",
+          "dish_form": "ONE_DISH",
+          "fat_g": 10,
+          "kcal": 310,
+          "meal_id": 42,
+          "my_stance": "LIKE",
+          "name": "شكشوكة",
+          "protein_g": 25,
+          "serving_grams": 250,
+          "tags": [
+            "breakfast_suitable",
+            "vegetarian"
+          ]
+        },
+        "properties": {
+          "allergens": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allergens",
+            "type": "array"
+          },
+          "carb_g": {
+            "title": "Carb G",
+            "type": "number"
+          },
+          "cuisine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cuisine"
+          },
+          "dish_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DishForm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fat_g": {
+            "title": "Fat G",
+            "type": "number"
+          },
+          "kcal": {
+            "title": "Kcal",
+            "type": "number"
+          },
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          },
+          "my_stance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MealStance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "protein_g": {
+            "title": "Protein G",
+            "type": "number"
+          },
+          "serving_grams": {
+            "title": "Serving Grams",
+            "type": "number"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "meal_id",
+          "name",
+          "serving_grams",
+          "kcal",
+          "protein_g",
+          "carb_g",
+          "fat_g",
+          "allergens",
+          "tags"
+        ],
+        "title": "MealSummary",
+        "type": "object"
+      },
+      "MealWindow": {
+        "example": {
+          "end": "10:00",
+          "slot": "BREAKFAST",
+          "start": "07:00"
+        },
+        "properties": {
+          "end": {
+            "examples": [
+              "07:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "End",
+            "type": "string"
+          },
+          "slot": {
+            "$ref": "#/components/schemas/MealSlot"
+          },
+          "start": {
+            "examples": [
+              "07:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slot",
+          "start",
+          "end"
+        ],
+        "title": "MealWindow",
+        "type": "object"
+      },
+      "NutrientAmount": {
+        "example": {
+          "code": "energy_kcal",
+          "per_100g": 124,
+          "per_serving": 310,
+          "unit": "kcal"
+        },
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "per_100g": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per 100G"
+          },
+          "per_serving": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per Serving"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/NutrientUnit"
+          }
+        },
+        "required": [
+          "code",
+          "unit"
+        ],
+        "title": "NutrientAmount",
+        "type": "object"
+      },
+      "NutrientTotals": {
+        "example": {
+          "carb_g": 195,
+          "fat_g": 60,
+          "fiber_g": 22,
+          "kcal": 1800,
+          "protein_g": 120,
+          "saturated_fat_g": 14,
+          "sodium_mg": 1550,
+          "sugars_g": 36
+        },
+        "properties": {
+          "carb_g": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carb G"
+          },
+          "fat_g": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fat G"
+          },
+          "fiber_g": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fiber G"
+          },
+          "kcal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kcal"
+          },
+          "protein_g": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protein G"
+          },
+          "saturated_fat_g": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saturated Fat G"
+          },
+          "sodium_mg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sodium Mg"
+          },
+          "sugars_g": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sugars G"
+          }
+        },
+        "title": "NutrientTotals",
+        "type": "object"
+      },
+      "NutrientUnit": {
+        "enum": [
+          "g",
+          "mg",
+          "mcg",
+          "kcal",
+          "IU"
+        ],
+        "title": "NutrientUnit",
+        "type": "string"
+      },
+      "PlanDayRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "title": "PlanDayRequest",
+        "type": "object"
+      },
+      "PlanItemLog": {
+        "additionalProperties": false,
+        "properties": {
+          "client_uuid": {
+            "format": "uuid",
+            "title": "Client Uuid",
+            "type": "string"
+          },
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          },
+          "kind": {
+            "const": "PLAN_ITEM",
+            "title": "Kind",
+            "type": "string"
+          },
+          "plan_item_id": {
+            "title": "Plan Item Id",
+            "type": "integer"
+          },
+          "servings_consumed": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 10.0,
+            "title": "Servings Consumed",
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind",
+          "client_uuid",
+          "plan_item_id",
+          "servings_consumed",
+          "consumed_at"
+        ],
+        "title": "PlanItemLog",
+        "type": "object"
+      },
+      "PlanItemOut": {
+        "example": {
+          "carb_g": 30,
+          "fat_g": 10,
+          "grams": 250,
+          "kcal": 310,
+          "logged": true,
+          "meal": {
+            "allergens": [
+              "EGG"
+            ],
+            "carb_g": 30,
+            "cuisine": "LIBYAN",
+            "dish_form": "ONE_DISH",
+            "fat_g": 10,
+            "kcal": 310,
+            "meal_id": 42,
+            "my_stance": "LIKE",
+            "name": "شكشوكة",
+            "protein_g": 25,
+            "serving_grams": 250,
+            "tags": [
+              "breakfast_suitable",
+              "vegetarian"
+            ]
+          },
+          "plan_item_id": 5,
+          "protein_g": 25,
+          "reason_codes": [
+            "HIGH_PROTEIN"
+          ],
+          "servings_multiplier": 1,
+          "slot": "BREAKFAST",
+          "was_swapped": false
+        },
+        "properties": {
+          "carb_g": {
+            "title": "Carb G",
+            "type": "number"
+          },
+          "fat_g": {
+            "title": "Fat G",
+            "type": "number"
+          },
+          "grams": {
+            "title": "Grams",
+            "type": "number"
+          },
+          "kcal": {
+            "title": "Kcal",
+            "type": "number"
+          },
+          "logged": {
+            "title": "Logged",
+            "type": "boolean"
+          },
+          "meal": {
+            "$ref": "#/components/schemas/MealSummary"
+          },
+          "plan_item_id": {
+            "title": "Plan Item Id",
+            "type": "integer"
+          },
+          "protein_g": {
+            "title": "Protein G",
+            "type": "number"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reason Codes",
+            "type": "array"
+          },
+          "servings_multiplier": {
+            "title": "Servings Multiplier",
+            "type": "number"
+          },
+          "slot": {
+            "$ref": "#/components/schemas/MealSlot"
+          },
+          "was_swapped": {
+            "title": "Was Swapped",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "plan_item_id",
+          "slot",
+          "meal",
+          "servings_multiplier",
+          "grams",
+          "kcal",
+          "protein_g",
+          "carb_g",
+          "fat_g",
+          "reason_codes",
+          "was_swapped",
+          "logged"
+        ],
+        "title": "PlanItemOut",
+        "type": "object"
+      },
+      "PlanStats": {
+        "example": {
+          "candidate_meals": 86,
+          "kcal_relaxed": false,
+          "solve_seconds": 0.842,
+          "solver_status": "FEASIBLE"
+        },
+        "properties": {
+          "candidate_meals": {
+            "title": "Candidate Meals",
+            "type": "integer"
+          },
+          "kcal_relaxed": {
+            "title": "Kcal Relaxed",
+            "type": "boolean"
+          },
+          "solve_seconds": {
+            "title": "Solve Seconds",
+            "type": "number"
+          },
+          "solver_status": {
+            "title": "Solver Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "solver_status",
+          "kcal_relaxed",
+          "solve_seconds",
+          "candidate_meals"
+        ],
+        "title": "PlanStats",
+        "type": "object"
+      },
+      "PlanTargetOut": {
+        "example": {
+          "carb_g": 195,
+          "fat_g": 60,
+          "fiber_g": 30,
+          "kcal": 1800,
+          "protein_g": 120
+        },
+        "properties": {
+          "carb_g": {
+            "title": "Carb G",
+            "type": "number"
+          },
+          "fat_g": {
+            "title": "Fat G",
+            "type": "number"
+          },
+          "fiber_g": {
+            "title": "Fiber G",
+            "type": "integer"
+          },
+          "kcal": {
+            "title": "Kcal",
+            "type": "integer"
+          },
+          "protein_g": {
+            "title": "Protein G",
+            "type": "number"
+          }
+        },
+        "required": [
+          "kcal",
+          "protein_g",
+          "carb_g",
+          "fat_g",
+          "fiber_g"
+        ],
+        "title": "PlanTargetOut",
         "type": "object"
       },
       "ProblemDetail": {
@@ -121,6 +2655,1956 @@
         "title": "ProblemDetail",
         "type": "object"
       },
+      "Profile": {
+        "example": {
+          "activity_level": "MODERATE",
+          "allergens": [
+            {
+              "code": "GLUTEN",
+              "severity": "AVOID"
+            }
+          ],
+          "birth_date": "1990-04-12",
+          "conditions": [
+            {
+              "code": "HYPERTENSION",
+              "severity": "MODERATE"
+            }
+          ],
+          "cuisines": [
+            "LIBYAN"
+          ],
+          "goal_type": "LOSE",
+          "height_cm": 175,
+          "ingredient_prefs": [
+            {
+              "ingredient_id": 18,
+              "stance": "LIKE"
+            }
+          ],
+          "latest_weight_kg": 82.5,
+          "latest_weight_on": "2026-10-19",
+          "sex": "MALE",
+          "sleep_time": "23:00",
+          "target_weight_kg": 75,
+          "timezone": "Africa/Tripoli",
+          "wake_time": "07:00",
+          "water_goal_ml": 2500,
+          "weekly_rate_kg": 0.5
+        },
+        "properties": {
+          "activity_level": {
+            "$ref": "#/components/schemas/ActivityLevel"
+          },
+          "allergens": {
+            "items": {
+              "$ref": "#/components/schemas/AllergenChoice"
+            },
+            "title": "Allergens",
+            "type": "array"
+          },
+          "birth_date": {
+            "format": "date",
+            "title": "Birth Date",
+            "type": "string"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionChoice"
+            },
+            "title": "Conditions",
+            "type": "array"
+          },
+          "cuisines": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cuisines",
+            "type": "array"
+          },
+          "goal_type": {
+            "$ref": "#/components/schemas/GoalType"
+          },
+          "height_cm": {
+            "title": "Height Cm",
+            "type": "number"
+          },
+          "ingredient_prefs": {
+            "items": {
+              "$ref": "#/components/schemas/IngredientChoice"
+            },
+            "title": "Ingredient Prefs",
+            "type": "array"
+          },
+          "latest_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Weight Kg"
+          },
+          "latest_weight_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Weight On"
+          },
+          "sex": {
+            "$ref": "#/components/schemas/Sex"
+          },
+          "sleep_time": {
+            "examples": [
+              "07:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Sleep Time",
+            "type": "string"
+          },
+          "target_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Weight Kg"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          },
+          "wake_time": {
+            "examples": [
+              "07:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Wake Time",
+            "type": "string"
+          },
+          "water_goal_ml": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Water Goal Ml"
+          },
+          "weekly_rate_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Rate Kg"
+          }
+        },
+        "required": [
+          "sex",
+          "birth_date",
+          "height_cm",
+          "activity_level",
+          "goal_type",
+          "timezone",
+          "wake_time",
+          "sleep_time",
+          "conditions",
+          "allergens",
+          "ingredient_prefs",
+          "cuisines"
+        ],
+        "title": "Profile",
+        "type": "object"
+      },
+      "ProfileState": {
+        "example": {
+          "profile": {
+            "activity_level": "MODERATE",
+            "allergens": [
+              {
+                "code": "GLUTEN",
+                "severity": "AVOID"
+              }
+            ],
+            "birth_date": "1990-04-12",
+            "conditions": [
+              {
+                "code": "HYPERTENSION",
+                "severity": "MODERATE"
+              }
+            ],
+            "cuisines": [
+              "LIBYAN"
+            ],
+            "goal_type": "LOSE",
+            "height_cm": 175,
+            "ingredient_prefs": [
+              {
+                "ingredient_id": 18,
+                "stance": "LIKE"
+              }
+            ],
+            "latest_weight_kg": 82.5,
+            "latest_weight_on": "2026-10-19",
+            "sex": "MALE",
+            "sleep_time": "23:00",
+            "target_weight_kg": 75,
+            "timezone": "Africa/Tripoli",
+            "wake_time": "07:00",
+            "water_goal_ml": 2500,
+            "weekly_rate_kg": 0.5
+          },
+          "screening": {
+            "eligible": true,
+            "reasons": []
+          },
+          "target": {
+            "based_on_weight_kg": 82.5,
+            "bmr_kcal": 1700,
+            "carb_g": 195,
+            "fat_g": 60,
+            "fiber_g": 30,
+            "formula_version": "targets_v1",
+            "kcal": 1800,
+            "protein_g": 120,
+            "reason": "INITIAL",
+            "target_id": 7,
+            "tdee_kcal": 2635,
+            "valid_from": "2026-10-19T06:00:00Z",
+            "was_floor_applied": false
+          }
+        },
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "screening": {
+            "$ref": "#/components/schemas/Screening"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Target"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "profile",
+          "screening"
+        ],
+        "title": "ProfileState",
+        "type": "object"
+      },
+      "ProfileUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "activity_level": {
+            "$ref": "#/components/schemas/ActivityLevel"
+          },
+          "allergens": {
+            "items": {
+              "$ref": "#/components/schemas/AllergenChoice"
+            },
+            "maxItems": 20,
+            "title": "Allergens",
+            "type": "array"
+          },
+          "birth_date": {
+            "format": "date",
+            "title": "Birth Date",
+            "type": "string"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionChoice"
+            },
+            "maxItems": 10,
+            "title": "Conditions",
+            "type": "array"
+          },
+          "cuisines": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Cuisines",
+            "type": "array"
+          },
+          "current_weight_kg": {
+            "anyOf": [
+              {
+                "maximum": 400.0,
+                "minimum": 20.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Weight Kg"
+          },
+          "goal_type": {
+            "$ref": "#/components/schemas/GoalType"
+          },
+          "height_cm": {
+            "maximum": 250.0,
+            "minimum": 100.0,
+            "title": "Height Cm",
+            "type": "number"
+          },
+          "ingredient_prefs": {
+            "items": {
+              "$ref": "#/components/schemas/IngredientChoice"
+            },
+            "maxItems": 100,
+            "title": "Ingredient Prefs",
+            "type": "array"
+          },
+          "sex": {
+            "$ref": "#/components/schemas/Sex"
+          },
+          "sleep_time": {
+            "examples": [
+              "07:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Sleep Time",
+            "type": "string"
+          },
+          "target_weight_kg": {
+            "anyOf": [
+              {
+                "maximum": 300.0,
+                "minimum": 30.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Weight Kg"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          },
+          "wake_time": {
+            "examples": [
+              "07:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Wake Time",
+            "type": "string"
+          },
+          "water_goal_ml": {
+            "anyOf": [
+              {
+                "maximum": 5000.0,
+                "minimum": 500.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Water Goal Ml"
+          },
+          "weekly_rate_kg": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Rate Kg"
+          }
+        },
+        "required": [
+          "sex",
+          "birth_date",
+          "height_cm",
+          "activity_level",
+          "goal_type",
+          "timezone",
+          "wake_time",
+          "sleep_time",
+          "conditions",
+          "allergens",
+          "ingredient_prefs",
+          "cuisines"
+        ],
+        "title": "ProfileUpdate",
+        "type": "object"
+      },
+      "Reference": {
+        "example": {
+          "activity_levels": [
+            "SEDENTARY",
+            "LIGHT",
+            "MODERATE",
+            "HIGH",
+            "ATHLETE"
+          ],
+          "allergens": [
+            {
+              "code": "GLUTEN",
+              "name": "الغلوتين"
+            },
+            {
+              "code": "MILK",
+              "name": "الحليب"
+            },
+            {
+              "code": "EGG",
+              "name": "البيض"
+            },
+            {
+              "code": "FISH",
+              "name": "السمك"
+            },
+            {
+              "code": "SHELLFISH",
+              "name": "المحار والقشريات"
+            },
+            {
+              "code": "PEANUT",
+              "name": "الفول السوداني"
+            },
+            {
+              "code": "TREE_NUTS",
+              "name": "المكسرات الشجرية"
+            },
+            {
+              "code": "SESAME",
+              "name": "السمسم"
+            },
+            {
+              "code": "SOY",
+              "name": "الصويا"
+            }
+          ],
+          "cuisines": [
+            {
+              "code": "LIBYAN",
+              "name": "ليبي"
+            },
+            {
+              "code": "LEVANTINE",
+              "name": "شامي"
+            },
+            {
+              "code": "GENERAL",
+              "name": "عام"
+            },
+            {
+              "code": "EGYPTIAN",
+              "name": "مصري"
+            },
+            {
+              "code": "MAGHREBI",
+              "name": "مغاربي"
+            }
+          ],
+          "dataset_version": "catalog_v3",
+          "goal_types": [
+            "LOSE",
+            "MAINTAIN",
+            "GAIN"
+          ],
+          "health_conditions": [
+            {
+              "code": "DIABETES_T2",
+              "fluid_goal_requires_clinician": false,
+              "is_supported": true,
+              "name": "السكري من النوع الثاني (بدون إنسولين)"
+            },
+            {
+              "code": "HYPERTENSION",
+              "fluid_goal_requires_clinician": false,
+              "is_supported": true,
+              "name": "ارتفاع ضغط الدم"
+            },
+            {
+              "code": "HEART_DISEASE",
+              "fluid_goal_requires_clinician": true,
+              "is_supported": true,
+              "name": "أمراض القلب"
+            },
+            {
+              "code": "DIABETES_INSULIN",
+              "fluid_goal_requires_clinician": false,
+              "is_supported": false,
+              "name": "السكري المعالج بالإنسولين"
+            }
+          ],
+          "sexes": [
+            "MALE",
+            "FEMALE"
+          ],
+          "slots": [
+            "BREAKFAST",
+            "LUNCH",
+            "DINNER",
+            "SNACK"
+          ]
+        },
+        "properties": {
+          "activity_levels": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityLevel"
+            },
+            "title": "Activity Levels",
+            "type": "array"
+          },
+          "allergens": {
+            "items": {
+              "$ref": "#/components/schemas/CodeName"
+            },
+            "title": "Allergens",
+            "type": "array"
+          },
+          "cuisines": {
+            "items": {
+              "$ref": "#/components/schemas/CodeName"
+            },
+            "title": "Cuisines",
+            "type": "array"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "goal_types": {
+            "items": {
+              "$ref": "#/components/schemas/GoalType"
+            },
+            "title": "Goal Types",
+            "type": "array"
+          },
+          "health_conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionRef"
+            },
+            "title": "Health Conditions",
+            "type": "array"
+          },
+          "sexes": {
+            "items": {
+              "$ref": "#/components/schemas/Sex"
+            },
+            "title": "Sexes",
+            "type": "array"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/MealSlot"
+            },
+            "title": "Slots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "health_conditions",
+          "allergens",
+          "cuisines",
+          "activity_levels",
+          "goal_types",
+          "sexes",
+          "slots",
+          "dataset_version"
+        ],
+        "title": "Reference",
+        "type": "object"
+      },
+      "RefreshRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "refresh_token": {
+            "title": "Refresh Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest",
+        "type": "object"
+      },
+      "RegisterRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "format": "email",
+            "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "RegisterRequest",
+        "type": "object"
+      },
+      "Screening": {
+        "example": {
+          "eligible": true,
+          "reasons": []
+        },
+        "properties": {
+          "eligible": {
+            "title": "Eligible",
+            "type": "boolean"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "eligible",
+          "reasons"
+        ],
+        "title": "Screening",
+        "type": "object"
+      },
+      "Sex": {
+        "enum": [
+          "MALE",
+          "FEMALE"
+        ],
+        "title": "Sex",
+        "type": "string"
+      },
+      "ShoppingItem": {
+        "example": {
+          "grams": 120,
+          "ingredient_id": 18,
+          "meals": 1,
+          "name": "طماطم"
+        },
+        "properties": {
+          "grams": {
+            "title": "Grams",
+            "type": "number"
+          },
+          "ingredient_id": {
+            "title": "Ingredient Id",
+            "type": "integer"
+          },
+          "meals": {
+            "title": "Meals",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ingredient_id",
+          "name",
+          "grams",
+          "meals"
+        ],
+        "title": "ShoppingItem",
+        "type": "object"
+      },
+      "ShoppingList": {
+        "example": {
+          "date_from": "2026-10-20",
+          "date_to": "2026-10-20",
+          "items": [
+            {
+              "grams": 120,
+              "ingredient_id": 18,
+              "meals": 1,
+              "name": "طماطم"
+            },
+            {
+              "grams": 100,
+              "ingredient_id": 19,
+              "meals": 1,
+              "name": "بيض"
+            }
+          ]
+        },
+        "properties": {
+          "date_from": {
+            "format": "date",
+            "title": "Date From",
+            "type": "string"
+          },
+          "date_to": {
+            "format": "date",
+            "title": "Date To",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ShoppingItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "date_from",
+          "date_to",
+          "items"
+        ],
+        "title": "ShoppingList",
+        "type": "object"
+      },
+      "SnapshotMeal": {
+        "description": "Meal detail for the offline snapshot. No per-user stance.",
+        "example": {
+          "allergens": [
+            "EGG"
+          ],
+          "carb_g": 30,
+          "cuisine": "LIBYAN",
+          "dataset_version": "catalog_v3",
+          "dish_form": "ONE_DISH",
+          "fat_g": 10,
+          "ingredients": [
+            {
+              "grams_per_serving": 120,
+              "ingredient_id": 18,
+              "is_optional": false,
+              "name": "طماطم"
+            },
+            {
+              "grams_per_serving": 100,
+              "ingredient_id": 19,
+              "is_optional": false,
+              "name": "بيض"
+            },
+            {
+              "grams_per_serving": 30,
+              "ingredient_id": 20,
+              "is_optional": false,
+              "name": "فلفل أحمر"
+            }
+          ],
+          "kcal": 310,
+          "meal_id": 42,
+          "name": "شكشوكة",
+          "nutrients": [
+            {
+              "code": "energy_kcal",
+              "per_100g": 124,
+              "per_serving": 310,
+              "unit": "kcal"
+            },
+            {
+              "code": "protein",
+              "per_100g": 10,
+              "per_serving": 25,
+              "unit": "g"
+            },
+            {
+              "code": "carbohydrate",
+              "per_100g": 12,
+              "per_serving": 30,
+              "unit": "g"
+            },
+            {
+              "code": "total_fat",
+              "per_100g": 4,
+              "per_serving": 10,
+              "unit": "g"
+            },
+            {
+              "code": "fiber",
+              "per_100g": 2.4,
+              "per_serving": 6,
+              "unit": "g"
+            },
+            {
+              "code": "sodium",
+              "per_100g": 168,
+              "per_serving": 420,
+              "unit": "mg"
+            }
+          ],
+          "protein_g": 25,
+          "serving_grams": 250,
+          "servings": 2,
+          "source": "NutriGuide catalog",
+          "steps": [
+            "سخّن الزيت في المقلاة.",
+            "أضف الطماطم واتركها حتى تتكثف.",
+            "اكسر البيض واطبخه حتى ينضج."
+          ],
+          "tags": [
+            "breakfast_suitable",
+            "vegetarian"
+          ],
+          "total_grams": 500
+        },
+        "properties": {
+          "allergens": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allergens",
+            "type": "array"
+          },
+          "carb_g": {
+            "title": "Carb G",
+            "type": "number"
+          },
+          "cuisine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cuisine"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "dish_form": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DishForm"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fat_g": {
+            "title": "Fat G",
+            "type": "number"
+          },
+          "ingredients": {
+            "items": {
+              "$ref": "#/components/schemas/MealIngredientOut"
+            },
+            "title": "Ingredients",
+            "type": "array"
+          },
+          "kcal": {
+            "title": "Kcal",
+            "type": "number"
+          },
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "nutrients": {
+            "items": {
+              "$ref": "#/components/schemas/NutrientAmount"
+            },
+            "title": "Nutrients",
+            "type": "array"
+          },
+          "protein_g": {
+            "title": "Protein G",
+            "type": "number"
+          },
+          "serving_grams": {
+            "title": "Serving Grams",
+            "type": "number"
+          },
+          "servings": {
+            "title": "Servings",
+            "type": "integer"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Steps",
+            "type": "array"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "total_grams": {
+            "title": "Total Grams",
+            "type": "number"
+          }
+        },
+        "required": [
+          "meal_id",
+          "name",
+          "serving_grams",
+          "kcal",
+          "protein_g",
+          "carb_g",
+          "fat_g",
+          "allergens",
+          "tags",
+          "servings",
+          "total_grams",
+          "nutrients",
+          "ingredients",
+          "steps",
+          "source",
+          "dataset_version"
+        ],
+        "title": "SnapshotMeal",
+        "type": "object"
+      },
+      "SwapRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "meal_id"
+        ],
+        "title": "SwapRequest",
+        "type": "object"
+      },
+      "SyncBatch": {
+        "additionalProperties": false,
+        "properties": {
+          "operations": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "CONSUMPTION_CORRECT": "#/components/schemas/SyncConsumptionCorrect",
+                  "CONSUMPTION_CREATE": "#/components/schemas/SyncConsumptionCreate",
+                  "CONSUMPTION_DELETE": "#/components/schemas/SyncConsumptionDelete",
+                  "INTERACTION_CREATE": "#/components/schemas/SyncInteractionCreate",
+                  "WATER_CREATE": "#/components/schemas/SyncWaterCreate",
+                  "WATER_DELETE": "#/components/schemas/SyncWaterDelete",
+                  "WEIGHT_PUT": "#/components/schemas/SyncWeightPut"
+                },
+                "propertyName": "op"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SyncConsumptionCreate"
+                },
+                {
+                  "$ref": "#/components/schemas/SyncConsumptionCorrect"
+                },
+                {
+                  "$ref": "#/components/schemas/SyncConsumptionDelete"
+                },
+                {
+                  "$ref": "#/components/schemas/SyncWaterCreate"
+                },
+                {
+                  "$ref": "#/components/schemas/SyncWaterDelete"
+                },
+                {
+                  "$ref": "#/components/schemas/SyncWeightPut"
+                },
+                {
+                  "$ref": "#/components/schemas/SyncInteractionCreate"
+                }
+              ]
+            },
+            "maxItems": 500,
+            "minItems": 1,
+            "title": "Operations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "operations"
+        ],
+        "title": "SyncBatch",
+        "type": "object"
+      },
+      "SyncChanges": {
+        "example": {
+          "consumption_logs": [
+            {
+              "consumed_at": "2026-10-20T08:15:00Z",
+              "grams_consumed": 250,
+              "kind": "PLAN_ITEM",
+              "log_date": "2026-10-20",
+              "log_id": 21,
+              "meal_id": 42,
+              "name": "شكشوكة",
+              "nutrients": {
+                "carb_g": 30,
+                "fat_g": 10,
+                "fiber_g": 6,
+                "kcal": 310,
+                "protein_g": 25,
+                "saturated_fat_g": 3,
+                "sodium_mg": 420,
+                "sugars_g": 8
+              },
+              "plan_item_id": 5,
+              "servings_consumed": 1,
+              "slot": "BREAKFAST",
+              "status": "CREATED"
+            }
+          ],
+          "deleted_consumption_log_ids": [],
+          "deleted_water_log_ids": [],
+          "meal_prefs": [
+            {
+              "meal_id": 42,
+              "stance": "LIKE",
+              "updated_at": "2026-10-19T18:30:00Z"
+            }
+          ],
+          "plans": [
+            {
+              "algorithm_version": "cpsat_v1",
+              "created_at": "2026-10-19T21:05:00Z",
+              "date": "2026-10-20",
+              "items": [
+                {
+                  "carb_g": 30,
+                  "fat_g": 10,
+                  "grams": 250,
+                  "kcal": 310,
+                  "logged": true,
+                  "meal": {
+                    "allergens": [
+                      "EGG"
+                    ],
+                    "carb_g": 30,
+                    "cuisine": "LIBYAN",
+                    "dish_form": "ONE_DISH",
+                    "fat_g": 10,
+                    "kcal": 310,
+                    "meal_id": 42,
+                    "my_stance": "LIKE",
+                    "name": "شكشوكة",
+                    "protein_g": 25,
+                    "serving_grams": 250,
+                    "tags": [
+                      "breakfast_suitable",
+                      "vegetarian"
+                    ]
+                  },
+                  "plan_item_id": 5,
+                  "protein_g": 25,
+                  "reason_codes": [
+                    "HIGH_PROTEIN"
+                  ],
+                  "servings_multiplier": 1,
+                  "slot": "BREAKFAST",
+                  "was_swapped": false
+                },
+                {
+                  "carb_g": 50,
+                  "fat_g": 20,
+                  "grams": 380,
+                  "kcal": 500,
+                  "logged": true,
+                  "meal": {
+                    "allergens": [],
+                    "carb_g": 50,
+                    "cuisine": "LIBYAN",
+                    "dish_form": "ONE_DISH",
+                    "fat_g": 20,
+                    "kcal": 500,
+                    "meal_id": 43,
+                    "name": "ملوخية",
+                    "protein_g": 30,
+                    "serving_grams": 380,
+                    "tags": [
+                      "lunch_suitable"
+                    ]
+                  },
+                  "plan_item_id": 6,
+                  "protein_g": 30,
+                  "reason_codes": [
+                    "HIGH_PROTEIN"
+                  ],
+                  "servings_multiplier": 1,
+                  "slot": "LUNCH",
+                  "was_swapped": false
+                },
+                {
+                  "carb_g": 70,
+                  "fat_g": 20,
+                  "grams": 450,
+                  "kcal": 640,
+                  "logged": true,
+                  "meal": {
+                    "allergens": [
+                      "GLUTEN"
+                    ],
+                    "carb_g": 70,
+                    "cuisine": "LIBYAN",
+                    "dish_form": "PLATE",
+                    "fat_g": 20,
+                    "kcal": 640,
+                    "meal_id": 44,
+                    "name": "كسكس بالدجاج",
+                    "protein_g": 45,
+                    "serving_grams": 450,
+                    "tags": [
+                      "dinner_suitable"
+                    ]
+                  },
+                  "plan_item_id": 7,
+                  "protein_g": 45,
+                  "reason_codes": [
+                    "HIGH_PROTEIN"
+                  ],
+                  "servings_multiplier": 1,
+                  "slot": "DINNER",
+                  "was_swapped": false
+                },
+                {
+                  "carb_g": 45,
+                  "fat_g": 10,
+                  "grams": 200,
+                  "kcal": 350,
+                  "logged": true,
+                  "meal": {
+                    "allergens": [
+                      "MILK"
+                    ],
+                    "carb_g": 45,
+                    "cuisine": "LEVANTINE",
+                    "dish_form": "ONE_DISH",
+                    "fat_g": 10,
+                    "kcal": 350,
+                    "meal_id": 45,
+                    "name": "لبنة بالزيت",
+                    "protein_g": 20,
+                    "serving_grams": 200,
+                    "tags": [
+                      "snack_suitable"
+                    ]
+                  },
+                  "plan_item_id": 8,
+                  "protein_g": 20,
+                  "reason_codes": [
+                    "HIGH_PROTEIN"
+                  ],
+                  "servings_multiplier": 1,
+                  "slot": "SNACK",
+                  "was_swapped": false
+                }
+              ],
+              "kcal_within_10pct": true,
+              "plan_id": 15,
+              "stats": {
+                "candidate_meals": 86,
+                "kcal_relaxed": false,
+                "solve_seconds": 0.842,
+                "solver_status": "FEASIBLE"
+              },
+              "target": {
+                "carb_g": 195,
+                "fat_g": 60,
+                "fiber_g": 30,
+                "kcal": 1800,
+                "protein_g": 120
+              },
+              "totals": {
+                "carb_g": 195.0,
+                "fat_g": 60.0,
+                "fiber_g": 22,
+                "kcal": 1800.0,
+                "protein_g": 120.0,
+                "saturated_fat_g": 14,
+                "sodium_mg": 1550,
+                "sugars_g": 36
+              },
+              "unmet_minimums": [
+                {
+                  "minimum": 30,
+                  "nutrient": "fiber",
+                  "total": 22
+                }
+              ]
+            }
+          ],
+          "profile_changed": false,
+          "server_time": "2026-10-20T08:16:00Z",
+          "water_logs": [
+            {
+              "amount_ml": 250,
+              "consumed_at": "2026-10-20T09:00:00Z",
+              "log_id": 3
+            }
+          ],
+          "weights": [
+            {
+              "measured_on": "2026-10-20",
+              "weight_kg": 82.5
+            }
+          ]
+        },
+        "properties": {
+          "consumption_logs": {
+            "items": {
+              "$ref": "#/components/schemas/ConsumptionLogOut"
+            },
+            "title": "Consumption Logs",
+            "type": "array"
+          },
+          "deleted_consumption_log_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Deleted Consumption Log Ids",
+            "type": "array"
+          },
+          "deleted_water_log_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Deleted Water Log Ids",
+            "type": "array"
+          },
+          "meal_prefs": {
+            "items": {
+              "$ref": "#/components/schemas/MealPref"
+            },
+            "title": "Meal Prefs",
+            "type": "array"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/DayPlanOut"
+            },
+            "title": "Plans",
+            "type": "array"
+          },
+          "profile_changed": {
+            "title": "Profile Changed",
+            "type": "boolean"
+          },
+          "server_time": {
+            "format": "date-time",
+            "title": "Server Time",
+            "type": "string"
+          },
+          "water_logs": {
+            "items": {
+              "$ref": "#/components/schemas/WaterLogOut"
+            },
+            "title": "Water Logs",
+            "type": "array"
+          },
+          "weights": {
+            "items": {
+              "$ref": "#/components/schemas/WeightPoint"
+            },
+            "title": "Weights",
+            "type": "array"
+          }
+        },
+        "required": [
+          "server_time",
+          "consumption_logs",
+          "deleted_consumption_log_ids",
+          "water_logs",
+          "deleted_water_log_ids",
+          "weights",
+          "plans",
+          "meal_prefs",
+          "profile_changed"
+        ],
+        "title": "SyncChanges",
+        "type": "object"
+      },
+      "SyncConsumptionCorrect": {
+        "additionalProperties": false,
+        "properties": {
+          "consumed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consumed At"
+          },
+          "grams_consumed": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 3000.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grams Consumed"
+          },
+          "log_id": {
+            "title": "Log Id",
+            "type": "integer"
+          },
+          "new_client_uuid": {
+            "format": "uuid",
+            "title": "New Client Uuid",
+            "type": "string"
+          },
+          "op": {
+            "const": "CONSUMPTION_CORRECT",
+            "title": "Op",
+            "type": "string"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          },
+          "servings_consumed": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 10.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Servings Consumed"
+          },
+          "slot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MealSlot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "op",
+          "op_id",
+          "log_id",
+          "new_client_uuid"
+        ],
+        "title": "SyncConsumptionCorrect",
+        "type": "object"
+      },
+      "SyncConsumptionCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "log": {
+            "discriminator": {
+              "mapping": {
+                "FOOD": "#/components/schemas/FoodLog",
+                "MEAL": "#/components/schemas/MealLog",
+                "PLAN_ITEM": "#/components/schemas/PlanItemLog"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PlanItemLog"
+              },
+              {
+                "$ref": "#/components/schemas/MealLog"
+              },
+              {
+                "$ref": "#/components/schemas/FoodLog"
+              }
+            ],
+            "title": "Log"
+          },
+          "op": {
+            "const": "CONSUMPTION_CREATE",
+            "title": "Op",
+            "type": "string"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "op",
+          "op_id",
+          "log"
+        ],
+        "title": "SyncConsumptionCreate",
+        "type": "object"
+      },
+      "SyncConsumptionDelete": {
+        "additionalProperties": false,
+        "properties": {
+          "log_id": {
+            "title": "Log Id",
+            "type": "integer"
+          },
+          "op": {
+            "const": "CONSUMPTION_DELETE",
+            "title": "Op",
+            "type": "string"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "op",
+          "op_id",
+          "log_id"
+        ],
+        "title": "SyncConsumptionDelete",
+        "type": "object"
+      },
+      "SyncInteractionCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "client_uuid": {
+            "format": "uuid",
+            "title": "Client Uuid",
+            "type": "string"
+          },
+          "event_type": {
+            "enum": [
+              "IMPRESSION",
+              "VIEW",
+              "SAVE",
+              "RATE",
+              "COOK",
+              "SKIP"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "meal_id": {
+            "title": "Meal Id",
+            "type": "integer"
+          },
+          "op": {
+            "const": "INTERACTION_CREATE",
+            "title": "Op",
+            "type": "string"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          },
+          "plan_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Item Id"
+          },
+          "screen": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Screen"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "client_uuid",
+          "meal_id",
+          "event_type",
+          "op",
+          "op_id"
+        ],
+        "title": "SyncInteractionCreate",
+        "type": "object"
+      },
+      "SyncOpResult": {
+        "example": {
+          "entity_id": 21,
+          "op_id": "6f1b9c3e-8a2d-4e55-9c1a-2b7d0e4f8a10",
+          "status": "CREATED"
+        },
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "CREATED",
+              "UPDATED",
+              "DUPLICATE",
+              "REJECTED"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "op_id",
+          "status"
+        ],
+        "title": "SyncOpResult",
+        "type": "object"
+      },
+      "SyncResult": {
+        "example": {
+          "results": [
+            {
+              "entity_id": 21,
+              "op_id": "6f1b9c3e-8a2d-4e55-9c1a-2b7d0e4f8a10",
+              "status": "CREATED"
+            }
+          ],
+          "server_time": "2026-10-20T08:16:00Z"
+        },
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SyncOpResult"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "server_time": {
+            "format": "date-time",
+            "title": "Server Time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "results",
+          "server_time"
+        ],
+        "title": "SyncResult",
+        "type": "object"
+      },
+      "SyncWaterCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_ml": {
+            "maximum": 1000.0,
+            "minimum": 50.0,
+            "title": "Amount Ml",
+            "type": "integer"
+          },
+          "client_uuid": {
+            "format": "uuid",
+            "title": "Client Uuid",
+            "type": "string"
+          },
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          },
+          "op": {
+            "const": "WATER_CREATE",
+            "title": "Op",
+            "type": "string"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "op",
+          "op_id",
+          "client_uuid",
+          "amount_ml",
+          "consumed_at"
+        ],
+        "title": "SyncWaterCreate",
+        "type": "object"
+      },
+      "SyncWaterDelete": {
+        "additionalProperties": false,
+        "properties": {
+          "log_id": {
+            "title": "Log Id",
+            "type": "integer"
+          },
+          "op": {
+            "const": "WATER_DELETE",
+            "title": "Op",
+            "type": "string"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "op",
+          "op_id",
+          "log_id"
+        ],
+        "title": "SyncWaterDelete",
+        "type": "object"
+      },
+      "SyncWeightPut": {
+        "additionalProperties": false,
+        "properties": {
+          "measured_on": {
+            "format": "date",
+            "title": "Measured On",
+            "type": "string"
+          },
+          "op": {
+            "const": "WEIGHT_PUT",
+            "title": "Op",
+            "type": "string"
+          },
+          "op_id": {
+            "format": "uuid",
+            "title": "Op Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "weight_kg": {
+            "maximum": 400.0,
+            "minimum": 20.0,
+            "title": "Weight Kg",
+            "type": "number"
+          }
+        },
+        "required": [
+          "op",
+          "op_id",
+          "measured_on",
+          "weight_kg",
+          "updated_at"
+        ],
+        "title": "SyncWeightPut",
+        "type": "object"
+      },
+      "Target": {
+        "example": {
+          "based_on_weight_kg": 82.5,
+          "bmr_kcal": 1700,
+          "carb_g": 195,
+          "fat_g": 60,
+          "fiber_g": 30,
+          "formula_version": "targets_v1",
+          "kcal": 1800,
+          "protein_g": 120,
+          "reason": "INITIAL",
+          "target_id": 7,
+          "tdee_kcal": 2635,
+          "valid_from": "2026-10-19T06:00:00Z",
+          "was_floor_applied": false
+        },
+        "properties": {
+          "based_on_weight_kg": {
+            "title": "Based On Weight Kg",
+            "type": "number"
+          },
+          "bmr_kcal": {
+            "title": "Bmr Kcal",
+            "type": "number"
+          },
+          "carb_g": {
+            "title": "Carb G",
+            "type": "number"
+          },
+          "fat_g": {
+            "title": "Fat G",
+            "type": "number"
+          },
+          "fiber_g": {
+            "title": "Fiber G",
+            "type": "integer"
+          },
+          "formula_version": {
+            "title": "Formula Version",
+            "type": "string"
+          },
+          "kcal": {
+            "title": "Kcal",
+            "type": "integer"
+          },
+          "protein_g": {
+            "title": "Protein G",
+            "type": "number"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/TargetReason"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "integer"
+          },
+          "tdee_kcal": {
+            "title": "Tdee Kcal",
+            "type": "number"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "was_floor_applied": {
+            "title": "Was Floor Applied",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "target_id",
+          "valid_from",
+          "reason",
+          "formula_version",
+          "based_on_weight_kg",
+          "bmr_kcal",
+          "tdee_kcal",
+          "kcal",
+          "protein_g",
+          "carb_g",
+          "fat_g",
+          "fiber_g",
+          "was_floor_applied"
+        ],
+        "title": "Target",
+        "type": "object"
+      },
+      "TargetReason": {
+        "enum": [
+          "INITIAL",
+          "WEIGHT_UPDATE",
+          "GOAL_CHANGE",
+          "PROFILE_CHANGE",
+          "FORMULA_CHANGE"
+        ],
+        "title": "TargetReason",
+        "type": "string"
+      },
+      "TargetsView": {
+        "example": {
+          "screening": {
+            "eligible": true,
+            "reasons": []
+          },
+          "target": {
+            "based_on_weight_kg": 82.5,
+            "bmr_kcal": 1700,
+            "carb_g": 195,
+            "fat_g": 60,
+            "fiber_g": 30,
+            "formula_version": "targets_v1",
+            "kcal": 1800,
+            "protein_g": 120,
+            "reason": "INITIAL",
+            "target_id": 7,
+            "tdee_kcal": 2635,
+            "valid_from": "2026-10-19T06:00:00Z",
+            "was_floor_applied": false
+          },
+          "water": {
+            "goal_ml": 2500,
+            "reminders_default_off": false,
+            "requires_clinician": false,
+            "source": "USER"
+          }
+        },
+        "properties": {
+          "screening": {
+            "$ref": "#/components/schemas/Screening"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Target"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "water": {
+            "$ref": "#/components/schemas/WaterGoal"
+          }
+        },
+        "required": [
+          "screening",
+          "water"
+        ],
+        "title": "TargetsView",
+        "type": "object"
+      },
+      "TokenPair": {
+        "example": {
+          "access_token": "access-token-example",
+          "expires_in": 900,
+          "refresh_token": "refresh-token-example",
+          "token_type": "bearer"
+        },
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "refresh_token": {
+            "title": "Refresh Token",
+            "type": "string"
+          },
+          "token_type": {
+            "const": "bearer",
+            "title": "Token Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token",
+          "refresh_token",
+          "token_type",
+          "expires_in"
+        ],
+        "title": "TokenPair",
+        "type": "object"
+      },
+      "UnmetMinimumOut": {
+        "example": {
+          "minimum": 30,
+          "nutrient": "fiber",
+          "total": 22
+        },
+        "properties": {
+          "minimum": {
+            "title": "Minimum",
+            "type": "number"
+          },
+          "nutrient": {
+            "title": "Nutrient",
+            "type": "string"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          }
+        },
+        "required": [
+          "nutrient",
+          "minimum"
+        ],
+        "title": "UnmetMinimumOut",
+        "type": "object"
+      },
       "ValidationIssue": {
         "properties": {
           "loc": {
@@ -153,18 +4637,1007 @@
         ],
         "title": "ValidationIssue",
         "type": "object"
+      },
+      "WaterDay": {
+        "example": {
+          "date": "2026-10-20",
+          "goal": {
+            "goal_ml": 2500,
+            "reminders_default_off": false,
+            "requires_clinician": false,
+            "source": "USER"
+          },
+          "logs": [
+            {
+              "amount_ml": 250,
+              "consumed_at": "2026-10-20T09:00:00Z",
+              "log_id": 3
+            },
+            {
+              "amount_ml": 500,
+              "consumed_at": "2026-10-20T13:00:00Z",
+              "log_id": 4
+            }
+          ],
+          "total_ml": 750
+        },
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "goal": {
+            "$ref": "#/components/schemas/WaterGoal"
+          },
+          "logs": {
+            "items": {
+              "$ref": "#/components/schemas/WaterLogOut"
+            },
+            "title": "Logs",
+            "type": "array"
+          },
+          "total_ml": {
+            "title": "Total Ml",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "date",
+          "total_ml",
+          "goal",
+          "logs"
+        ],
+        "title": "WaterDay",
+        "type": "object"
+      },
+      "WaterGoal": {
+        "example": {
+          "goal_ml": 2500,
+          "reminders_default_off": false,
+          "requires_clinician": false,
+          "source": "USER"
+        },
+        "properties": {
+          "goal_ml": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal Ml"
+          },
+          "reminders_default_off": {
+            "title": "Reminders Default Off",
+            "type": "boolean"
+          },
+          "requires_clinician": {
+            "title": "Requires Clinician",
+            "type": "boolean"
+          },
+          "source": {
+            "enum": [
+              "USER",
+              "DEFAULT",
+              "NONE"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "requires_clinician",
+          "reminders_default_off"
+        ],
+        "title": "WaterGoal",
+        "type": "object"
+      },
+      "WaterLogCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_ml": {
+            "maximum": 1000.0,
+            "minimum": 50.0,
+            "title": "Amount Ml",
+            "type": "integer"
+          },
+          "client_uuid": {
+            "format": "uuid",
+            "title": "Client Uuid",
+            "type": "string"
+          },
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "client_uuid",
+          "amount_ml",
+          "consumed_at"
+        ],
+        "title": "WaterLogCreate",
+        "type": "object"
+      },
+      "WaterLogOut": {
+        "example": {
+          "amount_ml": 250,
+          "consumed_at": "2026-10-20T09:00:00Z",
+          "log_id": 3
+        },
+        "properties": {
+          "amount_ml": {
+            "title": "Amount Ml",
+            "type": "integer"
+          },
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          },
+          "log_id": {
+            "title": "Log Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "log_id",
+          "amount_ml",
+          "consumed_at"
+        ],
+        "title": "WaterLogOut",
+        "type": "object"
+      },
+      "WaterLogResult": {
+        "description": "POST /water-logs adds status. GET logs stay WaterLogOut.",
+        "example": {
+          "amount_ml": 250,
+          "consumed_at": "2026-10-20T09:00:00Z",
+          "log_id": 3,
+          "status": "CREATED"
+        },
+        "properties": {
+          "amount_ml": {
+            "title": "Amount Ml",
+            "type": "integer"
+          },
+          "consumed_at": {
+            "format": "date-time",
+            "title": "Consumed At",
+            "type": "string"
+          },
+          "log_id": {
+            "title": "Log Id",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "CREATED",
+              "DUPLICATE"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "log_id",
+          "amount_ml",
+          "consumed_at",
+          "status"
+        ],
+        "title": "WaterLogResult",
+        "type": "object"
+      },
+      "WeightOut": {
+        "example": {
+          "goal_reached": false,
+          "measured_on": "2026-10-20",
+          "status": "UPDATED",
+          "target_status": "NOT_TRIGGERED",
+          "weight_kg": 82.5
+        },
+        "properties": {
+          "goal_reached": {
+            "title": "Goal Reached",
+            "type": "boolean"
+          },
+          "measured_on": {
+            "format": "date",
+            "title": "Measured On",
+            "type": "string"
+          },
+          "new_target_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Target Id"
+          },
+          "status": {
+            "enum": [
+              "CREATED",
+              "UPDATED",
+              "STALE_IGNORED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "target_status": {
+            "enum": [
+              "NOT_TRIGGERED",
+              "NO_CURRENT_TARGET",
+              "CREATED",
+              "INELIGIBLE",
+              "GOAL_INVALID"
+            ],
+            "title": "Target Status",
+            "type": "string"
+          },
+          "weight_kg": {
+            "title": "Weight Kg",
+            "type": "number"
+          }
+        },
+        "required": [
+          "measured_on",
+          "weight_kg",
+          "status",
+          "target_status",
+          "goal_reached"
+        ],
+        "title": "WeightOut",
+        "type": "object"
+      },
+      "WeightPoint": {
+        "example": {
+          "measured_on": "2026-10-20",
+          "weight_kg": 82.5
+        },
+        "properties": {
+          "measured_on": {
+            "format": "date",
+            "title": "Measured On",
+            "type": "string"
+          },
+          "weight_kg": {
+            "title": "Weight Kg",
+            "type": "number"
+          }
+        },
+        "required": [
+          "measured_on",
+          "weight_kg"
+        ],
+        "title": "WeightPoint",
+        "type": "object"
+      },
+      "WeightUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "weight_kg": {
+            "maximum": 400.0,
+            "minimum": 20.0,
+            "title": "Weight Kg",
+            "type": "number"
+          }
+        },
+        "required": [
+          "weight_kg",
+          "updated_at"
+        ],
+        "title": "WeightUpdate",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
       }
     }
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/adherence": {
+      "get": {
+        "description": "One row per day in the inclusive range, plus the streak of ACHIEVED days. Maximum 92 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "get_adherence",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "From",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "To",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdherenceRangeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Adherence",
+        "tags": [
+          "adherence"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "Exchange an email and password for a new token pair.\nError codes: INVALID_CREDENTIALS, RATE_LIMITED",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "description": "Revoke the refresh token. No content on success.\nError codes: VALIDATION_ERROR",
+        "operationId": "logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "description": "Rotate a refresh token. TOKEN_REUSED means the token was already used; the app logs out.\nError codes: TOKEN_INVALID, TOKEN_REUSED, RATE_LIMITED",
+        "operationId": "refresh_session",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Refresh Session",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "description": "Create an account and return an access token and a refresh token.\nError codes: EMAIL_TAKEN, VALIDATION_ERROR, RATE_LIMITED",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Register",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/catalog/snapshot": {
+      "get": {
+        "description": "Every active meal without a personal stance. Return 304 when If-None-Match equals the ETag.\nError codes: UNAUTHORIZED",
+        "operationId": "get_catalog_snapshot",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-None-Match"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSnapshot"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "ETag": {
+                "description": "Opaque tag of this snapshot. Send it back as If-None-Match.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The device already has this snapshot.",
+            "headers": {
+              "ETag": {
+                "description": "Opaque tag of this snapshot. Send it back as If-None-Match.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Catalog Snapshot",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/consumption-logs": {
+      "get": {
+        "description": "Active logs of that local day.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "list_consumption_logs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ConsumptionLogOut"
+                  },
+                  "title": "Response List Consumption Logs",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Consumption Logs",
+        "tags": [
+          "consumption"
+        ]
+      },
+      "post": {
+        "description": "Log a plan item, a catalog meal, or one food. 201 when created, 200 when the same client_uuid and content were already stored. A plan item also writes ACCEPT.\nError codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND, MEAL_NOT_FOUND, FOOD_NOT_FOUND, PLAN_ITEM_ALREADY_LOGGED, CLIENT_UUID_CONFLICT, INCOMPLETE_NUTRITION, VALIDATION_ERROR",
+        "operationId": "create_consumption_log",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "discriminator": {
+                  "mapping": {
+                    "FOOD": "#/components/schemas/FoodLog",
+                    "MEAL": "#/components/schemas/MealLog",
+                    "PLAN_ITEM": "#/components/schemas/PlanItemLog"
+                  },
+                  "propertyName": "kind"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/PlanItemLog"
+                  },
+                  {
+                    "$ref": "#/components/schemas/MealLog"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FoodLog"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsumptionLogOut"
+                }
+              }
+            },
+            "description": "Same client_uuid and the same content were already stored."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsumptionLogOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Consumption Log",
+        "tags": [
+          "consumption"
+        ]
+      }
+    },
+    "/api/v1/consumption-logs/{log_id}": {
+      "delete": {
+        "description": "Tombstone the log.\nError codes: UNAUTHORIZED, LOG_NOT_FOUND",
+        "operationId": "delete_consumption_log",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "log_id",
+            "required": true,
+            "schema": {
+              "title": "Log Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Consumption Log",
+        "tags": [
+          "consumption"
+        ]
+      }
+    },
+    "/api/v1/consumption-logs/{log_id}/correction": {
+      "post": {
+        "description": "Tombstone the old row and return the new one. At least one measured field must change.\nError codes: UNAUTHORIZED, LOG_NOT_FOUND, CLIENT_UUID_CONFLICT, VALIDATION_ERROR",
+        "operationId": "correct_consumption_log",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "log_id",
+            "required": true,
+            "schema": {
+              "title": "Log Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogCorrection"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsumptionLogOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Correct Consumption Log",
+        "tags": [
+          "consumption"
+        ]
+      }
+    },
+    "/api/v1/days/{date}": {
+      "get": {
+        "description": "Home screen: that day's plan, meal windows, adherence, and water.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND",
+        "operationId": "get_day_view",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Day View",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
-        "operationId": "health_api_v1_health_get",
+        "operationId": "health",
         "responses": {
           "200": {
             "content": {
@@ -200,6 +5673,1543 @@
         "summary": "Health",
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/api/v1/ingredients": {
+      "get": {
+        "description": "Search Arabic names, English names, and aliases. Log the hit's food_id, not a food search.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "search_ingredients",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 60,
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Search Ingredients",
+        "tags": [
+          "ingredients"
+        ]
+      }
+    },
+    "/api/v1/interactions": {
+      "post": {
+        "description": "Record IMPRESSION, VIEW, SAVE, RATE, COOK, or SKIP. When plan_item_id is set, the server copies plan_id, slot, and algorithm_version into context. 201 when created, 200 on a duplicate client_uuid.\nError codes: UNAUTHORIZED, MEAL_NOT_FOUND, PLAN_ITEM_NOT_FOUND, CLIENT_UUID_CONFLICT, VALIDATION_ERROR",
+        "operationId": "create_interaction",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InteractionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InteractionOut"
+                }
+              }
+            },
+            "description": "Same client_uuid and the same content were already stored."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InteractionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Interaction",
+        "tags": [
+          "interactions"
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "delete": {
+        "description": "Delete the account and every row that belongs to it.\nError codes: UNAUTHORIZED",
+        "operationId": "delete_me",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Me",
+        "tags": [
+          "account"
+        ]
+      },
+      "get": {
+        "description": "Account identity. has_profile is false until the first successful PUT /me/profile.\nError codes: UNAUTHORIZED",
+        "operationId": "get_me",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Me",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/me/meal-prefs": {
+      "get": {
+        "description": "Stances the user has set. Meals with no row are omitted.\nError codes: UNAUTHORIZED",
+        "operationId": "list_meal_prefs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MealPref"
+                  },
+                  "title": "Response List Meal Prefs",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Meal Prefs",
+        "tags": [
+          "meal-prefs"
+        ]
+      }
+    },
+    "/api/v1/me/meal-prefs/{meal_id}": {
+      "delete": {
+        "description": "Clear the stance. Also writes PREF_CLEAR.\nError codes: UNAUTHORIZED, MEAL_NOT_FOUND",
+        "operationId": "delete_meal_pref",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "meal_id",
+            "required": true,
+            "schema": {
+              "title": "Meal Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Meal Pref",
+        "tags": [
+          "meal-prefs"
+        ]
+      },
+      "put": {
+        "description": "Set LIKE or DISLIKE. Also writes PREF_LIKE or PREF_DISLIKE.\nError codes: UNAUTHORIZED, MEAL_NOT_FOUND",
+        "operationId": "set_meal_pref",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "meal_id",
+            "required": true,
+            "schema": {
+              "title": "Meal Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MealPrefUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MealPref"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Set Meal Pref",
+        "tags": [
+          "meal-prefs"
+        ]
+      }
+    },
+    "/api/v1/me/profile": {
+      "get": {
+        "description": "The saved profile, screening, and the current target when one exists.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND",
+        "operationId": "get_profile",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Profile",
+        "tags": [
+          "profile"
+        ]
+      },
+      "put": {
+        "description": "Replace the profile. The first save requires current_weight_kg; a later value is stored as today's weight. An ineligible screening is returned in the body, not as an error.\nError codes: UNAUTHORIZED, VALIDATION_ERROR, UNKNOWN_CODE, NO_WEIGHT, TARGET_VALIDATION, INVALID_TIMEZONE",
+        "operationId": "update_profile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Profile",
+        "tags": [
+          "profile"
+        ]
+      }
+    },
+    "/api/v1/me/targets": {
+      "get": {
+        "description": "Screening, the current calorie target, and the water goal including reminders_default_off.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND",
+        "operationId": "get_targets",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TargetsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Targets",
+        "tags": [
+          "profile"
+        ]
+      }
+    },
+    "/api/v1/meals": {
+      "get": {
+        "description": "Active meals. Without q, alphabetical. Nutrition is for one serving. Names and steps follow Accept-Language (ar default, en).\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "list_meals",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 60,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "slot",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/MealSlot"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Slot"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cuisine",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cuisine"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MealPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Meals",
+        "tags": [
+          "meals"
+        ]
+      }
+    },
+    "/api/v1/meals/{meal_id}": {
+      "get": {
+        "description": "One meal, including nutrients, ingredients, and steps in the requested language (Arabic when the meal has no translation). steps is empty when the meal has none.\nError codes: UNAUTHORIZED, MEAL_NOT_FOUND",
+        "operationId": "get_meal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "meal_id",
+            "required": true,
+            "schema": {
+              "title": "Meal Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MealDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Meal",
+        "tags": [
+          "meals"
+        ]
+      }
+    },
+    "/api/v1/plan-items/{plan_item_id}/alternatives": {
+      "get": {
+        "description": "Up to 10 meals that can replace this item. kcal_delta is the alternative minus the item.\nError codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND",
+        "operationId": "list_alternatives",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_item_id",
+            "required": true,
+            "schema": {
+              "title": "Plan Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Alternative"
+                  },
+                  "title": "Response List Alternatives",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Alternatives",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/v1/plan-items/{plan_item_id}/swap": {
+      "post": {
+        "description": "Replace the item's meal. Writes SWAP_OUT for the old meal with context.replaced_by. SWAP_REJECTED includes reasons.\nError codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND, MEAL_NOT_FOUND, SWAP_REJECTED, PLAN_ITEM_ALREADY_LOGGED",
+        "operationId": "swap_plan_item",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_item_id",
+            "required": true,
+            "schema": {
+              "title": "Plan Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwapRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanItemOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Swap Plan Item",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/v1/plans": {
+      "get": {
+        "description": "The current plan of each day in the inclusive range that has one. Maximum 31 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "list_plans",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "From",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "To",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DayPlanOut"
+                  },
+                  "title": "Response List Plans",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Plans",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/v1/plans/days": {
+      "post": {
+        "description": "Generate and store that day's plan with the default planner. PLANNER_BUSY is 503 and carries Retry-After. NOT_ELIGIBLE includes reasons.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, NOT_ELIGIBLE, NO_TARGET, CONDITION_CONFLICT, NO_FEASIBLE_PLAN, PLANNER_BUSY, RATE_LIMITED",
+        "operationId": "create_plan_day",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanDayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayPlanOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Plan Day",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/v1/reference": {
+      "get": {
+        "description": "Conditions, allergens, cuisines, and the closed lists for sex, activity, goal, and slot. Names follow Accept-Language (ar default, en). DIABETES_INSULIN is included with is_supported false.\nError codes:",
+        "operationId": "get_reference",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reference"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "summary": "Get Reference",
+        "tags": [
+          "reference"
+        ]
+      }
+    },
+    "/api/v1/shopping-list": {
+      "get": {
+        "description": "Ingredient grams summed from the current plans in the inclusive range. Maximum 31 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "get_shopping_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "From",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "To",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Shopping List",
+        "tags": [
+          "plans"
+        ]
+      }
+    },
+    "/api/v1/sync/batch": {
+      "post": {
+        "description": "Apply 1 to 500 operations. Each op_id is chosen by the client. A rejected operation sets status REJECTED and code.\nError codes: UNAUTHORIZED, VALIDATION_ERROR, RATE_LIMITED",
+        "operationId": "sync_batch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncBatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Sync Batch",
+        "tags": [
+          "sync"
+        ]
+      }
+    },
+    "/api/v1/sync/changes": {
+      "get": {
+        "description": "Rows changed after `since`, plus ids deleted since then.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "get_sync_changes",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "since",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Since",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncChanges"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Sync Changes",
+        "tags": [
+          "sync"
+        ]
+      }
+    },
+    "/api/v1/water": {
+      "get": {
+        "description": "Total, goal, and logs for one local date.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "get_water_day",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaterDay"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Water Day",
+        "tags": [
+          "water"
+        ]
+      }
+    },
+    "/api/v1/water-logs": {
+      "post": {
+        "description": "Add a glass. 201 when created, 200 when the same client_uuid and content were already stored.\nError codes: UNAUTHORIZED, CLIENT_UUID_CONFLICT, VALIDATION_ERROR",
+        "operationId": "create_water_log",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WaterLogCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaterLogResult"
+                }
+              }
+            },
+            "description": "Same client_uuid and the same content were already stored."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaterLogResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Water Log",
+        "tags": [
+          "water"
+        ]
+      }
+    },
+    "/api/v1/water-logs/{log_id}": {
+      "delete": {
+        "description": "Remove a water log.\nError codes: UNAUTHORIZED, LOG_NOT_FOUND",
+        "operationId": "delete_water_log",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "log_id",
+            "required": true,
+            "schema": {
+              "title": "Log Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Water Log",
+        "tags": [
+          "water"
+        ]
+      }
+    },
+    "/api/v1/weights": {
+      "get": {
+        "description": "Weights in the inclusive range. Maximum 92 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "operationId": "list_weights",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "From",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "To",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WeightPoint"
+                  },
+                  "title": "Response List Weights",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Weights",
+        "tags": [
+          "weights"
+        ]
+      }
+    },
+    "/api/v1/weights/{measured_on}": {
+      "put": {
+        "description": "Create or replace the weight of that local date. STALE_IGNORED keeps the stored row when updated_at is older.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, CLOCK_SKEW, VALIDATION_ERROR",
+        "operationId": "put_weight",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "measured_on",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Measured On",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Validation error"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            },
+            "description": "Problem"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put Weight",
+        "tags": [
+          "weights"
         ]
       }
     }

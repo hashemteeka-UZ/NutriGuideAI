@@ -1,0 +1,121 @@
+You are implementing **Step I.1 (the full API contract, Decision #125 and #168 to #174)**. Steps I.0 to I.0d are committed (`87f7ed5`, migration `0006` is head, CI green). This pass defines **every** endpoint of the mobile app with complete Pydantic request and response models, exports the OpenAPI contract, and writes a short guide for the Flutter teammate. **No endpoint is implemented in this pass**: every new route returns `501 NOT_IMPLEMENTED` in the existing problem format. Later passes (I.2 to I.7) fill them in without changing the contract unless a decision says so.
+
+Read first: `docs/project/steps/STEP_I_plan.md` (the screen-to-endpoint table, decisions #123 to #174, and the 2026-10-19 log lines), `docs/PROJECT_CONTEXT_v4_20.md` §11 (user tables), §28.6 (reason codes), §30.1 (screening), §30.5 (adherence), §30.7 (water), §33.4 (sync). Existing code to follow: `app/api/main.py`, `app/api/errors.py`, `app/api/schemas/common.py`, `app/api/routers/health.py`.
+
+## Hard rules
+1. No schema change, no migration, no change to any service, planner, data file or report. `uv run alembic check` stays clean; `docs/reports/*` unchanged.
+2. Routers contain no business logic. In this pass each handler body is one line: `raise not_implemented()` (a helper in `app/api/errors.py` that returns `ApiError(501, "NOT_IMPLEMENTED", "Not implemented")`). `GET /health` keeps working as today.
+3. Do not commit anything.
+
+## 1. Conventions (apply to every endpoint)
+- Prefix `/api/v1`. One router module per tag in `app/api/routers/`, one schema module per tag in `app/api/schemas/`.
+- `operationId` = the Python function name, unique across the API (set `generate_unique_id_function` in `create_app` to use `route.name`). Names are snake_case verbs, e.g. `get_day_view`, `create_consumption_log`. These names become the Dart client methods, so keep them short and clear.
+- Every operation declares `responses=PROBLEM_RESPONSES` and a `description` whose last line is `Error codes: CODE_A, CODE_B, ...` listing the codes it can return once implemented (use the codes in section 4). Add `501 NOT_IMPLEMENTED` to none of these lists: it is temporary.
+- Authentication: a module-level `bearer = HTTPBearer(auto_error=False)` in `app/api/deps.py`, used as a router dependency so every protected operation shows `security: [{"HTTPBearer": []}]` in OpenAPI. Public operations: `GET /health`, `GET /reference`, and the four `/auth/*` operations. No token checking yet (I.2).
+- Models: `model_config = ConfigDict(extra="forbid")` on every request model. Enums are the existing `StrEnum`s from `app/db/models` (or `Literal` for API-only values) so the Dart generator produces enums. Dates `date`, instants `datetime` (timezone required in requests: use `AwareDatetime`), clock times `time` serialized `"HH:MM"`. Measured values are `float` (rounded to 3 decimals by the later implementation, #128). IDs are `int`; client ids are `UUID`.
+- Localized names: response fields named `name` carry the language chosen by `Accept-Language` (`ar` default, `en`), #129. Do not add a header parameter to each operation; the guide documents it.
+- Every response model has one realistic `json_schema_extra` example (Arabic names for `name`, numbers that agree with each other). The mock server in the guide serves these examples, so the teammate builds screens on them.
+- Lists that can grow take `limit` (default 20, max 50) and `offset` (default 0) and return `{items: [...], total: int}` (`Page[T]` generic model in `schemas/common.py`).
+- Date ranges `from` and `to` (query names `from` and `to`; Python names `date_from`, `date_to` with `alias`), inclusive, `to >= from`; maximum span 31 days for plans and shopping list, 92 days for adherence and weights. Span checks are declared now (Pydantic or `Query` validators that return `VALIDATION_ERROR`), because they are contract, not logic.
+
+## 2. Endpoints and models
+Status code shown is the success code. `(P)` = public. Field lists are complete; add nothing else without reporting it.
+
+### health (exists, unchanged)
+- `GET /health` (P).
+
+### auth (I.2)
+- `POST /auth/register` (P) 201. Body `RegisterRequest {email: EmailStr, password: str (min 8, max 128)}`. Returns `TokenPair {access_token, refresh_token, token_type: "bearer", expires_in: int (seconds)}`. Codes: EMAIL_TAKEN, VALIDATION_ERROR, RATE_LIMITED.
+- `POST /auth/login` (P) 200. Body `LoginRequest {email, password}` → `TokenPair`. Codes: INVALID_CREDENTIALS, RATE_LIMITED.
+- `POST /auth/refresh` (P) 200. Body `RefreshRequest {refresh_token: str}` → `TokenPair`. Codes: TOKEN_INVALID, TOKEN_REUSED, RATE_LIMITED.
+- `POST /auth/logout` (P) 204. Body `RefreshRequest`. Codes: none beyond validation.
+
+### me
+- `GET /me` 200 → `Account {user_id, email, created_at, has_profile: bool}`. The app uses `has_profile` to open onboarding or Home. Codes: UNAUTHORIZED.
+- `DELETE /me` 204. Deletes the account and all its data (Decision #170). Codes: UNAUTHORIZED.
+
+### reference and ingredients (I.3)
+- `GET /reference` (P) 200 → `Reference {health_conditions: [ConditionRef {code, name, is_supported, fluid_goal_requires_clinician}], allergens: [CodeName {code, name}], cuisines: [CodeName], activity_levels: [ActivityLevel], goal_types: [GoalType], sexes: [Sex], slots: [MealSlot], dataset_version: str}`. Supported conditions are `DIABETES_T2`, `HYPERTENSION`, `HEART_DISEASE`; `DIABETES_INSULIN` is listed with `is_supported: false` (the app asks it as the insulin question).
+- `GET /ingredients` 200, query `q: str (min 1, max 60)`, `limit`, `offset` → `Page[IngredientHit]`, `IngredientHit {ingredient_id, code, name, food_id: int | None}`. Search over Arabic and English names and aliases. One endpoint serves both onboarding preferences and logging a single food (Decision #168: foods have English-only descriptions, so the app never searches foods directly; it logs `food_id` of the ingredient). Codes: UNAUTHORIZED, VALIDATION_ERROR.
+
+### profile and targets (I.3)
+- `GET /me/profile` 200 → `ProfileState`. Codes: UNAUTHORIZED, PROFILE_NOT_FOUND.
+- `PUT /me/profile` 200 (full replace, used by onboarding and by Profile edits). Body `ProfileUpdate {sex: Sex, birth_date: date, height_cm: float (100..250), activity_level: ActivityLevel, goal_type: GoalType, target_weight_kg: float | None (30..300), weekly_rate_kg: float | None (>0, <=1.0), timezone: str (IANA), wake_time: time, sleep_time: time, water_goal_ml: int | None (500..5000), current_weight_kg: float | None (20..400), conditions: [ConditionChoice {code: str, severity: ConditionSeverity | None}] (max 10), allergens: [AllergenChoice {code: str, severity: AllergenSeverity}] (max 20), ingredient_prefs: [IngredientChoice {ingredient_id: int, stance: IngredientStance}] (max 100), cuisines: [str] (cuisine codes, max 10; empty means no preference)}`. `current_weight_kg` is required on the first save (no weight yet) and, when given later, is recorded as today's weight. Model validators that need no database: `wake_time != sleep_time`; `goal_type != MAINTAIN` requires `target_weight_kg` and `weekly_rate_kg`; no duplicate codes or ingredient ids. Returns `ProfileState`. Codes: UNAUTHORIZED, VALIDATION_ERROR, UNKNOWN_CODE, NO_WEIGHT, TARGET_VALIDATION, INVALID_TIMEZONE.
+- `ProfileState {profile: Profile, screening: Screening, target: Target | None}`. `Profile` = every field of `ProfileUpdate` except `current_weight_kg`, plus `latest_weight_kg: float | None` and `latest_weight_on: date | None`. `Screening {eligible: bool, reasons: [str]}` (reasons such as `UNDER_18`, `UNSUPPORTED_CONDITION:DIABETES_INSULIN`; an ineligible user is not an error, the app shows the general mode, #143).
+- `GET /me/targets` 200 → `TargetsView {screening: Screening, target: Target | None, water: WaterGoal}`. `Target {target_id, valid_from: datetime, reason: TargetReason, formula_version, based_on_weight_kg, bmr_kcal, tdee_kcal, kcal: int, protein_g, carb_g, fat_g, fiber_g: int, was_floor_applied: bool}`. `WaterGoal {goal_ml: int | None, source: Literal["USER", "DEFAULT", "NONE"], requires_clinician: bool, reminders_default_off: bool}`. Codes: UNAUTHORIZED, PROFILE_NOT_FOUND.
+
+### meal preferences (I.3)
+- `GET /me/meal-prefs` 200 → `[MealPref {meal_id, stance: MealStance, updated_at}]`.
+- `PUT /me/meal-prefs/{meal_id}` 200. Body `MealPrefUpdate {stance: MealStance}` → `MealPref`. The server also writes a `PREF_LIKE` or `PREF_DISLIKE` interaction (Decision #169). Codes: UNAUTHORIZED, MEAL_NOT_FOUND.
+- `DELETE /me/meal-prefs/{meal_id}` 204. Writes `PREF_CLEAR`. Codes: UNAUTHORIZED, MEAL_NOT_FOUND.
+
+### meals and catalog (I.4, snapshot in I.7)
+- `GET /meals` 200, query `q: str | None (max 60)`, `slot: MealSlot | None`, `cuisine: str | None`, `limit`, `offset` → `Page[MealSummary]`. Without `q`, alphabetical. Active meals only.
+- `MealSummary {meal_id, name, cuisine: str | None (code), dish_form: DishForm | None, serving_grams: float, kcal: float, protein_g: float, carb_g: float, fat_g: float, allergens: [str] (codes), tags: [str] (codes), my_stance: MealStance | None}` (nutrition per one serving).
+- `GET /meals/{meal_id}` 200 → `MealDetail` = `MealSummary` fields plus `servings: int, total_grams: float, nutrients: [NutrientAmount {code, unit: NutrientUnit, per_serving: float | None, per_100g: float | None}], ingredients: [MealIngredientOut {ingredient_id, name, grams_per_serving: float, is_optional: bool}], steps: [str] (in the requested language, falling back to Arabic; empty list when the meal has none), source: str, dataset_version: str`. Codes: UNAUTHORIZED, MEAL_NOT_FOUND.
+- `GET /catalog/snapshot` 200 → `CatalogSnapshot {dataset_version, generated_at: datetime, meals: [MealDetail]}` without `my_stance` (use a separate `SnapshotMeal` model if needed). Supports `ETag` and `If-None-Match` → `304` (declare the 304 response and the `ETag` response header in OpenAPI). Codes: UNAUTHORIZED.
+
+### plans and day view (I.5)
+- `POST /plans/days` 201. Body `PlanDayRequest {date: date}` → `DayPlanOut`. Generates and stores the plan of that day with the default planner (#131). Codes: UNAUTHORIZED, PROFILE_NOT_FOUND, NOT_ELIGIBLE (with `reasons`), NO_TARGET, CONDITION_CONFLICT, NO_FEASIBLE_PLAN, PLANNER_BUSY (503 with `Retry-After`), RATE_LIMITED.
+- `GET /plans` 200, query `from`, `to` → `[DayPlanOut]` (the current plan of each day that has one).
+- `DayPlanOut {plan_id, date, algorithm_version, created_at, target: PlanTargetOut {kcal, protein_g, carb_g, fat_g, fiber_g}, items: [PlanItemOut], totals: NutrientTotals, kcal_within_10pct: bool, unmet_minimums: [UnmetMinimumOut {nutrient, minimum, total: float | None}], stats: PlanStats | None}`. `PlanItemOut {plan_item_id, slot: MealSlot, meal: MealSummary, servings_multiplier: float, grams: float, kcal: float, protein_g, carb_g, fat_g, reason_codes: [str], was_swapped: bool, logged: bool}` (nutrition for the item at its multiplier). `NutrientTotals {kcal, protein_g, carb_g, fat_g, fiber_g, sodium_mg, sugars_g, saturated_fat_g}` (all `float | None`). `PlanStats {solver_status: str, kcal_relaxed: bool, solve_seconds: float, candidate_meals: int}` (#148; null for plans whose snapshot has no solver data).
+- `GET /days/{date}` 200 → `DayView {date, plan: DayPlanOut | None, meal_windows: [MealWindow {slot: MealSlot, start: time, end: time}], adherence: DayAdherenceOut, water: WaterDay}` (#134, #145). Codes: UNAUTHORIZED, PROFILE_NOT_FOUND.
+- `GET /plan-items/{plan_item_id}/alternatives` 200 → `[Alternative {meal: MealSummary, servings_multiplier: float, kcal: float, kcal_delta: float}]` (max 10, #137). Codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND.
+- `POST /plan-items/{plan_item_id}/swap` 200. Body `SwapRequest {meal_id: int}` → `PlanItemOut`. The server writes a `SWAP_OUT` interaction for the old meal with `context.replaced_by` (#169). Codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND, MEAL_NOT_FOUND, SWAP_REJECTED (with `reasons`), PLAN_ITEM_ALREADY_LOGGED.
+- `GET /shopping-list` 200, query `from`, `to` → `ShoppingList {date_from, date_to, items: [ShoppingItem {ingredient_id, name, grams: float, meals: int}]}`, summed from the current plans of the range (Decision #171). Codes: UNAUTHORIZED, VALIDATION_ERROR.
+
+### consumption, weight, water, adherence (I.6)
+- `POST /consumption-logs` 201 created, 200 duplicate (same `client_uuid`, same content). Body is a discriminated union on `kind`: `PlanItemLog {kind: "PLAN_ITEM", client_uuid, plan_item_id, servings_consumed: float (>0, <=10), consumed_at: AwareDatetime}`, `MealLog {kind: "MEAL", client_uuid, meal_id, servings_consumed, consumed_at, slot: MealSlot | None}`, `FoodLog {kind: "FOOD", client_uuid, food_id, grams_consumed: float (>0, <=3000), consumed_at, slot: MealSlot | None}`. Returns `ConsumptionLogOut {log_id, kind, log_date, consumed_at, slot, plan_item_id, meal_id, food_id, servings_consumed, grams_consumed, name: str, nutrients: NutrientTotals, status: Literal["CREATED", "DUPLICATE"]}`. Logging a plan item also writes an `ACCEPT` interaction (#169). Free-form dishes typed as ingredients are **not** in the contract (deferred, Decision #172). Codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND, MEAL_NOT_FOUND, FOOD_NOT_FOUND, PLAN_ITEM_ALREADY_LOGGED, CLIENT_UUID_CONFLICT, INCOMPLETE_NUTRITION, VALIDATION_ERROR.
+- `GET /consumption-logs` 200, query `date: date` → `[ConsumptionLogOut]` (active logs of that local day).
+- `POST /consumption-logs/{log_id}/correction` 201. Body `LogCorrection {new_client_uuid: UUID, servings_consumed: float | None, grams_consumed: float | None, consumed_at: AwareDatetime | None, slot: MealSlot | None}` (at least one change) → `ConsumptionLogOut` (the new row; the old one is tombstoned). Codes: UNAUTHORIZED, LOG_NOT_FOUND, CLIENT_UUID_CONFLICT, VALIDATION_ERROR.
+- `DELETE /consumption-logs/{log_id}` 204. Codes: UNAUTHORIZED, LOG_NOT_FOUND.
+- `PUT /weights/{measured_on}` 200. Body `WeightUpdate {weight_kg: float (20..400), updated_at: AwareDatetime}` → `WeightOut {measured_on, weight_kg, status: Literal["CREATED", "UPDATED", "STALE_IGNORED"], target_status: Literal["NOT_TRIGGERED", "NO_CURRENT_TARGET", "CREATED", "INELIGIBLE", "GOAL_INVALID"], new_target_id: int | None, goal_reached: bool}`. Codes: UNAUTHORIZED, PROFILE_NOT_FOUND, CLOCK_SKEW, VALIDATION_ERROR.
+- `GET /weights` 200, query `from`, `to` → `[WeightPoint {measured_on, weight_kg}]`.
+- `GET /water` 200, query `date: date` → `WaterDay {date, total_ml: int, goal: WaterGoal, logs: [WaterLogOut {log_id, amount_ml, consumed_at}]}`.
+- `POST /water-logs` 201 or 200 duplicate. Body `WaterLogCreate {client_uuid, amount_ml: int (50..1000), consumed_at: AwareDatetime}` → `WaterLogOut` plus `status`. Codes: UNAUTHORIZED, CLIENT_UUID_CONFLICT, VALIDATION_ERROR.
+- `DELETE /water-logs/{log_id}` 204. Codes: UNAUTHORIZED, LOG_NOT_FOUND.
+- `GET /adherence` 200, query `from`, `to` → `AdherenceRangeOut {days: [DayAdherenceOut], streak: int}`. `DayAdherenceOut {date, status: Literal["ACHIEVED", "PARTIAL", "NOT_ACHIEVED"] | None, reason: str | None, target_kcal: float | None, totals: NutrientTotals, log_count: int, exceeded_limits: [ExceededLimitOut {nutrient, total: float | None, limit: float}], unmet_minimums: [UnmetMinimumOut], fiber_target_g: int | None, plan_items_total: int, plan_items_consumed: int, completion: float | None}` (mirrors `DayAdherence`, §30.5).
+
+### interactions (I.6)
+- `POST /interactions` 201 or 200 duplicate. Body `InteractionCreate {client_uuid, meal_id, event_type: Literal["IMPRESSION", "VIEW", "SAVE", "RATE", "COOK", "SKIP"], value: int | None (1..5, required only for RATE), plan_item_id: int | None, screen: str | None (max 40)}` → `InteractionOut {interaction_id, status}`. The server copies `plan_id`, `slot` and `algorithm_version` into `context` from the plan item when given, so every learning event is tied to the plan and planner that produced it (Decision #169). `ACCEPT`, `SWAP_OUT` and `PREF_*` are written only by the server. Codes: UNAUTHORIZED, MEAL_NOT_FOUND, PLAN_ITEM_NOT_FOUND, CLIENT_UUID_CONFLICT, VALIDATION_ERROR.
+
+### sync (I.7)
+- `POST /sync/batch` 200. Body `SyncBatch {operations: [SyncOperation] (1..500)}`, `SyncOperation` = discriminated union on `op`: `CONSUMPTION_CREATE` (the three log bodies), `CONSUMPTION_CORRECT {log_id, ...LogCorrection}`, `CONSUMPTION_DELETE {log_id}`, `WATER_CREATE`, `WATER_DELETE {log_id}`, `WEIGHT_PUT {measured_on, ...WeightUpdate}`, `INTERACTION_CREATE`. Each operation has `op_id: UUID` chosen by the client. Returns `SyncResult {results: [SyncOpResult {op_id, status: Literal["CREATED", "UPDATED", "DUPLICATE", "REJECTED"], code: str | None, entity_id: int | None}], server_time: datetime}` (#138). Codes: UNAUTHORIZED, VALIDATION_ERROR, RATE_LIMITED.
+- `GET /sync/changes` 200, query `since: AwareDatetime` → `SyncChanges {server_time, consumption_logs: [ConsumptionLogOut], deleted_consumption_log_ids: [int], water_logs: [WaterLogOut], deleted_water_log_ids: [int], weights: [WeightPoint], plans: [DayPlanOut], meal_prefs: [MealPref], profile_changed: bool}`.
+
+## 3. Error codes
+- Add `not_implemented()` and keep `SERVICE_ERRORS` unchanged (no new service exceptions in this pass).
+- Add to `errors.py` a constant `PLANNED_ERROR_CODES` (tuple, sorted) listing every code that appears in any operation description, and a test that asserts each description's codes are a subset of it plus the existing mapped codes. Codes that later passes will raise and that do not exist yet: `EMAIL_TAKEN`, `INVALID_CREDENTIALS`, `TOKEN_INVALID`, `TOKEN_REUSED`, `UNKNOWN_CODE`, `PLANNER_BUSY`, `RATE_LIMITED`, `UNAUTHORIZED`.
+
+## 4. Contract file and guide
+- Regenerate `docs/api/openapi.json` with `uv run python -m scripts.export_openapi` (the drift test must pass). Bump `API_VERSION` to `"0.2.0"`.
+- New `docs/api/API_GUIDE.md` (English, short, for the Flutter teammate):
+  1. What the contract is and that `openapi.json` is the only source of truth.
+  2. Generate the Dart client: `openapi-generator-cli generate -i docs/api/openapi.json -g dart-dio -o mobile/packages/nutriguide_api` (pin the generator version you document), and how operationIds become method names.
+  3. Run a mock server from the file with Prism: `npx @stoplight/prism-cli@5 mock docs/api/openapi.json` (port 4010), and that it serves the examples.
+  4. Auth flow: register or login, send `Authorization: Bearer`, refresh on 401 `UNAUTHORIZED`, a `TOKEN_REUSED` answer means log out.
+  5. Language with `Accept-Language`, dates and times formats, measured numbers, `client_uuid` and offline retry, `Retry-After` on `PLANNER_BUSY`.
+  6. Week plan = seven `POST /plans/days` calls in sequence with progress.
+  7. Error handling by `code`, with the table of all codes and the HTTP status of each.
+  8. Screen to endpoint table (copy the one from the plan, updated to these paths).
+
+## 5. Tests (`tests/api/`)
+- Every path and method listed in section 2 exists in the OpenAPI document, and no other path exists besides these and `/health`.
+- Every new operation answers `501` with `code: NOT_IMPLEMENTED` and `application/problem+json` (parametrized over the route table; send a minimal valid body where one is required so the request reaches the handler; a malformed body still gets `422 VALIDATION_ERROR`).
+- `operationId`s are unique and equal to the function names.
+- Every operation except the public six declares `HTTPBearer` security; the public ones declare none.
+- Every response model referenced by an operation has an example, and each example validates against its own model.
+- Validation examples: `PUT /me/profile` with equal wake and sleep times, with `LOSE` and no `target_weight_kg`, and with a duplicate condition code; `GET /plans` with a 32-day range; `POST /interactions` with `RATE` and no value; `POST /consumption-logs` with an unknown `kind`. Each returns `422 VALIDATION_ERROR` with `errors`.
+- The error-code test of section 3.
+- All existing tests pass unchanged.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), and `npx @stoplight/prism-cli@5 mock docs/api/openapi.json` started once with one `curl` to `/api/v1/days/2026-10-20` (send any Bearer value) to show the mock answers with the example. If `npx` is not available, say so and skip only that check.
+
+## Report back
+1. Files created/changed.
+2. The list of operations as `METHOD path → operationId (success status)`.
+3. The size of `openapi.json` and the number of schemas in it.
+4. The Prism check output.
+5. Test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions, especially any field you had to add, rename or drop.

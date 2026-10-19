@@ -5,9 +5,13 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import Depends
+from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.db.session import SessionLocal
+
+# Declared on protected routers so OpenAPI shows the bearer scheme. I.2 checks the token.
+bearer = HTTPBearer(auto_error=False)
 
 
 def get_db() -> Iterator[Session]:
