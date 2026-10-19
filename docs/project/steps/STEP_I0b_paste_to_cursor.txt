@@ -1,0 +1,66 @@
+You are implementing **Step I.0b (the only schema change of Step I)**. Step I.0 is closed (`62b1336`); catalog batch 02 is closed (`f5e6f9d`, tag `dataset-v2`, 75 active meals). This pass adds migration `0005` for decisions #145, #149 and #161, plus three interaction event types for preference history (the user plans a beta and later ML on real usage), a cuisine preference table, and two `consumption_logs` columns for off-catalog dishes logged as ingredients; all summarised as Decision #165. It is the third use of the post-freeze policy (§20.1). **No data in this pass:** loading `meal_steps` rows and `dish_form` values, and rebuilding the dev database, is the next pass, I.0c (#166). The muscle-gain path (`MUSCLE` goal, protein preference, training days/time, #144 and #153–#157) is **deferred** by the user: do not touch `GoalType`, `goal_requires_target`, `targets.py` or anything protein-related.
+
+The user has just placed these files in the repository (do not edit their content; if one is wrong or contradicts the code, report it):
+
+- `docs/PROJECT_CONTEXT_v4_19.md` (replaces `docs/PROJECT_CONTEXT_v4_18.md`; single source of truth). Read its CHANGELOG v4.18 → v4.19 first (decisions #141–#166), then §10.1 (`dish_form`), §10.7, §11.2 (`wake_time`, `sleep_time`), §11.6, §11.9 (`entry_group`, `entry_label`), §11.14, §11.15, §20.1.
+- `docs/project/DEV_JOURNAL.md` (entry J-036), `docs/project/CONTEXT_INDEX.md`, `docs/project/steps/STEP_I_plan.md`.
+
+## Hard rules
+1. Migrations `0001`–`0004` are never edited (hash test). Add **one** new revision `0005` (`down_revision = "0004"`), written and reviewed by hand in the style of `0004` (constraint names through `op.f(...)` and the naming convention), and add its SHA-256 to `tests/test_migration_files.py` in the same change.
+2. No other schema change. No nutrient, recipe, gram, tag, limit or catalog file changes. `DATASET_MANIFEST.yaml` must not change.
+3. The F.1 benchmark must not move (#88): `docs/reports/f1_scenario_report.md` regenerated after this pass must be byte-identical (`git diff` empty). If a line differs, stop and report it.
+4. No service, planner or API behaviour changes. Nothing reads the new columns or tables yet.
+5. `docs/api/openapi.json` must not change; the drift check stays green.
+6. Do not commit anything.
+
+## 1. Models (`app/db/models/user.py`, `app/db/models/catalog.py`)
+- New `MealStance(StrEnum)`: `LIKE`, `DISLIKE` (do not reuse `IngredientStance`: `EXCLUDE` is not a meal stance).
+- New `DishForm(StrEnum)` in `catalog.py`: `ONE_DISH`, `PLATE`.
+- `InteractionEventType`: add `PREF_LIKE`, `PREF_DISLIKE`, `PREF_CLEAR` (after `SWAP_OUT`). The existing `event_type_valid` CHECK widens accordingly (§11.6). No service writes them yet.
+- `UserProfile` (§11.2) new columns: `wake_time`, `sleep_time`: `Time` (no timezone), `nullable=False`, `server_default` `'07:00:00'` and `'23:00:00'`; `CheckConstraint("wake_time <> sleep_time", name="wake_sleep_differ")`.
+- New model `UserMealPref` (§11.14), table `user_meal_prefs`, modelled on `UserIngredientPref`: PK `(user_id, meal_id)`; `user_id` FK `users` CASCADE; `meal_id` FK `meals.meal_id` **RESTRICT**, `index=True`; `stance` `String NOT NULL` with `enum_check(..., MealStance, name="stance_valid")`; `created_at` / `updated_at` helpers.
+- New model `MealStep` (§10.7), table `meal_steps`, modelled on `MealTranslation`: `meal_id` FK `meals` CASCADE, `lang` (`LANG_CODE` + `lang_check`), `position` `SmallInteger NOT NULL`, `text` `Text NOT NULL`, `created_at` / `updated_at`; PK `(meal_id, lang, position)`; `CheckConstraint("position >= 1", name="position_positive")`; `CheckConstraint("length(btrim(text)) > 0", name="text_not_blank")`.
+- `Meal.dish_form`: `String`, nullable; `enum_check("dish_form", DishForm, name="dish_form_valid")` (the CHECK must allow NULL, as the existing nullable enum checks do).
+- New model `UserCuisinePref` (§11.15), table `user_cuisine_prefs`: PK `(user_id, cuisine_id)`; `user_id` FK `users` CASCADE; `cuisine_id` FK `cuisines.cuisine_id` **RESTRICT**, `index=True`; `created_at` only (rows are inserted or deleted, never updated).
+- `ConsumptionLog` (§11.9) new columns: `entry_group` `Uuid` nullable, `index=True`; `entry_label` `Text` nullable; `CheckConstraint("entry_group IS NULL OR food_id IS NOT NULL", name="entry_group_food_only")`; `CheckConstraint("entry_label IS NULL OR (entry_group IS NOT NULL AND length(btrim(entry_label)) > 0)", name="entry_label_needs_group")`. The logging service is not changed in this pass.
+- Export the new models and enums wherever the existing ones are exported (`app/db/models/__init__.py`) so Alembic metadata sees them.
+
+## 2. Migration `0005_wake_sleep_meal_prefs_meal_steps.py`
+- `upgrade()`:
+  1. Add `user_profiles.wake_time` and `sleep_time` as `NOT NULL` with their server defaults (existing rows take the defaults; no separate backfill), then `wake_sleep_differ`.
+  2. Add `meals.dish_form` (nullable) and `dish_form_valid`.
+  2b. Drop and recreate `user_interactions` `event_type_valid` with the three new values (downgrade restores the `0004` list; a comment notes it fails if `PREF_*` rows exist, which is acceptable).
+  3. Create `meal_steps`, `user_meal_prefs` and `user_cuisine_prefs` with all constraints and their FK indexes.
+  4. Add `consumption_logs.entry_group` (with its index) and `entry_label`, then their two CHECKs.
+- `downgrade()` reverses everything in the opposite order.
+- `uv run alembic check` must report no drift. Extend `tests/test_migrations.py`: revision list now ends with `"0005"`, a `MIGRATION_0005_COLUMNS` set (`wake_time`, `sleep_time`, `dish_form`, `entry_group`, `entry_label`) plus the three new tables, present after upgrade and absent after downgrade to `0004`; the round-trip test passes.
+- One migration test on existing data: insert a `user_profiles` row at `0004`, upgrade to `0005`, and assert it reads `wake_time = 07:00` and `sleep_time = 23:00`.
+
+## 3. Integrity suite (§19) and metadata tests
+- `tests/test_models_metadata.py`: add `meal_steps` to `CATALOG_TABLES`, and `user_meal_prefs` and `user_cuisine_prefs` to `USER_TABLES`; add all three to `COMPOSITE_PK` (`("meal_id", "lang", "position")`, `("user_id", "meal_id")`, `("user_id", "cuisine_id")`); add `("meal_steps", "lang")` and `("meal_steps", "position")` to `NON_FK_PK_COLUMNS`; add `meal_steps` and `user_meal_prefs` to `MUTABLE_TABLES` (`user_cuisine_prefs` has `created_at` only: put it in whichever audit class the suite uses for insert-only tables). Update the comments that list section numbers.
+- `tests/integrity/check_cases.py` and the CHECK / UNIQUE / NOT NULL registries: every new constraint must be covered, or the registry test must fail. Positive and negative cases at least:
+  - `wake_sleep_differ`: 07:00/23:00 and 07:00/01:00 pass; equal times fail; NULL fails (NOT NULL).
+  - `dish_form_valid`: `ONE_DISH`, `PLATE`, NULL pass; `'BOWL'` fails.
+  - `user_cuisine_prefs`: duplicate `(user_id, cuisine_id)` fails; deleting a cuisine that is referenced is refused (RESTRICT); deleting the user cascades.
+  - `entry_group_food_only`: a food row with `entry_group` passes; a meal row with `entry_group` fails.
+  - `entry_label_needs_group`: label with group passes; label without group fails; blank label `'  '` fails; NULL label with group passes.
+  - `event_type_valid`: each of `PREF_LIKE`, `PREF_DISLIKE`, `PREF_CLEAR` passes; `'LIKE'` fails; old values still pass.
+  - `meal_steps`: `position` 0 fails; blank text `'  '` fails; bad `lang` fails; duplicate `(meal_id, lang, position)` fails; deleting the meal cascades its steps.
+  - `user_meal_prefs`: `LIKE` and `DISLIKE` pass; `EXCLUDE` fails; duplicate `(user_id, meal_id)` fails; deleting a meal that has a preference is refused (RESTRICT); deleting the user cascades.
+- Update the documented constraint counts wherever the suite records them.
+
+## 4. Builders, existing tests, README
+- `tests/builders.py`: keep defaults so every existing test passes unchanged.
+- Every existing service, planner, scenario, pipeline and API test passes with unchanged expectations.
+- `README.md`: point the "source of truth" link to `docs/PROJECT_CONTEXT_v4_19.md` (the only doc edit you make; historical mentions in the journal and old step files stay as they are).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run alembic upgrade head` on the dev database, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), `uv run python -m app.pipeline.manifest --check`, then regenerate `uv run python -m scripts.f1_scenario_report` and run `git diff --stat docs/reports/f1_scenario_report.md` plus `git diff docs/reports/f1_scenario_report.md | head -40`.
+
+## Report back
+1. Files created/changed.
+2. The `0005` migration body (upgrade and downgrade) as written, and its SHA-256.
+3. `alembic check` output and the `\d user_profiles`, `\d meal_steps`, `\d user_meal_prefs`, `\d user_cuisine_prefs`, `\d consumption_logs` output from the dev database (`docker compose exec db psql ...` or equivalent).
+4. Scenario report diff (expected: empty), openapi check and manifest check results.
+5. Test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions.

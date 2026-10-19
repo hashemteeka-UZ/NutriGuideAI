@@ -259,6 +259,13 @@ def values_meal_tags(conn: Connection, **overrides: Any) -> dict[str, Any]:
     return values
 
 
+def values_meal_steps(conn: Connection, **overrides: Any) -> dict[str, Any]:
+    values: dict[str, Any] = {"lang": "ar", "position": 1, "text": "chop the onion", **overrides}
+    if "meal_id" not in values:
+        values["meal_id"] = make_meal(conn)
+    return values
+
+
 def values_meal_translations(conn: Connection, **overrides: Any) -> dict[str, Any]:
     n = nxt()
     values: dict[str, Any] = {
@@ -323,6 +330,24 @@ def values_user_ingredient_prefs(conn: Connection, **overrides: Any) -> dict[str
         values["user_id"] = make_user(conn)
     if "ingredient_id" not in values:
         values["ingredient_id"] = make_ingredient(conn)
+    return values
+
+
+def values_user_meal_prefs(conn: Connection, **overrides: Any) -> dict[str, Any]:
+    values: dict[str, Any] = {"stance": "LIKE", **overrides}
+    if "user_id" not in values:
+        values["user_id"] = make_user(conn)
+    if "meal_id" not in values:
+        values["meal_id"] = make_meal(conn)
+    return values
+
+
+def values_user_cuisine_prefs(conn: Connection, **overrides: Any) -> dict[str, Any]:
+    values: dict[str, Any] = dict(overrides)
+    if "user_id" not in values:
+        values["user_id"] = make_user(conn)
+    if "cuisine_id" not in values:
+        values["cuisine_id"] = make_cuisine(conn)
     return values
 
 
@@ -466,12 +491,15 @@ VALUE_BUILDERS: dict[str, Callable[..., dict[str, Any]]] = {
     "meal_nutrients": values_meal_nutrients,
     "meal_allergens": values_meal_allergens,
     "meal_tags": values_meal_tags,
+    "meal_steps": values_meal_steps,
     "meal_translations": values_meal_translations,
     "users": values_users,
     "user_profiles": values_user_profiles,
     "user_health_conditions": values_user_health_conditions,
     "user_allergen_prefs": values_user_allergen_prefs,
     "user_ingredient_prefs": values_user_ingredient_prefs,
+    "user_meal_prefs": values_user_meal_prefs,
+    "user_cuisine_prefs": values_user_cuisine_prefs,
     "user_interactions": values_user_interactions,
     "user_targets": values_user_targets,
     "meal_plans": values_meal_plans,
@@ -567,6 +595,10 @@ def make_meal_translation(conn: Connection, **overrides: Any) -> tuple[int, str]
     return make_row(conn, "meal_translations", **overrides)
 
 
+def make_meal_step(conn: Connection, **overrides: Any) -> tuple[int, str, int]:
+    return make_row(conn, "meal_steps", **overrides)
+
+
 def make_user(conn: Connection, **overrides: Any) -> int:
     return make_row(conn, "users", **overrides)
 
@@ -585,6 +617,14 @@ def make_user_allergen_pref(conn: Connection, **overrides: Any) -> tuple[int, in
 
 def make_user_ingredient_pref(conn: Connection, **overrides: Any) -> tuple[int, int]:
     return make_row(conn, "user_ingredient_prefs", **overrides)
+
+
+def make_user_meal_pref(conn: Connection, **overrides: Any) -> tuple[int, int]:
+    return make_row(conn, "user_meal_prefs", **overrides)
+
+
+def make_user_cuisine_pref(conn: Connection, **overrides: Any) -> tuple[int, int]:
+    return make_row(conn, "user_cuisine_prefs", **overrides)
 
 
 def make_user_interaction(conn: Connection, **overrides: Any) -> int:
@@ -642,12 +682,15 @@ MAKERS: dict[str, Callable[..., Any]] = {
         "meal_nutrients": "make_meal_nutrient",
         "meal_allergens": "make_meal_allergen",
         "meal_tags": "make_meal_tag",
+        "meal_steps": "make_meal_step",
         "meal_translations": "make_meal_translation",
         "users": "make_user",
         "user_profiles": "make_user_profile",
         "user_health_conditions": "make_user_health_condition",
         "user_allergen_prefs": "make_user_allergen_pref",
         "user_ingredient_prefs": "make_user_ingredient_pref",
+        "user_meal_prefs": "make_user_meal_pref",
+        "user_cuisine_prefs": "make_user_cuisine_pref",
         "user_interactions": "make_user_interaction",
         "user_targets": "make_user_target",
         "meal_plans": "make_meal_plan",

@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 from uuid import uuid4
 
+import pytest
 from sqlalchemy import delete, text
 from sqlalchemy.engine import Connection
+from sqlalchemy.exc import IntegrityError
 
 from tests.builders import (
+    insert_values,
     make_consumption_log,
+    make_cuisine,
     make_food,
     make_meal,
     make_meal_plan,
@@ -17,14 +21,17 @@ from tests.builders import (
     make_refresh_token,
     make_user,
     make_user_allergen_pref,
+    make_user_cuisine_pref,
     make_user_health_condition,
     make_user_ingredient_pref,
     make_user_interaction,
+    make_user_meal_pref,
     make_user_profile,
     make_user_target,
     make_water_log,
     make_weight_log,
     table,
+    values_for,
 )
 from tests.integrity.helpers import assert_rejected, assert_rejects, fetch_by_pk
 
@@ -443,3 +450,100 @@ def test_user_health_conditions_relationship(integrity_conn: Connection) -> None
     user_id = make_user(integrity_conn)
     make_user_health_condition(integrity_conn, user_id=user_id)
     assert fetch_by_pk(integrity_conn, "users", user_id) is not None
+
+
+def test_user_profiles_sleep_after_midnight_accepted(integrity_conn: Connection) -> None:
+    profile_id = make_user_profile(integrity_conn, wake_time=time(7, 0), sleep_time=time(1, 0))
+    row = fetch_by_pk(integrity_conn, "user_profiles", profile_id)
+    assert row is not None
+    assert row._mapping["wake_time"] == time(7, 0)
+    assert row._mapping["sleep_time"] == time(1, 0)
+
+
+@pytest.mark.parametrize("column", ["wake_time", "sleep_time"])
+def test_user_profiles_null_wake_or_sleep_rejected(integrity_conn: Connection, column: str) -> None:
+    values = values_for(integrity_conn, "user_profiles")
+    values[column] = None
+    with pytest.raises(IntegrityError) as caught, integrity_conn.begin_nested():
+        insert_values(integrity_conn, "user_profiles", values)
+    assert caught.value.orig.sqlstate == "23502"
+    assert caught.value.orig.diag.column_name == column
+
+
+@pytest.mark.parametrize("event_type", ["PREF_LIKE", "PREF_DISLIKE", "PREF_CLEAR", "SWAP_OUT"])
+def test_user_interactions_preference_and_existing_event_types_accepted(
+    integrity_conn: Connection, event_type: str
+) -> None:
+    make_user_interaction(integrity_conn, event_type=event_type)
+
+
+def test_user_interactions_like_event_type_rejected(integrity_conn: Connection) -> None:
+    assert_rejects(
+        integrity_conn,
+        "ck_user_interactions_event_type_valid",
+        lambda: make_user_interaction(integrity_conn, event_type="LIKE"),
+    )
+
+
+def test_user_meal_prefs_dislike_accepted(integrity_conn: Connection) -> None:
+    pk = make_user_meal_pref(integrity_conn, stance="DISLIKE")
+    row = fetch_by_pk(integrity_conn, "user_meal_prefs", pk)
+    assert row is not None
+    assert row.stance == "DISLIKE"
+
+
+def test_user_meal_prefs_duplicate_rejected(integrity_conn: Connection) -> None:
+    user_id = make_user(integrity_conn)
+    meal_id = make_meal(integrity_conn)
+    make_user_meal_pref(integrity_conn, user_id=user_id, meal_id=meal_id)
+    assert_rejects(
+        integrity_conn,
+        "pk_user_meal_prefs",
+        lambda: make_user_meal_pref(
+            integrity_conn, user_id=user_id, meal_id=meal_id, stance="DISLIKE"
+        ),
+    )
+
+
+def test_user_cuisine_prefs_duplicate_rejected(integrity_conn: Connection) -> None:
+    user_id = make_user(integrity_conn)
+    cuisine_id = make_cuisine(integrity_conn)
+    make_user_cuisine_pref(integrity_conn, user_id=user_id, cuisine_id=cuisine_id)
+    assert_rejects(
+        integrity_conn,
+        "pk_user_cuisine_prefs",
+        lambda: make_user_cuisine_pref(integrity_conn, user_id=user_id, cuisine_id=cuisine_id),
+    )
+
+
+def test_consumption_logs_blank_entry_label_rejected(integrity_conn: Connection) -> None:
+    group = uuid4()
+    assert_rejects(
+        integrity_conn,
+        "ck_consumption_logs_entry_label_needs_group",
+        lambda: make_consumption_log(
+            integrity_conn,
+            meal_id=None,
+            food_id=make_food(integrity_conn),
+            servings_consumed=None,
+            grams_consumed=40,
+            entry_group=group,
+            entry_label="  ",
+        ),
+    )
+
+
+def test_consumption_logs_null_entry_label_with_group_accepted(integrity_conn: Connection) -> None:
+    log_id = make_consumption_log(
+        integrity_conn,
+        meal_id=None,
+        food_id=make_food(integrity_conn),
+        servings_consumed=None,
+        grams_consumed=40,
+        entry_group=uuid4(),
+        entry_label=None,
+    )
+    row = fetch_by_pk(integrity_conn, "consumption_logs", log_id)
+    assert row is not None
+    assert row.entry_label is None
+    assert row.entry_group is not None

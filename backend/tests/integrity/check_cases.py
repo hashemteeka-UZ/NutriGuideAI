@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 from typing import Any
 from uuid import uuid4
 
@@ -234,6 +234,36 @@ CHECK_CASES: dict[str, CheckCase] = {
         positive={"goal_type": "LOSE", "target_weight_kg": 70, "weekly_rate_kg": 0.5},
         negative={"goal_type": "LOSE", "target_weight_kg": None, "weekly_rate_kg": None},
     ),
+    "ck_user_profiles_wake_sleep_differ": CheckCase(
+        table="user_profiles",
+        positive={"wake_time": time(7, 0), "sleep_time": time(23, 0)},
+        negative={"wake_time": time(7, 0), "sleep_time": time(7, 0)},
+    ),
+    "ck_meals_dish_form_valid": CheckCase(
+        table="meals",
+        positive={"dish_form": "ONE_DISH"},
+        negative={"dish_form": "BOWL"},
+    ),
+    "ck_meal_steps_position_positive": CheckCase(
+        table="meal_steps",
+        positive={"position": 1},
+        negative={"position": 0},
+    ),
+    "ck_meal_steps_text_not_blank": CheckCase(
+        table="meal_steps",
+        positive={"text": "chop the onion"},
+        negative={"text": "  "},
+    ),
+    "ck_meal_steps_lang_iso639_1": CheckCase(
+        table="meal_steps",
+        positive={"lang": "ar"},
+        negative={"lang": "AR"},
+    ),
+    "ck_user_meal_prefs_stance_valid": CheckCase(
+        table="user_meal_prefs",
+        positive={"stance": "LIKE"},
+        negative={"stance": "EXCLUDE"},
+    ),
     "ck_user_interactions_value_range": CheckCase(
         table="user_interactions",
         positive={"event_type": "RATE", "value": 1},
@@ -289,6 +319,22 @@ CHECK_CASES: dict[str, CheckCase] = {
             "grams_consumed": None,
         },
         negative=_plan_item_on_food,
+    ),
+    "ck_consumption_logs_entry_group_food_only": CheckCase(
+        table="consumption_logs",
+        positive=lambda conn: _food_log(conn, entry_group=uuid4()),
+        negative=lambda conn: {
+            "meal_id": make_meal(conn),
+            "food_id": None,
+            "servings_consumed": 1,
+            "grams_consumed": None,
+            "entry_group": uuid4(),
+        },
+    ),
+    "ck_consumption_logs_entry_label_needs_group": CheckCase(
+        table="consumption_logs",
+        positive=lambda conn: _food_log(conn, entry_group=uuid4(), entry_label="طبق"),
+        negative={"entry_label": "طبق", "entry_group": None},
     ),
     "ck_weight_logs_weight_range": CheckCase(
         table="weight_logs",
@@ -464,6 +510,7 @@ SECONDARY_INDEX_CASES: dict[str, IndexCase] = {
     "ix_consumption_logs_user_id_log_date": IndexCase(
         "consumption_logs", ("user_id", "log_date"), predicate="(deleted_at IS NULL)"
     ),
+    "ix_consumption_logs_entry_group": IndexCase("consumption_logs", ("entry_group",)),
     "ix_water_logs_user_id_log_date": IndexCase(
         "water_logs", ("user_id", "log_date"), predicate="(deleted_at IS NULL)"
     ),

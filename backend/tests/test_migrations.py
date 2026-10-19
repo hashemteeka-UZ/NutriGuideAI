@@ -45,6 +45,14 @@ MIGRATION_0004_COLUMNS = {
     ("ingredients", "code"),
     ("condition_tag_restrictions", "source_reference"),
 }
+MIGRATION_0005_COLUMNS = {
+    ("user_profiles", "wake_time"),
+    ("user_profiles", "sleep_time"),
+    ("meals", "dish_form"),
+    ("consumption_logs", "entry_group"),
+    ("consumption_logs", "entry_label"),
+}
+MIGRATION_0005_TABLES = {"meal_steps", "user_meal_prefs", "user_cuisine_prefs"}
 
 
 def _alembic_config(conn: Connection) -> Config:
@@ -119,19 +127,25 @@ def test_round_trip_upgrade_downgrade_upgrade(migration_db: Engine) -> None:
     script = ScriptDirectory.from_config(Config(ALEMBIC_INI))
     head = script.get_current_head()
     revisions = [rev.revision for rev in reversed(list(script.walk_revisions()))]
-    assert revisions[:4] == ["0001", "0002", "0003", "0004"]
+    assert revisions[:5] == ["0001", "0002", "0003", "0004", "0005"]
     assert revisions[-1] == head
 
     for revision in revisions:
         _upgrade(migration_db, revision)
         assert _current_revision(migration_db) == revision
     assert MEAL_PLAN_SLOT_INDEX in _index_names(migration_db)
-    assert _columns(migration_db) >= MIGRATION_0003_COLUMNS | MIGRATION_0004_COLUMNS
+    assert _columns(migration_db) >= (
+        MIGRATION_0003_COLUMNS | MIGRATION_0004_COLUMNS | MIGRATION_0005_COLUMNS
+    )
+    assert _tables(migration_db) >= MIGRATION_0005_TABLES
     assert VARIANT_GROUP_INDEX in _index_names(migration_db)
 
     for revision in reversed(revisions[:-1]):
         _downgrade(migration_db, revision)
         assert _current_revision(migration_db) == revision
+        if revision == "0004":
+            assert not MIGRATION_0005_COLUMNS & _columns(migration_db)
+            assert not MIGRATION_0005_TABLES & _tables(migration_db)
         if revision == "0003":
             assert not MIGRATION_0004_COLUMNS & _columns(migration_db)
         if revision == "0002":
@@ -210,7 +224,10 @@ def test_0004_backfills_ingredient_codes_and_restriction_source(migration_db: En
 def test_0004_upgrade_then_loader_matches_existing_ingredients_by_code(
     migration_db: Engine,
 ) -> None:
-    """F.1 rows loaded under 0003 keep their ids after 0004; the loader updates, never inserts."""
+    """F.1 rows loaded under 0003 keep their ids after 0004; the loader updates, never inserts.
+
+    The loader runs at head: the current meal model selects columns added in 0005.
+    """
     from sqlalchemy.orm import Session
 
     from app.seed.f1_files import SLICE_FOODS_FILE, read_slice_foods
@@ -231,6 +248,7 @@ def test_0004_upgrade_then_loader_matches_existing_ingredients_by_code(
         codes = dict(conn.execute(text("SELECT canonical_name, code FROM ingredients")).all())
         assert codes == {f.ingredient_en: f.ingredient_code for f in foods.foods}
 
+    _upgrade(migration_db, "0005")
     with Session(migration_db) as session:
         report = load_f1_slice(session, DEFAULT_DATA_DIR)
         session.commit()
@@ -241,6 +259,34 @@ def test_0004_upgrade_then_loader_matches_existing_ingredients_by_code(
     with migration_db.connect() as conn:
         assert conn.execute(text("SELECT count(*) FROM ingredients")).scalar_one() == 62
         assert conn.execute(text("SELECT count(DISTINCT code) FROM ingredients")).scalar_one() == 62
+
+
+def test_0005_existing_profile_receives_wake_and_sleep_defaults(migration_db: Engine) -> None:
+    _upgrade(migration_db, "0004")
+    with migration_db.begin() as conn:
+        user_id = conn.execute(
+            text(
+                "INSERT INTO users (email, hashed_password) "
+                "VALUES ('wake@example.com', 'hashed') RETURNING user_id"
+            )
+        ).scalar_one()
+        conn.execute(
+            text(
+                "INSERT INTO user_profiles "
+                "(user_id, sex, birth_date, height_cm, activity_level, goal_type, timezone) "
+                "VALUES (:user_id, 'MALE', '1990-01-01', 170, 'LIGHT', 'MAINTAIN', "
+                "'Africa/Tripoli')"
+            ),
+            {"user_id": user_id},
+        )
+    _upgrade(migration_db, "0005")
+    with migration_db.begin() as conn:
+        row = conn.execute(
+            text("SELECT wake_time::text, sleep_time::text FROM user_profiles")
+        ).one()
+        assert row == ("07:00:00", "23:00:00")
+        conn.execute(text("DELETE FROM user_profiles"))
+        conn.execute(text("DELETE FROM users"))
 
 
 def test_no_drift_between_migration_and_models(migration_db: Engine) -> None:
@@ -256,7 +302,7 @@ def test_no_drift_between_migration_and_models(migration_db: Engine) -> None:
 def test_migrated_schema_shape(migration_db: Engine) -> None:
     _upgrade(migration_db)
 
-    assert len(PROJECT_TABLES) == 34
+    assert len(PROJECT_TABLES) == 37
     assert _tables(migration_db) == PROJECT_TABLES | {"alembic_version"}
     assert "pg_trgm" in _extensions(migration_db)
 

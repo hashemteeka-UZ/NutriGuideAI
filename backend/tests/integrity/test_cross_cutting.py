@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, time
 
 import pytest
 from sqlalchemy import delete
@@ -57,6 +57,8 @@ DOCUMENTED_DEFAULTS: dict[tuple[str, str], object] = {
     ("user_health_conditions", "diagnosed"): False,
     ("meal_plan_items", "was_swapped"): False,
     ("user_profiles", "physiological_status"): "NONE",
+    ("user_profiles", "wake_time"): time(7, 0),
+    ("user_profiles", "sleep_time"): time(23, 0),
     ("health_conditions", "fluid_goal_requires_clinician"): False,
     ("health_conditions", "is_supported"): False,
     ("meal_plan_items", "reason_codes"): [],
@@ -85,7 +87,7 @@ def _orm_not_null_without_default() -> list[tuple[str, str]]:
 
 def test_check_registry_covers_every_pg_check(integrity_conn: Connection) -> None:
     assert pg_check_names(integrity_conn) == set(CHECK_CASES)
-    assert len(CHECK_CASES) == 67
+    assert len(CHECK_CASES) == 75
 
 
 @pytest.mark.parametrize("name", sorted(CHECK_CASES))
@@ -125,7 +127,7 @@ def _secondary_indexes(conn: Connection) -> dict[str, IndexInfo]:
 
 def test_secondary_index_registry_covers_every_pg_index(integrity_conn: Connection) -> None:
     assert set(_secondary_indexes(integrity_conn)) == set(SECONDARY_INDEX_CASES)
-    assert len(SECONDARY_INDEX_CASES) == 10
+    assert len(SECONDARY_INDEX_CASES) == 11
 
 
 @pytest.mark.parametrize("name", sorted(SECONDARY_INDEX_CASES))
@@ -189,7 +191,7 @@ def test_partial_unique_index_rows_outside_predicate_accepted(
 def test_fk_catalog_matches_expected_ondelete(integrity_conn: Connection) -> None:
     actual = {(fk.table, fk.column): fk.ondelete for fk in pg_foreign_keys(integrity_conn)}
     assert actual == EXPECTED_ONDELETE
-    assert len(actual) == 47
+    assert len(actual) == 52
 
 
 @pytest.mark.parametrize(("table_name", "column"), sorted(EXPECTED_ONDELETE))

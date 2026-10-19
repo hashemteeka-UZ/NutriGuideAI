@@ -1,6 +1,6 @@
 """USER domain (§11). May reference CATALOG and REFERENCE (§8)."""
 
-from datetime import date, datetime
+from datetime import date, datetime, time
 from enum import StrEnum
 from typing import Any
 from uuid import UUID
@@ -15,6 +15,8 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     SmallInteger,
     String,
+    Text,
+    Time,
     UniqueConstraint,
     Uuid,
     false,
@@ -78,6 +80,11 @@ class IngredientStance(StrEnum):
     EXCLUDE = "EXCLUDE"
 
 
+class MealStance(StrEnum):
+    LIKE = "LIKE"
+    DISLIKE = "DISLIKE"
+
+
 class InteractionEventType(StrEnum):
     IMPRESSION = "IMPRESSION"
     ACCEPT = "ACCEPT"
@@ -87,6 +94,9 @@ class InteractionEventType(StrEnum):
     COOK = "COOK"
     SKIP = "SKIP"
     SWAP_OUT = "SWAP_OUT"
+    PREF_LIKE = "PREF_LIKE"
+    PREF_DISLIKE = "PREF_DISLIKE"
+    PREF_CLEAR = "PREF_CLEAR"
 
 
 class MealSlot(StrEnum):
@@ -145,6 +155,7 @@ class UserProfile(Base):
             " OR (target_weight_kg IS NOT NULL AND weekly_rate_kg IS NOT NULL)",
             name="goal_requires_target",
         ),
+        CheckConstraint("wake_time <> sleep_time", name="wake_sleep_differ"),
     )
 
     user_id: Mapped[int] = fk_column("users.user_id", ondelete="CASCADE", primary_key=True)
@@ -160,6 +171,8 @@ class UserProfile(Base):
     )
     timezone: Mapped[str] = mapped_column(String, nullable=False)
     water_goal_ml: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    wake_time: Mapped[time] = mapped_column(Time, nullable=False, server_default="07:00:00")
+    sleep_time: Mapped[time] = mapped_column(Time, nullable=False, server_default="23:00:00")
     created_at: Mapped[datetime] = created_at_column()
     updated_at: Mapped[datetime] = updated_at_column()
 
@@ -307,6 +320,14 @@ class ConsumptionLog(Base):
             name="food_requires_grams",
         ),
         CheckConstraint("plan_item_id IS NULL OR meal_id IS NOT NULL", name="plan_item_needs_meal"),
+        CheckConstraint(
+            "entry_group IS NULL OR food_id IS NOT NULL",
+            name="entry_group_food_only",
+        ),
+        CheckConstraint(
+            "entry_label IS NULL OR (entry_group IS NOT NULL AND length(btrim(entry_label)) > 0)",
+            name="entry_label_needs_group",
+        ),
         Index(None, "user_id", "log_date", postgresql_where=text("deleted_at IS NULL")),
     )
 
@@ -327,6 +348,8 @@ class ConsumptionLog(Base):
     servings_consumed: Mapped[float | None] = mapped_column(MEASURE, nullable=True)
     grams_consumed: Mapped[float | None] = mapped_column(MEASURE, nullable=True)
     created_at: Mapped[datetime] = created_at_column()
+    entry_group: Mapped[UUID | None] = mapped_column(Uuid, nullable=True, index=True)
+    entry_label: Mapped[str | None] = mapped_column(Text, nullable=True)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     client_uuid: Mapped[UUID | None] = mapped_column(Uuid, nullable=True, unique=True)
     nutrients_snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
@@ -418,3 +441,28 @@ class WaterLog(Base):
     client_uuid: Mapped[UUID | None] = mapped_column(Uuid, nullable=True, unique=True)
     created_at: Mapped[datetime] = created_at_column()
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+# §11.14
+class UserMealPref(Base):
+    __tablename__ = "user_meal_prefs"
+    __table_args__ = (
+        PrimaryKeyConstraint("user_id", "meal_id"),
+        enum_check("stance", MealStance, name="stance_valid"),
+    )
+
+    user_id: Mapped[int] = fk_column("users.user_id", ondelete="CASCADE")
+    meal_id: Mapped[int] = fk_column("meals.meal_id", ondelete="RESTRICT", index=True)
+    stance: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[datetime] = created_at_column()
+    updated_at: Mapped[datetime] = updated_at_column()
+
+
+# §11.15
+class UserCuisinePref(Base):
+    __tablename__ = "user_cuisine_prefs"
+    __table_args__ = (PrimaryKeyConstraint("user_id", "cuisine_id"),)
+
+    user_id: Mapped[int] = fk_column("users.user_id", ondelete="CASCADE")
+    cuisine_id: Mapped[int] = fk_column("cuisines.cuisine_id", ondelete="RESTRICT", index=True)
+    created_at: Mapped[datetime] = created_at_column()

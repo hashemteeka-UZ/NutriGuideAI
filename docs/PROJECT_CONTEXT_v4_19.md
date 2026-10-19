@@ -1,13 +1,61 @@
-# PROJECT_CONTEXT.md — v4.18
+# PROJECT_CONTEXT.md — v4.19
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_17.md`, `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_18.md`, `PROJECT_CONTEXT_v4_17.md`, `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.18 → v4.19
+
+v4.19 is the **third use of the post-freeze policy (§20.1)**: Step I.0b, the only schema change of Step I (2026-10-17, DEV_JOURNAL J-036). It adds migration `0005` for the product decisions taken during the UI design and the catalog batch 02 work (#141–#164), before the API contract (I.1) is written, so the contract is built on the final columns. **Scope change by the user (2026-10-17):** the muscle-gain path (#144, #153–#157: `MUSCLE` goal, protein preference, training days and time) is a topic of its own and is **deferred** to a later dedicated step; this pass does not touch `goal_type`, `targets_v1` or protein. Data loading (`meal_steps` rows, `dish_form` values) and the dev-database rebuild are a separate data pass, I.0c (#166). The planner, `calc_v1`, `targets_v1`, `greedy_v1` and `cpsat_v1` behave exactly as before; the #88 F.1 report must stay byte-identical.
+
+**Product decisions recorded (from `knowledge/claude/ui/UI_v2_changes_and_sources.md`, `UI_v3_athlete_and_personal_theme_sources.md`, `steps/g3_data/batch_02_theory_notes.md`; sources are listed there):**
+
+| # | Topic | Schema? |
+|---|---|---|
+| #141 | Wellness tone and UI language (dietary considerations, not treatment) | No |
+| #142 | Adaptive onboarding (options shown from the user's data) | No |
+| #143 | General mode instead of "not eligible" (§30.1 screening result returned, profile still saved) | No |
+| #144 | Protein preference for active users (by goal / 1.8 / 2.0 g per kg) and a new targets formula version | Deferred (muscle-gain step) |
+| #145 | Wake and sleep times; meal windows computed from them | **Yes** (`wake_time`, `sleep_time`, I.0b) |
+| #146 | Water sessions in the UI | No |
+| #147 | Portion shown in grams | No |
+| #148 | Optimizer statistics in the plan response | No |
+| #149 | Favourite and disliked meals: dislike = hard exclusion in Layer 1; favourite = small objective bonus | **Yes** (`user_meal_prefs`, I.0b) |
+| #150 | Shopping list (computed) | No |
+| #151 | Weekly report (computed) | No |
+| #152 | Computed badges | No |
+| #153 | Fourth goal `MUSCLE`: fixed small surplus (~275 kcal/day, inside the 500 kcal gain cap), no target weight or rate; formula `targets_v2` | Deferred (muscle-gain step) |
+| #154 | `MUSCLE` protein is a floor with a 2.2 g/kg ceiling (one-sided deviation in CP-SAT) | Deferred |
+| #155 | 25 g protein per main meal for `MUSCLE` (soft first, then hard) | Deferred |
+| #156 | Training days per week (2–6) and usual training time; pre/post-workout slot rule | Deferred (muscle-gain step) |
+| #157 | Reason codes, badges and home ordering for the `MUSCLE` path | Deferred |
+| #158 | Protein recipe batch 02 | No (data, delivered in catalog_v2) |
+| #159 | App accent follows the goal, stored on the device only | No |
+| #160 | Gendered address and avatar, device only | No |
+| #161 | Preparation steps per meal (`meal_steps`) and `meals.dish_form` (schema.org `recipeInstructions` / `HowToStep`) | **Yes** |
+| #162 | Dish composition rule (one dish vs plate, Plate Method) | No |
+| #163 | Team review applied to batch 01 (soft delete, quinoa → bulgur) | No (data) |
+| #164 | `catalog_v2` frozen (75 active meals, tag `dataset-v2`) | No (data) |
+
+**New decisions in this version:**
+
+| # | Topic | Change | Schema? |
+|---|---|---|---|
+| #165 | Step I.0b schema (migration `0005`) | `user_profiles`: `wake_time`, `sleep_time` `TIME NOT NULL DEFAULT '07:00'` / `'23:00'`, `CHECK (wake_time <> sleep_time)` (#145). New table `user_meal_prefs` (§11.14, #149). New table `meal_steps` (§10.7) and `meals.dish_form` (§10.1) (#161). `user_interactions.event_type` adds `PREF_LIKE`, `PREF_DISLIKE`, `PREF_CLEAR` (§11.6): every preference change is also logged as an event, so the history survives for the later ML layer while `user_meal_prefs` keeps only the current state (user goal 2026-10-18: beta with classmates, then ML trained on real usage). New table `user_cuisine_prefs` (§11.15): the cuisines a user prefers, a **soft** preference (objective bonus, never a filter; no rows = all cuisines). `consumption_logs` adds `entry_group` (`UUID` nullable) and `entry_label` (`TEXT` nullable) so an off-plan dish that is not in the catalog can be logged as several food rows (ingredients in grams) that the app shows and sums as one entry (§11.9). Nothing else: `goal_type`, `goal_requires_target`, `targets_v1` and every planner are unchanged. | **Yes** |
+| #166 | Step I.0c data pass | `meal_steps` rows and `dish_form` values are loaded by the catalog pipeline from a versioned steps file (`team_recipe_steps_v2`, 38 batch-02 meals); steps for the 37 batch-01 meals are written by the team later through the same file format. The dev database is rebuilt from the catalog only (the 110 F.1 slice meals no longer active in dev; the F.1 benchmark keeps its own isolated database, #101). Not schema. | No |
+
+**Why cuisine is a soft preference and not a filter (user request 2026-10-18):** catalog_v2 has 37 general, 26 Libyan, 7 Levantine and 5 Egyptian meals (before deactivations); breakfasts and snacks of one cuisine alone are too few, so a hard filter would repeat the same meals or miss protein and fibre targets, or make days infeasible for users with conditions. A bonus in the objective (like favourites) leans the plan toward the chosen cuisines while Layer 1 safety and the nutrient targets keep priority.
+
+**Why off-catalog dishes need no new table yet:** the user enters the ingredients in grams; each becomes a `food_id` + `grams_consumed` row (already supported, nutrients from `foods`), tied together by `entry_group` and named by `entry_label`. Saving a personal recipe for reuse would need user-owned meals, which stay Future Work (#59, §29). Ready-made foods (FNDDS, deferred G.4) would make this search much more useful before the beta.
+
+**Why `user_meal_prefs` is a new table and not `user_interactions`:** a preference is current *state* the planner reads every day (one row per user and meal, changed in place), while `user_interactions` is an append-only *event* log for analysis. Mixing them would make "is this meal disliked now?" a query over history. Same pattern as `user_ingredient_prefs` (§11.5).
 
 ---
 
@@ -653,6 +701,8 @@ Source of truth for ingredient-level **presence** properties — `tag_group = 'C
 - `yield_factor_source` — **NEW in v4.14 (#78)** — `TEXT` nullable: where the factor comes from.
 - `reviewed_by` — **NEW in v4.14 (#78)** — `TEXT` nullable: the team member who reviewed an LLM-drafted recipe (§31.4); `is_verified = (reviewed_by IS NOT NULL)` is enforced by the loader.
 
+- `dish_form` — **NEW in v4.19 (#161, #165)** — `TEXT` nullable, CHECK (`ONE_DISH`, `PLATE`) (name `dish_form_valid`). `ONE_DISH` = ingredients cooked or mixed together; `PLATE` = separate components served side by side (#162). `NULL` = not yet documented (batch-01 meals until their steps are written).
+
 Constraints: `servings > 0`, `total_grams > 0`
 
 **`total_grams` definition (Decision #25):** the **final as-served weight of the whole recipe (all servings)** — i.e. after cooking, not the sum of raw ingredient weights. How it was obtained is recorded in `weight_method`:
@@ -701,6 +751,12 @@ Rules:
 
 Holds only additional (non-default) languages. Fallback: `meals.name` + `meals.default_lang`.
 
+## 10.7 `meal_steps` — NEW in v4.19 (Decisions #161, #165)
+Ordered preparation steps of a meal, per language (schema.org `Recipe.recipeInstructions` as a list of `HowToStep`).
+- `meal_id` FK → `meals` (CASCADE), `lang` (same `lang_check` as §10.6), `position` `SMALLINT NOT NULL`, `text` `TEXT NOT NULL`, `created_at`, `updated_at` — PK: `(meal_id, lang, position)`
+- `CHECK (position >= 1)` (name `position_positive`), `CHECK (length(btrim(text)) > 0)` (name `text_not_blank`)
+- Unlike §10.6, the default language is stored here too (a meal has no steps column). Loaded only by the catalog pipeline (#166); positions are 1..n with no gaps (pipeline gate, not a DB rule).
+
 ---
 
 # 11. DOMAIN 3 — USER
@@ -722,6 +778,7 @@ Holds only additional (non-default) languages. Fallback: `meals.name` + `meals.d
 - `physiological_status` — **NEW** — CHECK (`NONE`, `PREGNANT`, `LACTATING`), `NOT NULL DEFAULT 'NONE'`; `CHECK (sex = 'FEMALE' OR physiological_status = 'NONE')`
 - `timezone` — **NEW** — IANA name (e.g. `Africa/Tripoli`), `NOT NULL` — needed to compute the user's local day for daily adherence
 - `water_goal_ml` — **NEW in v4.6 (Decision #49)** — nullable integer, `CHECK (water_goal_ml BETWEEN 500 AND 5000)` (name `water_goal_range`). `NULL` = no user-entered goal; the app then derives the default goal (§30.7) unless the fluid-safety rule applies
+- `wake_time`, `sleep_time` — **NEW in v4.19 (#145)** — `TIME NOT NULL`, defaults `07:00` and `23:00`, `CHECK (wake_time <> sleep_time)` (name `wake_sleep_differ`). Local times in the user's `timezone`; sleep may be after midnight (e.g. wake 07:00, sleep 01:00). Meal windows are computed from them in the service layer.
 - `CHECK (goal_type = 'MAINTAIN' OR (target_weight_kg IS NOT NULL AND weekly_rate_kg IS NOT NULL))`
 
 **Removed in v4.2:**
@@ -744,11 +801,13 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 ## 11.6 `user_interactions` — CHANGED in v4.2 (Decision #28)
 - `id`, `user_id`, `meal_id`, `event_type`, `value`, `context` JSONB, `created_at`
 - `value` — `SMALLINT` nullable — the rating for `RATE` events: `CHECK (value IS NULL OR value BETWEEN 1 AND 5)` and `CHECK (event_type <> 'RATE' OR value IS NOT NULL)` (v4.8, #60)
-- `event_type` CHECK widened to: `IMPRESSION`, `ACCEPT`, `VIEW`, `SAVE`, `RATE`, `COOK`, `SKIP`, `SWAP_OUT`
+- `event_type` CHECK widened to: `IMPRESSION`, `ACCEPT`, `VIEW`, `SAVE`, `RATE`, `COOK`, `SKIP`, `SWAP_OUT`, and (v4.19, #165) `PREF_LIKE`, `PREF_DISLIKE`, `PREF_CLEAR`
+  - `PREF_*` — written in the same transaction as every change to `user_meal_prefs` (§11.14), so preference history is kept for training while the table holds only the current state
+  - `SWAP_OUT` — `meal_id` is the replaced meal; `context.replaced_by` is the chosen one
   - `IMPRESSION` — the system showed/recommended this meal to the user (needed so the ML layer and its offline evaluation know what was offered, not only what was chosen)
   - `ACCEPT` — the user kept/accepted a recommended meal
 - `context` — `JSONB NOT NULL DEFAULT '{}'` (v4.9, #63)
-- `context` convention (documented, not enforced): `{"plan_id":…, "slot":…, "algorithm_version":…, "score":…, "position":…}`
+- `context` convention (documented, not enforced): `{"plan_id":…, "plan_item_id":…, "slot":…, "algorithm_version":…, "score":…, "position":…}`. Learning signals are recorded from the beta onward; safety filters (Layer 1) stay rule-based and a future ML layer only reorders safe options (§18). Planned vs eaten comes from `consumption_logs.plan_item_id` (§11.9). No synthetic ratings are ever stored.
 - `client_uuid` — **NEW in v4.4 (Decision #37)** — `UUID` nullable, `UNIQUE` — generated on the phone when the event is recorded offline; makes sync idempotent (a retried upload never creates a duplicate)
 - Index: `(user_id, created_at)`
 - This table is **data collection only** — no ML tables are created in Phase 1 (§18).
@@ -783,6 +842,8 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `servings_consumed` — nullable numeric (for meals; supports partial, e.g. 0.5)
 - `grams_consumed` — **NEW** — nullable numeric (for foods)
 - `created_at` — `TIMESTAMPTZ NOT NULL` (server receive time)
+- `entry_group` — **NEW in v4.19 (#165)** — `UUID` nullable, indexed: rows with the same value are one eaten dish entered as ingredients (off-catalog); set by the phone, only on `food_id` rows: `CHECK (entry_group IS NULL OR food_id IS NOT NULL)` (name `entry_group_food_only`)
+- `entry_label` — **NEW in v4.19 (#165)** — `TEXT` nullable, the user's name for that dish (e.g. a restaurant meal); `CHECK (entry_label IS NULL OR (entry_group IS NOT NULL AND length(btrim(entry_label)) > 0))` (name `entry_label_needs_group`). The same label is repeated on every row of the group.
 - `deleted_at` — **NEW in v4.5 (Decision #43)** — `TIMESTAMPTZ` nullable — **tombstone**: a log is never physically deleted or edited; a correction tombstones the old row and inserts a new one (new `client_uuid`). Adherence, summaries and ML rewards ignore rows with `deleted_at IS NOT NULL`
 - `client_uuid` — **NEW in v4.4 (Decision #37)** — `UUID` nullable — generated on the phone for offline-created logs; idempotent sync (listed here as a column in v4.8; previously under Constraints)
 - `nutrients_snapshot` — **NEW** — `JSONB NOT NULL` — the consumed amounts of the mandatory nutrients, computed at log time with the then-current `computation_version` (so later recomputation of meals never rewrites history; same pattern as `target_snapshot`)
@@ -865,6 +926,16 @@ Append-only log of drinking water, same pattern as `consumption_logs` (§11.9).
 
 Daily water total = `SUM(amount_ml)` of active rows for `(user_id, log_date)` — computed, not stored (§18.11). Water is shown next to adherence but does **not** change the day status of §30.5. Only plain water is logged here; other beverages with energy/nutrients are logged as foods/meals in `consumption_logs`. Reminder settings are **not** stored in the database (Decision #51).
 
+## 11.14 `user_meal_prefs` — NEW in v4.19 (Decisions #149, #165)
+Current like/dislike state of a user for a catalog meal (state, not an event log; see the v4.19 changelog).
+- `user_id` FK → `users` (CASCADE), `meal_id` FK → `meals` (RESTRICT, indexed — soft-delete protected like §11.6), `stance` `TEXT NOT NULL` CHECK (`LIKE`, `DISLIKE`) (name `stance_valid`), `created_at`, `updated_at` — PK: `(user_id, meal_id)`
+- Removing a preference deletes the row; every change is also logged in `user_interactions` as `PREF_LIKE` / `PREF_DISLIKE` / `PREF_CLEAR` (§11.6). `DISLIKE` is a hard exclusion in Layer 1; `LIKE` is a small bonus in the planner objective (implemented in I.5; users without rows plan exactly as before).
+
+
+## 11.15 `user_cuisine_prefs` — NEW in v4.19 (Decision #165)
+Cuisines the user would like to see more of in plans (soft preference).
+- `user_id` FK → `users` (CASCADE), `cuisine_id` FK → `cuisines` (RESTRICT, indexed), `created_at` — PK: `(user_id, cuisine_id)`
+- No rows = no preference (all cuisines equal). The planner gives meals of a preferred cuisine a small objective bonus (I.5); it never excludes other cuisines, so safety rules and nutrient targets keep priority (see the v4.19 changelog).
 ---
 
 # 12. Relationship Map
@@ -899,7 +970,8 @@ meals >──── cuisines      (no USER reference — v4.8, Decision #59)
                         ├────< meal_nutrients >────── nutrients
                         ├────< meal_allergens >────── allergens       (derived)
                         ├────< meal_tags >─────────── dietary_tags    (MANUAL + DERIVED)
-                        └────< meal_translations
+                        ├────< meal_translations
+                        └────< meal_steps                              (NEW — v4.19)
 
 
 USER
@@ -913,6 +985,8 @@ users ───── 1:1 ───── user_profiles
   ├────< user_health_conditions >──── health_conditions
   ├────< user_allergen_prefs >──── allergens
   ├────< user_ingredient_prefs >── ingredients
+  ├────< user_meal_prefs >──────── meals   (soft-delete protected)    (NEW — v4.19)
+  ├────< user_cuisine_prefs >───── cuisines                           (NEW — v4.19)
   ├────< user_interactions >────── meals   (soft-delete protected)
   ├────< meal_plans ────────────── user_targets (target_id)
   │          └────< meal_plan_items >──── meals   (soft-delete protected)
@@ -1210,6 +1284,7 @@ After testing, roll back or delete temporary test data.
 - Seed and reference **data** are not schema: loading them does not reopen the freeze.
 - **First use (v4.14, 2026-10-06):** migration `0003` (decisions #75–#78) during Step F.1.
 - **Second use (v4.16, 2026-10-11):** migration `0004` (decision #91) as Step G.0, closed before any Step G data work (#90).
+- **Third use (v4.19, 2026-10-17):** migration `0005` (decision #165) as Step I.0b, before the API contract I.1; its data (#166) is a separate pass I.0c.
 
 ---
 

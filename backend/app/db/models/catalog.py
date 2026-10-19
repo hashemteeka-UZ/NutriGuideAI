@@ -9,7 +9,9 @@ from sqlalchemy import (
     DateTime,
     Integer,
     PrimaryKeyConstraint,
+    SmallInteger,
     String,
+    Text,
     UniqueConstraint,
     false,
     func,
@@ -48,6 +50,11 @@ class MealTagSource(StrEnum):
     DERIVED = "DERIVED"
 
 
+class DishForm(StrEnum):
+    ONE_DISH = "ONE_DISH"
+    PLATE = "PLATE"
+
+
 # §10.1
 class Meal(Base):
     __tablename__ = "meals"
@@ -66,6 +73,7 @@ class Meal(Base):
             f"weight_method = '{WeightMethod.YIELD_FACTOR.value}' OR yield_factor IS NULL",
             name="yield_factor_only_for_yield_method",
         ),
+        enum_check("dish_form", DishForm, name="dish_form_valid"),
         trigram_index("name_normalized"),
     )
 
@@ -93,6 +101,7 @@ class Meal(Base):
     yield_factor: Mapped[float | None] = mapped_column(MEASURE, nullable=True)
     yield_factor_source: Mapped[str | None] = mapped_column(String, nullable=True)
     reviewed_by: Mapped[str | None] = mapped_column(String, nullable=True)
+    dish_form: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = created_at_column()
     updated_at: Mapped[datetime] = updated_at_column()
 
@@ -179,3 +188,21 @@ class MealTranslation(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str | None] = mapped_column(String, nullable=True)
     name_normalized: Mapped[str] = mapped_column(String, nullable=False)
+
+
+# §10.7
+class MealStep(Base):
+    __tablename__ = "meal_steps"
+    __table_args__ = (
+        PrimaryKeyConstraint("meal_id", "lang", "position"),
+        lang_check("lang", name="lang_iso639_1"),
+        CheckConstraint("position >= 1", name="position_positive"),
+        CheckConstraint("length(btrim(text)) > 0", name="text_not_blank"),
+    )
+
+    meal_id: Mapped[int] = fk_column("meals.meal_id", ondelete="CASCADE")
+    lang: Mapped[str] = mapped_column(LANG_CODE, nullable=False)
+    position: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = created_at_column()
+    updated_at: Mapped[datetime] = updated_at_column()

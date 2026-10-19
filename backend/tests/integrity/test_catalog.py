@@ -12,6 +12,7 @@ from tests.builders import (
     make_meal_ingredient,
     make_meal_nutrient,
     make_meal_plan_item,
+    make_meal_step,
     make_meal_tag,
     make_meal_translation,
     make_user_interaction,
@@ -27,6 +28,7 @@ def test_verification_4_meal_child_relationships(integrity_conn: Connection) -> 
     make_meal_allergen(integrity_conn, meal_id=meal_id)
     make_meal_tag(integrity_conn, meal_id=meal_id)
     make_meal_translation(integrity_conn, meal_id=meal_id)
+    make_meal_step(integrity_conn, meal_id=meal_id)
     assert fetch_by_pk(integrity_conn, "meals", meal_id) is not None
 
 
@@ -184,3 +186,22 @@ def test_meal_ingredients_is_optional_defaults_false(integrity_conn: Connection)
     )
     assert optional is not None
     assert optional.is_optional is True
+
+
+def test_meal_dish_form_plate_and_null_accepted(integrity_conn: Connection) -> None:
+    plate_id = make_meal(integrity_conn, dish_form="PLATE")
+    unset_id = make_meal(integrity_conn)
+    plate = fetch_by_pk(integrity_conn, "meals", plate_id)
+    unset = fetch_by_pk(integrity_conn, "meals", unset_id)
+    assert plate is not None and plate.dish_form == "PLATE"
+    assert unset is not None and unset.dish_form is None
+
+
+def test_meal_steps_duplicate_position_rejected(integrity_conn: Connection) -> None:
+    meal_id = make_meal(integrity_conn)
+    make_meal_step(integrity_conn, meal_id=meal_id, lang="ar", position=1)
+    assert_rejects(
+        integrity_conn,
+        "pk_meal_steps",
+        lambda: make_meal_step(integrity_conn, meal_id=meal_id, lang="ar", position=1),
+    )

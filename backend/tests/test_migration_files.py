@@ -19,6 +19,9 @@ MIGRATION_SHA256: dict[str, str] = {
     "0004_ingredient_code_restriction_source.py": (
         "9014f489970c9b63dfbd84b919368bd5174addf3f4aed2158925a6647ba43793"
     ),
+    "0005_wake_sleep_meal_prefs_meal_steps.py": (
+        "46f2a392b71a9eeb608b6be7f3abe1aca283ebffa54b287600ff6648d6c85627"
+    ),
 }
 
 EDITED_MESSAGE = (

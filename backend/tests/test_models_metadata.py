@@ -60,6 +60,7 @@ CATALOG_TABLES = {
     "meal_allergens",
     "meal_tags",
     "meal_translations",
+    "meal_steps",
 }
 
 USER_TABLES = {
@@ -68,6 +69,8 @@ USER_TABLES = {
     "user_health_conditions",
     "user_allergen_prefs",
     "user_ingredient_prefs",
+    "user_meal_prefs",
+    "user_cuisine_prefs",
     "user_interactions",
     "meal_plans",
     "meal_plan_items",
@@ -87,7 +90,7 @@ ALLOWED_FK_TARGETS = {
     **dict.fromkeys(USER_TABLES, EXPECTED_TABLES),
 }
 
-# Composite PKs (§9.8, §9.12, §9.13, §10.2-§10.6, §11.4, §11.5).
+# Composite PKs (§9.8, §9.12, §9.13, §10.2-§10.7, §11.4, §11.5, §11.14, §11.15).
 COMPOSITE_PK = {
     "food_nutrients": ("food_id", "nutrient_id"),
     "ingredient_allergens": ("ingredient_id", "allergen_id"),
@@ -97,11 +100,19 @@ COMPOSITE_PK = {
     "meal_allergens": ("meal_id", "allergen_id"),
     "meal_tags": ("meal_id", "tag_id"),
     "meal_translations": ("meal_id", "lang"),
+    "meal_steps": ("meal_id", "lang", "position"),
     "user_allergen_prefs": ("user_id", "allergen_id"),
     "user_ingredient_prefs": ("user_id", "ingredient_id"),
+    "user_meal_prefs": ("user_id", "meal_id"),
+    "user_cuisine_prefs": ("user_id", "cuisine_id"),
 }
 # Composite-PK columns that are not foreign keys.
-NON_FK_PK_COLUMNS = {("meal_ingredients", "position"), ("meal_translations", "lang")}
+NON_FK_PK_COLUMNS = {
+    ("meal_ingredients", "position"),
+    ("meal_translations", "lang"),
+    ("meal_steps", "lang"),
+    ("meal_steps", "position"),
+}
 # Single-column PKs that are also the FK to the parent (1:1, §11.2).
 FK_AS_PK = {"user_profiles": "user_id"}
 SURROGATE_PK_TABLES = sorted(EXPECTED_TABLES - COMPOSITE_PK.keys() - FK_AS_PK.keys())
@@ -124,6 +135,8 @@ MUTABLE_TABLES = {
     "user_health_conditions",
     "user_allergen_prefs",
     "user_ingredient_prefs",
+    "user_meal_prefs",
+    "meal_steps",
     "meal_plans",
     "meal_plan_items",
     "weight_logs",
@@ -136,6 +149,8 @@ APPEND_ONLY_TABLES = {
     "user_interactions",
     "user_targets",
     "refresh_tokens",
+    # §11.15: inserted or deleted, never updated, so created_at only.
+    "user_cuisine_prefs",
 }
 # refresh_tokens.issued_at serves as created_at (§15.10).
 CREATED_AT_COLUMN = {"refresh_tokens": "issued_at"}
@@ -163,6 +178,7 @@ ENUM_COLUMNS: dict[tuple[str, str], type[StrEnum]] = {
     ("ingredients", "review_status"): ref.ReviewStatus,
     ("meals", "weight_method"): cat.WeightMethod,
     ("meals", "quality_tier"): cat.QualityTier,
+    ("meals", "dish_form"): cat.DishForm,
     ("meal_tags", "source"): cat.MealTagSource,
     ("user_profiles", "sex"): usr.Sex,
     ("user_profiles", "activity_level"): usr.ActivityLevel,
@@ -171,6 +187,7 @@ ENUM_COLUMNS: dict[tuple[str, str], type[StrEnum]] = {
     ("user_health_conditions", "severity"): usr.ConditionSeverity,
     ("user_allergen_prefs", "severity"): usr.AllergenSeverity,
     ("user_ingredient_prefs", "stance"): usr.IngredientStance,
+    ("user_meal_prefs", "stance"): usr.MealStance,
     ("user_interactions", "event_type"): usr.InteractionEventType,
     ("meal_plan_items", "slot"): usr.MealSlot,
     ("consumption_logs", "slot"): usr.MealSlot,
@@ -193,6 +210,7 @@ LANG_COLUMNS = [
     ("ingredient_aliases", "lang"),
     ("meals", "default_lang"),
     ("meal_translations", "lang"),
+    ("meal_steps", "lang"),
 ]
 
 # §15.9 normalized search columns with a GIN pg_trgm index.
@@ -429,6 +447,7 @@ EXPECTED_ONDELETE = {
     ("meal_tags", "meal_id"): "CASCADE",
     ("meal_tags", "tag_id"): "RESTRICT",
     ("meal_translations", "meal_id"): "CASCADE",
+    ("meal_steps", "meal_id"): "CASCADE",
     ("user_profiles", "user_id"): "CASCADE",
     ("user_health_conditions", "user_id"): "CASCADE",
     ("user_health_conditions", "condition_id"): "RESTRICT",
@@ -436,6 +455,10 @@ EXPECTED_ONDELETE = {
     ("user_allergen_prefs", "allergen_id"): "RESTRICT",
     ("user_ingredient_prefs", "user_id"): "CASCADE",
     ("user_ingredient_prefs", "ingredient_id"): "RESTRICT",
+    ("user_meal_prefs", "user_id"): "CASCADE",
+    ("user_meal_prefs", "meal_id"): "RESTRICT",
+    ("user_cuisine_prefs", "user_id"): "CASCADE",
+    ("user_cuisine_prefs", "cuisine_id"): "RESTRICT",
     ("user_interactions", "user_id"): "CASCADE",
     ("user_interactions", "meal_id"): "RESTRICT",
     ("meal_plans", "user_id"): "CASCADE",
@@ -537,8 +560,15 @@ def test_meals_columns_and_checks() -> None:
         "total_grams > 0",
         "yield_factor IS NULL OR (yield_factor > 0 AND yield_factor <= 3)",
         "weight_method = 'YIELD_FACTOR' OR yield_factor IS NULL",
+        "dish_form IN ('ONE_DISH', 'PLATE')",
     } <= _checks("meals")
-    for column in ("variant_group", "yield_factor", "yield_factor_source", "reviewed_by"):
+    for column in (
+        "variant_group",
+        "yield_factor",
+        "yield_factor_source",
+        "reviewed_by",
+        "dish_form",
+    ):
         assert meals.c[column].nullable is True, column
     assert (("variant_group",), False, None) in _indexes("meals")
 
@@ -632,7 +662,15 @@ def test_user_profiles_columns_and_checks() -> None:
     table = _table("user_profiles")
     for column in ("target_weight_kg", "weekly_rate_kg", "water_goal_ml"):
         assert table.c[column].nullable is True, column
-    for column in ("sex", "birth_date", "height_cm", "timezone", "physiological_status"):
+    for column in (
+        "sex",
+        "birth_date",
+        "height_cm",
+        "timezone",
+        "physiological_status",
+        "wake_time",
+        "sleep_time",
+    ):
         assert table.c[column].nullable is False, column
     assert isinstance(table.c.water_goal_ml.type, Integer)
     assert not {"weight_kg", "target_kcal", "targets_computed_at"} & set(table.columns.keys())
@@ -643,6 +681,7 @@ def test_user_profiles_columns_and_checks() -> None:
         "water_goal_ml BETWEEN 500 AND 5000",
         "sex = 'FEMALE' OR physiological_status = 'NONE'",
         "goal_type = 'MAINTAIN' OR (target_weight_kg IS NOT NULL AND weekly_rate_kg IS NOT NULL)",
+        "wake_time <> sleep_time",
     } <= _checks("user_profiles")
     names = {c.name for c in table.constraints if isinstance(c, CheckConstraint)}
     assert "ck_user_profiles_water_goal_range" in names
@@ -703,7 +742,15 @@ def test_meal_plan_items_columns_and_checks() -> None:
 
 def test_consumption_logs_columns_and_checks() -> None:
     table = _table("consumption_logs")
-    for column in ("slot", "plan_item_id", "meal_id", "food_id", "deleted_at"):
+    for column in (
+        "slot",
+        "plan_item_id",
+        "meal_id",
+        "food_id",
+        "deleted_at",
+        "entry_group",
+        "entry_label",
+    ):
         assert table.c[column].nullable is True, column
     for column in ("consumed_at", "log_date", "nutrients_snapshot"):
         assert table.c[column].nullable is False, column
@@ -712,7 +759,10 @@ def test_consumption_logs_columns_and_checks() -> None:
         "meal_id IS NULL OR (servings_consumed > 0 AND grams_consumed IS NULL)",
         "food_id IS NULL OR (grams_consumed > 0 AND servings_consumed IS NULL)",
         "plan_item_id IS NULL OR meal_id IS NOT NULL",
+        "entry_group IS NULL OR food_id IS NOT NULL",
+        "entry_label IS NULL OR (entry_group IS NOT NULL AND length(btrim(entry_label)) > 0)",
     } <= _checks("consumption_logs")
+    assert (("entry_group",), False, None) in _indexes("consumption_logs")
 
 
 @pytest.mark.parametrize("table_name", ["consumption_logs", "water_logs"])
