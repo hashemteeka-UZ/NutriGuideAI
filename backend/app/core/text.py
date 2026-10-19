@@ -35,3 +35,10 @@ def normalize_search_text(text: str) -> str:
     collapse whitespace."""
     normalized = text.translate(_TRANSLATION).lower()
     return _WHITESPACE.sub(" ", normalized).strip()
+
+
+def pick_name(lang: str, name_ar: str, name_en: str | None) -> str:
+    """English when asked for and present, otherwise Arabic (#129)."""
+    if lang == "en" and name_en:
+        return name_en
+    return name_ar

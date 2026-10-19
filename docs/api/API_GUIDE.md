@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.3.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.4.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -57,6 +57,12 @@ Authorization: Bearer <access_token>
 6. Each `/auth/*` route allows **10 requests per minute** from one client address. The next one is **429** `RATE_LIMITED` with `Retry-After`.
 
 `GET /me` includes `has_profile`. False opens onboarding; true opens Home. `DELETE /me` deletes the account and its data (**204**).
+
+## Onboarding flow
+
+1. Call `GET /reference` with no token. It returns conditions, allergens, cuisines, and the closed lists. Names follow `Accept-Language` (Arabic when the header is missing).
+2. Call `PUT /me/profile` with the choices and `current_weight_kg` on the first save. Read `screening` and `target` from that response. `screening.eligible: false` is a normal **200**: `target` is null, and a target that was already current is closed.
+3. `GET /me` field `has_profile` decides the screen: false opens onboarding, true opens Home.
 
 ## 4. Language, time, and numbers
 

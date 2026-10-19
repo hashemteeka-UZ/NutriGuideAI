@@ -27,15 +27,24 @@ def api_session(integrity_conn: Connection) -> Iterator[Session]:
 
 
 @pytest.fixture
-def client(api_session: Session) -> Iterator[TestClient]:
+def now_clock() -> dict[str, datetime]:
+    return {"now": NOW}
+
+
+@pytest.fixture
+def client(api_session: Session, now_clock: dict[str, datetime]) -> Iterator[TestClient]:
     limiter.enabled = False
     application = create_app()
 
     def override_db() -> Iterator[Session]:
-        yield api_session
+        try:
+            yield api_session
+        except BaseException:
+            api_session.rollback()
+            raise
 
     application.dependency_overrides[get_db] = override_db
-    application.dependency_overrides[get_now] = lambda: NOW
+    application.dependency_overrides[get_now] = lambda: now_clock["now"]
     test_client = TestClient(application, raise_server_exceptions=False)
     try:
         with test_client:

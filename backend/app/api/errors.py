@@ -31,8 +31,10 @@ from app.services.consumption import (
     PlanItemAlreadyLoggedError,
     PlanItemNotFoundError,
 )
+from app.services.ingredient_search import EmptySearchError
 from app.services.plan_swap import SwapRejectedError
 from app.services.planner import MissingTargetError, NoFeasiblePlanError
+from app.services.profile import UnknownCodeError
 from app.services.screening import ProfileNotFoundError
 from app.services.targets import MissingWeightError, TargetValidationError, UserNotEligibleError
 from app.services.weight import ClockSkewError
@@ -60,6 +62,8 @@ SERVICE_ERRORS: Mapping[type[Exception], tuple[int, str]] = {
     ClockSkewError: (422, "CLOCK_SKEW"),
     TargetValidationError: (422, "TARGET_VALIDATION"),
     InvalidTimezoneError: (422, "INVALID_TIMEZONE"),
+    UnknownCodeError: (422, "UNKNOWN_CODE"),
+    EmptySearchError: (422, "VALIDATION_ERROR"),
     EmailTakenError: (409, "EMAIL_TAKEN"),
     InvalidCredentialsError: (401, "INVALID_CREDENTIALS"),
     TokenInvalidError: (401, "TOKEN_INVALID"),
@@ -124,7 +128,7 @@ def error_codes(*codes: str) -> str:
 
 
 # Every code named by an operation description, sorted. Later passes raise the ones
-# that are not in SERVICE_ERRORS yet: UNKNOWN_CODE, PLANNER_BUSY, RATE_LIMITED, UNAUTHORIZED.
+# that are not in SERVICE_ERRORS yet: PLANNER_BUSY, RATE_LIMITED, UNAUTHORIZED.
 PLANNED_ERROR_CODES: Final[tuple[str, ...]] = (
     "CLIENT_UUID_CONFLICT",
     "CLOCK_SKEW",

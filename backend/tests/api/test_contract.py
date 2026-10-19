@@ -140,10 +140,17 @@ _LIVE = {
     "logout",
     "get_me",
     "delete_me",
+    "get_reference",
+    "search_ingredients",
+    "get_profile",
+    "update_profile",
+    "get_targets",
+    "list_meal_prefs",
+    "set_meal_pref",
+    "delete_meal_pref",
 }
 
 _FUTURE_CODES = (
-    "UNKNOWN_CODE",
     "PLANNER_BUSY",
     "RATE_LIMITED",
     "UNAUTHORIZED",

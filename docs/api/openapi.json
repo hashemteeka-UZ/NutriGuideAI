@@ -3197,6 +3197,7 @@
             "type": "array"
           },
           "dataset_version": {
+            "description": "Active catalog dataset_version shared with GET /health, or \"unknown\" when active meals do not share exactly one version.",
             "title": "Dataset Version",
             "type": "string"
           },
@@ -4953,7 +4954,7 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -5679,7 +5680,7 @@
     },
     "/api/v1/ingredients": {
       "get": {
-        "description": "Search Arabic names, English names, and aliases. Log the hit's food_id, not a food search.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "Search Arabic names, English names, and aliases. Ranked by exact match, then prefix, then contains, then similarity. Rejected ingredients are excluded. Log the hit's food_id, not a food search.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
         "operationId": "search_ingredients",
         "parameters": [
           {
@@ -6127,7 +6128,7 @@
         ]
       },
       "put": {
-        "description": "Replace the profile. The first save requires current_weight_kg; a later value is stored as today's weight. An ineligible screening is returned in the body, not as an error.\nError codes: UNAUTHORIZED, VALIDATION_ERROR, UNKNOWN_CODE, NO_WEIGHT, TARGET_VALIDATION, INVALID_TIMEZONE",
+        "description": "Replace the profile. The first save requires current_weight_kg; a later value is stored as today's weight. At most one target is created per save. An ineligible screening is returned in the body, not as an error, and closes the current target.\nError codes: UNAUTHORIZED, VALIDATION_ERROR, UNKNOWN_CODE, NO_WEIGHT, TARGET_VALIDATION, INVALID_TIMEZONE",
         "operationId": "update_profile",
         "requestBody": {
           "content": {
@@ -6670,7 +6671,7 @@
     },
     "/api/v1/reference": {
       "get": {
-        "description": "Conditions, allergens, cuisines, and the closed lists for sex, activity, goal, and slot. Names follow Accept-Language (ar default, en). DIABETES_INSULIN is included with is_supported false.\nError codes:",
+        "description": "Conditions, allergens, cuisines, and the closed lists for sex, activity, goal, and slot. Names follow Accept-Language (ar default, en). DIABETES_INSULIN is included with is_supported false. The response sets Cache-Control: public, max-age=3600. dataset_version is \"unknown\" when active meals do not share one version.\nError codes:",
         "operationId": "get_reference",
         "responses": {
           "200": {

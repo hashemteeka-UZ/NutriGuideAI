@@ -1,0 +1,105 @@
+You are implementing **Step I.3 (profile, targets, reference data, ingredient search, meal likes; Decisions #136, #176 to #182)**. Step I.2 is committed (`93e66f7`, CI green). This pass replaces the 501 stubs of these seven operations and nothing else:
+
+`GET /reference`, `GET /ingredients`, `GET /me/profile`, `PUT /me/profile`, `GET /me/targets`, `GET /me/meal-prefs`, `PUT /me/meal-prefs/{meal_id}`, `DELETE /me/meal-prefs/{meal_id}` (eight routes; the two meal-pref writes count as one feature).
+
+The user has just placed updated documents (do not edit their content; report contradictions): `docs/PROJECT_CONTEXT_v4_20.md` (one historical note marked superseded by #175), `docs/project/DEV_JOURNAL.md` (entries J-038 and J-039), `docs/project/steps/STEP_I_plan.md` (Decisions #176 to #182, the source of truth for this pass), and this file in `docs/project/steps/`.
+
+## Hard rules
+1. No schema change and no migration. `uv run alembic check` stays clean.
+2. Existing service behaviour does not change. Allowed edits outside the new modules: extract the public helpers named below from `targets.py` and `weight.py` without changing what the existing functions do, and move the dataset-version helper out of `routers/health.py`. Planner, optimizer, data, `docs/reports/*` untouched; the F.1 report stays byte-identical.
+3. No data change. If the ingredient check in section 5 finds gaps, report them; do not edit loaders or data.
+4. The contract changes only where section 8 says. Regenerate `docs/api/openapi.json`, drift test green.
+5. Routers hold no business rules (#124): they parse, call one service function, commit (writes), and map the result to the schema.
+6. Never log profile values, weights, conditions or allergens (#133); log ids and codes only.
+7. Do not commit anything.
+
+## 1. Language dependency (`app/api/deps.py`)
+- `get_lang(accept_language: Annotated[str | None, Header()] = None) -> Literal["ar", "en"]`: parse the header with q-values; the first acceptable primary tag that is `ar` or `en` wins; anything else or missing gives `ar`. `Lang = Annotated[...]`. Unit tests for `en-US,en;q=0.9`, `fr, en;q=0.5`, `ar`, missing, garbage, `en;q=0`.
+- A localized name helper `pick_name(lang, name_ar, name_en)`: English when asked and present, otherwise Arabic (#129).
+
+## 2. `GET /reference` (public, no token) (#180)
+- New `app/services/reference.py`: `reference_lists(session) -> ...` reads `health_conditions` (all rows; supported first, then by code), `allergens` and `cuisines` (by code) from the database, not from the schema examples. The enum lists come from the enums.
+- Move `_dataset_version` and its query from `routers/health.py` into `app/services/catalog_version.py` as `active_dataset_version(session) -> str | None`, used by both routes; `/health` output must not change (its tests prove it). For `/reference`, `None` becomes `"unknown"` (document it in the field description).
+- Names follow `get_lang`. Response header `Cache-Control: public, max-age=3600` (lists change only with a new dataset version).
+- No rate limit yet (the general limits of #132 come in the closure pass); leave a one-line comment.
+
+## 3. `GET /ingredients?q=` (#181)
+- New `app/services/ingredient_search.py`: `search_ingredients(session, q, limit, offset, lang) -> (hits, total)`.
+- Normalize `q` with `normalize_search_text` (the only normalizer, §15.9). After normalization an empty string → `422 VALIDATION_ERROR`.
+- Match on `ingredient_aliases.alias_normalized` (Arabic and English names already live there with the trigram index): `alias_normalized LIKE '%' || :q || '%'` with `%`, `_` and `\` escaped, OR `similarity(alias_normalized, :q) >= 0.3` for small typos.
+- One row per ingredient, ranked by its best alias: exact match, then prefix match, then contains, then higher similarity, then `ingredient_id`. `total` counts distinct ingredients before paging.
+- Exclude ingredients with `review_status = 'REJECTED'`. `name` = `pick_name(lang, canonical_name_ar, canonical_name)`; `food_id` = `default_food_id` (may be null).
+- Before writing it, run on the dev database and put in the report: number of ingredients, how many lack an `ar` alias, how many lack an `en` alias, how many have no `default_food_id`.
+
+## 4. Profile service `app/services/profile.py` (#136, #176 to #178)
+Public API (no FastAPI imports):
+- `ProfileInput` (frozen dataclass mirroring `ProfileUpdate`, codes as strings).
+- `save_profile(session, user_id, data: ProfileInput, now) -> ProfileOutcome` and `load_profile(session, user_id, now) -> ProfileOutcome`, where `ProfileOutcome` holds the profile row, its four child sets as codes/ids, the latest weight `(date, kg)` or `None`, the `ScreeningResult`, and the current `UserTarget` or `None`. `load_profile` raises `ProfileNotFoundError` when there is no profile.
+
+`save_profile`, all in the caller's transaction, in this order:
+1. `zone(data.timezone)` (raises `InvalidTimezoneError`). The user's local date `today` uses the NEW timezone.
+2. Resolve every condition, allergen and cuisine code and every ingredient id in one query per table. Any unknown one → new `UnknownCodeError(kind, values)` (`ValueError` subclass) mapped to `422 UNKNOWN_CODE`; the detail names the kind and the unknown values. Codes are case-sensitive.
+3. First save (no profile row) and `current_weight_kg` is null → `MissingWeightError` (`409 NO_WEIGHT`). Nothing is written.
+4. Upsert the `user_profiles` row (all fields, including `water_goal_ml` where null clears it).
+5. Replace the four child sets by difference (#176): delete rows not in the request, update changed `severity`/`stance` in place, insert new ones. Unchanged rows keep their `created_at`/`updated_at`. `diagnosed` stays at its default.
+6. Weight (#178): when `current_weight_kg` is given, write it as the weight of `today` with `updated_at = now` through a new public `upsert_weight(session, user_id, measured_on, weight_kg, updated_at, now) -> (WeightLog, WeightStatus)` extracted from `weight._upsert` + `_weight` validation. `record_weight` keeps using it and behaves exactly as before. The profile service does NOT call `record_weight`, so one save makes at most one target.
+7. Goal direction (#177): before any target work, validate the goal against the latest weight with a new public `validate_goal(goal_type, target_weight_kg, weekly_rate_kg, weight_kg)` extracted from `targets._validate` (same messages; `_validate` calls it). A failure raises `TargetValidationError` (`422 TARGET_VALIDATION`) and the whole save rolls back. This runs even when screening fails, so an invalid goal is never stored.
+8. Screening `screen_user(session, user_id, today)`.
+9. Target (#177), at most one per save:
+   - Ineligible: no new target; if a current target exists, close it (`valid_to = now`) so no stale target can feed the planner. Response `target: null`.
+   - Eligible, no current target: `INITIAL` if the user never had any `user_targets` row, otherwise `PROFILE_CHANGE` (returning from ineligible).
+   - Eligible with a current target, first match wins: `GOAL_CHANGE` if `goal_type`, `target_weight_kg` or `weekly_rate_kg` changed; `PROFILE_CHANGE` if `sex`, `birth_date`, `height_cm` or `activity_level` changed; `WEIGHT_UPDATE` if the latest weight differs from the current target's `based_on_weight_kg` by at least `WEIGHT_RECOMPUTE_DELTA_KG`; otherwise keep the current target.
+   - Create through `create_user_target(session, user_id, reason, now)` (unchanged).
+   - Conditions, allergens, ingredient prefs, cuisines, wake/sleep times, timezone and water goal never create a target (targets_v1 does not use them).
+10. Return the outcome. The router commits.
+
+## 5. Water goal `app/services/water.py` (#179)
+Only the goal now (logging comes in I.6): `water_goal(session, user_id, screening, sex, water_goal_ml) -> WaterGoalResult(goal_ml, source, requires_clinician, reminders_default_off)`, §30.7:
+- `requires_clinician` = the user has a condition with `fluid_goal_requires_clinician = true` (data, not a hard-coded code). When true, `reminders_default_off = true`.
+- `water_goal_ml` set → `source USER`, that value (also for a clinician-flagged user: it is the clinician-set amount).
+- Else flagged, or screening ineligible → `source NONE`, `goal_ml null`.
+- Else `source DEFAULT`, 1600 ml for `FEMALE`, 2000 ml for `MALE` (named constants with the EFSA 2010 comment).
+
+## 6. API layer
+- `GET /me/profile` → `ProfileState` (404 `PROFILE_NOT_FOUND` without a profile). `latest_weight_kg/on` from the latest weight row.
+- `PUT /me/profile` → 200 `ProfileState`. An ineligible screening is a normal 200 with `screening.eligible = false` and `target: null`.
+- `GET /me/targets` → `TargetsView` (404 without a profile).
+- `Target` mapping: `kcal` = `target_kcal` as int, `fiber_g` = `fiber_target_g(target_kcal)` (not stored), numbers rounded to 3 places (#128).
+- Meal prefs (#182), service functions in `app/services/meal_prefs.py`:
+  - list: the user's rows, newest `updated_at` first.
+  - set: the meal must exist and be active, else `MealNotFoundError` (404 `MEAL_NOT_FOUND`). Upsert the row; write one `user_interactions` row `PREF_LIKE` or `PREF_DISLIKE` (context `{"source": "meal_prefs"}`) only when the stance actually changed or the row is new. Same stance again → 200, no event.
+  - delete: unknown or inactive meal → 404; existing row → delete and write `PREF_CLEAR`; no row → 204 and no event.
+- Add `UnknownCodeError → (422, "UNKNOWN_CODE")` to `SERVICE_ERRORS` and remove `UNKNOWN_CODE` from the "not mapped yet" list.
+
+## 7. Tests
+Service tests (`tests/services/test_profile.py`, `test_water.py`, `test_meal_prefs.py`, `test_ingredient_search.py`, `test_reference.py`) and API tests (`tests/api/test_profile.py`, `test_reference.py`, `test_ingredients.py`, `test_meal_prefs.py`). At least:
+- First save without weight → 409 `NO_WEIGHT`, nothing written. First save with weight → profile, children, one weight row on the local date, one `INITIAL` target; numbers equal `compute_targets` for the same inputs.
+- Each reason: goal change → `GOAL_CHANGE`; height change only → `PROFILE_CHANGE`; weight +2.0 kg only → `WEIGHT_UPDATE`; weight +0.3 kg only → no new target; goal and height changed together → one `GOAL_CHANGE`; only conditions/allergens/cuisines/times changed → no new target. Previous target gets `valid_to = now` each time a new one is made.
+- `LOSE` with `target_weight_kg` above the weight → 422 `TARGET_VALIDATION`, nothing changed in any table (compare before/after).
+- Adding `DIABETES_INSULIN` → 200, `eligible false`, reasons `["UNSUPPORTED_CONDITION:DIABETES_INSULIN"]`, current target closed, `GET /me/targets` shows `target null`. Removing it → new target `PROFILE_CHANGE`. Under 18 → `UNDER_18`, no target.
+- Unknown condition/allergen/cuisine code or ingredient id → 422 `UNKNOWN_CODE`; bad timezone → 422 `INVALID_TIMEZONE`; Pydantic rules (duplicates, wake = sleep, missing goal fields) → 422 `VALIDATION_ERROR`.
+- Child replacement keeps `created_at` of unchanged rows and updates changed severities.
+- Timezone: a save at 23:30 UTC with `Asia/Tokyo` stores the weight on the next local date.
+- Water: default female 1600 and male 2000; user value wins; `HEART_DISEASE` → `NONE`, `requires_clinician true`, `reminders_default_off true`, and with a user value → `USER` with `requires_clinician true`; ineligible → `NONE`.
+- Reference: public (no token), Arabic by default, English with `Accept-Language: en`, `DIABETES_INSULIN` present with `is_supported false`, `HEART_DISEASE` with `fluid_goal_requires_clinician true`, no kidney/pregnancy/gout code anywhere, `Cache-Control` header, `dataset_version` equals `/health`.
+- Ingredients: token required; Arabic query with and without hamza/tashkeel finds the same ingredient; English query works; prefix ranks above contains; paging and `total`; `q` of only spaces or tashkeel → 422; rejected ingredients never returned.
+- Meal prefs: set LIKE → one `PREF_LIKE`; LIKE again → no new event; DISLIKE → `PREF_DISLIKE`; delete → `PREF_CLEAR`; delete again → 204, no event; unknown meal → 404; another user's rows never visible.
+- Every remaining stub still answers 401 without a token and 501 with one (update the contract test lists only for the routes implemented here).
+- No profile value appears in captured logs during a save (same pattern as the I.2 password test).
+
+## 8. Contract changes (regenerate `openapi.json`)
+- `API_VERSION` → `"0.4.0"`.
+- Descriptions only: `/reference` mentions `Cache-Control` and the `"unknown"` dataset version; `/ingredients` says ranking and that rejected ingredients are excluded; `PUT /me/profile` says at most one target per save and that an ineligible save closes the current target.
+- No schema, field or status change. If you find a field that cannot be filled as specified, stop and report instead of changing the schema.
+- `docs/api/API_GUIDE.md`: a short section "Onboarding flow" (call `/reference`, then `PUT /me/profile`, read `screening` and `target`; `GET /me` `has_profile` decides onboarding vs home).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped). Then run the server and by `curl` on the dev database: register, `GET /reference` (show 2 conditions), `GET /ingredients?q=طماطم`, first `PUT /me/profile` with a weight, `GET /me/targets`, a second `PUT` changing only `goal_type`, `PUT /me/meal-prefs/{some active meal}` LIKE, then `DELETE /me` to clean up.
+
+## Report back
+1. Files created/changed.
+2. The ingredient alias check numbers (section 3).
+3. The `curl` session: status codes and the important fields (target reason, kcal, water source), tokens shortened.
+4. `git diff --stat docs/api/openapi.json` and the contract changes.
+5. Test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions.

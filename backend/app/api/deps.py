@@ -2,14 +2,15 @@
 
 from collections.abc import Iterator
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Literal
 
-from fastapi import Depends
+from fastapi import Depends, Header
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.errors import ApiError
+from app.core.text import pick_name as pick_name
 from app.db.models import User
 from app.db.session import SessionLocal
 from app.services.auth import TokenInvalidError, decode_access
@@ -70,3 +71,45 @@ def get_current_user(
 
 
 CurrentUser = Annotated[int, Depends(get_current_user)]
+
+
+def _language_quality(header: str) -> list[str]:
+    """Primary tags of ar/en in header order, skipping q=0 and anything else."""
+    found: list[str] = []
+    for part in header.split(","):
+        piece = part.strip()
+        if not piece:
+            continue
+        bits = [bit.strip() for bit in piece.split(";") if bit.strip()]
+        tag = bits[0]
+        quality = 1.0
+        for bit in bits[1:]:
+            if not bit.lower().startswith("q="):
+                continue
+            try:
+                quality = float(bit[2:])
+            except ValueError:
+                quality = 0.0
+        if quality <= 0 or tag == "*":
+            continue
+        primary = tag.split("-", 1)[0].split("_", 1)[0].lower()
+        if primary in {"ar", "en"}:
+            found.append(primary)
+    return found
+
+
+def get_lang(
+    accept_language: Annotated[str | None, Header(include_in_schema=False)] = None,
+) -> Literal["ar", "en"]:
+    """First acceptable ar or en primary tag. Missing, unknown, or q=0 falls back to ar."""
+    if not accept_language:
+        return "ar"
+    found = _language_quality(accept_language)
+    if "en" in found[:1]:
+        return "en"
+    if "ar" in found[:1]:
+        return "ar"
+    return "ar"
+
+
+Lang = Annotated[Literal["ar", "en"], Depends(get_lang)]

@@ -13,8 +13,10 @@ from app.api.errors import SERVICE_ERRORS, ApiError
 from app.api.main import create_app
 from app.services.condition_limits import ConditionConflictError, LimitSource, ResolvedLimit
 from app.services.consumption import PlanItemNotFoundError
+from app.services.ingredient_search import EmptySearchError
 from app.services.plan_swap import SwapRejectedError
 from app.services.planner import NoFeasiblePlanError
+from app.services.profile import UnknownCodeError
 from app.services.targets import UserNotEligibleError
 
 
@@ -45,6 +47,10 @@ def _instance(exc_type: type[Exception]) -> Exception:
         return NoFeasiblePlanError("BREAKFAST", {"MEAL_ALREADY_USED": 2}, 4)
     if exc_type is SwapRejectedError:
         return SwapRejectedError(["SAME_MEAL"])
+    if exc_type is UnknownCodeError:
+        return UnknownCodeError("condition", ["NOPE"])
+    if exc_type is EmptySearchError:
+        return EmptySearchError()
     return exc_type("failure")
 
 

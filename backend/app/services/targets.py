@@ -133,26 +133,40 @@ class TargetResult:
     formula_version: str = FORMULA_VERSION
 
 
+def validate_goal(
+    goal_type: GoalType,
+    target_weight_kg: Decimal | None,
+    weekly_rate_kg: Decimal | None,
+    weight_kg: Decimal,
+) -> None:
+    """§11.2: a loss goal points below the current weight, a gain goal above it."""
+    if goal_type == GoalType.MAINTAIN:
+        return
+    if weekly_rate_kg is None or weekly_rate_kg <= 0:
+        raise TargetValidationError(f"{goal_type} requires a positive weekly_rate_kg")
+    if target_weight_kg is None:
+        raise TargetValidationError(f"{goal_type} requires target_weight_kg")
+    if goal_type == GoalType.LOSE and not target_weight_kg < weight_kg:
+        raise TargetValidationError(
+            f"LOSE requires target_weight_kg ({target_weight_kg}) below the current "
+            f"weight ({weight_kg})"
+        )
+    if goal_type == GoalType.GAIN and not target_weight_kg > weight_kg:
+        raise TargetValidationError(
+            f"GAIN requires target_weight_kg ({target_weight_kg}) above the current "
+            f"weight ({weight_kg})"
+        )
+
+
 def _validate(inputs: TargetInputs) -> None:
     if inputs.height_cm <= 0 or inputs.weight_kg <= 0:
         raise TargetValidationError("height_cm and weight_kg must be positive")
-    if inputs.goal_type == GoalType.MAINTAIN:
-        return
-    if inputs.weekly_rate_kg is None or inputs.weekly_rate_kg <= 0:
-        raise TargetValidationError(f"{inputs.goal_type} requires a positive weekly_rate_kg")
-    if inputs.target_weight_kg is None:
-        raise TargetValidationError(f"{inputs.goal_type} requires target_weight_kg")
-    # §11.2: direction consistency with the current weight is application logic.
-    if inputs.goal_type == GoalType.LOSE and not inputs.target_weight_kg < inputs.weight_kg:
-        raise TargetValidationError(
-            f"LOSE requires target_weight_kg ({inputs.target_weight_kg}) below the current "
-            f"weight ({inputs.weight_kg})"
-        )
-    if inputs.goal_type == GoalType.GAIN and not inputs.target_weight_kg > inputs.weight_kg:
-        raise TargetValidationError(
-            f"GAIN requires target_weight_kg ({inputs.target_weight_kg}) above the current "
-            f"weight ({inputs.weight_kg})"
-        )
+    validate_goal(
+        inputs.goal_type,
+        inputs.target_weight_kg,
+        inputs.weekly_rate_kg,
+        inputs.weight_kg,
+    )
 
 
 def _goal_adjustment(inputs: TargetInputs) -> tuple[Decimal | None, Decimal, bool, bool]:

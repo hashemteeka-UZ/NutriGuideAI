@@ -84,7 +84,12 @@ class Reference(BaseModel):
     goal_types: list[GoalType]
     sexes: list[Sex]
     slots: list[MealSlot]
-    dataset_version: str
+    dataset_version: str = Field(
+        description=(
+            'Active catalog dataset_version shared with GET /health, or "unknown" when active '
+            "meals do not share exactly one version."
+        )
+    )
 
     model_config = with_example(
         {

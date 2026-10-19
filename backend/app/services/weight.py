@@ -67,6 +67,18 @@ def _weight(value: Decimal | int | float) -> Decimal:
     return weight
 
 
+def upsert_weight(
+    session: Session,
+    user_id: int,
+    measured_on: date,
+    weight_kg: Decimal | int | float,
+    updated_at: datetime,
+    now: datetime,
+) -> tuple[WeightLog, WeightStatus]:
+    """Validate weight_kg and write that day's row. Last write with the newer updated_at wins."""
+    return _upsert(session, user_id, measured_on, _weight(weight_kg), updated_at, now)
+
+
 def _upsert(
     session: Session,
     user_id: int,
@@ -159,7 +171,7 @@ def record_weight(
     if measured_on > local_today:
         raise ValueError(f"measured_on {measured_on} is after the user's local date {local_today}")
 
-    row, status = _upsert(session, user_id, measured_on, weight, updated_at, now)
+    row, status = upsert_weight(session, user_id, measured_on, weight, updated_at, now)
     latest_on, latest_weight = _latest_weight(session, user_id)
     target_status, new_target_id = TargetStatus.NOT_TRIGGERED, None
     if status is not WeightStatus.STALE_IGNORED and latest_on == measured_on:

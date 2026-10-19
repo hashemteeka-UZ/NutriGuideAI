@@ -31,7 +31,7 @@ from app.api.routers import (
 from app.core.config import get_settings
 
 API_PREFIX: Final = "/api/v1"
-API_VERSION: Final = "0.3.0"
+API_VERSION: Final = "0.4.0"
 
 _CORS_METHODS: Final = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 _CORS_HEADERS: Final = ["Authorization", "Content-Type", "Accept-Language", "X-Request-ID"]
