@@ -240,11 +240,11 @@ def test_adherence_completion_status_and_streak(scenario: ScenarioResult) -> Non
 def test_p3_is_ineligible_and_may_still_log(scenario: ScenarioResult, session: Session) -> None:
     p3 = scenario.personas["P3"]
     assert p3.screening.eligible is False
-    assert p3.screening.reasons == ["UNSUPPORTED_CONDITION:CKD"]
+    assert p3.screening.reasons == ["UNSUPPORTED_CONDITION:DIABETES_INSULIN"]
     assert p3.target_error is not None
     assert p3.plan_error is not None
-    assert "UNSUPPORTED_CONDITION:CKD" in p3.target_error
-    assert "UNSUPPORTED_CONDITION:CKD" in p3.plan_error
+    assert "UNSUPPORTED_CONDITION:DIABETES_INSULIN" in p3.target_error
+    assert "UNSUPPORTED_CONDITION:DIABETES_INSULIN" in p3.plan_error
     assert p3.targets == ()
     assert (
         session.execute(

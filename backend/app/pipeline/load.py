@@ -38,6 +38,7 @@ from app.db.models.reference import FoodExternalSource
 from app.pipeline.classify import Classification, FilledFood, Outcome
 from app.pipeline.files import (
     FDC_CATEGORY_EN,
+    CatalogAuthoringError,
     CatalogFiles,
     CatalogMeal,
     CatalogMealSteps,
@@ -45,7 +46,13 @@ from app.pipeline.files import (
     IngredientFoodSource,
     YieldFactorKind,
 )
-from app.seed.f1_loader import NUMERIC_SCALE, _rounded, total_grams
+from app.seed.f1_loader import (
+    NUMERIC_SCALE,
+    _rounded,
+    delete_unseeded_health_conditions,
+    total_grams,
+    unseeded_condition_user_errors,
+)
 from app.services.recompute_meals import MealRecompute, recompute_meal
 
 TABLES = (
@@ -212,6 +219,11 @@ class _Loader:
 
     def run(self) -> None:
         seed = self.files.seed
+        blocked = unseeded_condition_user_errors(
+            self.session, {c.code for c in seed.health_conditions}
+        )
+        if blocked:
+            raise CatalogAuthoringError(blocked)
         accepted_foods = {
             key: food
             for key, food in self.classified.filled.items()
@@ -314,6 +326,7 @@ class _Loader:
                     "source_reference": restriction.source_reference,
                 },
             )
+        self._retire_unseeded_conditions({c.code for c in seed.health_conditions})
         food_ids, ingredient_ids = self._load_foods_and_ingredients(
             accepted_foods, category_ids, nutrient_ids, allergen_ids, tag_ids
         )
@@ -321,6 +334,15 @@ class _Loader:
         self._deactivate_missing_meals({ref for ref in meal_ids.values()})
         self._load_steps(meal_ids)
         self._recompute(meal_ids)
+
+    def _retire_unseeded_conditions(self, seed_codes: set[str]) -> None:
+        """The reference seed is the source of truth for health_conditions (#167)."""
+        retired = delete_unseeded_health_conditions(self.session, seed_codes)
+        if retired.errors:
+            raise CatalogAuthoringError(retired.errors)
+        self.report.tables["condition_nutrient_limits"].deactivated += retired.limits_deleted
+        self.report.tables["condition_tag_restrictions"].deactivated += retired.restrictions_deleted
+        self.report.tables["health_conditions"].deactivated += retired.conditions_deleted
 
     def _load_categories(self, foods: Mapping[str, FilledFood]) -> dict[str, int]:
         wanted: dict[str, tuple[str, str]] = {}

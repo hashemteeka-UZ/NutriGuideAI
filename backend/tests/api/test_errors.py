@@ -38,7 +38,9 @@ def _instance(exc_type: type[Exception]) -> Exception:
     if exc_type is UserNotEligibleError:
         return UserNotEligibleError(1, ["UNDER_18"])
     if exc_type is ConditionConflictError:
-        return ConditionConflictError("sodium", _limit("5", "HYPERTENSION"), _limit("1", "CKD"))
+        return ConditionConflictError(
+            "sodium", _limit("5", "HYPERTENSION"), _limit("1", "HEART_DISEASE")
+        )
     if exc_type is NoFeasiblePlanError:
         return NoFeasiblePlanError("BREAKFAST", {"MEAL_ALREADY_USED": 2}, 4)
     if exc_type is SwapRejectedError:

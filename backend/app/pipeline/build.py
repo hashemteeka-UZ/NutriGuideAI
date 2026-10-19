@@ -21,6 +21,7 @@ from app.pipeline.files import CatalogAuthoringError, CatalogFiles, read_catalog
 from app.pipeline.gates import run_catalog_gates
 from app.pipeline.load import CatalogLoadReport, load_catalog
 from app.pipeline.report import write_reports
+from app.seed.f1_loader import unseeded_condition_user_errors
 
 DEFAULT_DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "catalog"
 AUTHORING_GATES = ("G7", "G9", "G13")
@@ -46,6 +47,10 @@ def build_catalog(
     amounts = {key: food.amounts for key, food in filled.items()}
     gates = run_catalog_gates(files, amounts)
     authoring = [str(f) for name in AUTHORING_GATES for f in gates.get(name, [])]
+    if load and session is not None:
+        authoring.extend(
+            unseeded_condition_user_errors(session, {c.code for c in files.seed.health_conditions})
+        )
     if authoring:
         raise CatalogAuthoringError(authoring)
     classified = classify(files, filled, gates)

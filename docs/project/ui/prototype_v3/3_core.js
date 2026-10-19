@@ -38,7 +38,7 @@ const E=(n,s=28,cls='')=>`<svg class="emo ${cls}" viewBox="0 0 32 32" width="${s
 const S={lang:'ar',mode:'auto',screen:'welcome',nav:'fwd',anim:true,sheet:null,toast:null,banner:null,
  scen:{offline:false,late:false,general:false,fluid:false,complete:false},
  o:{name:'أحمد',sex:'MALE',age:29,h:175,w:88,goal:'LOSE',tw:78,rate:0.5,act:'MODERATE',prot:'GOAL',care:['HYPERTENSION'],
-    allergy:{sesame:'AVOID'},ckd:false,insulin:false,preg:false,wake:420,sleep:1380,docGoal:1500,hasDoc:true,tdays:4,ttime:1080,accent:'AUTO',avatar:'AUTO'},persona:'ahmed',
+    allergy:{sesame:'AVOID'},insulin:false,wake:420,sleep:1380,docGoal:1500,hasDoc:true,tdays:4,ttime:1080,accent:'AUTO',avatar:'AUTO'},persona:'ahmed',
  step:0,welcomeSlide:0,eaten:{1:true},water:[{t:'07:40',ml:250},{t:'09:35',ml:250},{t:'11:30',ml:300}],now:13*60+40,
  kmode:'eaten',favs:{L07:true},nope:{},shop:{},progTab:'report',planDay:1,mult:{},rem:{meals:true,water:true,weight:true}};
 try{const sv=JSON.parse(localStorage.getItem('ng-proto-v3')||'{}');if(sv.lang)S.lang=sv.lang;if(sv.mode)S.mode=sv.mode;}catch(e){}
@@ -66,7 +66,7 @@ function targets(){
  // MUSCLE: protein is a floor (target) with a ceiling of 2.2 g/kg, and each main meal needs at least 25 g
  return {bmr:Math.round(bmr),tdee:Math.round(tdee),adj:Math.round(adj),kcal,protein,fat,carb,fiber,water,bmi,gpk,refw:Math.round(refw),pmax:o.goal==='MUSCLE'?Math.round(refw*2.2):null,pmeal:o.goal==='MUSCLE'?25:null};
 }
-const general=()=>S.scen.general||S.o.ckd||S.o.insulin||S.o.preg;
+const general=()=>S.scen.general||S.o.insulin;
 /* meal windows from wake/sleep (minutes from midnight) */
 function baseWindows(){
  const W=S.o.wake,Z=S.o.sleep<=W?S.o.sleep+1440:S.o.sleep;

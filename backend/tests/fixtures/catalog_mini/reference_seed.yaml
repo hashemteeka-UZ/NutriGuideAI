@@ -168,11 +168,6 @@ health_conditions:
   name_ar: أمراض القلب
   is_supported: true
   fluid_goal_requires_clinician: true
-- code: CKD
-  name_en: Chronic kidney disease
-  name_ar: مرض الكلى المزمن
-  is_supported: false
-  fluid_goal_requires_clinician: true
 - code: DIABETES_INSULIN
   name_en: Insulin-treated diabetes
   name_ar: السكري المعالج بالإنسولين

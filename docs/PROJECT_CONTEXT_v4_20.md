@@ -1,13 +1,23 @@
-# PROJECT_CONTEXT.md — v4.19
+# PROJECT_CONTEXT.md — v4.20
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_18.md`, `PROJECT_CONTEXT_v4_17.md`, `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_19.md`, `PROJECT_CONTEXT_v4_18.md`, `PROJECT_CONTEXT_v4_17.md`, `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.19 → v4.20
+
+v4.20 records the **fourth use of the post-freeze policy (§20.1)**: the removal pass after Step I.0c (2026-10-19, DEV_JOURNAL J-037). Step I.0c (data) is committed: catalog_v3, 158 meals, 477 preparation steps on 121 meals, dev database rebuilt from the catalog only.
+
+| # | Topic | Change | Schema? |
+|---|---|---|---|
+| #167 | Scope: supported conditions (user decision, final, 2026-10-19) | The project serves **only** type 2 diabetes (not insulin-treated), hypertension and heart disease. **Kidney disease, pregnancy, lactation and gout are cancelled permanently**, in the code and in the theory part. Removed: `user_profiles.physiological_status` with its two CHECKs (migration `0006`), the `PhysiologicalStatus` enum, the screening reason `PREGNANT_OR_LACTATING`, the condition `CKD` from every reference seed (catalog, F.1 slice, test fixtures), and every mention in the current documentation, report chapters and UI prototype. Kept: under-18 screening and `DIABETES_INSULIN` as the one recognized-unsupported condition (an insulin user is a diabetes user; carbohydrate planning tied to insulin dosing is not covered, so they get the general mode). The water rule `fluid_goal_requires_clinician` now applies to `HEART_DISEASE` only. **Reason:** the user wants the project focused on one direction and finished well; each of these populations needs its own clinical rules, data and validation. **Frozen artifacts (approved by the user):** the F.1 benchmark persona P3 changes from `CKD` to `DIABETES_INSULIN` (same purpose: an unsupported condition gets no personalized plan), so `f1_scenario_report.md` is regenerated once; the catalog reference seed loses `CKD`, so `DATASET_MANIFEST.yaml` gets a new hash (`dataset_version` stays `catalog_v3`, meals unchanged). **Known limitation (one line in the report):** the app is designed for adults with type 2 diabetes, hypertension or heart disease, or no condition; it is not designed for pregnancy, lactation, kidney disease or gout. | **Yes** |
 
 ---
 
@@ -250,7 +260,7 @@ v4.6 records a **scope change** approved on 2026-09-29 after a change-impact ana
 | # | Topic | Resolution (short) | Schema? |
 |---|---|---|---|
 | 49 | Water tracking was Future Work (§18.10, §29); user requested it now. Adding it before the freeze costs one table; adding it after would reopen the frozen schema | **Scope change:** new append-only table `water_logs` (same pattern as `consumption_logs`: `client_uuid`, `log_date`, tombstone) + nullable `user_profiles.water_goal_ml`. Water is **not** part of the daily adherence status (§30.5 unchanged) | Yes |
-| 50 | Heart-failure patients are often under clinician-ordered fluid restriction; "drink more" goals/reminders could harm them. CKD (recognized, unsupported) has the same issue | **Fluid-safety rule (§30.7):** data-driven flag `health_conditions.fluid_goal_requires_clinician`; for flagged users no default water goal is computed, water reminders are off by default, a "consult your doctor" notice is shown, and only a user-entered (clinician-set) goal is used | Yes (1 column) |
+| 50 | Heart-failure patients are often under clinician-ordered fluid restriction; "drink more" goals/reminders could harm them. CKD (recognized, unsupported) had the same issue *(CKD removed in v4.20, #167)* | **Fluid-safety rule (§30.7):** data-driven flag `health_conditions.fluid_goal_requires_clinician`; for flagged users no default water goal is computed, water reminders are off by default, a "consult your doctor" notice is shown, and only a user-entered (clinician-set) goal is used | Yes (1 column) |
 | 51 | Reminders were mapped only to FCM (server push) | Water and **meal-logging** reminders are **local notifications** scheduled on the device (`flutter_local_notifications`), fully offline; reminder settings live on the device only (no table). FCM stays for server-initiated messages only | No |
 | 52 | UI/UX quality was not an explicit direction; UX drives pilot data volume and the SUS score (§28.5) | UI/UX direction recorded (§29): RTL-first design, one-tap logging from the plan, progress rings/streaks derived from §30.5; inspired by principles of existing apps, never copying another product's visual identity. Wireframes may start in parallel; implementation in the app phase | No |
 | 53 | Chatbot via a free LLM tier: the Gemini API unpaid-tier terms allow Google to use content for product improvement and human review, forbid sensitive/personal data and medical advice | Chatbot **stays deferred** (after F.1). Binding design constraints recorded in §29: free tier for development with synthetic data only; paid tier (or Claude API) for any real-user data; server-side calls only; topic guard + grounding via function calling; never bypasses Layer 1; fixed responses for medical emergencies; per-user rate limit. Open item: team budget for the paid tier — decided when the chatbot phase starts | No (tables stay deferred) |
@@ -312,7 +322,7 @@ v4.2 incorporates a full consultant-style review of v4.1 against the product vis
 | 24 | `dietary_tags` mixed dietary, occasion and condition semantics in one flat list, and had no stable machine key | Added `dietary_tags.tag_group` (`DIETARY` / `OCCASION` / `CONDITION`) and `dietary_tags.code` UNIQUE (§9.4) | Yes |
 | 25 | `meals.total_grams` had no defined meaning (raw sum vs cooked weight) → `amount_per_100g` could be wrong | `total_grams` = **final as-served (cooked) weight of the whole recipe**; new `meals.weight_method` (`WEIGHED` / `YIELD_FACTOR` / `SUM_OF_INGREDIENTS`) (§10.1, §10.3) | Yes |
 | 26 | Teammate template collects only 5 macros → chronic-condition filtering would be impossible (no sodium, sat fat, cholesterol, sugars) | **Mandatory nutrient set** of 9 nutrients defined; `nutrients.code` UNIQUE stable key; `nutrients.is_mandatory`; missing ≠ zero rule (§9.7, §31.3) | Yes (small) + data requirement |
-| 27 | Unsupported populations (pregnancy, lactation, under-18, CKD, insulin-treated diabetes) had no representation → app could generate plans for people the equations/rules do not cover | `user_profiles.physiological_status`; `health_conditions.is_supported`; screening rules (§30.1) | Yes |
+| 27 | Unsupported populations (under-18, insulin-treated diabetes; pregnancy, lactation and CKD were here until v4.20, #167) had no representation → app could generate plans for people the equations/rules do not cover | `user_profiles.physiological_status`; `health_conditions.is_supported`; screening rules (§30.1) | Yes |
 | 28 | ML personalization and offline evaluation need impressions/accepts, not just views/swaps; Arabic search had no normalized field | `user_interactions.event_type` CHECK widened (`IMPRESSION`, `ACCEPT`); normalized Arabic search columns + `pg_trgm` (§11.6, §15.9) | Yes (small) |
 | 29 | ML direction: K-Means as "the ML part" is academically weak; greedy optimizer cannot enforce weekly constraints | §28 rewritten: honest ML/non-ML classification; primary ML component = **contextual bandit personalization (LinUCB)** + optional supervised auto-tagging assistant; optimizer = **OR-Tools CP-SAT** (or PuLP MILP) | No (direction only) |
 | 30 | Energy/target calculation had no documented scientific basis | §30: Mifflin-St Jeor, PAL multipliers, goal adjustment, calorie floors, rate caps, macro split, recompute triggers | No (application logic) |
@@ -557,13 +567,13 @@ A meal may carry more than one occasion tag. Occasion tags are assigned **manual
 
 ## 9.5 `health_conditions` — CHANGED in v4.2 (Decision #27)
 - `condition_id` PK
-- `code` UNIQUE (e.g. `DIABETES_T2`, `HYPERTENSION`, `HEART_DISEASE`, `CKD`, `DIABETES_INSULIN`)
+- `code` UNIQUE (`DIABETES_T2`, `HYPERTENSION`, `HEART_DISEASE`, `DIABETES_INSULIN`)
 - `name_en`, `name_ar`
 - `is_supported` — **NEW** — `BOOLEAN NOT NULL DEFAULT false`. `true` = the app has validated rules and may generate personalized plans for users with this condition. `false` = the condition is *recognized* (so users can declare it honestly) but the app does **not** generate personalized plans for such users (§30.1).
-- `fluid_goal_requires_clinician` — **NEW in v4.6 (Decision #50)** — `BOOLEAN NOT NULL DEFAULT false`. `true` = a clinician may restrict this user's fluid intake, so the app never computes a default water goal and keeps water reminders off by default (§30.7). Seed: `true` for `HEART_DISEASE` and `CKD`, `false` for the others. Kept as data, not hard-coded condition codes in the app (§15.6).
+- `fluid_goal_requires_clinician` — **NEW in v4.6 (Decision #50)** — `BOOLEAN NOT NULL DEFAULT false`. `true` = a clinician may restrict this user's fluid intake, so the app never computes a default water goal and keeps water reminders off by default (§30.7). Seed: `true` for `HEART_DISEASE`, `false` for the others (v4.20, #167). Kept as data, not hard-coded condition codes in the app (§15.6).
 
 In-scope supported conditions (§29): `DIABETES_T2`, `HYPERTENSION`, `HEART_DISEASE`. *(`GOUT` removed from the project in v4.7 — Decision #54; not seeded at all.)*
-Recognized but unsupported (seed): `CKD` (chronic kidney disease — protein/potassium/phosphorus rules differ fundamentally), `DIABETES_INSULIN` (insulin-treated diabetes — carbohydrate planning is tied to medication dosing). More can be added without redesign.
+Recognized but unsupported (seed): `DIABETES_INSULIN` (insulin-treated diabetes — carbohydrate planning is tied to medication dosing). No other condition is recognized (v4.20, #167).
 
 ## 9.5b `condition_nutrient_limits` — CHANGED in v4.2 (Decision #18)
 Turns a condition into enforceable numeric constraints.
@@ -775,7 +785,6 @@ Ordered preparation steps of a meal, per language (schema.org `Recipe.recipeInst
 - `goal_type` — `LOSE` / `MAINTAIN` / `GAIN`
 - `target_weight_kg` — **NEW** — nullable numeric, `CHECK (target_weight_kg BETWEEN 30 AND 300)`
 - `weekly_rate_kg` — **NEW** — nullable numeric, `CHECK (weekly_rate_kg > 0 AND weekly_rate_kg <= 1.0)`
-- `physiological_status` — **NEW** — CHECK (`NONE`, `PREGNANT`, `LACTATING`), `NOT NULL DEFAULT 'NONE'`; `CHECK (sex = 'FEMALE' OR physiological_status = 'NONE')`
 - `timezone` — **NEW** — IANA name (e.g. `Africa/Tripoli`), `NOT NULL` — needed to compute the user's local day for daily adherence
 - `water_goal_ml` — **NEW in v4.6 (Decision #49)** — nullable integer, `CHECK (water_goal_ml BETWEEN 500 AND 5000)` (name `water_goal_range`). `NULL` = no user-entered goal; the app then derives the default goal (§30.7) unless the fluid-safety rule applies
 - `wake_time`, `sleep_time` — **NEW in v4.19 (#145)** — `TIME NOT NULL`, defaults `07:00` and `23:00`, `CHECK (wake_time <> sleep_time)` (name `wake_sleep_differ`). Local times in the user's `timezone`; sleep may be after midnight (e.g. wake 07:00, sleep 01:00). Meal windows are computed from them in the service layer.
@@ -1133,7 +1142,7 @@ app/
 ```
 One shared `Base` (defined with the naming convention below — see "Constraint naming convention"). Alembic must import all model metadata.
 
-**Enum implementation note:** use `sqlalchemy.Enum(..., native_enum=False)` (or `String` + explicit `CheckConstraint`) for **all** enum-like columns — never `native_enum=True`. v4.2 additions covered by this rule: `dietary_tags.tag_group`, `condition_nutrient_limits.limit_basis`, `meal_tags.source`, `meals.weight_method`, `user_profiles.sex`, `user_profiles.activity_level`, `user_profiles.physiological_status`, `weight_logs.source`, `user_targets.reason`, `consumption_logs.slot`, and the widened `user_interactions.event_type`. v4.4 addition: `foods.external_source`. **Complete list made explicit in v4.8 (#60)** — also covered: `meals.quality_tier`, `foods.state`, `nutrients.unit`, `ingredients.review_status`, `condition_tag_restrictions.restriction_type`, `user_profiles.goal_type`, `user_health_conditions.severity`, `user_allergen_prefs.severity`, `user_ingredient_prefs.stance`, `meal_plan_items.slot` (`consumption_logs.slot` uses the same value set). Any new enum-like column follows the same rule.
+**Enum implementation note:** use `sqlalchemy.Enum(..., native_enum=False)` (or `String` + explicit `CheckConstraint`) for **all** enum-like columns — never `native_enum=True`. v4.2 additions covered by this rule: `dietary_tags.tag_group`, `condition_nutrient_limits.limit_basis`, `meal_tags.source`, `meals.weight_method`, `user_profiles.sex`, `user_profiles.activity_level`, `weight_logs.source`, `user_targets.reason`, `consumption_logs.slot`, and the widened `user_interactions.event_type`. v4.4 addition: `foods.external_source`. **Complete list made explicit in v4.8 (#60)** — also covered: `meals.quality_tier`, `foods.state`, `nutrients.unit`, `ingredients.review_status`, `condition_tag_restrictions.restriction_type`, `user_profiles.goal_type`, `user_health_conditions.severity`, `user_allergen_prefs.severity`, `user_ingredient_prefs.stance`, `meal_plan_items.slot` (`consumption_logs.slot` uses the same value set). Any new enum-like column follows the same rule.
 
 **Type mapping (v4.8, Decisions #56, #58):** surrogate PK → `mapped_column(BigInteger, Identity(always=True), primary_key=True)`; measured values → `Numeric(12, 3, asdecimal=False)` (exceptions in §15.2); FK columns → `index=True` per §15.3.
 
@@ -1206,7 +1215,6 @@ meal_ingredients.grams = -5       → rejected
 - Two `user_targets` rows with `valid_to IS NULL` for the same user → rejected (partial unique index)
 - Two `weight_logs` rows for the same user and day → rejected
 - `user_profiles` with `goal_type = 'LOSE'` and NULL `target_weight_kg` → rejected
-- `user_profiles` with `sex = 'MALE'` and `physiological_status = 'PREGNANT'` → rejected
 - `meal_plan_items.servings_multiplier = 0.7` → rejected
 - `weekly_rate_kg = 1.5` → rejected
 - Deleting a `dietary_tags` row referenced by `ingredient_tags` → rejected (RESTRICT)
@@ -1285,6 +1293,7 @@ After testing, roll back or delete temporary test data.
 - **First use (v4.14, 2026-10-06):** migration `0003` (decisions #75–#78) during Step F.1.
 - **Second use (v4.16, 2026-10-11):** migration `0004` (decision #91) as Step G.0, closed before any Step G data work (#90).
 - **Third use (v4.19, 2026-10-17):** migration `0005` (decision #165) as Step I.0b, before the API contract I.1; its data (#166) is a separate pass I.0c.
+- **Fourth use (v4.20, 2026-10-19):** migration `0006` (decision #167) drops `user_profiles.physiological_status`; cancelled conditions removed.
 
 ---
 
@@ -1581,11 +1590,10 @@ All values below are initial engineering defaults and **must be reviewed by a qu
 ## 30.1 Screening (before any personalized plan)
 The app does **not** generate personalized plans (it may show general information and allow logging) when:
 - age < 18 (from `birth_date`)
-- `physiological_status` ∈ (`PREGNANT`, `LACTATING`)
-- the user has any condition with `health_conditions.is_supported = false` (e.g. `CKD`, `DIABETES_INSULIN`)
+- the user has any condition with `health_conditions.is_supported = false` (`DIABETES_INSULIN`)
 - multi-condition limits conflict (§28.2)
 
-**Known limitation (v4.7, Decision #54):** only the three supported conditions and the recognized-unsupported ones in §9.5 can be declared. Conditions outside that list (e.g. gout) are not recognized; the disclaimer tells users with other medical conditions to consult their clinician before following a plan.
+**Known limitation (v4.7, Decision #54):** only the three supported conditions and the recognized-unsupported ones in §9.5 can be declared. Conditions outside that list are not recognized (v4.20, #167: not designed for pregnancy, lactation, kidney disease or gout); the disclaimer tells users with other medical conditions to consult their clinician before following a plan.
 
 **Screening date (v4.15, #85):** screening is evaluated on the user's local date (`user_profiles.timezone`) at the time of the request.
 
@@ -1633,8 +1641,8 @@ For a user and `log_date`: sum `consumption_logs.nutrients_snapshot`, compare wi
 
 ## 30.7 Water goal & fluid safety — NEW in v4.6 (Decisions #49, #50)
 - **Default goal** (used only when `user_profiles.water_goal_ml IS NULL`): beverage-water target derived from EFSA (2010) adequate intake of total water (2.0 L women / 2.5 L men), minus ~20% supplied by food → **1600 ml (women) / 2000 ml (men)**. Computed in application logic, not stored. The "8 glasses a day" rule is not used (no scientific basis).
-- **Fluid-safety rule:** if the user has any condition with `health_conditions.fluid_goal_requires_clinician = true` (seed: `HEART_DISEASE`, `CKD`): no default goal is computed or shown, water reminders are **off by default**, and the water screen shows a notice to follow the fluid amount set by the user's doctor. The user may enter that clinician-set goal in `water_goal_ml`, and may turn reminders on explicitly.
-- Physiological states excluded by screening (§30.1: pregnancy, lactation, under 18) still may log water; they get no default goal (the default above is for adults only).
+- **Fluid-safety rule:** if the user has any condition with `health_conditions.fluid_goal_requires_clinician = true` (seed: `HEART_DISEASE`): no default goal is computed or shown, water reminders are **off by default**, and the water screen shows a notice to follow the fluid amount set by the user's doctor. The user may enter that clinician-set goal in `water_goal_ml`, and may turn reminders on explicitly.
+- Users under 18 (excluded by screening, §30.1) may still log water; they get no default goal (the default above is for adults only).
 - Water does not affect the day status of §30.5.
 
 **Expert validation:** involve a dietitian to review §30 defaults, all `condition_nutrient_limits` / `condition_tag_restrictions` seed rows, and a sample of catalog meals. Record the review in the project report.

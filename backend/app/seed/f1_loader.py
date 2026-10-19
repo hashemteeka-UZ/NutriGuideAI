@@ -24,7 +24,7 @@ from typing import Any
 
 import yaml
 from pydantic import ValidationError
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -49,9 +49,11 @@ from app.db.models import (
     MealTag,
     MealTranslation,
     Nutrient,
+    UserHealthCondition,
 )
 from app.db.models.catalog import MealTagSource, WeightMethod
 from app.db.models.reference import FoodExternalSource, ReviewStatus
+from app.pipeline.files import CatalogAuthoringError
 from app.seed.f1_files import F1Files, SubsetRow, read_f1_files
 from app.seed.quality_gates import (
     GATE_NAMES,
@@ -378,6 +380,11 @@ class _Loader:
 
     def run(self) -> None:
         seed = self.files.seed
+        blocked = unseeded_condition_user_errors(
+            self.session, {c.code for c in seed.health_conditions}
+        )
+        if blocked:
+            raise CatalogAuthoringError(blocked)
         category_ids = self._load_categories()
         cuisine_ids = {
             c.code: self._upsert(
@@ -472,6 +479,7 @@ class _Loader:
                     "source_reference": restriction.source_reference,
                 },
             )
+        self._retire_unseeded_conditions({c.code for c in seed.health_conditions})
         nutrient_by_nbr = {
             n.source_code: nutrient_ids[n.code] for n in seed.nutrients if n.source_code
         }
@@ -481,6 +489,15 @@ class _Loader:
         meal_ids = self._load_meals(cuisine_ids, tag_ids, food_ids, ingredient_ids)
         self._deactivate_missing_meals()
         self._recompute(meal_ids)
+
+    def _retire_unseeded_conditions(self, seed_codes: set[str]) -> None:
+        """The reference seed is the source of truth for health_conditions (#167)."""
+        retired = delete_unseeded_health_conditions(self.session, seed_codes)
+        if retired.errors:
+            raise CatalogAuthoringError(retired.errors)
+        self.report.tables["condition_nutrient_limits"].deleted += retired.limits_deleted
+        self.report.tables["condition_tag_restrictions"].deleted += retired.restrictions_deleted
+        self.report.tables["health_conditions"].deleted += retired.conditions_deleted
 
     def _load_categories(self) -> dict[str, int]:
         descriptions = {
@@ -752,11 +769,88 @@ class _Loader:
             self.report.recomputed.append(MealRecompute(meal_id, ref_external, nutrition, derived))
 
 
+@dataclass(frozen=True)
+class UnseededConditionDeletion:
+    errors: list[str]
+    limits_deleted: int = 0
+    restrictions_deleted: int = 0
+    conditions_deleted: int = 0
+
+
+def _unseeded_conditions(session: Session, seed_codes: set[str]) -> list[HealthCondition]:
+    statement = select(HealthCondition).order_by(HealthCondition.code)
+    if seed_codes:
+        statement = statement.where(HealthCondition.code.not_in(sorted(seed_codes)))
+    return list(session.execute(statement).scalars())
+
+
+def unseeded_condition_user_errors(session: Session, seed_codes: set[str]) -> list[str]:
+    """One line per condition absent from the seed that a user still declares.
+
+    The line names the code and the number of users. Nothing is deleted.
+    """
+    lines: list[str] = []
+    for condition in _unseeded_conditions(session, seed_codes):
+        users = int(
+            session.execute(
+                select(func.count())
+                .select_from(UserHealthCondition)
+                .where(UserHealthCondition.condition_id == condition.condition_id)
+            ).scalar_one()
+        )
+        if users:
+            noun = "user" if users == 1 else "users"
+            lines.append(f"health_conditions {condition.code}: referenced by {users} {noun}")
+    return lines
+
+
+def delete_unseeded_health_conditions(
+    session: Session, seed_codes: set[str]
+) -> UnseededConditionDeletion:
+    """Delete conditions missing from the seed, after their nutrient-limit rows.
+
+    Tag-restriction rows of those conditions are deleted and counted as well (the FK is
+    ON DELETE CASCADE; leaving them uncounted would hide the deletion). When any user
+    still references a condition, nothing is deleted and `errors` names each code.
+    """
+    errors = unseeded_condition_user_errors(session, seed_codes)
+    if errors:
+        return UnseededConditionDeletion(errors=errors)
+    limits_deleted = 0
+    restrictions_deleted = 0
+    extras = _unseeded_conditions(session, seed_codes)
+    for condition in extras:
+        for limit in session.execute(
+            select(ConditionNutrientLimit).where(
+                ConditionNutrientLimit.condition_id == condition.condition_id
+            )
+        ).scalars():
+            session.delete(limit)
+            limits_deleted += 1
+        for restriction in session.execute(
+            select(ConditionTagRestriction).where(
+                ConditionTagRestriction.condition_id == condition.condition_id
+            )
+        ).scalars():
+            session.delete(restriction)
+            restrictions_deleted += 1
+        session.delete(condition)
+    if extras:
+        session.flush()
+    return UnseededConditionDeletion(
+        errors=[],
+        limits_deleted=limits_deleted,
+        restrictions_deleted=restrictions_deleted,
+        conditions_deleted=len(extras),
+    )
+
+
 def load_f1_slice(session: Session, data_dir: Path, now: datetime | None = None) -> LoadReport:
     """Validate, gate, load and recompute the F.1 slice inside one SAVEPOINT of `session`.
 
-    Raises F1LoadError (with the full report) if any input or gate fails; nothing is written
-    then. The caller owns the outer transaction and decides whether to commit.
+    Raises F1LoadError (with the full report) if any input, gate, or in-use unseeded
+    condition fails; nothing is written then. The caller owns the outer transaction and
+    decides whether to commit.
     """
     report = LoadReport(data_dir=str(data_dir))
     try:
@@ -769,12 +863,22 @@ def load_f1_slice(session: Session, data_dir: Path, now: datetime | None = None)
     report.total_meals = len(files.meals.meals)
     report.unverified_meals = sum(1 for m in files.meals.meals if m.reviewed_by is None)
     report.findings = _findings(files)
+    report.errors.extend(
+        unseeded_condition_user_errors(session, {c.code for c in files.seed.health_conditions})
+    )
     if not report.ok:
         raise F1LoadError(report)
 
     try:
         with session.begin_nested():
             _Loader(session, files, report, now or datetime.now(UTC)).run()
+    except CatalogAuthoringError as exc:
+        report.errors.extend(exc.errors)
+        report.tables = {name: TableCounts() for name in TABLES}
+        report.deactivated_meals = []
+        report.reactivated_meals = []
+        report.recomputed = []
+        raise F1LoadError(report) from exc
     except (SQLAlchemyError, _LoadConflictError, TagRuleError) as exc:
         report.errors.append(f"database (rolled back): {exc}")
         report.tables = {name: TableCounts() for name in TABLES}

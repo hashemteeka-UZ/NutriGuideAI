@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.core.text import normalize_search_text
 from app.db.models import (
     Allergen,
+    ConditionNutrientLimit,
     ConditionTagRestriction,
     Cuisine,
     DietaryTag,
@@ -40,6 +41,12 @@ from app.seed.f1_loader import DEFAULT_DATA_DIR, TABLES, F1LoadError, load_f1_sl
 from app.services.meal_derived import TagRuleError
 from app.services.meal_nutrition import is_meal_nutritionally_complete
 from app.services.tag_rules import TAG_RULES_VERSION
+from tests.builders import (
+    make_condition_nutrient_limit,
+    make_health_condition,
+    make_user_health_condition,
+    make_user_profile,
+)
 
 FILES = read_f1_files(DEFAULT_DATA_DIR)
 # Recipes changed or added in the team review of 2026-10-06 (all reviewed by the user).
@@ -523,3 +530,83 @@ def test_recompute_failure_rolls_back_the_whole_load(
     assert caught.value.report.recomputed == []
     assert set(_row_counts(session).values()) == {0}
     assert session.execute(text("SELECT count(*) FROM meal_nutrients")).scalar_one() == 0
+
+
+def _retired_condition(integrity_conn: Connection) -> int:
+    condition_id = make_health_condition(
+        integrity_conn,
+        code="RETIRED_CONDITION",
+        name_en="Retired",
+        name_ar="ملغاة",
+        is_supported=False,
+    )
+    make_condition_nutrient_limit(integrity_conn, condition_id=condition_id)
+    return condition_id
+
+
+def test_unseeded_condition_and_its_limits_are_deleted(
+    session: Session, integrity_conn: Connection
+) -> None:
+    condition_id = _retired_condition(integrity_conn)
+    report = load_f1_slice(session, DEFAULT_DATA_DIR)
+    assert report.ok, report.format()
+    assert report.tables["health_conditions"].deleted == 1
+    assert report.tables["condition_nutrient_limits"].deleted == 1
+    assert session.get(HealthCondition, condition_id) is None
+    assert (
+        session.execute(
+            select(ConditionNutrientLimit).where(
+                ConditionNutrientLimit.condition_id == condition_id
+            )
+        ).scalar_one_or_none()
+        is None
+    )
+    codes = set(session.execute(select(HealthCondition.code)).scalars())
+    assert "RETIRED_CONDITION" not in codes
+    assert "DIABETES_INSULIN" in codes
+
+
+def test_unseeded_condition_referenced_by_a_user_fails_and_changes_nothing(
+    session: Session, integrity_conn: Connection
+) -> None:
+    condition_id = _retired_condition(integrity_conn)
+    user = make_user_profile(integrity_conn)
+    make_user_health_condition(integrity_conn, user_id=user, condition_id=condition_id)
+    before = _row_counts(session)
+    links = session.execute(text("SELECT count(*) FROM user_health_conditions")).scalar_one()
+    with pytest.raises(F1LoadError) as caught:
+        load_f1_slice(session, DEFAULT_DATA_DIR)
+    assert caught.value.report.errors == [
+        "health_conditions RETIRED_CONDITION: referenced by 1 user"
+    ]
+    assert _row_counts(session) == before
+    assert (
+        session.execute(text("SELECT count(*) FROM user_health_conditions")).scalar_one() == links
+    )
+
+
+def test_user_reference_is_reported_with_gate_failures(
+    session: Session, integrity_conn: Connection, tmp_path: Path
+) -> None:
+    condition_id = _retired_condition(integrity_conn)
+    user = make_user_profile(integrity_conn)
+    make_user_health_condition(integrity_conn, user_id=user, condition_id=condition_id)
+    before = _row_counts(session)
+    data_dir = _copy_data_dir(tmp_path)
+    _replace_once(data_dir / SLICE_MEALS_FILE, "  - vegetarian\n", "  - paleo\n")
+    with pytest.raises(F1LoadError) as caught:
+        load_f1_slice(session, data_dir)
+    failures = caught.value.report.failures
+    assert "health_conditions RETIRED_CONDITION: referenced by 1 user" in failures
+    assert any("'paleo'" in failure for failure in failures), failures
+    assert _row_counts(session) == before
+
+
+def test_second_f1_load_deletes_no_conditions_and_recomputes_nothing(session: Session) -> None:
+    load_f1_slice(session, DEFAULT_DATA_DIR)
+    second = load_f1_slice(session, DEFAULT_DATA_DIR)
+    assert second.ok, second.format()
+    assert second.tables["health_conditions"].deleted == 0
+    assert second.tables["condition_nutrient_limits"].deleted == 0
+    assert second.tables["condition_tag_restrictions"].deleted == 0
+    assert all(not item.changed for item in second.recomputed)

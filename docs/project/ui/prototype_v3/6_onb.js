@@ -5,7 +5,9 @@ function steps(){
  a.push('activity');
  if(o.goal==='MUSCLE')a.push('training');
  if(o.goal==='MUSCLE'||o.act==='HIGH'||o.act==='ATHLETE')a.push('protein');
- a.push('care','allergy','safety','rhythm');
+ a.push('care','allergy');
+ if(o.care.includes('DIABETES_T2'))a.push('safety');
+ a.push('rhythm');
  if(o.care.includes('HEART_DISEASE'))a.push('fluid');
  a.push('result');return a;
 }
@@ -88,7 +90,7 @@ function onbStep(k){
  case 'allergy':return{h:L(G('هل تتجنب أي مكون؟','هل تتجنبين أي مكون؟'),'Any ingredient you avoid?'),p:L(G('اضغط مرة للتجنب، ومرتين إذا كانت حساسية شديدة','اضغطي مرة للتجنب، ومرتين إذا كانت حساسية شديدة'),'Tap once to avoid, twice for a severe allergy'),b:`
   <div class="rise" style="--i:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:8px">${Object.keys(ALG).map(k=>{const sv=o.allergy[k]||'';return `<button class="allg press" data-act="alg" data-v="${k}" data-sev="${sv}" aria-label="${L(ALG[k][1],ALG[k][2])}">${sv?`<span class="tag" style="background:${sv==='SEVERE'?'var(--danger)':'var(--part)'}">${sv==='SEVERE'?L('شديدة','Severe'):L('تجنب','Avoid')}</span>`:''}${E(ALG[k][0],38)}<span>${L(ALG[k][1],ALG[k][2])}</span></button>`}).join('')}</div>
   <div class="rise" style="--i:2">${tip('shield',L('«تجنب» يعني أننا لا نضعه في خطتك. «شديدة» تعني أيضًا أننا نحذرك بوضوح إذا ظهر في أي وجبة تتصفحها.','“Avoid” keeps it out of your plan. “Severe” also warns you clearly if it appears in any meal you browse.'))}</div>`,ok:true};
- case 'safety':{const rows=[['ckd',L('مرض كلى مزمن','Chronic kidney disease'),'red-heart',true],['insulin',L('أستخدم الإنسولين','I use insulin'),'syringe',o.care.includes('DIABETES_T2')],['preg',L('حامل أو مرضعة حاليًا','Pregnant or breastfeeding'),'pregnant-woman',o.sex==='FEMALE'&&o.age>=18&&o.age<=50]].filter(r=>r[3]);
+ case 'safety':{const rows=[['insulin',L('أستخدم الإنسولين','I use insulin'),'syringe',true]];
   return{h:L('سؤال أخير للاطمئنان','One last check'),p:L('حتى نتأكد أن الخطة الشخصية مناسبة لك','So we are sure a personal plan suits you'),b:`
   <div class="rise" style="--i:1;text-align:center;padding:6px 0 2px">${E('shield',70)}</div>
   <div class="card rise" style="--i:2;padding:4px 16px">${rows.map(r=>`<div class="li"><span class="emobox" style="--tc:var(--signal)">${E(r[2],26)}</span><span class="grow" style="font-weight:600">${r[1]}</span><button class="tgl" role="switch" aria-checked="${!!o[r[0]]}" data-act="safe" data-v="${r[0]}" aria-label="${r[1]}"></button></div>`).join('')}</div>

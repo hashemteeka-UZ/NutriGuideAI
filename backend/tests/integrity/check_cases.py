@@ -224,11 +224,6 @@ CHECK_CASES: dict[str, CheckCase] = {
         positive={"water_goal_ml": 500},
         negative={"water_goal_ml": 100},
     ),
-    "ck_user_profiles_status_requires_female": CheckCase(
-        table="user_profiles",
-        positive={"sex": "MALE", "physiological_status": "NONE"},
-        negative={"sex": "MALE", "physiological_status": "PREGNANT"},
-    ),
     "ck_user_profiles_goal_requires_target": CheckCase(
         table="user_profiles",
         positive={"goal_type": "LOSE", "target_weight_kg": 70, "weekly_rate_kg": 0.5},

@@ -22,6 +22,9 @@ MIGRATION_SHA256: dict[str, str] = {
     "0005_wake_sleep_meal_prefs_meal_steps.py": (
         "46f2a392b71a9eeb608b6be7f3abe1aca283ebffa54b287600ff6648d6c85627"
     ),
+    "0006_drop_physiological_status.py": (
+        "709abaaf42cbb59c9101bed6ba2d4b90f4a96ebbb686f4806663e00073f84e75"
+    ),
 }
 
 EDITED_MESSAGE = (

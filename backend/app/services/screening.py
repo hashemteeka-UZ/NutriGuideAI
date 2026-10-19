@@ -13,15 +13,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.models import HealthCondition, UserHealthCondition, UserProfile
-from app.db.models.user import PhysiologicalStatus
 
 ADULT_AGE_YEARS: Final = 18
-EXCLUDED_PHYSIOLOGICAL_STATUSES: Final = frozenset(
-    {PhysiologicalStatus.PREGNANT, PhysiologicalStatus.LACTATING}
-)
 
 UNDER_18: Final = "UNDER_18"
-PREGNANT_OR_LACTATING: Final = "PREGNANT_OR_LACTATING"
 UNSUPPORTED_CONDITION: Final = "UNSUPPORTED_CONDITION"
 
 
@@ -42,19 +37,15 @@ def age_in_years(birth_date: date, on: date) -> int:
 
 
 def screen_user(session: Session, user_id: int, as_of: date) -> ScreeningResult:
-    profile = session.execute(
-        select(UserProfile.birth_date, UserProfile.physiological_status).where(
-            UserProfile.user_id == user_id
-        )
-    ).one_or_none()
-    if profile is None:
+    birth_date = session.execute(
+        select(UserProfile.birth_date).where(UserProfile.user_id == user_id)
+    ).scalar_one_or_none()
+    if birth_date is None:
         raise ProfileNotFoundError(f"user {user_id} has no user_profiles row")
 
     reasons: list[str] = []
-    if age_in_years(profile.birth_date, as_of) < ADULT_AGE_YEARS:
+    if age_in_years(birth_date, as_of) < ADULT_AGE_YEARS:
         reasons.append(UNDER_18)
-    if profile.physiological_status in EXCLUDED_PHYSIOLOGICAL_STATUSES:
-        reasons.append(PREGNANT_OR_LACTATING)
     unsupported = session.execute(
         select(HealthCondition.code)
         .join(UserHealthCondition, UserHealthCondition.condition_id == HealthCondition.condition_id)

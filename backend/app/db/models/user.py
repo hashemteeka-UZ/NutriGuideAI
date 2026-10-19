@@ -57,12 +57,6 @@ class GoalType(StrEnum):
     GAIN = "GAIN"
 
 
-class PhysiologicalStatus(StrEnum):
-    NONE = "NONE"
-    PREGNANT = "PREGNANT"
-    LACTATING = "LACTATING"
-
-
 class ConditionSeverity(StrEnum):
     MILD = "MILD"
     MODERATE = "MODERATE"
@@ -140,16 +134,10 @@ class UserProfile(Base):
         enum_check("sex", Sex, name="sex_valid"),
         enum_check("activity_level", ActivityLevel, name="activity_level_valid"),
         enum_check("goal_type", GoalType, name="goal_type_valid"),
-        enum_check("physiological_status", PhysiologicalStatus, name="physiological_status_valid"),
         CheckConstraint("height_cm BETWEEN 100 AND 250", name="height_range"),
         CheckConstraint("target_weight_kg BETWEEN 30 AND 300", name="target_weight_range"),
         CheckConstraint("weekly_rate_kg > 0 AND weekly_rate_kg <= 1.0", name="weekly_rate_range"),
         CheckConstraint("water_goal_ml BETWEEN 500 AND 5000", name="water_goal_range"),
-        CheckConstraint(
-            f"sex = '{Sex.FEMALE.value}'"
-            f" OR physiological_status = '{PhysiologicalStatus.NONE.value}'",
-            name="status_requires_female",
-        ),
         CheckConstraint(
             f"goal_type = '{GoalType.MAINTAIN.value}'"
             " OR (target_weight_kg IS NOT NULL AND weekly_rate_kg IS NOT NULL)",
@@ -166,9 +154,6 @@ class UserProfile(Base):
     goal_type: Mapped[str] = mapped_column(String, nullable=False)
     target_weight_kg: Mapped[float | None] = mapped_column(MEASURE, nullable=True)
     weekly_rate_kg: Mapped[float | None] = mapped_column(MEASURE, nullable=True)
-    physiological_status: Mapped[str] = mapped_column(
-        String, nullable=False, server_default=PhysiologicalStatus.NONE.value
-    )
     timezone: Mapped[str] = mapped_column(String, nullable=False)
     water_goal_ml: Mapped[int | None] = mapped_column(Integer, nullable=True)
     wake_time: Mapped[time] = mapped_column(Time, nullable=False, server_default="07:00:00")

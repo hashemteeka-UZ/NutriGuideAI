@@ -135,7 +135,7 @@ function act(k,a,ev){
  case 'startOnb':S.step=0;go('onboarding');break;
  case 'onbNext':{const st=steps();if(S.step>=st.length-1){if(general()){go('home')}else{S.gen=true;render();runGen()}}else{S.step++;S.nav='fwd';S.anim=true;render();}break;}
  case 'onbBack':if(S.step===0)go('welcome',true);else{S.step--;S.nav='back';S.anim=true;render();}break;
- case 'sex':o.sex=v;if(v==='MALE')o.preg=false;render();break;
+ case 'sex':o.sex=v;render();break;
  case 'goal':o.goal=v;if(v==='MUSCLE'){o.prot='GOAL';o.tw=o.w+3}if(v==='LOSE'&&o.tw>=o.w)o.tw=o.w-8;if(v==='GAIN'&&o.tw<=o.w)o.tw=o.w+5;render();break;
  case 'rate':o.rate=+v;render();break;
  case 'act':o.act=v;if(v!=='HIGH'&&v!=='ATHLETE'&&o.goal!=='MUSCLE')o.prot='GOAL';render();break;
@@ -205,7 +205,7 @@ function renderPanel(){
  ${b('notify','',L('إشعار موعد وجبة','Meal reminder'),0)}${b('scen','late',L('فات موعد وجبة','Missed a meal'),S.scen.late)}
  ${b('scen','complete',L('يوم مكتمل','Day complete'),S.scen.complete)}${b('scen','offline',L('دون إنترنت','Offline'),S.scen.offline)}
  ${b('scen','general',L('الوضع العام','General mode'),S.scen.general)}${b('scen','fluid',L('ماء بهدف الطبيب','Doctor water goal'),S.o.care.includes('HEART_DISEASE'))}
- ${b('athlete','',L('سؤال البروتين (نشاط عالٍ)','Protein question (high activity)'),0)}${b('female','',L('سؤال الأمان (أنثى)','Safety question (female)'),0)}</div>
+ ${b('athlete','',L('سؤال البروتين (نشاط عالٍ)','Protein question (high activity)'),0)}${b('insulin','',L('سؤال الإنسولين (سكر الدم)','Insulin question (blood sugar)'),0)}</div>
  <div class="lbl">${L('اللغة والمظهر','Language and theme')}</div><div class="grid">${b('lang','ar','العربية',S.lang==='ar')}${b('lang','en','English',S.lang==='en')}</div>
  <div class="grid" style="grid-template-columns:1fr 1fr 1fr">${b('mode','light',L('فاتح','Light'),S.mode==='light')}${b('mode','dark',L('ليلي','Dark'),S.mode==='dark')}${b('mode','auto',L('تلقائي','Auto'),S.mode==='auto')}</div>
  <p>${L('الرسومات: Fluent Emoji من Microsoft (رخصة MIT). أسماء الوجبات من كتالوج المشروع، والأرقام للعرض.','Illustrations: Microsoft Fluent Emoji (MIT). Meal names from the project catalog; numbers are illustrative.')}</p>`;
@@ -219,7 +219,7 @@ panelEl.addEventListener('click',ev=>{
   else{S.scen[v]=!S.scen[v];if(v==='late'){S.eaten[1]=!S.scen.late}if(v==='complete'&&S.scen.complete){go('home');setTimeout(()=>confetti(.5,.3,150),300);return}go(['home','plan','water','progress','profile','shop'].includes(S.screen)?S.screen:'home')}}
  else if(k==='persona'){setPersona(v);S.planDay=2;go(['welcome','login','onboarding'].includes(S.screen)?'home':S.screen)}
  else if(k==='athlete'){S.o.act='ATHLETE';S.step=steps().indexOf('protein');go('onboarding')}
- else if(k==='female'){S.o.sex='FEMALE';S.o.name='سارة';S.step=steps().indexOf('safety');go('onboarding')}
+ else if(k==='insulin'){if(!S.o.care.includes('DIABETES_T2'))S.o.care=[...S.o.care,'DIABETES_T2'];S.step=steps().indexOf('safety');go('onboarding')}
  else if(k==='lang'){S.lang=v;save();S.anim=true;render()}
  else if(k==='mode'){S.mode=v;save();render()}
 });

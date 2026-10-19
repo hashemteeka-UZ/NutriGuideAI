@@ -53,7 +53,7 @@ The specific objectives are:
 ### 1.4.2 Limitations and Exclusions
 
 - **Not a medical device.** The application gives dietary suggestions and does not replace a physician or a dietitian. Users with unsupported conditions, or for whom no safe plan exists, are referred to a professional.
-- **Gout is excluded.** Gout support requires reliable purine-content data, which the food source used here does not provide, so gout was removed from the scope (decision #54). A user with gout receives a normal plan, and this is documented as a known limitation.
+- **Target users.** The app is designed for adults with type 2 diabetes, hypertension or heart disease, or no condition; it is not for pregnancy, lactation, kidney disease or gout.
 - **Catalog size.** The current catalog is a curated first release of 196 ingredients and 75 meals. More dishes will be added later in batches through the same pipeline without redesign.
 - **Ready-made foods.** Packaged and ready foods from the FNDDS source are deferred to future work.
 - **Machine learning.** Personalization with machine learning, clustering and synthetic rating data are not implemented. The recommendation engine in this report is rule-based filtering plus mathematical optimization, and machine learning is described as a direction for future work.

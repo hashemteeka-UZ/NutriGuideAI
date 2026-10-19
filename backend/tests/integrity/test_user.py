@@ -209,14 +209,6 @@ def test_user_profiles_lose_with_null_target_weight_rejected(
     )
 
 
-def test_user_profiles_male_pregnant_rejected(integrity_conn: Connection) -> None:
-    assert_rejects(
-        integrity_conn,
-        "ck_user_profiles_status_requires_female",
-        lambda: make_user_profile(integrity_conn, sex="MALE", physiological_status="PREGNANT"),
-    )
-
-
 def test_weekly_rate_kg_1_5_rejected(integrity_conn: Connection) -> None:
     assert_rejects(
         integrity_conn,

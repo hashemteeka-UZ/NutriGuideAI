@@ -6,14 +6,29 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
-from app.db.models import Food, FoodNutrient, Meal, MealNutrient
+from app.db.models import (
+    ConditionNutrientLimit,
+    Food,
+    FoodNutrient,
+    HealthCondition,
+    Meal,
+    MealNutrient,
+    UserHealthCondition,
+)
 from app.pipeline.build import build_catalog
 from app.pipeline.classify import Outcome
+from app.pipeline.files import CatalogAuthoringError
 from app.seed.f1_loader import DEFAULT_DATA_DIR, load_f1_slice
+from tests.builders import (
+    make_condition_nutrient_limit,
+    make_health_condition,
+    make_user_health_condition,
+    make_user_profile,
+)
 from tests.pipeline.helpers import copy_mini
 
 
@@ -167,3 +182,93 @@ def test_catalog_load_does_not_touch_f1_meal_nutrients_or_flags(
     assert after_nutrients == f1_nutrients
     assert _meal(session, "NG-GOLD-01").dataset_version == "team_recipes_v1"
     assert session.execute(select(Meal).where(Meal.ref_external == "F1-B01")).scalar_one().is_active
+
+
+def _catalog_state(session: Session) -> tuple[list[str], int, int, int]:
+    codes = list(
+        session.execute(select(HealthCondition.code).order_by(HealthCondition.code)).scalars()
+    )
+    limits = int(
+        session.execute(select(func.count()).select_from(ConditionNutrientLimit)).scalar_one()
+    )
+    links = int(session.execute(select(func.count()).select_from(UserHealthCondition)).scalar_one())
+    meals = int(session.execute(select(func.count()).select_from(Meal)).scalar_one())
+    return codes, limits, links, meals
+
+
+def _retired_condition(integrity_conn: Connection) -> tuple[int, int]:
+    condition_id = make_health_condition(
+        integrity_conn,
+        code="RETIRED_CONDITION",
+        name_en="Retired",
+        name_ar="ملغاة",
+        is_supported=False,
+    )
+    limit_id = make_condition_nutrient_limit(integrity_conn, condition_id=condition_id)
+    return condition_id, limit_id
+
+
+def test_unseeded_condition_and_its_limits_are_deleted(
+    session: Session, integrity_conn: Connection, tmp_path: Path
+) -> None:
+    condition_id, limit_id = _retired_condition(integrity_conn)
+    result = build_catalog(copy_mini(tmp_path), session=session, load=True)
+    assert result.load is not None
+    assert result.load.tables["health_conditions"].deactivated == 1
+    assert result.load.tables["condition_nutrient_limits"].deactivated == 1
+    codes, _, _, _ = _catalog_state(session)
+    assert "RETIRED_CONDITION" not in codes
+    assert "DIABETES_INSULIN" in codes
+    assert session.get(HealthCondition, condition_id) is None
+    assert session.get(ConditionNutrientLimit, limit_id) is None
+
+
+def test_unseeded_condition_referenced_by_a_user_fails_and_changes_nothing(
+    session: Session, integrity_conn: Connection, tmp_path: Path
+) -> None:
+    condition_id, _limit_id = _retired_condition(integrity_conn)
+    user = make_user_profile(integrity_conn)
+    make_user_health_condition(integrity_conn, user_id=user, condition_id=condition_id)
+    before = _catalog_state(session)
+    with pytest.raises(CatalogAuthoringError) as caught:
+        build_catalog(copy_mini(tmp_path), session=session, load=True)
+    assert caught.value.errors == ["health_conditions RETIRED_CONDITION: referenced by 1 user"]
+    assert _catalog_state(session) == before
+
+
+def test_user_reference_is_reported_with_gate_failures(
+    session: Session, integrity_conn: Connection, tmp_path: Path
+) -> None:
+    condition_id, _limit_id = _retired_condition(integrity_conn)
+    user = make_user_profile(integrity_conn)
+    make_user_health_condition(integrity_conn, user_id=user, condition_id=condition_id)
+    data_dir = copy_mini(tmp_path)
+    seed = data_dir / "reference_seed.yaml"
+    seed.write_text(
+        seed.read_text(encoding="utf-8").replace(
+            "  nutrient: saturated_fat\n  limit_basis: PERCENT_ENERGY\n",
+            "  nutrient: sodium\n  limit_basis: PERCENT_ENERGY\n",
+            1,
+        ),
+        encoding="utf-8",
+    )
+    before = _catalog_state(session)
+    with pytest.raises(CatalogAuthoringError) as caught:
+        build_catalog(data_dir, session=session, load=True)
+    report = caught.value.format()
+    assert "health_conditions RETIRED_CONDITION: referenced by 1 user" in report
+    assert "G7 HEART_DISEASE/sodium:" in report
+    assert _catalog_state(session) == before
+
+
+def test_second_catalog_load_deletes_nothing_and_recomputes_nothing(
+    session: Session, tmp_path: Path
+) -> None:
+    data_dir = copy_mini(tmp_path)
+    build_catalog(data_dir, session=session, load=True)
+    second = build_catalog(data_dir, session=session, load=True)
+    assert second.load is not None
+    assert second.load.tables["health_conditions"].deactivated == 0
+    assert second.load.tables["condition_nutrient_limits"].deactivated == 0
+    assert second.load.tables["condition_tag_restrictions"].deactivated == 0
+    assert all(not recompute.changed for recompute in second.load.recomputed)

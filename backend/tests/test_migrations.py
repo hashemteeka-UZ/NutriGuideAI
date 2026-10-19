@@ -127,7 +127,7 @@ def test_round_trip_upgrade_downgrade_upgrade(migration_db: Engine) -> None:
     script = ScriptDirectory.from_config(Config(ALEMBIC_INI))
     head = script.get_current_head()
     revisions = [rev.revision for rev in reversed(list(script.walk_revisions()))]
-    assert revisions[:5] == ["0001", "0002", "0003", "0004", "0005"]
+    assert revisions == ["0001", "0002", "0003", "0004", "0005", "0006"]
     assert revisions[-1] == head
 
     for revision in revisions:
@@ -139,10 +139,13 @@ def test_round_trip_upgrade_downgrade_upgrade(migration_db: Engine) -> None:
     )
     assert _tables(migration_db) >= MIGRATION_0005_TABLES
     assert VARIANT_GROUP_INDEX in _index_names(migration_db)
+    assert ("user_profiles", "physiological_status") not in _columns(migration_db)
 
     for revision in reversed(revisions[:-1]):
         _downgrade(migration_db, revision)
         assert _current_revision(migration_db) == revision
+        if revision == "0005":
+            assert ("user_profiles", "physiological_status") in _columns(migration_db)
         if revision == "0004":
             assert not MIGRATION_0005_COLUMNS & _columns(migration_db)
             assert not MIGRATION_0005_TABLES & _tables(migration_db)
@@ -285,6 +288,64 @@ def test_0005_existing_profile_receives_wake_and_sleep_defaults(migration_db: En
             text("SELECT wake_time::text, sleep_time::text FROM user_profiles")
         ).one()
         assert row == ("07:00:00", "23:00:00")
+        conn.execute(text("DELETE FROM user_profiles"))
+        conn.execute(text("DELETE FROM users"))
+
+
+def test_0006_existing_profile_keeps_its_other_values(migration_db: Engine) -> None:
+    _upgrade(migration_db, "0005")
+    with migration_db.begin() as conn:
+        user_id = conn.execute(
+            text(
+                "INSERT INTO users (email, hashed_password) "
+                "VALUES ('keep@example.com', 'hashed') RETURNING user_id"
+            )
+        ).scalar_one()
+        conn.execute(
+            text(
+                "INSERT INTO user_profiles ("
+                "user_id, sex, birth_date, height_cm, activity_level, goal_type, "
+                "target_weight_kg, weekly_rate_kg, physiological_status, timezone, "
+                "water_goal_ml, wake_time, sleep_time"
+                ") VALUES ("
+                ":user_id, 'FEMALE', '1984-03-02', 172.5, 'HIGH', 'LOSE', "
+                "65, 0.25, 'LACTATING', 'Africa/Tripoli', 1800, '06:30:00', '22:15:00'"
+                ")"
+            ),
+            {"user_id": user_id},
+        )
+    _upgrade(migration_db, "0006")
+    with migration_db.begin() as conn:
+        columns = set(
+            conn.execute(
+                text(
+                    "SELECT column_name FROM information_schema.columns "
+                    "WHERE table_schema = 'public' AND table_name = 'user_profiles'"
+                )
+            ).scalars()
+        )
+        assert "physiological_status" not in columns
+        row = conn.execute(
+            text(
+                "SELECT sex, birth_date::text, height_cm::text, activity_level, goal_type, "
+                "target_weight_kg::text, weekly_rate_kg::text, timezone, water_goal_ml, "
+                "wake_time::text, sleep_time::text "
+                "FROM user_profiles"
+            )
+        ).one()
+        assert row == (
+            "FEMALE",
+            "1984-03-02",
+            "172.500",
+            "HIGH",
+            "LOSE",
+            "65.000",
+            "0.250",
+            "Africa/Tripoli",
+            1800,
+            "06:30:00",
+            "22:15:00",
+        )
         conn.execute(text("DELETE FROM user_profiles"))
         conn.execute(text("DELETE FROM users"))
 

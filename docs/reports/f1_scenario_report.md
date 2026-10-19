@@ -83,10 +83,10 @@ Resolved limits: none (#69).
 | goal_type | MAINTAIN |
 | target_weight_kg | — |
 | weekly_rate_kg | — |
-| conditions | CKD |
+| conditions | DIABETES_INSULIN |
 | timezone | Africa/Tripoli |
 | screening_eligible | False |
-| screening_reasons | UNSUPPORTED_CONDITION:CKD |
+| screening_reasons | UNSUPPORTED_CONDITION:DIABETES_INSULIN |
 
 No `user_targets` rows.
 
@@ -409,5 +409,5 @@ P1 variety across three days: 6 distinct meals / 12 items.
 - P1 day 2 kcal_within_10pct=True; adherence=ACHIEVED; completion=1.000.
 - P1 day 1 lunch swapped F1-L04 → F1-D01.
 - P2 day 1 lunch swapped F1-D04 → F1-D01.
-- P3 screening eligible=False reasons=UNSUPPORTED_CONDITION:CKD; user_targets=0; adherence status=None reason=NO_TARGET.
+- P3 screening eligible=False reasons=UNSUPPORTED_CONDITION:DIABETES_INSULIN; user_targets=0; adherence status=None reason=NO_TARGET.
 - Mandatory nutrients in the loaded catalog: 9.

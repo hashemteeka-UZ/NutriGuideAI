@@ -183,7 +183,6 @@ ENUM_COLUMNS: dict[tuple[str, str], type[StrEnum]] = {
     ("user_profiles", "sex"): usr.Sex,
     ("user_profiles", "activity_level"): usr.ActivityLevel,
     ("user_profiles", "goal_type"): usr.GoalType,
-    ("user_profiles", "physiological_status"): usr.PhysiologicalStatus,
     ("user_health_conditions", "severity"): usr.ConditionSeverity,
     ("user_allergen_prefs", "severity"): usr.AllergenSeverity,
     ("user_ingredient_prefs", "stance"): usr.IngredientStance,
@@ -631,7 +630,6 @@ def test_server_defaults() -> None:
     assert default_sql("meals", "is_verified") == "false"
     assert default_sql("meal_ingredients", "is_optional") == "false"
     assert default_sql("meals", "ingested_at") == "now()"
-    assert default_sql("user_profiles", "physiological_status") == "NONE"
     assert default_sql("user_health_conditions", "diagnosed") == "false"
     assert default_sql("meal_plan_items", "reason_codes") == "[]"
     assert default_sql("user_interactions", "context") == "{}"
@@ -667,7 +665,6 @@ def test_user_profiles_columns_and_checks() -> None:
         "birth_date",
         "height_cm",
         "timezone",
-        "physiological_status",
         "wake_time",
         "sleep_time",
     ):
@@ -679,7 +676,6 @@ def test_user_profiles_columns_and_checks() -> None:
         "target_weight_kg BETWEEN 30 AND 300",
         "weekly_rate_kg > 0 AND weekly_rate_kg <= 1.0",
         "water_goal_ml BETWEEN 500 AND 5000",
-        "sex = 'FEMALE' OR physiological_status = 'NONE'",
         "goal_type = 'MAINTAIN' OR (target_weight_kg IS NOT NULL AND weekly_rate_kg IS NOT NULL)",
         "wake_time <> sleep_time",
     } <= _checks("user_profiles")

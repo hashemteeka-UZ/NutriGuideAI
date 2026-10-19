@@ -1,7 +1,7 @@
 # NutriGuideAI
 
 Nutrition / meal recommendation project. Architecture and decisions live in
-[`docs/PROJECT_CONTEXT_v4_19.md`](docs/PROJECT_CONTEXT_v4_19.md).
+[`docs/PROJECT_CONTEXT_v4_20.md`](docs/PROJECT_CONTEXT_v4_20.md).
 
 ## Local development
 

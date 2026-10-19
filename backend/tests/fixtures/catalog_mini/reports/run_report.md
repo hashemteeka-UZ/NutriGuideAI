@@ -5,7 +5,7 @@
 - `ingredients.yaml`: `e4c0ea5ad3f4229be928e7de3f6cfbbfe206c9266dd213ea343b980782646f20`
 - `manual_foods.yaml`: `1a59d472a52a6de17ecd584a9ae1a158f109efc462b2d10b035b3a9a3baebf9c`
 - `meals/batch_01.yaml`: `98eef8ee77dc43cc82dad1ff1e18f27bf95eba1e65081843784fef6977f359d0`
-- `reference_seed.yaml`: `fc9978f986dfa4a3cd0c392fb5ff54eeba7fc2d44072ff5ebb18a5cf6332134c`
+- `reference_seed.yaml`: `fa801883387fddb2e9f6c9111939d503380c99dcfab0442cabb3332522cdac9d`
 - `sources/fndds_ingredient_subset.csv`: `a6d3f31208f851fd8d508bc8b373bcb877bd9adf43df0fc3cf6a7be3a3b56714`
 - `sources/source_manifest.yaml`: `80158014809b5306888797567f705dc060ac31abacb316b790e03214aefedae6`
 - `sources/sr_legacy_subset.csv`: `39dfc89caa86a8b62472fadbec85f14f701cff271b0c3c91b42acf8185c810a2`

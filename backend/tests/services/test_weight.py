@@ -10,8 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
-from app.db.models import UserProfile, UserTarget, WeightLog
-from app.db.models.user import PhysiologicalStatus
+from app.db.models import UserTarget, WeightLog
 from app.services.targets import FORMULA_VERSION
 from app.services.weight import (
     CLOCK_SKEW_TOLERANCE,
@@ -21,7 +20,7 @@ from app.services.weight import (
     record_weight,
 )
 from tests.builders import make_user_profile
-from tests.services.conftest import NOW, case_2_user, plan_target
+from tests.services.conftest import NOW, add_conditions, case_2_user, plan_target
 
 D = Decimal
 TODAY = date(2026, 10, 6)  # NOW (09:00 UTC) is still 11:00 in Africa/Tripoli
@@ -195,10 +194,8 @@ def test_ineligible_path_keeps_the_weight_row_and_the_old_target(
     plan_target(slice_session, user)
     previous = _current(slice_session, user)
     assert previous is not None
-    profile = slice_session.get(UserProfile, user)
-    assert profile is not None
-    profile.physiological_status = PhysiologicalStatus.PREGNANT
-    slice_session.flush()
+    add_conditions(slice_session, integrity_conn, user, "DIABETES_INSULIN")
+    slice_session.expire_all()
 
     result = record_weight(slice_session, user, TODAY, 52, LATER, LATER)
     assert result.status is WeightStatus.CREATED

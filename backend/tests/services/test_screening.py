@@ -37,37 +37,30 @@ def test_under_18(
     assert result.reasons == ([] if eligible else ["UNDER_18"])
 
 
-@pytest.mark.parametrize("status", ["PREGNANT", "LACTATING"])
-def test_pregnant_or_lactating(session: Session, integrity_conn: Connection, status: str) -> None:
-    user = make_user_profile(integrity_conn, sex="FEMALE", physiological_status=status)
-    result = screen_user(session, user, AS_OF)
-    assert not result.eligible
-    assert result.reasons == ["PREGNANT_OR_LACTATING"]
-
-
 def test_unsupported_condition(session: Session, integrity_conn: Connection) -> None:
     user = make_user_profile(integrity_conn)
-    for code, supported in (("CKD", False), ("DIABETES_T2", True), ("DIABETES_INSULIN", False)):
+    for code, supported in (
+        ("TEST_UNSUPPORTED", False),
+        ("DIABETES_T2", True),
+        ("DIABETES_INSULIN", False),
+    ):
         condition = make_health_condition(integrity_conn, code=code, is_supported=supported)
         make_user_health_condition(integrity_conn, user_id=user, condition_id=condition)
     result = screen_user(session, user, AS_OF)
     assert not result.eligible
     assert result.reasons == [
-        "UNSUPPORTED_CONDITION:CKD",
         "UNSUPPORTED_CONDITION:DIABETES_INSULIN",
+        "UNSUPPORTED_CONDITION:TEST_UNSUPPORTED",
     ]
 
 
 def test_all_reasons_are_reported(session: Session, integrity_conn: Connection) -> None:
-    user = make_user_profile(
-        integrity_conn, birth_date=date(2010, 1, 1), physiological_status="PREGNANT"
-    )
-    ckd = make_health_condition(integrity_conn, code="CKD", is_supported=False)
-    make_user_health_condition(integrity_conn, user_id=user, condition_id=ckd)
+    user = make_user_profile(integrity_conn, birth_date=date(2010, 1, 1))
+    insulin = make_health_condition(integrity_conn, code="DIABETES_INSULIN", is_supported=False)
+    make_user_health_condition(integrity_conn, user_id=user, condition_id=insulin)
     assert screen_user(session, user, AS_OF).reasons == [
         "UNDER_18",
-        "PREGNANT_OR_LACTATING",
-        "UNSUPPORTED_CONDITION:CKD",
+        "UNSUPPORTED_CONDITION:DIABETES_INSULIN",
     ]
 
 

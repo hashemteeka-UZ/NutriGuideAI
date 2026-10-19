@@ -358,10 +358,10 @@ def test_second_plan_leaves_the_first_untouched(
 def test_ineligible_user_writes_nothing(slice_session: Session, integrity_conn: Connection) -> None:
     user = case_1_user(integrity_conn)
     plan_target(slice_session, user)
-    add_conditions(slice_session, integrity_conn, user, "CKD")
+    add_conditions(slice_session, integrity_conn, user, "DIABETES_INSULIN")
     with pytest.raises(UserNotEligibleError) as caught:
         create_day_plan(slice_session, user, PLAN_DATE, NOW, planner="greedy")
-    assert caught.value.reasons == ["UNSUPPORTED_CONDITION:CKD"]
+    assert caught.value.reasons == ["UNSUPPORTED_CONDITION:DIABETES_INSULIN"]
     assert _plan_counts(slice_session, user) == (0, 0)
 
 

@@ -832,7 +832,9 @@ def _run_p3(
         goal_type="MAINTAIN",
         timezone=TIMEZONE,
     )
-    make_user_health_condition(conn, user_id=user, condition_id=_condition_id(session, "CKD"))
+    make_user_health_condition(
+        conn, user_id=user, condition_id=_condition_id(session, "DIABETES_INSULIN")
+    )
     session.expire_all()
     screening = screen_user(session, user, start_date)
     persona = _new_persona(
@@ -841,7 +843,7 @@ def _run_p3(
         _profile(
             start_date,
             Decimal(80),
-            ("CKD",),
+            ("DIABETES_INSULIN",),
             sex="MALE",
             birth_date=date(1966, 1, 15),
             height_cm=170,

@@ -154,11 +154,11 @@ def test_missing_weight_raises(session: Session, integrity_conn: Connection) -> 
 def test_ineligible_user_raises(session: Session, integrity_conn: Connection) -> None:
     user = make_user_profile(integrity_conn)
     make_weight_log(integrity_conn, user_id=user, weight_kg=70)
-    ckd = make_health_condition(integrity_conn, code="CKD", is_supported=False)
-    make_user_health_condition(integrity_conn, user_id=user, condition_id=ckd)
+    insulin = make_health_condition(integrity_conn, code="DIABETES_INSULIN", is_supported=False)
+    make_user_health_condition(integrity_conn, user_id=user, condition_id=insulin)
     with pytest.raises(UserNotEligibleError) as caught:
         create_user_target(session, user, TargetReason.INITIAL, NOW)
-    assert caught.value.reasons == ["UNSUPPORTED_CONDITION:CKD"]
+    assert caught.value.reasons == ["UNSUPPORTED_CONDITION:DIABETES_INSULIN"]
     assert _current(session, user) == []
 
 

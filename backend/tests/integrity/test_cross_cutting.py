@@ -56,7 +56,6 @@ DOCUMENTED_DEFAULTS: dict[tuple[str, str], object] = {
     ("ingredients", "review_status"): "PENDING",
     ("user_health_conditions", "diagnosed"): False,
     ("meal_plan_items", "was_swapped"): False,
-    ("user_profiles", "physiological_status"): "NONE",
     ("user_profiles", "wake_time"): time(7, 0),
     ("user_profiles", "sleep_time"): time(23, 0),
     ("health_conditions", "fluid_goal_requires_clinician"): False,
@@ -87,7 +86,7 @@ def _orm_not_null_without_default() -> list[tuple[str, str]]:
 
 def test_check_registry_covers_every_pg_check(integrity_conn: Connection) -> None:
     assert pg_check_names(integrity_conn) == set(CHECK_CASES)
-    assert len(CHECK_CASES) == 75
+    assert len(CHECK_CASES) == 73
 
 
 @pytest.mark.parametrize("name", sorted(CHECK_CASES))

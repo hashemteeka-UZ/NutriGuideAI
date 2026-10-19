@@ -83,7 +83,7 @@ const PERSONAS={
 const WEEK_STD=WEEK.map(w=>({...w,m:[...w.m]}));
 function setPersona(k){
  const p=PERSONAS[k];S.persona=k;
- Object.assign(S.o,{care:[],allergy:{},tdays:4,ttime:1080,accent:'AUTO',avatar:'AUTO',ckd:false,insulin:false,preg:false},JSON.parse(JSON.stringify(p.o)));
+ Object.assign(S.o,{care:[],allergy:{},tdays:4,ttime:1080,accent:'AUTO',avatar:'AUTO',insulin:false},JSON.parse(JSON.stringify(p.o)));
  TODAY=p.today.map(([slot,m,x],i)=>({id:i+1,slot,m,x}));
  WEEK=p.week?p.week.map(w=>({...w,m:[...w.m]})):WEEK_STD.map(w=>({...w,m:[...w.m]}));
  WEEK[2].m=TODAY.map(it=>it.m);WEIGHTS=p.weights;
