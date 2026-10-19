@@ -33,6 +33,8 @@ uv run --project backend pre-commit install
 uv run --project backend pre-commit run --all-files
 ```
 
+Access tokens are signed with `JWT_SECRET` in `.env`. It is required and must be at least 32 characters. Generate one with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+
 The optional `db_test` service (throwaway database, no persistent volume) is
 reserved for schema tests and is started with
 `docker compose --profile test up -d db_test`.

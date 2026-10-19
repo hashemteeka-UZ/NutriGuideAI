@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.2.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.3.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -49,11 +49,12 @@ curl -H "Authorization: Bearer dev" http://127.0.0.1:4010/api/v1/days/2026-10-20
 Authorization: Bearer <access_token>
 ```
 
-1. `POST /auth/register` or `POST /auth/login` returns `access_token`, `refresh_token`, `token_type` (`bearer`), and `expires_in` (seconds).
+1. `POST /auth/register` or `POST /auth/login` returns `access_token`, `refresh_token`, `token_type` (`bearer`), and `expires_in` (seconds). The access token lasts **15 minutes** (`expires_in` is 900). The refresh token lasts **30 days**.
 2. Send the access token on later calls.
 3. On **401** `UNAUTHORIZED`, call `POST /auth/refresh` with the refresh token and replace both tokens.
-4. On **401** `TOKEN_REUSED`, the refresh token was already used. Log the user out. Do not keep retrying refresh.
+4. On **401** `TOKEN_REUSED`, the refresh token was already used. That revokes the whole family: log the user out. Do not keep retrying refresh.
 5. `POST /auth/logout` sends the refresh token and returns **204**.
+6. Each `/auth/*` route allows **10 requests per minute** from one client address. The next one is **429** `RATE_LIMITED` with `Retry-After`.
 
 `GET /me` includes `has_profile`. False opens onboarding; true opens Home. `DELETE /me` deletes the account and its data (**204**).
 

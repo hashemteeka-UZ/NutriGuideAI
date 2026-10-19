@@ -1,5 +1,7 @@
 # Protein coverage of the meal catalog (athlete / muscle-building path)
 
+> Update 2026-10-19 (decision #175): the muscle-building path is cancelled permanently. This check is kept as history only.
+
 Scope: `backend/data/catalog/meals/team_recipes_batch_01.yaml`, the only meal batch (40 meals, catalog_v1 / team_recipes_v1). The older `backend/data/f1_slice/slice_meals.yaml` is the F.1 seed and is not included. Values are per **one serving** at the default multiplier of 1.0.
 
 ## How the numbers are produced in the code

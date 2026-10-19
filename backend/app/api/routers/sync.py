@@ -5,11 +5,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 from pydantic import AwareDatetime
 
-from app.api.deps import bearer
+from app.api.deps import get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes, not_implemented
 from app.api.schemas.sync import SyncBatch, SyncChanges, SyncResult
 
-router = APIRouter(prefix="/sync", tags=["sync"], dependencies=[Depends(bearer)])
+router = APIRouter(prefix="/sync", tags=["sync"], dependencies=[Depends(get_current_user)])
 
 
 @router.post(

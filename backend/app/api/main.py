@@ -5,8 +5,10 @@ from typing import Any, Final
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
+from slowapi.errors import RateLimitExceeded
 
-from app.api.errors import register_exception_handlers
+from app.api.errors import ServiceErrorMiddleware, register_exception_handlers
+from app.api.limiting import limiter, rate_limit_handler
 from app.api.observability import RequestIdMiddleware, configure_logging
 from app.api.routers import (
     account,
@@ -29,7 +31,7 @@ from app.api.routers import (
 from app.core.config import get_settings
 
 API_PREFIX: Final = "/api/v1"
-API_VERSION: Final = "0.2.0"
+API_VERSION: Final = "0.3.0"
 
 _CORS_METHODS: Final = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 _CORS_HEADERS: Final = ["Authorization", "Content-Type", "Accept-Language", "X-Request-ID"]
@@ -50,6 +52,9 @@ def create_app() -> FastAPI:
         redoc_url=None,
         generate_unique_id_function=_operation_id,
     )
+    # Starlette inserts each middleware at the front, so the first add is the inner one.
+    # Service errors stay inside the request-id middleware, and CORS stays outside both.
+    application.add_middleware(ServiceErrorMiddleware)
     application.add_middleware(RequestIdMiddleware)
     settings = get_settings()
     if settings.CORS_ORIGINS:
@@ -60,6 +65,8 @@ def create_app() -> FastAPI:
             allow_headers=_CORS_HEADERS,
             expose_headers=["X-Request-ID"],
         )
+    application.state.limiter = limiter
+    application.add_exception_handler(RateLimitExceeded, rate_limit_handler)
     register_exception_handlers(application)
     for module in (
         health,

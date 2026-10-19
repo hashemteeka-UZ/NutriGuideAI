@@ -4,12 +4,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.deps import bearer
+from app.api.deps import get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes, not_implemented
 from app.api.schemas.adherence import AdherenceRangeOut
 from app.api.schemas.common import HistoryDateRange
 
-router = APIRouter(tags=["adherence"], dependencies=[Depends(bearer)])
+router = APIRouter(tags=["adherence"], dependencies=[Depends(get_current_user)])
 
 
 @router.get(

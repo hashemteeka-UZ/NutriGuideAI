@@ -15,6 +15,12 @@ from sqlalchemy.exc import OperationalError
 from app.core.config import REPO_ROOT, get_settings
 from app.db.admin import admin_engine, create_database, drop_database, require_db_name, upgrade_head
 
+# Test-only. Overrides .env so the suite never signs tokens with a developer secret,
+# and so auth routes are not rate-limited unless a test turns the limiter on.
+# Must run before any test module imports the app (collection imports this file first).
+os.environ["JWT_SECRET"] = "test-only-jwt-secret-not-for-production-use"
+os.environ["RATE_LIMIT_ENABLED"] = "false"
+
 
 class _TestDbSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=REPO_ROOT / ".env", extra="ignore")

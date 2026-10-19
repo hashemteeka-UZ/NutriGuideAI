@@ -22,7 +22,7 @@ def test_health_returns_ok_with_exact_keys(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.json() == {
         "status": "ok",
-        "api_version": "0.2.0",
+        "api_version": "0.3.0",
         "database": "ok",
         "dataset_version": None,
         "default_planner": "cpsat",

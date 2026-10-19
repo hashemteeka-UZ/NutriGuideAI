@@ -2,11 +2,13 @@
 
 from fastapi import APIRouter, Depends
 
-from app.api.deps import bearer
+from app.api.deps import get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes, not_implemented
 from app.api.schemas.meal_prefs import MealPref, MealPrefUpdate
 
-router = APIRouter(prefix="/me/meal-prefs", tags=["meal-prefs"], dependencies=[Depends(bearer)])
+router = APIRouter(
+    prefix="/me/meal-prefs", tags=["meal-prefs"], dependencies=[Depends(get_current_user)]
+)
 
 
 @router.get(

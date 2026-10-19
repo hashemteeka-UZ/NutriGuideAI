@@ -18,6 +18,7 @@ v4.20 records the **fourth use of the post-freeze policy (§20.1)**: the removal
 | # | Topic | Change | Schema? |
 |---|---|---|---|
 | #167 | Scope: supported conditions (user decision, final, 2026-10-19) | The project serves **only** type 2 diabetes (not insulin-treated), hypertension and heart disease. **Kidney disease, pregnancy, lactation and gout are cancelled permanently**, in the code and in the theory part. Removed: `user_profiles.physiological_status` with its two CHECKs (migration `0006`), the `PhysiologicalStatus` enum, the screening reason `PREGNANT_OR_LACTATING`, the condition `CKD` from every reference seed (catalog, F.1 slice, test fixtures), and every mention in the current documentation, report chapters and UI prototype. Kept: under-18 screening and `DIABETES_INSULIN` as the one recognized-unsupported condition (an insulin user is a diabetes user; carbohydrate planning tied to insulin dosing is not covered, so they get the general mode). The water rule `fluid_goal_requires_clinician` now applies to `HEART_DISEASE` only. **Reason:** the user wants the project focused on one direction and finished well; each of these populations needs its own clinical rules, data and validation. **Frozen artifacts (approved by the user):** the F.1 benchmark persona P3 changes from `CKD` to `DIABETES_INSULIN` (same purpose: an unsupported condition gets no personalized plan), so `f1_scenario_report.md` is regenerated once; the catalog reference seed loses `CKD`, so `DATASET_MANIFEST.yaml` gets a new hash (`dataset_version` stays `catalog_v3`, meals unchanged). **Known limitation (one line in the report):** the app is designed for adults with type 2 diabetes, hypertension or heart disease, or no condition; it is not designed for pregnancy, lactation, kidney disease or gout. | **Yes** |
+| #175 | Scope: goals (user decision, final, 2026-10-19) | Only three goals: `LOSE`, `MAINTAIN`, `GAIN`. The muscle-building path is **cancelled permanently**, not deferred: the `MUSCLE` goal and `targets_v2` (#153), protein preference (#144), the protein floor and per-meal protein rules (#154, #155), training days and time (#156) and their reason codes and badges (#157). None of these was ever implemented in code, so no migration is needed; the UI prototype and the documentation were cleaned. `ATHLETE` stays as an activity level (it only sets PAL 1.9 and the athlete protein factor of `targets_v1`). Batch 02 recipes chosen for protein coverage stay as ordinary catalog meals. | No |
 
 ---
 
@@ -32,7 +33,7 @@ v4.19 is the **third use of the post-freeze policy (§20.1)**: Step I.0b, the on
 | #141 | Wellness tone and UI language (dietary considerations, not treatment) | No |
 | #142 | Adaptive onboarding (options shown from the user's data) | No |
 | #143 | General mode instead of "not eligible" (§30.1 screening result returned, profile still saved) | No |
-| #144 | Protein preference for active users (by goal / 1.8 / 2.0 g per kg) and a new targets formula version | Deferred (muscle-gain step) |
+| #144 | Protein preference for active users (by goal / 1.8 / 2.0 g per kg) and a new targets formula version | **Cancelled (v4.20, #175)** |
 | #145 | Wake and sleep times; meal windows computed from them | **Yes** (`wake_time`, `sleep_time`, I.0b) |
 | #146 | Water sessions in the UI | No |
 | #147 | Portion shown in grams | No |
@@ -41,11 +42,11 @@ v4.19 is the **third use of the post-freeze policy (§20.1)**: Step I.0b, the on
 | #150 | Shopping list (computed) | No |
 | #151 | Weekly report (computed) | No |
 | #152 | Computed badges | No |
-| #153 | Fourth goal `MUSCLE`: fixed small surplus (~275 kcal/day, inside the 500 kcal gain cap), no target weight or rate; formula `targets_v2` | Deferred (muscle-gain step) |
-| #154 | `MUSCLE` protein is a floor with a 2.2 g/kg ceiling (one-sided deviation in CP-SAT) | Deferred |
-| #155 | 25 g protein per main meal for `MUSCLE` (soft first, then hard) | Deferred |
-| #156 | Training days per week (2–6) and usual training time; pre/post-workout slot rule | Deferred (muscle-gain step) |
-| #157 | Reason codes, badges and home ordering for the `MUSCLE` path | Deferred |
+| #153 | Fourth goal `MUSCLE`: fixed small surplus (~275 kcal/day, inside the 500 kcal gain cap), no target weight or rate; formula `targets_v2` | **Cancelled (v4.20, #175)** |
+| #154 | `MUSCLE` protein is a floor with a 2.2 g/kg ceiling (one-sided deviation in CP-SAT) | **Cancelled (v4.20, #175)** |
+| #155 | 25 g protein per main meal for `MUSCLE` (soft first, then hard) | **Cancelled (v4.20, #175)** |
+| #156 | Training days per week (2–6) and usual training time; pre/post-workout slot rule | **Cancelled (v4.20, #175)** |
+| #157 | Reason codes, badges and home ordering for the `MUSCLE` path | **Cancelled (v4.20, #175)** |
 | #158 | Protein recipe batch 02 | No (data, delivered in catalog_v2) |
 | #159 | App accent follows the goal, stored on the device only | No |
 | #160 | Gendered address and avatar, device only | No |
@@ -1363,7 +1364,7 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Step I — to be planned: the API phase** (§34.2–§34.5) that the Flutter teammate needs. Step H is closed (v4.18): plans are generated by `cpsat_v1` by default. Open points carried into Step I: optimizer latency behind an HTTP request (§28.4c), and recipe batches from the dish proposal (#101), which can run alongside.
+**Step I — to be planned: the API phase** (§34.2–§34.5) that the Flutter app needs. Step H is closed (v4.18): plans are generated by `cpsat_v1` by default. Open points carried into Step I: optimizer latency behind an HTTP request (§28.4c), and recipe batches from the dish proposal (#101), which can run alongside.
 
 ---
 

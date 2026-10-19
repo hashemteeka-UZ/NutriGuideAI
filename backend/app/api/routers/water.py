@@ -5,11 +5,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.deps import bearer
+from app.api.deps import get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes, not_implemented
 from app.api.schemas.water import WaterDay, WaterLogCreate, WaterLogResult
 
-router = APIRouter(tags=["water"], dependencies=[Depends(bearer)])
+router = APIRouter(tags=["water"], dependencies=[Depends(get_current_user)])
 
 
 @router.get(

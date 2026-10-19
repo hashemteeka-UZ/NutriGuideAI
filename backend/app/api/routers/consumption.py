@@ -5,7 +5,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.deps import bearer
+from app.api.deps import get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes, not_implemented
 from app.api.schemas.consumption import (
     ConsumptionCreate,
@@ -13,7 +13,7 @@ from app.api.schemas.consumption import (
     LogCorrection,
 )
 
-router = APIRouter(tags=["consumption"], dependencies=[Depends(bearer)])
+router = APIRouter(tags=["consumption"], dependencies=[Depends(get_current_user)])
 
 _LOG_CODES = error_codes(
     "UNAUTHORIZED",

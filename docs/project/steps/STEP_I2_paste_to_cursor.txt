@@ -1,0 +1,65 @@
+You are implementing **Step I.2 (authentication, Decisions #130, #132, #170, #174)**. Step I.1 is committed (`b5c8607`, CI green): every route exists as a 501 stub. This pass implements the four `/auth/*` operations, the `get_current_user` dependency for every protected route, `GET /me`, `DELETE /me`, and rate limiting for the auth routes. All other routes stay 501, but from now on they answer `401 UNAUTHORIZED` first when the token is missing or invalid.
+
+The user has just placed updated documents in the repository (do not edit their content; report contradictions): `docs/PROJECT_CONTEXT_v4_20.md` (Decision #175 added: only three goals, the muscle-building path is cancelled permanently), `docs/project/DEV_JOURNAL.md`, `docs/project/steps/STEP_I_plan.md`, `docs/project/ui/**` and the UI prototype. Nothing in the backend refers to the muscle path; confirm with a search for `MUSCLE` and `protein_preference` over `backend/` (expected: no hits).
+
+## Hard rules
+1. No schema change and no migration: `users` and `refresh_tokens` already exist (§11.1, §11.12). `uv run alembic check` stays clean.
+2. No change to services outside the new `app/services/auth.py` and `app/services/account.py`, no planner or data change, `docs/reports/*` unchanged.
+3. The contract changes only where listed in section 6. Regenerate `docs/api/openapi.json` and keep the drift test green.
+4. Do not commit anything.
+
+## 1. Dependencies and settings
+- `uv add "pwdlib[argon2]" pyjwt slowapi` (record the resolved versions in the report).
+- `app/core/config.py` new settings: `JWT_SECRET: SecretStr` (required, at least 32 characters, validated), `ACCESS_TOKEN_MINUTES: int = 15`, `REFRESH_TOKEN_DAYS: int = 30`, `RATE_LIMIT_ENABLED: bool = True`.
+- `.env.example`: add `JWT_SECRET=` with a one-line comment on how to generate one (`python -c "import secrets; print(secrets.token_urlsafe(48))"`). `.github/workflows/ci.yml`: add a fixed test-only `JWT_SECRET` value to the job env (clearly named as test-only). The test suite sets its own secret and `RATE_LIMIT_ENABLED=false` in the API test fixtures (the rate-limit tests enable it explicitly).
+- README: one short paragraph in the dev-setup section about `JWT_SECRET`.
+
+## 2. Service `app/services/auth.py` (no FastAPI imports)
+- Password hashing with `pwdlib` `PasswordHash((Argon2Hasher(),))` at its recommended defaults; one module-level hasher. `hash_password`, `verify_password`. When a stored hash needs rehash (`verify_and_update`), update it on successful login.
+- Email normalisation: `strip().lower()`; the `users.email_lowercase` CHECK already enforces lower case.
+- `register_user(session, email, password, now) -> TokenPair data`: insert the user; a unique violation on email raises `EmailTakenError`. Returns tokens from `issue_tokens` (new family).
+- `authenticate(session, email, password, now)`: unknown email and wrong password both raise `InvalidCredentialsError`; for an unknown email still run one verification against a fixed dummy hash so the response time does not reveal whether the account exists (OWASP).
+- `issue_tokens(session, user_id, now, family_id=None)`: access token = JWT HS256 with claims `sub` (user id as string), `iat`, `exp` (`now + ACCESS_TOKEN_MINUTES`), `typ: "access"`. Refresh token = `secrets.token_urlsafe(32)`; store only `sha256` hex of it in `refresh_tokens` with `family_id` (new `uuid4` unless given), `issued_at = now`, `expires_at = now + REFRESH_TOKEN_DAYS`. Return `access_token`, `refresh_token`, `expires_in` (seconds).
+- `rotate_refresh(session, raw_token, now)`: look up by hash with `SELECT ... FOR UPDATE`. Not found or expired → `TokenInvalidError`. Already revoked → reuse detected (#45): revoke every non-revoked token of that family, flush, then raise `TokenReusedError`; the revocation must survive the error response, so the router commits before re-raising (document why in a comment). Otherwise revoke it (`revoked_at = now`), issue a new token in the same family, set `replaced_by_token_id`.
+- `logout(session, raw_token, now)`: revoke every token of the family if the token is known; an unknown token does nothing (no error, no information leak).
+- `decode_access(token, now) -> int`: verify signature and `typ`; check `exp` against the injected `now`, not the wall clock (decode with `verify_exp` off, then compare), so tests stay deterministic. Any failure raises `TokenInvalidError`.
+- Exceptions: `AuthError` base; `EmailTakenError`, `InvalidCredentialsError`, `TokenInvalidError`, `TokenReusedError`. Add them to `SERVICE_ERRORS`: `EMAIL_TAKEN` 409, `INVALID_CREDENTIALS` 401, `TOKEN_INVALID` 401, `TOKEN_REUSED` 401.
+
+## 3. Service `app/services/account.py`
+- `account_info(session, user_id) -> (user, has_profile)`.
+- `delete_account(session, user_id)`: delete the `users` row; every user table cascades (§11). Before writing it, list in the report each table that references `users` and its `ondelete`, and confirm nothing blocks the delete. A test creates a user with a profile, a weight, a target, a plan with items, consumption and water logs, interactions, meal and cuisine prefs and refresh tokens, deletes the account, and asserts every one of those tables has no row left for that user while catalog rows are untouched.
+
+## 4. API layer
+- `app/api/deps.py`: `get_current_user(credentials = Depends(bearer), session, now) -> int` (user id). Missing header, wrong scheme, bad token, expired token, or a user id that no longer exists → `401 UNAUTHORIZED` problem with header `WWW-Authenticate: Bearer`. `CurrentUser = Annotated[int, Depends(get_current_user)]`. Replace the router-level `Depends(bearer)` with `Depends(get_current_user)` on every protected router, so OpenAPI keeps the `HTTPBearer` security and 501 stubs now require a valid token.
+- `routers/auth.py`: implement the four operations; each write commits explicitly (#123). `register` → 201; `login`, `refresh_session` → 200; `logout` → 204 always, also for an unknown token.
+- `routers/account.py`: `GET /me` → `Account`; `DELETE /me` → 204, then the access token stops working (next request 401) because the user no longer exists.
+- Rate limiting (#132) with `slowapi`: limiter keyed by client IP, in-memory. `10/minute` on each of the four `/auth/*` routes. Exceeding returns the problem format `429 RATE_LIMITED` with `Retry-After`. `RATE_LIMIT_ENABLED=false` turns it off. The other limits of #132 come with their routes in later passes; put them as named constants now so they live in one place. Note in a code comment that behind a reverse proxy the server must run with trusted proxy headers so the IP is the client's.
+- Logging: never log passwords, tokens or token hashes (#133); add a test that registers and logs in with a recognisable password and asserts it appears in no captured log record.
+
+## 5. Tests (`tests/api/test_auth.py`, `tests/services/test_auth.py`, `tests/api/test_account.py`)
+- Register → 201, tokens work on `GET /me` (`has_profile: false`); email stored lower case; duplicate email (any case) → 409 `EMAIL_TAKEN`; short password → 422.
+- Login success; wrong password and unknown email both → 401 `INVALID_CREDENTIALS` with the same body apart from `request_id`; password over 128 characters → 422.
+- Refresh rotates: new pair works, old refresh token used again → 401 `TOKEN_REUSED` and afterwards the newest token of the family is also rejected (`TOKEN_REUSED` or `TOKEN_INVALID`, state which); expired refresh token → `TOKEN_INVALID`; random string → `TOKEN_INVALID`.
+- Logout → 204; the logged-out refresh token then fails; logout with an unknown token → 204.
+- Access token: missing header, `Basic` scheme, bad signature, `typ` not `access`, expired (by moving the injected clock 16 minutes) → 401 `UNAUTHORIZED` with `WWW-Authenticate: Bearer`.
+- Every protected stub answers 401 without a token and 501 with a valid token (update the existing contract test to sign in first).
+- `DELETE /me` removes everything (section 3) and the same token then gets 401.
+- Rate limit: with the limiter enabled, the 11th login within a minute from one client → 429 `RATE_LIMITED` with `Retry-After`.
+- `SERVICE_ERRORS` mapping test covers the four new codes.
+- All existing tests pass unchanged except the contract tests you had to update for authentication (list them).
+
+## 6. Contract changes (regenerate `openapi.json`)
+- `LoginRequest.password`: `max_length=128` (no minimum, so old accounts never get locked out by a future rule).
+- `API_VERSION` → `"0.3.0"`.
+- Nothing else in the contract changes. Update `docs/api/API_GUIDE.md` only where it describes these behaviours (token lifetime 15 minutes, refresh 30 days, reuse means log out, 10 auth requests per minute).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped). Then start the server (`uv run uvicorn app.api.main:app --port 8000`) with a real `JWT_SECRET` in `.env` and run by `curl`: register, `GET /me`, refresh, reuse the old refresh token, logout. Show the status codes.
+
+## Report back
+1. Files created/changed, and the resolved versions of the three new packages.
+2. The tables that reference `users` with their `ondelete`, and the account-deletion test result.
+3. The `curl` session (status codes and response bodies with tokens shortened).
+4. `git diff --stat docs/api/openapi.json` and the contract changes.
+5. Test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions.

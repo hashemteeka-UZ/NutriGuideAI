@@ -3,8 +3,6 @@ function steps(){
  const o=S.o,a=['name','about','measure','goal'];
  if(o.goal==='LOSE'||o.goal==='GAIN')a.push('pace');
  a.push('activity');
- if(o.goal==='MUSCLE')a.push('training');
- if(o.goal==='MUSCLE'||o.act==='HIGH'||o.act==='ATHLETE')a.push('protein');
  a.push('care','allergy');
  if(o.care.includes('DIABETES_T2'))a.push('safety');
  a.push('rhythm');
@@ -47,7 +45,6 @@ function onbStep(k){
  case 'goal':return{h:L(G('ما هدفك؟','ما هدفكِ؟'),'What is your goal?'),p:L('نبني سعراتك اليومية حول هدفك','We build your daily calories around it'),b:[
   ['LOSE','chart-decreasing',L('إنقاص الوزن','Lose weight'),L('عجز معتدل وآمن في السعرات','A moderate, safe calorie deficit')],
   ['MAINTAIN','balance-scale',L('المحافظة على وزني','Keep my weight'),L('أكل متوازن يحافظ على طاقتك','Balanced eating to keep your energy')],
-  ['MUSCLE','flexed-biceps',L('بناء العضلات','Build muscle'),L('فائض صغير وبروتين أعلى ووجبات حول تمرينك','A small surplus, more protein, meals around your training')],
   ['GAIN','chart-increasing',L('زيادة الوزن','Gain weight'),L('فائض مدروس مع بروتين أعلى','A planned surplus with more protein')]].map((x,i)=>`<div class="rise" style="--i:${i+1}">${opt('goal',x[0],o.goal===x[0],x[1],x[2],x[3])}</div>`).join(''),ok:true};
  case 'pace':return{h:o.goal==='LOSE'?L(G('إلى أين تريد أن تصل؟','إلى أين تريدين أن تصلي؟'),'Where do you want to get to?'):L(G('كم تريد أن تزيد؟','كم تريدين أن تزيدي؟'),'How much do you want to gain?'),p:L(G('اختر وزنك المستهدف وسرعة الوصول','اختاري وزنكِ المستهدف وسرعة الوصول'),'Pick your target weight and pace'),ad:adapt(L('لأن هدفك تغيير الوزن','because your goal changes weight')),b:`
   <div class="row rise" style="--i:1">${wheel('tw',o.goal==='LOSE'?40:o.w,o.goal==='LOSE'?o.w:o.w+40,1,L('كغ','kg'),L('الوزن المستهدف','Target weight'))}</div>

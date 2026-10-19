@@ -25,7 +25,9 @@ PLAN_DATE = date(2026, 10, 7)
 
 @pytest.fixture
 def session(integrity_conn: Connection) -> Iterator[Session]:
-    with Session(bind=integrity_conn) as s:
+    # The connection is already in the test's transaction. A savepoint keeps
+    # session.rollback() (unique-violation recovery) from ending that transaction.
+    with Session(bind=integrity_conn, join_transaction_mode="create_savepoint") as s:
         yield s
 
 

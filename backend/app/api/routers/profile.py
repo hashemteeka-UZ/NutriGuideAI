@@ -2,11 +2,11 @@
 
 from fastapi import APIRouter, Depends
 
-from app.api.deps import bearer
+from app.api.deps import get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes, not_implemented
 from app.api.schemas.profile import ProfileState, ProfileUpdate, TargetsView
 
-router = APIRouter(tags=["profile"], dependencies=[Depends(bearer)])
+router = APIRouter(tags=["profile"], dependencies=[Depends(get_current_user)])
 
 
 @router.get(

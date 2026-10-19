@@ -30,7 +30,7 @@ const avatar=()=>S.o.avatar&&S.o.avatar!=='AUTO'&&AVATARS[S.o.sex].includes(S.o.
 
 // Training days (Sunday-first week, index 2 = today, Tuesday) and the pre/post-workout rule.
 const TDAYS={2:[0,3],3:[0,2,4],4:[0,2,4,6],5:[0,1,2,4,6],6:[0,1,2,3,4,6]};
-const muscle=()=>S.o.goal==='MUSCLE';
+const muscle=()=>false; // muscle-building goal cancelled (decision #175)
 function training(d=2){
  if(!muscle())return null;
  if(!(TDAYS[S.o.tdays]||[]).includes(d))return{on:false};
@@ -73,12 +73,6 @@ const PERSONAS={
   today:[['BREAKFAST','B07',1.5],['LUNCH','L07',2],['SNACK','S02',1.5],['DINNER','D05',1]],weights:[92.4,92.0,91.6,91.7,91.1,90.6,90.4,89.9,89.6,89.2,88.9,88.4]},
  sara:{ar:'سارة · إنقاص الوزن',en:'Sara · lose weight',o:{name:'سارة',sex:'FEMALE',age:31,h:163,w:72,goal:'LOSE',tw:64,rate:0.5,act:'LIGHT',prot:'GOAL',care:['DIABETES_T2'],allergy:{}},
   today:[['BREAKFAST','B07',1],['LUNCH','L07',1.5],['SNACK','S02',1],['DINNER','D02',1]],weights:[75.1,74.9,74.6,74.4,74.0,73.8,73.6,73.1,72.9,72.6,72.3,72.0]},
- yusuf:{ar:'يوسف · بناء العضلات',en:'Yusuf · build muscle',o:{name:'يوسف',sex:'MALE',age:24,h:178,w:78,goal:'MUSCLE',tw:81,rate:0.25,act:'LIGHT',prot:'GOAL',care:[],allergy:{},tdays:4,ttime:1080},
-  today:[['BREAKFAST','N1',1.5],['LUNCH','L07',2],['SNACK','S01',2],['DINNER','Q4',1.5]],weights:[75.6,75.7,75.9,76.1,76.2,76.5,76.7,76.9,77.2,77.4,77.7,78.0],
-  week:[{st:'ACHIEVED',m:['N1','Q1','S01','Q4']},{st:'ACHIEVED',m:['B09','Q2','Q3','D05']},{st:null,m:['N1','L07','S01','Q4']},{st:null,m:['B03','L09','N2','Q1']},{st:null,m:['N1','Q4','S01','L04']},{st:null,m:['B09','L07','Q3','Q2']},{st:null,m:['N1','Q1','N2','D05']}]},
- reem:{ar:'ريم · بناء العضلات',en:'Reem · build muscle',o:{name:'ريم',sex:'FEMALE',age:26,h:165,w:60,goal:'MUSCLE',tw:63,rate:0.25,act:'LIGHT',prot:'GOAL',care:[],allergy:{},tdays:3,ttime:1050},
-  today:[['BREAKFAST','N1',1],['LUNCH','L07',1.5],['SNACK','S01',2],['DINNER','Q4',1]],weights:[58.1,58.2,58.4,58.5,58.7,58.9,59.0,59.2,59.4,59.6,59.8,60.0],
-  week:[{st:'ACHIEVED',m:['N1','Q1','S01','Q4']},{st:'PARTIAL',m:['B09','Q2','Q3','D05']},{st:null,m:['N1','L07','S01','Q4']},{st:null,m:['B03','L09','N2','Q1']},{st:null,m:['N1','Q4','S01','L04']},{st:null,m:['B09','L07','Q3','Q2']},{st:null,m:['N1','Q1','N2','D05']}]}
 };
 const WEEK_STD=WEEK.map(w=>({...w,m:[...w.m]}));
 function setPersona(k){

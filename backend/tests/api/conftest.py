@@ -11,6 +11,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_now
+from app.api.limiting import limiter
 from app.api.main import create_app
 
 NOW = datetime(2026, 10, 12, 9, 0, tzinfo=UTC)
@@ -27,6 +28,7 @@ def api_session(integrity_conn: Connection) -> Iterator[Session]:
 
 @pytest.fixture
 def client(api_session: Session) -> Iterator[TestClient]:
+    limiter.enabled = False
     application = create_app()
 
     def override_db() -> Iterator[Session]:

@@ -5,7 +5,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.deps import bearer
+from app.api.deps import get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes, not_implemented
 from app.api.schemas.common import PlanDateRange
 from app.api.schemas.plans import (
@@ -18,7 +18,7 @@ from app.api.schemas.plans import (
     SwapRequest,
 )
 
-router = APIRouter(tags=["plans"], dependencies=[Depends(bearer)])
+router = APIRouter(tags=["plans"], dependencies=[Depends(get_current_user)])
 
 _PLAN_DAY_CODES = error_codes(
     "UNAUTHORIZED",

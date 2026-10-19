@@ -133,11 +133,16 @@ _SCHEMA_MODULES = (
     "sync",
 )
 
+_LIVE = {
+    "register",
+    "login",
+    "refresh_session",
+    "logout",
+    "get_me",
+    "delete_me",
+}
+
 _FUTURE_CODES = (
-    "EMAIL_TAKEN",
-    "INVALID_CREDENTIALS",
-    "TOKEN_INVALID",
-    "TOKEN_REUSED",
     "UNKNOWN_CODE",
     "PLANNER_BUSY",
     "RATE_LIMITED",
@@ -242,19 +247,41 @@ def test_catalog_snapshot_declares_etag_and_not_modified() -> None:
     assert "If-None-Match" in names
 
 
-@pytest.mark.parametrize("operation_id", sorted(_CALLS))
-def test_stub_returns_not_implemented(api: TestClient, operation_id: str) -> None:
+def _bearer(client: TestClient) -> dict[str, str]:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={"email": "contract@example.com", "password": "password1"},
+    )
+    assert response.status_code == 201, response.text
+    return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+
+@pytest.mark.parametrize("operation_id", sorted(set(_CALLS) - _LIVE))
+def test_stub_returns_not_implemented(client: TestClient, operation_id: str) -> None:
     body, params = _CALLS[operation_id]
     method, path, _operation = next(
         item for item in _operations() if item[2]["operationId"] == operation_id
     )
-    response = api.request(method, _fill(path), json=body, params=params)
+    response = client.request(
+        method, _fill(path), json=body, params=params, headers=_bearer(client)
+    )
     assert response.status_code == 501, response.text
     assert response.headers["content-type"].startswith("application/problem+json")
     payload = response.json()
     assert payload["code"] == "NOT_IMPLEMENTED"
     assert payload["status"] == 501
     assert payload["title"] == "Not implemented"
+
+
+def test_protected_routes_reject_a_missing_token(client: TestClient) -> None:
+    for method, path, operation in _operations():
+        if (method, path) in _PUBLIC:
+            continue
+        body, params = _CALLS[operation["operationId"]]
+        response = client.request(method, _fill(path), json=body, params=params)
+        assert response.status_code == 401, (method, path, response.text)
+        assert response.headers["www-authenticate"] == "Bearer"
+        assert response.json()["code"] == "UNAUTHORIZED"
 
 
 def test_malformed_body_is_validation_error(api: TestClient) -> None:
@@ -269,52 +296,59 @@ def test_malformed_body_is_validation_error(api: TestClient) -> None:
     assert payload["errors"]
 
 
-def test_profile_rejects_equal_wake_and_sleep(api: TestClient) -> None:
+def test_profile_rejects_equal_wake_and_sleep(client: TestClient) -> None:
     body = {**_PROFILE, "wake_time": "07:00", "sleep_time": "07:00"}
-    response = api.put("/api/v1/me/profile", json=body)
+    response = client.put("/api/v1/me/profile", json=body, headers=_bearer(client))
     assert response.status_code == 422
     assert response.json()["code"] == "VALIDATION_ERROR"
     assert response.json()["errors"]
 
 
-def test_profile_lose_requires_target_weight(api: TestClient) -> None:
+def test_profile_lose_requires_target_weight(client: TestClient) -> None:
     body = {key: value for key, value in _PROFILE.items() if key != "target_weight_kg"}
-    response = api.put("/api/v1/me/profile", json=body)
+    response = client.put("/api/v1/me/profile", json=body, headers=_bearer(client))
     assert response.status_code == 422
     assert response.json()["code"] == "VALIDATION_ERROR"
     assert response.json()["errors"]
 
 
-def test_profile_rejects_a_duplicate_condition(api: TestClient) -> None:
+def test_profile_rejects_a_duplicate_condition(client: TestClient) -> None:
     body = {
         **_PROFILE,
         "conditions": [{"code": "HYPERTENSION"}, {"code": "HYPERTENSION"}],
     }
-    response = api.put("/api/v1/me/profile", json=body)
+    response = client.put("/api/v1/me/profile", json=body, headers=_bearer(client))
     assert response.status_code == 422
     assert response.json()["code"] == "VALIDATION_ERROR"
     assert response.json()["errors"]
 
 
-def test_plan_range_over_31_days_is_validation_error(api: TestClient) -> None:
-    response = api.get("/api/v1/plans", params={"from": "2026-10-01", "to": "2026-11-01"})
-    assert response.status_code == 422
-    assert response.json()["code"] == "VALIDATION_ERROR"
-    assert response.json()["errors"]
-
-
-def test_rate_without_value_is_validation_error(api: TestClient) -> None:
-    response = api.post(
-        "/api/v1/interactions",
-        json={"client_uuid": _UUID, "meal_id": 42, "event_type": "RATE"},
+def test_plan_range_over_31_days_is_validation_error(client: TestClient) -> None:
+    response = client.get(
+        "/api/v1/plans",
+        params={"from": "2026-10-01", "to": "2026-11-01"},
+        headers=_bearer(client),
     )
     assert response.status_code == 422
     assert response.json()["code"] == "VALIDATION_ERROR"
     assert response.json()["errors"]
 
 
-def test_unknown_consumption_kind_is_validation_error(api: TestClient) -> None:
-    response = api.post("/api/v1/consumption-logs", json={"kind": "DISH"})
+def test_rate_without_value_is_validation_error(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/interactions",
+        json={"client_uuid": _UUID, "meal_id": 42, "event_type": "RATE"},
+        headers=_bearer(client),
+    )
+    assert response.status_code == 422
+    assert response.json()["code"] == "VALIDATION_ERROR"
+    assert response.json()["errors"]
+
+
+def test_unknown_consumption_kind_is_validation_error(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/consumption-logs", json={"kind": "DISH"}, headers=_bearer(client)
+    )
     assert response.status_code == 422
     assert response.json()["code"] == "VALIDATION_ERROR"
     assert response.json()["errors"]

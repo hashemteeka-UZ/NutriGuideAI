@@ -475,7 +475,7 @@ const avatar=()=>S.o.avatar&&S.o.avatar!=='AUTO'&&AVATARS[S.o.sex].includes(S.o.
 
 // Training days (Sunday-first week, index 2 = today, Tuesday) and the pre/post-workout rule.
 const TDAYS={2:[0,3],3:[0,2,4],4:[0,2,4,6],5:[0,1,2,4,6],6:[0,1,2,3,4,6]};
-const muscle=()=>S.o.goal==='MUSCLE';
+const muscle=()=>false; // muscle-building goal cancelled (decision #175)
 function training(d=2){
  if(!muscle())return null;
  if(!(TDAYS[S.o.tdays]||[]).includes(d))return{on:false};
@@ -518,12 +518,6 @@ const PERSONAS={
   today:[['BREAKFAST','B07',1.5],['LUNCH','L07',2],['SNACK','S02',1.5],['DINNER','D05',1]],weights:[92.4,92.0,91.6,91.7,91.1,90.6,90.4,89.9,89.6,89.2,88.9,88.4]},
  sara:{ar:'سارة · إنقاص الوزن',en:'Sara · lose weight',o:{name:'سارة',sex:'FEMALE',age:31,h:163,w:72,goal:'LOSE',tw:64,rate:0.5,act:'LIGHT',prot:'GOAL',care:['DIABETES_T2'],allergy:{}},
   today:[['BREAKFAST','B07',1],['LUNCH','L07',1.5],['SNACK','S02',1],['DINNER','D02',1]],weights:[75.1,74.9,74.6,74.4,74.0,73.8,73.6,73.1,72.9,72.6,72.3,72.0]},
- yusuf:{ar:'يوسف · بناء العضلات',en:'Yusuf · build muscle',o:{name:'يوسف',sex:'MALE',age:24,h:178,w:78,goal:'MUSCLE',tw:81,rate:0.25,act:'LIGHT',prot:'GOAL',care:[],allergy:{},tdays:4,ttime:1080},
-  today:[['BREAKFAST','N1',1.5],['LUNCH','L07',2],['SNACK','S01',2],['DINNER','Q4',1.5]],weights:[75.6,75.7,75.9,76.1,76.2,76.5,76.7,76.9,77.2,77.4,77.7,78.0],
-  week:[{st:'ACHIEVED',m:['N1','Q1','S01','Q4']},{st:'ACHIEVED',m:['B09','Q2','Q3','D05']},{st:null,m:['N1','L07','S01','Q4']},{st:null,m:['B03','L09','N2','Q1']},{st:null,m:['N1','Q4','S01','L04']},{st:null,m:['B09','L07','Q3','Q2']},{st:null,m:['N1','Q1','N2','D05']}]},
- reem:{ar:'ريم · بناء العضلات',en:'Reem · build muscle',o:{name:'ريم',sex:'FEMALE',age:26,h:165,w:60,goal:'MUSCLE',tw:63,rate:0.25,act:'LIGHT',prot:'GOAL',care:[],allergy:{},tdays:3,ttime:1050},
-  today:[['BREAKFAST','N1',1],['LUNCH','L07',1.5],['SNACK','S01',2],['DINNER','Q4',1]],weights:[58.1,58.2,58.4,58.5,58.7,58.9,59.0,59.2,59.4,59.6,59.8,60.0],
-  week:[{st:'ACHIEVED',m:['N1','Q1','S01','Q4']},{st:'PARTIAL',m:['B09','Q2','Q3','D05']},{st:null,m:['N1','L07','S01','Q4']},{st:null,m:['B03','L09','N2','Q1']},{st:null,m:['N1','Q4','S01','L04']},{st:null,m:['B09','L07','Q3','Q2']},{st:null,m:['N1','Q1','N2','D05']}]}
 };
 const WEEK_STD=WEEK.map(w=>({...w,m:[...w.m]}));
 function setPersona(k){
@@ -588,8 +582,6 @@ function steps(){
  const o=S.o,a=['name','about','measure','goal'];
  if(o.goal==='LOSE'||o.goal==='GAIN')a.push('pace');
  a.push('activity');
- if(o.goal==='MUSCLE')a.push('training');
- if(o.goal==='MUSCLE'||o.act==='HIGH'||o.act==='ATHLETE')a.push('protein');
  a.push('care','allergy');
  if(o.care.includes('DIABETES_T2'))a.push('safety');
  a.push('rhythm');
@@ -632,7 +624,6 @@ function onbStep(k){
  case 'goal':return{h:L(G('ما هدفك؟','ما هدفكِ؟'),'What is your goal?'),p:L('نبني سعراتك اليومية حول هدفك','We build your daily calories around it'),b:[
   ['LOSE','chart-decreasing',L('إنقاص الوزن','Lose weight'),L('عجز معتدل وآمن في السعرات','A moderate, safe calorie deficit')],
   ['MAINTAIN','balance-scale',L('المحافظة على وزني','Keep my weight'),L('أكل متوازن يحافظ على طاقتك','Balanced eating to keep your energy')],
-  ['MUSCLE','flexed-biceps',L('بناء العضلات','Build muscle'),L('فائض صغير وبروتين أعلى ووجبات حول تمرينك','A small surplus, more protein, meals around your training')],
   ['GAIN','chart-increasing',L('زيادة الوزن','Gain weight'),L('فائض مدروس مع بروتين أعلى','A planned surplus with more protein')]].map((x,i)=>`<div class="rise" style="--i:${i+1}">${opt('goal',x[0],o.goal===x[0],x[1],x[2],x[3])}</div>`).join(''),ok:true};
  case 'pace':return{h:o.goal==='LOSE'?L(G('إلى أين تريد أن تصل؟','إلى أين تريدين أن تصلي؟'),'Where do you want to get to?'):L(G('كم تريد أن تزيد؟','كم تريدين أن تزيدي؟'),'How much do you want to gain?'),p:L(G('اختر وزنك المستهدف وسرعة الوصول','اختاري وزنكِ المستهدف وسرعة الوصول'),'Pick your target weight and pace'),ad:adapt(L('لأن هدفك تغيير الوزن','because your goal changes weight')),b:`
   <div class="row rise" style="--i:1">${wheel('tw',o.goal==='LOSE'?40:o.w,o.goal==='LOSE'?o.w:o.w+40,1,L('كغ','kg'),L('الوزن المستهدف','Target weight'))}</div>
@@ -999,7 +990,7 @@ function profile(){
  return `<div class="screen ${S.anim?'anim '+S.nav:''}">${topbar(L('حسابي','Me'),'')}<div class="scroll">
  <div class="card hero rise" style="--i:0"><div class="row" style="position:relative;z-index:1;gap:14px"><span class="thumb" style="width:64px;height:64px;background:rgba(255,255,255,.2)">${E(avatar(),46)}</span><div class="grow"><b style="font-size:19px">${o.name}</b><div style="opacity:.9;font-size:13px">ahmed@example.com</div></div>
   <div style="text-align:center"><b class="num" style="font-size:20px">${E('fire',18)} 5</b><div style="opacity:.85;font-size:11px">${L('أيام','days')}</div></div></div></div>
- <div class="card rise" style="--i:1;padding:4px 16px">${row('bullseye',L('هدفي','My goal'),L({LOSE:'إنقاص الوزن',MAINTAIN:'المحافظة',GAIN:'الزيادة',MUSCLE:'بناء العضلات'}[o.goal],{LOSE:'Lose',MAINTAIN:'Maintain',GAIN:'Gain',MUSCLE:'Build muscle'}[o.goal]),'data-act="editOnb"')}
+ <div class="card rise" style="--i:1;padding:4px 16px">${row('bullseye',L('هدفي','My goal'),L({LOSE:'إنقاص الوزن',MAINTAIN:'المحافظة',GAIN:'الزيادة'}[o.goal],{LOSE:'Lose',MAINTAIN:'Maintain',GAIN:'Gain',MUSCLE:'Build muscle'}[o.goal]),'data-act="editOnb"')}
   ${row('straight-ruler',L('الطول والوزن','Height and weight'),`<span class="num">${o.h} · ${o.w}</span>`,'data-act="editOnb"')}${row('person-biking',L('نشاطي','Activity'),'','data-act="editOnb"')}${muscle()?row('person-lifting-weights',L('تمريني','My training'),`<span class="num">${TDAYS[o.tdays].length} ${L('أيام','days')} · ${hm(o.ttime)}</span>`,'data-act="editTrain"'):''}
   ${row('herb',L('ما نراعيه في أكلي','What we keep in mind'),o.care.length?o.care.length+'':L('لا شيء','None'),'data-act="editOnb"')}${row('shield',L('ما أتجنبه','What I avoid'),Object.keys(o.allergy).length+'','data-act="editOnb"')}</div>
  <div class="card rise" style="--i:2"><div class="between"><h2>${E('alarm-clock',22)} ${L('مواعيد يومي','My daily rhythm')}</h2><button class="link" data-act="editRhythm">${L('تعديل','Edit')}</button></div>
@@ -1227,13 +1218,13 @@ function renderPanel(){
  const cur=S.gen?'gen':S.sheet&&S.sheet.type==='meal'?'meal':S.screen==='onboarding'&&steps()[S.step]==='result'?'result':S.screen;
  panelEl.innerHTML=`<h2>${L('لوحة التجربة','Demo controls')}</h2><p>${L('أداة لعرض النموذج فقط، وليست جزءًا من التطبيق.','For the demo only, not part of the app.')}</p>
  <div class="lbl">${L('جرّب شخصية','Try a persona')}</div><div class="grid">${Object.entries(PERSONAS).map(([k,p])=>b('persona',k,L(p.ar,p.en),S.persona===k)).join('')}</div>
- <p style="margin-top:6px">${L('اللون يتبع الهدف، والمخاطبة والرسمة تتبع الجنس. قارن يوسف بريم.','Colour follows the goal; address and avatar follow sex. Compare Yusuf and Reem.')}</p>
+ <p style="margin-top:6px">${L('اللون يتبع الهدف، والمخاطبة والرسمة تتبع الجنس. قارن أحمد بسارة.','Colour follows the goal; address and avatar follow sex. Compare Ahmed and Sara.')}</p>
  <div class="lbl">${L('الشاشات','Screens')}</div><div class="grid">${sc.map(([k,l])=>b('scr',k,l,cur===k)).join('')}</div>
  <div class="lbl">${L('سيناريوهات','Scenarios')}</div><div class="grid">
  ${b('notify','',L('إشعار موعد وجبة','Meal reminder'),0)}${b('scen','late',L('فات موعد وجبة','Missed a meal'),S.scen.late)}
  ${b('scen','complete',L('يوم مكتمل','Day complete'),S.scen.complete)}${b('scen','offline',L('دون إنترنت','Offline'),S.scen.offline)}
  ${b('scen','general',L('الوضع العام','General mode'),S.scen.general)}${b('scen','fluid',L('ماء بهدف الطبيب','Doctor water goal'),S.o.care.includes('HEART_DISEASE'))}
- ${b('athlete','',L('سؤال البروتين (نشاط عالٍ)','Protein question (high activity)'),0)}${b('insulin','',L('سؤال الإنسولين (سكر الدم)','Insulin question (blood sugar)'),0)}</div>
+ ${b('insulin','',L('سؤال الإنسولين (سكر الدم)','Insulin question (blood sugar)'),0)}</div>
  <div class="lbl">${L('اللغة والمظهر','Language and theme')}</div><div class="grid">${b('lang','ar','العربية',S.lang==='ar')}${b('lang','en','English',S.lang==='en')}</div>
  <div class="grid" style="grid-template-columns:1fr 1fr 1fr">${b('mode','light',L('فاتح','Light'),S.mode==='light')}${b('mode','dark',L('ليلي','Dark'),S.mode==='dark')}${b('mode','auto',L('تلقائي','Auto'),S.mode==='auto')}</div>
  <p>${L('الرسومات: Fluent Emoji من Microsoft (رخصة MIT). أسماء الوجبات من كتالوج المشروع، والأرقام للعرض.','Illustrations: Microsoft Fluent Emoji (MIT). Meal names from the project catalog; numbers are illustrative.')}</p>`;
@@ -1246,11 +1237,10 @@ panelEl.addEventListener('click',ev=>{
  else if(k==='scen'){if(v==='fluid'){S.o.care=S.o.care.includes('HEART_DISEASE')?S.o.care.filter(x=>x!=='HEART_DISEASE'):[...S.o.care,'HEART_DISEASE'];go('water')}
   else{S.scen[v]=!S.scen[v];if(v==='late'){S.eaten[1]=!S.scen.late}if(v==='complete'&&S.scen.complete){go('home');setTimeout(()=>confetti(.5,.3,150),300);return}go(['home','plan','water','progress','profile','shop'].includes(S.screen)?S.screen:'home')}}
  else if(k==='persona'){setPersona(v);S.planDay=2;go(['welcome','login','onboarding'].includes(S.screen)?'home':S.screen)}
- else if(k==='athlete'){S.o.act='ATHLETE';S.step=steps().indexOf('protein');go('onboarding')}
  else if(k==='insulin'){if(!S.o.care.includes('DIABETES_T2'))S.o.care=[...S.o.care,'DIABETES_T2'];S.step=steps().indexOf('safety');go('onboarding')}
  else if(k==='lang'){S.lang=v;save();S.anim=true;render()}
  else if(k==='mode'){S.mode=v;save();render()}
 });
 setInterval(()=>{if(S.screen==='welcome'&&!S.sheet){S.welcomeSlide++;const w=app.querySelector('.wslide');if(w){w.style.animation='none';void w.offsetWidth;}render();const n=app.querySelector('.wslide');if(n)n.style.animation='rise .5s both'}},4200);
-setPersona(S.persona||'ahmed');render();
+setPersona(PERSONAS[S.persona]?S.persona:'ahmed');render();
 </script>

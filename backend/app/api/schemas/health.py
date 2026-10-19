@@ -15,7 +15,7 @@ class HealthResponse(BaseModel):
     model_config = with_example(
         {
             "status": "ok",
-            "api_version": "0.2.0",
+            "api_version": "0.3.0",
             "database": "ok",
             "dataset_version": "catalog_v3",
             "default_planner": "cpsat",

@@ -1289,7 +1289,7 @@
       },
       "HealthResponse": {
         "example": {
-          "api_version": "0.2.0",
+          "api_version": "0.3.0",
           "database": "ok",
           "dataset_version": "catalog_v3",
           "default_planner": "cpsat",
@@ -1608,6 +1608,7 @@
             "type": "string"
           },
           "password": {
+            "maxLength": 128,
             "title": "Password",
             "type": "string"
           }
@@ -4952,7 +4953,7 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "openapi": "3.1.0",
   "paths": {

@@ -11,9 +11,16 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from app.api.observability import API_LOGGER_NAME, request_id_var
 from app.api.schemas.common import ProblemDetail, ValidationIssue
+from app.services.auth import (
+    EmailTakenError,
+    InvalidCredentialsError,
+    TokenInvalidError,
+    TokenReusedError,
+)
 from app.services.common import InvalidTimezoneError, MealNotFoundError
 from app.services.condition_limits import ConditionConflictError
 from app.services.consumption import (
@@ -53,6 +60,10 @@ SERVICE_ERRORS: Mapping[type[Exception], tuple[int, str]] = {
     ClockSkewError: (422, "CLOCK_SKEW"),
     TargetValidationError: (422, "TARGET_VALIDATION"),
     InvalidTimezoneError: (422, "INVALID_TIMEZONE"),
+    EmailTakenError: (409, "EMAIL_TAKEN"),
+    InvalidCredentialsError: (401, "INVALID_CREDENTIALS"),
+    TokenInvalidError: (401, "TOKEN_INVALID"),
+    TokenReusedError: (401, "TOKEN_REUSED"),
 }
 
 _HTTP_CODES: Final[dict[int, str]] = {
@@ -113,8 +124,7 @@ def error_codes(*codes: str) -> str:
 
 
 # Every code named by an operation description, sorted. Later passes raise the ones
-# that are not in SERVICE_ERRORS yet: EMAIL_TAKEN, INVALID_CREDENTIALS, TOKEN_INVALID,
-# TOKEN_REUSED, UNKNOWN_CODE, PLANNER_BUSY, RATE_LIMITED, UNAUTHORIZED.
+# that are not in SERVICE_ERRORS yet: UNKNOWN_CODE, PLANNER_BUSY, RATE_LIMITED, UNAUTHORIZED.
 PLANNED_ERROR_CODES: Final[tuple[str, ...]] = (
     "CLIENT_UUID_CONFLICT",
     "CLOCK_SKEW",
@@ -230,11 +240,42 @@ async def _api_error_handler(_request: Request, exc: Exception) -> JSONResponse:
     )
 
 
-async def _unhandled_handler(_request: Request, exc: Exception) -> JSONResponse:
+def _mapped_problem(exc: Exception) -> JSONResponse | None:
     mapped = _service_error(exc)
-    if mapped is not None:
-        status, code = mapped
-        return problem_response(status, code, _title(code), str(exc), reasons=_reasons(exc))
+    if mapped is None:
+        return None
+    status, code = mapped
+    return problem_response(status, code, _title(code), str(exc), reasons=_reasons(exc))
+
+
+class ServiceErrorMiddleware:
+    """Turn a mapped service exception into a problem response inside the request.
+
+    Starlette runs the `Exception` handler on the outermost server-error middleware,
+    which is outside the request-id middleware. Handling the mapped errors here keeps
+    `request_id` on the body and the real status on the access log.
+    """
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        try:
+            await self.app(scope, receive, send)
+        except Exception as exc:
+            response = _mapped_problem(exc)
+            if response is None:
+                raise
+            await response(scope, receive, send)
+
+
+async def _unhandled_handler(_request: Request, exc: Exception) -> JSONResponse:
+    response = _mapped_problem(exc)
+    if response is not None:
+        return response
     logger.exception("unhandled exception", exc_info=exc)
     return problem_response(500, "INTERNAL_ERROR", "Internal server error")
 

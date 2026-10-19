@@ -199,13 +199,13 @@ function renderPanel(){
  const cur=S.gen?'gen':S.sheet&&S.sheet.type==='meal'?'meal':S.screen==='onboarding'&&steps()[S.step]==='result'?'result':S.screen;
  panelEl.innerHTML=`<h2>${L('لوحة التجربة','Demo controls')}</h2><p>${L('أداة لعرض النموذج فقط، وليست جزءًا من التطبيق.','For the demo only, not part of the app.')}</p>
  <div class="lbl">${L('جرّب شخصية','Try a persona')}</div><div class="grid">${Object.entries(PERSONAS).map(([k,p])=>b('persona',k,L(p.ar,p.en),S.persona===k)).join('')}</div>
- <p style="margin-top:6px">${L('اللون يتبع الهدف، والمخاطبة والرسمة تتبع الجنس. قارن يوسف بريم.','Colour follows the goal; address and avatar follow sex. Compare Yusuf and Reem.')}</p>
+ <p style="margin-top:6px">${L('اللون يتبع الهدف، والمخاطبة والرسمة تتبع الجنس. قارن أحمد بسارة.','Colour follows the goal; address and avatar follow sex. Compare Ahmed and Sara.')}</p>
  <div class="lbl">${L('الشاشات','Screens')}</div><div class="grid">${sc.map(([k,l])=>b('scr',k,l,cur===k)).join('')}</div>
  <div class="lbl">${L('سيناريوهات','Scenarios')}</div><div class="grid">
  ${b('notify','',L('إشعار موعد وجبة','Meal reminder'),0)}${b('scen','late',L('فات موعد وجبة','Missed a meal'),S.scen.late)}
  ${b('scen','complete',L('يوم مكتمل','Day complete'),S.scen.complete)}${b('scen','offline',L('دون إنترنت','Offline'),S.scen.offline)}
  ${b('scen','general',L('الوضع العام','General mode'),S.scen.general)}${b('scen','fluid',L('ماء بهدف الطبيب','Doctor water goal'),S.o.care.includes('HEART_DISEASE'))}
- ${b('athlete','',L('سؤال البروتين (نشاط عالٍ)','Protein question (high activity)'),0)}${b('insulin','',L('سؤال الإنسولين (سكر الدم)','Insulin question (blood sugar)'),0)}</div>
+ ${b('insulin','',L('سؤال الإنسولين (سكر الدم)','Insulin question (blood sugar)'),0)}</div>
  <div class="lbl">${L('اللغة والمظهر','Language and theme')}</div><div class="grid">${b('lang','ar','العربية',S.lang==='ar')}${b('lang','en','English',S.lang==='en')}</div>
  <div class="grid" style="grid-template-columns:1fr 1fr 1fr">${b('mode','light',L('فاتح','Light'),S.mode==='light')}${b('mode','dark',L('ليلي','Dark'),S.mode==='dark')}${b('mode','auto',L('تلقائي','Auto'),S.mode==='auto')}</div>
  <p>${L('الرسومات: Fluent Emoji من Microsoft (رخصة MIT). أسماء الوجبات من كتالوج المشروع، والأرقام للعرض.','Illustrations: Microsoft Fluent Emoji (MIT). Meal names from the project catalog; numbers are illustrative.')}</p>`;
@@ -218,10 +218,9 @@ panelEl.addEventListener('click',ev=>{
  else if(k==='scen'){if(v==='fluid'){S.o.care=S.o.care.includes('HEART_DISEASE')?S.o.care.filter(x=>x!=='HEART_DISEASE'):[...S.o.care,'HEART_DISEASE'];go('water')}
   else{S.scen[v]=!S.scen[v];if(v==='late'){S.eaten[1]=!S.scen.late}if(v==='complete'&&S.scen.complete){go('home');setTimeout(()=>confetti(.5,.3,150),300);return}go(['home','plan','water','progress','profile','shop'].includes(S.screen)?S.screen:'home')}}
  else if(k==='persona'){setPersona(v);S.planDay=2;go(['welcome','login','onboarding'].includes(S.screen)?'home':S.screen)}
- else if(k==='athlete'){S.o.act='ATHLETE';S.step=steps().indexOf('protein');go('onboarding')}
  else if(k==='insulin'){if(!S.o.care.includes('DIABETES_T2'))S.o.care=[...S.o.care,'DIABETES_T2'];S.step=steps().indexOf('safety');go('onboarding')}
  else if(k==='lang'){S.lang=v;save();S.anim=true;render()}
  else if(k==='mode'){S.mode=v;save();render()}
 });
 setInterval(()=>{if(S.screen==='welcome'&&!S.sheet){S.welcomeSlide++;const w=app.querySelector('.wslide');if(w){w.style.animation='none';void w.offsetWidth;}render();const n=app.querySelector('.wslide');if(n)n.style.animation='rise .5s both'}},4200);
-setPersona(S.persona||'ahmed');render();
+setPersona(PERSONAS[S.persona]?S.persona:'ahmed');render();

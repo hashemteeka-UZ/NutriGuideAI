@@ -34,7 +34,7 @@ class LoginRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     email: EmailAddress
-    password: str
+    password: str = Field(max_length=128)
 
 
 class RefreshRequest(BaseModel):

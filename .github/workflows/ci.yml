@@ -32,6 +32,8 @@ jobs:
       POSTGRES_TEST_PORT: "5432"
       APP_ENV: test
       CI: true
+      # Test-only signing key. Not a production secret.
+      JWT_SECRET: test-only-ci-jwt-secret-not-for-production-use
 
     steps:
       - uses: actions/checkout@v4
