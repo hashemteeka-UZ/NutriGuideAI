@@ -23,7 +23,13 @@ import yaml
 from app.db.models.catalog import QualityTier
 from app.pipeline.build import AUTHORING_GATES, DEFAULT_DATA_DIR
 from app.pipeline.classify import Classification, ClassifiedRecord, Outcome, classify, fill_foods
-from app.pipeline.files import MEALS_DIR, CatalogAuthoringError, CatalogFiles, read_catalog
+from app.pipeline.files import (
+    MEALS_DIR,
+    STEPS_DIR,
+    CatalogAuthoringError,
+    CatalogFiles,
+    read_catalog,
+)
 from app.pipeline.gates import run_catalog_gates
 from app.pipeline.load import quality_tier
 from app.services.meal_nutrition import COMPUTATION_VERSION
@@ -81,6 +87,21 @@ def _meal_batches(data_dir: Path, files: CatalogFiles) -> dict[str, dict[str, ob
     return batches
 
 
+def _step_batches(data_dir: Path, files: CatalogFiles) -> dict[str, dict[str, object]]:
+    steps_dir = data_dir / STEPS_DIR
+    paths = sorted(steps_dir.glob("*.yaml")) if steps_dir.is_dir() else []
+    if len(paths) != len(files.step_files):
+        raise CatalogAuthoringError(["steps file count does not match parsed batches"])
+    batches: dict[str, dict[str, object]] = {}
+    for path, batch in zip(paths, files.step_files, strict=True):
+        batches[path.relative_to(data_dir).as_posix()] = {
+            "dataset_version": batch.dataset_version,
+            "meal_count": len(batch.meals),
+            "step_count": sum(len(meal.steps_ar) for meal in batch.meals),
+        }
+    return batches
+
+
 def build_document(data_dir: Path) -> dict[str, Any]:
     """Manifest body from the catalog files and the same classification the build uses."""
     files, classified = _classify(data_dir)
@@ -103,6 +124,7 @@ def build_document(data_dir: Path) -> dict[str, Any]:
             "meal_tiers": _tier_counts(files, classified),
         },
         "meal_batches": _meal_batches(data_dir, files),
+        "step_batches": _step_batches(data_dir, files),
     }
 
 

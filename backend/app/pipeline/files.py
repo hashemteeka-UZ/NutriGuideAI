@@ -10,7 +10,7 @@ import csv
 import hashlib
 import re
 from collections import Counter
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
@@ -26,7 +26,7 @@ from pydantic import (
     model_validator,
 )
 
-from app.db.models.catalog import WeightMethod
+from app.db.models.catalog import DishForm, WeightMethod
 from app.db.models.reference import FoodState, ReviewStatus
 from app.seed.f1_files import (
     SUBSET_COLUMNS,
@@ -46,6 +46,7 @@ REFERENCE_SEED_FILE = "reference_seed.yaml"
 INGREDIENTS_FILE = "ingredients.yaml"
 MANUAL_FOODS_FILE = "manual_foods.yaml"
 MEALS_DIR = "meals"
+STEPS_DIR = "steps"
 SOURCES_DIR = "sources"
 REPORTS_DIR = "reports"
 SOURCE_MANIFEST_FILE = "source_manifest.yaml"
@@ -84,6 +85,9 @@ FDC_CATEGORY_EN: dict[str, str] = {
 }
 
 THRESHOLD_TAG_CODES = frozenset({"high_sodium", "high_sugar"})
+# §10.7: steps files are Arabic until the team writes another language.
+SUPPORTED_STEP_LANGS = frozenset({"ar"})
+MAX_STEP_CHARS = 500
 
 
 class IngredientFoodSource(StrEnum):
@@ -212,6 +216,19 @@ class CatalogMealFile(_Model):
     meals: list[CatalogMeal]
 
 
+class CatalogMealSteps(_Model):
+    ref_external: Text
+    dish_form: DishForm
+    steps_ar: Annotated[list[str], Field(min_length=1)]
+
+
+class CatalogStepsFile(_Model):
+    dataset_version: Text
+    default_lang: Literal["ar"]
+    note: str | None = None
+    meals: list[CatalogMealSteps]
+
+
 class ManifestSubset(_Model):
     sha256: Text
     row_count: Annotated[int, Field(ge=0)]
@@ -242,6 +259,7 @@ class CatalogFiles:
     ingredients: CatalogIngredients
     manuals: list[ManualFood]
     meal_files: list[CatalogMealFile]
+    step_files: list[CatalogStepsFile]
     sr_subset: list[SubsetRow]
     fndds_subset: list[FnddsIngredientRow]
     manifest: SourceManifest
@@ -321,6 +339,7 @@ def read_catalog(data_dir: Path) -> CatalogFiles:
     ingredients: CatalogIngredients | None = None
     manuals: list[ManualFood] = []
     meal_files: list[CatalogMealFile] = []
+    step_files: list[CatalogStepsFile] = []
     sr_subset: list[SubsetRow] = []
     fndds_subset: list[FnddsIngredientRow] = []
     manifest: SourceManifest | None = None
@@ -329,6 +348,7 @@ def read_catalog(data_dir: Path) -> CatalogFiles:
     ingredients_path = data_dir / INGREDIENTS_FILE
     manuals_path = data_dir / MANUAL_FOODS_FILE
     meals_dir = data_dir / MEALS_DIR
+    steps_dir = data_dir / STEPS_DIR
     sources_dir = data_dir / SOURCES_DIR
     manifest_path = sources_dir / SOURCE_MANIFEST_FILE
     sr_path = sources_dir / SR_SUBSET_FILE
@@ -428,6 +448,10 @@ def read_catalog(data_dir: Path) -> CatalogFiles:
     if duplicates:
         errors.append(f"duplicate ref_external: {duplicates}")
 
+    step_paths = sorted(steps_dir.glob("*.yaml")) if steps_dir.is_dir() else []
+    step_files, step_errors = _read_step_files(step_paths, set(raw_refs))
+    errors.extend(step_errors)
+
     if manifest is not None:
         errors.extend(_check_subset_hashes(manifest, sr_path, fndds_path))
 
@@ -451,6 +475,7 @@ def read_catalog(data_dir: Path) -> CatalogFiles:
         sr_path,
         fndds_path,
         *meal_paths,
+        *step_paths,
     ]
     input_hashes = _hashed_inputs(input_paths, data_dir)
     if errors:
@@ -461,11 +486,82 @@ def read_catalog(data_dir: Path) -> CatalogFiles:
         ingredients=ingredients,
         manuals=manuals,
         meal_files=meal_files,
+        step_files=step_files,
         sr_subset=sr_subset,
         fndds_subset=fndds_subset,
         manifest=manifest,
         input_hashes=input_hashes,
     )
+
+
+def _read_step_files(
+    paths: Sequence[Path], meal_refs: set[str]
+) -> tuple[list[CatalogStepsFile], list[str]]:
+    """Parse every steps file. Schema and authoring failures are returned together."""
+    files: list[CatalogStepsFile] = []
+    errors: list[str] = []
+    seen: dict[str, str] = {}
+    for path in paths:
+        try:
+            raw = _read_yaml(path)
+        except (OSError, yaml.YAMLError) as exc:
+            errors.append(f"{path.name}: {exc}")
+            continue
+        if not isinstance(raw, dict):
+            errors.append(f"{path.name}: file must be a mapping")
+            continue
+        file_errors = _step_file_errors(path.name, raw, meal_refs, seen)
+        errors.extend(file_errors)
+        if file_errors:
+            continue
+        try:
+            files.append(CatalogStepsFile.model_validate(raw))
+        except ValidationError as exc:
+            errors.extend(_format_validation(path, exc))
+    return files, errors
+
+
+def _step_file_errors(
+    filename: str,
+    raw: Mapping[str, Any],
+    meal_refs: set[str],
+    seen: dict[str, str],
+) -> list[str]:
+    """G13 checks that must be visible even when a meal fails the pydantic model."""
+    errors: list[str] = []
+    lang = raw.get("default_lang")
+    if lang not in SUPPORTED_STEP_LANGS:
+        errors.append(f"G13 {filename}: default_lang {lang!r} is not a supported language")
+    meals = raw.get("meals")
+    if not isinstance(meals, list):
+        return errors
+    for index, meal in enumerate(meals):
+        if not isinstance(meal, dict):
+            errors.append(f"G13 {filename} meals[{index}]: meal must be a mapping")
+            continue
+        ref = meal.get("ref_external")
+        subject = f"{filename} {ref}" if isinstance(ref, str) else f"{filename} meals[{index}]"
+        form = meal.get("dish_form")
+        if form not in {member.value for member in DishForm}:
+            errors.append(f"G13 {subject}: dish_form {form!r} is not ONE_DISH or PLATE")
+        if isinstance(ref, str):
+            if ref not in meal_refs:
+                errors.append(f"G13 {subject}: unknown ref_external {ref!r}")
+            previous = seen.get(ref)
+            if previous is not None:
+                errors.append(f"G13 {subject}: duplicate ref_external {ref!r} (also in {previous})")
+            else:
+                seen[ref] = filename
+        steps = meal.get("steps_ar")
+        if isinstance(steps, list):
+            for number, step in enumerate(steps, start=1):
+                if not isinstance(step, str) or not step.strip():
+                    errors.append(f"G13 {subject}: step {number} is blank")
+                elif len(step) > MAX_STEP_CHARS:
+                    errors.append(
+                        f"G13 {subject}: step {number} is longer than {MAX_STEP_CHARS} characters"
+                    )
+    return errors
 
 
 def _read_ingredients(path: Path) -> CatalogIngredients:
@@ -601,6 +697,7 @@ __all__ = [
     "FNDDS_SUBSET_FILE",
     "INGREDIENTS_FILE",
     "MANUAL_FOODS_FILE",
+    "MAX_STEP_CHARS",
     "MEALS_DIR",
     "REFERENCE_SEED_FILE",
     "REPORTS_DIR",
@@ -608,7 +705,9 @@ __all__ = [
     "SOURCE_MANIFEST_FILE",
     "SR_RELEASE",
     "SR_SUBSET_FILE",
+    "STEPS_DIR",
     "SUBSET_COLUMNS",
+    "SUPPORTED_STEP_LANGS",
     "THRESHOLD_TAG_CODES",
     "CatalogAuthoringError",
     "CatalogFiles",
@@ -616,7 +715,9 @@ __all__ = [
     "CatalogIngredients",
     "CatalogMeal",
     "CatalogMealFile",
+    "CatalogMealSteps",
     "CatalogReferenceSeed",
+    "CatalogStepsFile",
     "CrossCheck",
     "CrossCheckStatus",
     "FnddsIngredientRow",

@@ -1,0 +1,16 @@
+Step I.0c review: accepted. Your catalog_v3 handling was right (keep DATASET_VERSION = catalog_v3). One addition before commit, data only: the preparation steps of batches 03, 04 and 05.
+
+The user has just placed these three files, unchanged, in `backend/data/catalog/steps/` (do not edit them; if one fails a gate, stop and report every failing line):
+- `team_recipe_steps_batch_03.yaml` (team_recipe_steps_v3, 32 meals, 159 steps)
+- `team_recipe_steps_batch_04.yaml` (team_recipe_steps_v4, 20 meals, 75 steps)
+- `team_recipe_steps_batch_05.yaml` (team_recipe_steps_v5, 31 meals, 80 steps)
+Copies are also placed in `docs/project/steps/g3_data/` like batch 02.
+
+Do:
+1. `uv run python -m app.pipeline.manifest --write`, then `--check`. Expected diff: three new hashes under `curated_files` and three new entries under `step_batches`.
+2. Load on the dev database: `uv run python -m app.pipeline.build --load` twice. Expected after the first run: `meal_steps` 314 inserted (163 unchanged), meals with steps 121, meals with `dish_form` 121, meals without steps 37 (batch 01). Second run: everything unchanged.
+3. Update the test that pins the real catalog numbers (163 rows / 38 meals) to 477 rows / 121 meals, positions contiguous from 1 for every meal, batch 01 meals still without steps and with NULL `dish_form`.
+4. Checks: ruff check, ruff format --check, mypy, `scripts.export_openapi --check`, `alembic check`, `CI=true uv run pytest -q` (0 skipped), regenerate the F.1 scenario report and restore timing-only lines as before (`git diff docs/reports/` empty).
+5. Do not commit.
+
+Report back: manifest diff, both load counts, test counts and check outputs, findings.

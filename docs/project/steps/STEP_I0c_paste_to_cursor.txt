@@ -1,0 +1,50 @@
+You are implementing **Step I.0c (data pass, Decision #166)**. Step I.0b is committed (migration `0005` is head, CI green). This pass fills the new catalog structures with data and cleans the dev database. **No schema change, no migration, no model column change.**
+
+Read first: `docs/PROJECT_CONTEXT_v4_19.md` CHANGELOG v4.18 → v4.19 (#161, #165, #166), §10.1 (`dish_form`), §10.7 (`meal_steps`), §20.1 ("seed and reference data are not schema"), §31 (catalog pipeline).
+
+## Hard rules
+1. No migration, no change to `app/db/models/*`, no change to any meal, ingredient, gram, nutrient, tag or allergen. Meal nutrition and every derived table must come out byte-identical (the recompute in the loader must report every meal unchanged on the second run).
+2. The F.1 benchmark must not move (#88): regenerated `docs/reports/f1_scenario_report.md` differs at most in the timing lines of section 6; restore those so `git diff` on it is empty. `docs/reports/planner_comparison_report.md` must not change apart from the timing lines it already strips.
+3. `docs/api/openapi.json` must not change.
+4. Everything the loader does stays in one transaction, idempotent, with all gate failures reported together (§31).
+5. Do not commit anything.
+
+## 1. Steps file in the catalog
+- Copy `docs/project/steps/g3_data/team_recipe_steps_batch_02.yaml` to `backend/data/catalog/steps/team_recipe_steps_batch_02.yaml` **unchanged** (keep the original in docs). Header: `dataset_version: team_recipe_steps_v2`, `default_lang: ar`, `note`, then `meals: [{ref_external, dish_form, steps_ar: [..]}]`. It has 38 meals and 163 steps in total; dish_form values `ONE_DISH` and `PLATE`.
+- `app/pipeline/files.py`: a pydantic model for this file (extra fields forbidden like the other catalog models): `dataset_version` (str), `default_lang` (must be `ar` for now), optional `note`, `meals` list of `{ref_external: str, dish_form: DishForm, steps_ar: list[str] (min 1)}`. `read_catalog` reads every `steps/*.yaml` in sorted order (the `steps/` directory is **optional**: a catalog without it is valid, so existing test fixtures keep working). Add the step files to `input_hashes`.
+- Authoring gate (new, in `gates.py`, reported with the others): every `ref_external` exists among the catalog meals; no `ref_external` appears twice across all step files; every step is non-blank after strip; no step longer than 500 characters; `default_lang` is a supported language. Failures are `CatalogAuthoringError` lines like the existing gates.
+
+## 2. Loader (`app/pipeline/load.py`)
+- For each meal listed in a step file: set `meals.dish_form` from the file, and make `meal_steps` for `(meal_id, lang = default_lang)` equal to the file: positions `1..n` in file order; insert missing positions, update changed text, delete positions above `n`. Use the existing `_upsert` / `_sync` helpers and `TableCounts` (add a `meal_steps` entry to the report; `dish_form` changes count as meal updates).
+- For catalog meals **not** listed in any step file: leave `dish_form` NULL and delete any `meal_steps` rows they have (the files are the source of truth). Never touch steps of meals outside the catalog's dataset versions.
+- `dish_form` and steps do not feed `recompute_meal`; nutrition and derived tables must not change because of them.
+- Run report (`write_reports`): add the per-table counts for `meal_steps` and the number of meals with and without steps.
+
+## 3. Manifest
+- `app/pipeline/manifest.py`: keep `DATASET_VERSION = "catalog_v2"` (nutrition and meals are unchanged). Add a `step_batches` section in the same shape as `meal_batches` (`{path: {dataset_version, meal_count, step_count}}`); the steps file hash appears under `curated_files` through `input_hashes`. Regenerate `DATASET_MANIFEST.yaml` with `--write` and show its diff in the report (expected: only the new hash and the new section).
+
+## 4. Dev database rebuild (closes the I.0 note: 110 F.1 slice meals still active in dev)
+- New script `backend/scripts/rebuild_dev_db.py`: refuses to run unless `--yes` is given **and** the database host in the configured URL is `localhost`, `127.0.0.1` or `db` (the compose service); prints the target database name before doing anything. Steps: `alembic downgrade base`, `alembic upgrade head` (through the Alembic API, not a shell), then the same load as `python -m app.pipeline.build --load` (reference seed + catalog), then print: active meals by `dataset_version`, total `meal_steps` rows, meals with `dish_form` set.
+- Run it on the dev database. Expected afterwards: 75 active meals (`team_recipes_v1` 37 + `team_recipes_v2` 38; after a rebuild from empty, meals deactivated in the batch 01 review (NG-D09, NG-L12, NG-S02) may simply not exist, which is fine; report the exact numbers you see), **no** `f1_slice_v1` meals, 163 `meal_steps` rows on 38 meals, 38 meals with `dish_form`.
+- The F.1 benchmark keeps using its own isolated database fixture (#101); do not change it.
+- Add one short paragraph to `README.md` under the existing dev-setup section: how and when to run the script.
+
+## 5. Tests
+- Files: the real steps file parses; a copy with an unknown `ref_external`, a duplicate `ref_external`, a blank step, a 501-character step, or `dish_form: BOWL` fails with one line per problem, all reported together.
+- Loader on the real catalog (integrity database): 163 `meal_steps` rows, positions contiguous from 1 for each of the 38 meals, `dish_form` set for exactly those 38; meals of batch 01 have no steps and NULL `dish_form`.
+- Sync: in a temporary copy of the catalog, shorten one meal's steps from 5 to 3 → positions 4 and 5 deleted, others unchanged; change one step's text → one update; remove a meal from the steps file → its steps deleted and `dish_form` back to NULL.
+- Idempotency: second load reports `meal_steps` all unchanged and every recompute unchanged.
+- Catalog without a `steps/` directory still builds (existing fixtures).
+- `rebuild_dev_db.py`: unit test of the guard only (refuses without `--yes`; refuses for a non-local host). Do not run a downgrade in the test suite through this script.
+- Every existing pipeline, service, planner, scenario and API test passes with unchanged expectations.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check` (after `--write`), `uv run python -m scripts.rebuild_dev_db --yes`, then `uv run python -m app.pipeline.build --load` a second time (idempotency on dev), `uv run alembic check`, `CI=true uv run pytest -q` (0 skipped), then regenerate `uv run python -m scripts.f1_scenario_report` and `git diff --stat docs/reports/` (restore timing-only lines as in I.0b and say so).
+
+## Report back
+1. Files created/changed.
+2. `DATASET_MANIFEST.yaml` diff.
+3. Output of `rebuild_dev_db.py` and of the second load (counts per table, `meal_steps` included).
+4. Scenario/comparison report diff (expected: empty after restoring timing lines), openapi and manifest check results.
+5. Test counts and check outputs.
+6. Findings (one line each, with the section number) and assumptions.

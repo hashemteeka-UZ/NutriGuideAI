@@ -28,6 +28,7 @@ from app.db.models import (
     IngredientTag,
     Meal,
     MealIngredient,
+    MealStep,
     MealTag,
     MealTranslation,
     Nutrient,
@@ -39,6 +40,7 @@ from app.pipeline.files import (
     FDC_CATEGORY_EN,
     CatalogFiles,
     CatalogMeal,
+    CatalogMealSteps,
     CrossCheckStatus,
     IngredientFoodSource,
     YieldFactorKind,
@@ -63,6 +65,7 @@ TABLES = (
     "ingredient_tags",
     "meals",
     "meal_translations",
+    "meal_steps",
     "meal_ingredients",
     "meal_tags",
 )
@@ -85,6 +88,8 @@ class CatalogLoadReport:
     deactivated_meals: list[str] = field(default_factory=list)
     reactivated_meals: list[str] = field(default_factory=list)
     recomputed: list[MealRecompute] = field(default_factory=list)
+    meals_with_steps: int = 0
+    meals_without_steps: int = 0
 
     @property
     def all_unchanged(self) -> bool:
@@ -314,6 +319,7 @@ class _Loader:
         )
         meal_ids = self._load_meals(cuisine_ids, tag_ids, food_ids, ingredient_ids)
         self._deactivate_missing_meals({ref for ref in meal_ids.values()})
+        self._load_steps(meal_ids)
         self._recompute(meal_ids)
 
     def _load_categories(self, foods: Mapping[str, FilledFood]) -> dict[str, int]:
@@ -498,6 +504,7 @@ class _Loader:
                     "is_verified": meal.reviewed_by is not None,
                     "is_active": True,
                     "dataset_version": batch.dataset_version,
+                    "dish_form": self._dish_form(meal.ref_external),
                 },
             )
             meal_ids[meal_id] = meal.ref_external
@@ -555,6 +562,56 @@ class _Loader:
             ("tag_id",),
             {(tag_id,): {} for tag_id in sorted(wanted - derived)},
         )
+
+    def _step_specs(self) -> dict[str, tuple[str, CatalogMealSteps]]:
+        specs: dict[str, tuple[str, CatalogMealSteps]] = {}
+        for step_file in self.files.step_files:
+            for meal in step_file.meals:
+                specs[meal.ref_external] = (step_file.default_lang, meal)
+        return specs
+
+    def _dish_form(self, ref_external: str) -> str | None:
+        spec = self._step_specs().get(ref_external)
+        if spec is None:
+            return None
+        return spec[1].dish_form.value
+
+    def _load_steps(self, accepted: Mapping[int, str]) -> None:
+        """Steps files are the source of truth for catalog meals only (§10.7, #166)."""
+        specs = self._step_specs()
+        versions = {batch.dataset_version for batch in self.files.meal_files}
+        accepted_ids = set(accepted)
+        if versions:
+            rows = self.session.execute(
+                select(Meal).where(Meal.dataset_version.in_(versions))
+            ).scalars()
+            for meal in rows:
+                ref = meal.ref_external or ""
+                spec = specs.get(ref)
+                if meal.meal_id not in accepted_ids:
+                    desired_form = spec[1].dish_form.value if spec is not None else None
+                    if not _same(meal.dish_form, desired_form):
+                        meal.dish_form = desired_form
+                        self.report.tables["meals"].updated += 1
+                if spec is None:
+                    desired: dict[tuple[Any, ...], Mapping[str, Any]] = {}
+                else:
+                    lang, step_meal = spec
+                    desired = {
+                        (lang, position): {"text": text}
+                        for position, text in enumerate(step_meal.steps_ar, start=1)
+                    }
+                self._sync(
+                    "meal_steps",
+                    MealStep,
+                    {"meal_id": meal.meal_id},
+                    ("lang", "position"),
+                    desired,
+                )
+        accepted_refs = set(accepted.values())
+        listed = set(specs)
+        self.report.meals_with_steps = len(accepted_refs & listed)
+        self.report.meals_without_steps = len(accepted_refs - listed)
 
     def _deactivate_missing_meals(self, accepted_refs: set[str]) -> None:
         versions = {batch.dataset_version for batch in self.files.meal_files}

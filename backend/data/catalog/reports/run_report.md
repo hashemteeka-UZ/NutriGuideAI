@@ -12,6 +12,10 @@
 - `sources/fndds_ingredient_subset.csv`: `733f0c8a17d26ed6ecd820e6c716b67919d17a9b117d36aa4546b2d25185cf6e`
 - `sources/source_manifest.yaml`: `107f09d6c8f7975b7cb50643144dbf1f3305ac4f6ae9cfafec78e5c51725798f`
 - `sources/sr_legacy_subset.csv`: `9b8a1c09d0f79b8b99a4a8e4e2538c2e2b8a35fa83da3bec1b4e3f29d629c856`
+- `steps/team_recipe_steps_batch_02.yaml`: `e60b6fb6c0119b2c73d4926baa4d008c87cbba99899236ab75fca300fae4ab54`
+- `steps/team_recipe_steps_batch_03.yaml`: `3fac2f0b006952b1320e4bb0811ed268c3c9542e01cabce5b8f77a507054bf02`
+- `steps/team_recipe_steps_batch_04.yaml`: `f9d9eedc7a304cea0cb36b83211ddaafd611724865b617c11024cf223f02128b`
+- `steps/team_recipe_steps_batch_05.yaml`: `4e6282b26fcfa56681aa81267a3c792a1e9c69a83cbac96391dd63a15d3b3d84`
 
 ## foods
 
@@ -86,8 +90,11 @@
   ingredient_tags                0 /    0 /    4 /    0
   meals                          0 /    0 /  158 /    0
   meal_translations              0 /    0 /  158 /    0
+  meal_steps                     0 /    0 /  477 /    0
   meal_ingredients               0 /    0 / 1271 /    0
   meal_tags                      0 /    0 /  422 /    0
 
 - deactivated meals: []
 - reactivated meals: []
+- meals with steps: 121
+- meals without steps: 37

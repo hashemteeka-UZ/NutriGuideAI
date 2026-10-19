@@ -37,6 +37,18 @@ The optional `db_test` service (throwaway database, no persistent volume) is
 reserved for schema tests and is started with
 `docker compose --profile test up -d db_test`.
 
+Rebuild the dev database from the catalog only when the schema has changed or
+when the F.1 benchmark slice has been loaded into dev and you want that slice
+gone. From `backend/`, and only when `DATABASE_URL` points at `localhost`,
+`127.0.0.1`, or the compose service `db`:
+
+```bash
+uv run python -m scripts.rebuild_dev_db --yes
+```
+
+The script prints the target database name, drops the schema, migrates to
+head, and loads the reference seed and the catalog.
+
 ### Run the API
 
 From `backend/`:

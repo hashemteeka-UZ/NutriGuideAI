@@ -6,6 +6,8 @@ from collections.abc import Mapping, Sequence
 
 from app.db.models.catalog import WeightMethod
 from app.pipeline.files import (
+    MAX_STEP_CHARS,
+    SUPPORTED_STEP_LANGS,
     THRESHOLD_TAG_CODES,
     CatalogFiles,
     CatalogIngredient,
@@ -147,6 +149,49 @@ def gate_manual_foods(manuals: Sequence[ManualFood], mandatory: Sequence[str]) -
     return failures
 
 
+def gate_recipe_steps(files: CatalogFiles) -> list[GateFailure]:
+    """G13: steps files name catalog meals, once, with non-blank steps of at most 500 characters."""
+    meal_refs = {meal.ref_external for _, meal in files.meals}
+    failures: list[GateFailure] = []
+    seen: dict[str, str] = {}
+    for step_file in files.step_files:
+        if step_file.default_lang not in SUPPORTED_STEP_LANGS:
+            failures.append(
+                GateFailure(
+                    "G13",
+                    step_file.dataset_version,
+                    f"default_lang {step_file.default_lang!r} is not a supported language",
+                )
+            )
+        for meal in step_file.meals:
+            subject = meal.ref_external
+            if subject not in meal_refs:
+                failures.append(GateFailure("G13", subject, f"unknown ref_external {subject!r}"))
+            previous = seen.get(subject)
+            if previous is not None:
+                failures.append(
+                    GateFailure(
+                        "G13",
+                        subject,
+                        f"duplicate ref_external {subject!r} (also in {previous})",
+                    )
+                )
+            else:
+                seen[subject] = step_file.dataset_version
+            for number, step in enumerate(meal.steps_ar, start=1):
+                if not step.strip():
+                    failures.append(GateFailure("G13", subject, f"step {number} is blank"))
+                elif len(step) > MAX_STEP_CHARS:
+                    failures.append(
+                        GateFailure(
+                            "G13",
+                            subject,
+                            f"step {number} is longer than {MAX_STEP_CHARS} characters",
+                        )
+                    )
+    return failures
+
+
 def run_catalog_gates(
     files: CatalogFiles, amounts: Mapping[str, Mapping[str, float]]
 ) -> dict[str, list[GateFailure]]:
@@ -162,4 +207,5 @@ def run_catalog_gates(
         "G10": gate_manual_threshold_tags(files.ingredients.ingredients, meals),
         "G11": gate_yield_factor_kind(meals),
         "G12": gate_manual_foods(files.manuals, mandatory),
+        "G13": gate_recipe_steps(files),
     }

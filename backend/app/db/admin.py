@@ -51,3 +51,8 @@ def create_database(admin: Engine, name: str) -> None:
 def upgrade_head(engine: Engine) -> None:
     with engine.begin() as conn:
         command.upgrade(alembic_config(conn), "head")
+
+
+def downgrade_base(engine: Engine) -> None:
+    with engine.begin() as conn:
+        command.downgrade(alembic_config(conn), "base")

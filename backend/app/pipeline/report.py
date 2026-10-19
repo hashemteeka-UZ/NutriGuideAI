@@ -128,6 +128,8 @@ def format_run_report(
         lines.append("")
         lines.append(f"- deactivated meals: {load.deactivated_meals}")
         lines.append(f"- reactivated meals: {load.reactivated_meals}")
+        lines.append(f"- meals with steps: {load.meals_with_steps}")
+        lines.append(f"- meals without steps: {load.meals_without_steps}")
         lines.append("")
     return "\n".join(lines)
 

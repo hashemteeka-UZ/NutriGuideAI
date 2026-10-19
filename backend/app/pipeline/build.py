@@ -23,7 +23,7 @@ from app.pipeline.load import CatalogLoadReport, load_catalog
 from app.pipeline.report import write_reports
 
 DEFAULT_DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "catalog"
-AUTHORING_GATES = ("G7", "G9")
+AUTHORING_GATES = ("G7", "G9", "G13")
 
 
 @dataclass
