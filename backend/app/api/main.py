@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 from slowapi.errors import RateLimitExceeded
+from starlette.middleware.gzip import GZipMiddleware
 
 from app.api.errors import ServiceErrorMiddleware, register_exception_handlers
 from app.api.limiting import limiter, rate_limit_handler
@@ -28,10 +29,10 @@ from app.api.routers import (
     water,
     weights,
 )
+from app.api.version import API_VERSION
 from app.core.config import get_settings
 
 API_PREFIX: Final = "/api/v1"
-API_VERSION: Final = "0.4.0"
 
 _CORS_METHODS: Final = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 _CORS_HEADERS: Final = ["Authorization", "Content-Type", "Accept-Language", "X-Request-ID"]
@@ -53,8 +54,10 @@ def create_app() -> FastAPI:
         generate_unique_id_function=_operation_id,
     )
     # Starlette inserts each middleware at the front, so the first add is the inner one.
-    # Service errors stay inside the request-id middleware, and CORS stays outside both.
+    # Service errors stay inside gzip, gzip stays inside the request-id middleware,
+    # and CORS stays outside all of them.
     application.add_middleware(ServiceErrorMiddleware)
+    application.add_middleware(GZipMiddleware, minimum_size=1024)
     application.add_middleware(RequestIdMiddleware)
     settings = get_settings()
     if settings.CORS_ORIGINS:

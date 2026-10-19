@@ -1289,7 +1289,7 @@
       },
       "HealthResponse": {
         "example": {
-          "api_version": "0.3.0",
+          "api_version": "0.5.0",
           "database": "ok",
           "dataset_version": "catalog_v3",
           "default_planner": "cpsat",
@@ -4954,7 +4954,7 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "0.4.0"
+    "version": "0.5.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -5230,7 +5230,7 @@
     },
     "/api/v1/catalog/snapshot": {
       "get": {
-        "description": "Every active meal without a personal stance. Return 304 when If-None-Match equals the ETag.\nError codes: UNAUTHORIZED",
+        "description": "Every active meal, without a personal stance, ordered by meal_id. dataset_version is the catalog version. ETag is a strong tag: the SHA-256 of the canonical JSON of the snapshot without generated_at (sorted keys, no spaces), plus the language. If-None-Match equal to that tag, a comma-separated list containing it, or * returns 304 with an empty body and the ETag. Otherwise 200 with ETag and Cache-Control: private, no-cache. Vary is Accept-Language, Authorization, and Accept-Encoding when the body is large enough to gzip. A response of at least 1024 bytes is gzip-encoded when the client accepts gzip.\nError codes: UNAUTHORIZED",
         "operationId": "get_catalog_snapshot",
         "parameters": [
           {
@@ -6232,7 +6232,7 @@
     },
     "/api/v1/meals": {
       "get": {
-        "description": "Active meals. Without q, alphabetical. Nutrition is for one serving. Names and steps follow Accept-Language (ar default, en).\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "Active meals for browsing and logging. With q, the meal name and every translation are ranked like ingredient search: exact, then prefix, then contains, then trigram similarity; one row per meal. Without q, meals are ordered by the normalized displayed name, then meal_id. slot keeps meals that carry that slot's occasion tag. cuisine filters by cuisine code; an unknown code returns an empty page. Results are not filtered by the caller's health conditions or allergies; each meal lists its allergen codes so the app can mark them. Names follow Accept-Language (ar default, en). Nutrition is for one serving.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
         "operationId": "list_meals",
         "parameters": [
           {
@@ -6353,7 +6353,7 @@
     },
     "/api/v1/meals/{meal_id}": {
       "get": {
-        "description": "One meal, including nutrients, ingredients, and steps in the requested language (Arabic when the meal has no translation). steps is empty when the meal has none.\nError codes: UNAUTHORIZED, MEAL_NOT_FOUND",
+        "description": "One active meal. The name is the meal name when Accept-Language matches default_lang, otherwise the translation in that language, otherwise the meal name. Steps are in the requested language, then Arabic, or an empty list when the meal has none. kcal is the stored energy_kcal per serving. dataset_version is this meal's batch id. Not filtered by the caller's health conditions or allergies.\nError codes: UNAUTHORIZED, MEAL_NOT_FOUND",
         "operationId": "get_meal",
         "parameters": [
           {

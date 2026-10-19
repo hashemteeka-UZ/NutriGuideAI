@@ -38,5 +38,5 @@ def test_reference_is_public_localized_and_matches_health(
         == "Hypertension"
     )
     health = client.get("/api/v1/health")
-    assert body["dataset_version"] == health.json()["dataset_version"]
-    assert body["dataset_version"] == "f1_slice_v1"
+    assert health.json()["dataset_version"] is None
+    assert body["dataset_version"] == "unknown"

@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_MINUTES: int = 15
     REFRESH_TOKEN_DAYS: int = 30
     RATE_LIMIT_ENABLED: bool = True
+    CATALOG_MANIFEST_PATH: Path = (
+        REPO_ROOT / "backend" / "data" / "catalog" / "DATASET_MANIFEST.yaml"
+    )
 
     @field_validator("DATABASE_URL")
     @classmethod

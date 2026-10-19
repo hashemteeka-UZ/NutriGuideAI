@@ -31,12 +31,12 @@ from app.services.consumption import (
     PlanItemAlreadyLoggedError,
     PlanItemNotFoundError,
 )
-from app.services.ingredient_search import EmptySearchError
 from app.services.plan_swap import SwapRejectedError
 from app.services.planner import MissingTargetError, NoFeasiblePlanError
 from app.services.profile import UnknownCodeError
 from app.services.screening import ProfileNotFoundError
 from app.services.targets import MissingWeightError, TargetValidationError, UserNotEligibleError
+from app.services.text_search import EmptySearchError
 from app.services.weight import ClockSkewError
 
 logger = logging.getLogger(API_LOGGER_NAME)

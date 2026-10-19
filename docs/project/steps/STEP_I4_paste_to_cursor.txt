@@ -1,0 +1,85 @@
+You are implementing **Step I.4 (catalog: meal list and search, meal detail, offline catalog snapshot, catalog version fix; Decisions #183 to #188)**. Step I.3 is committed (`6643183`, CI green). This pass replaces the 501 stubs of `GET /meals`, `GET /meals/{meal_id}` and `GET /catalog/snapshot`, fixes how the catalog version is found, and makes `scripts/f1_scenario_report.py --catalog` runnable again.
+
+The user has just placed updated documents (do not edit their content; report contradictions): `docs/project/DEV_JOURNAL.md` (J-040), `docs/project/CONTEXT_INDEX.md`, `docs/project/steps/STEP_I_plan.md` (Decisions #183 to #188, the source of truth for this pass), and this file in `docs/project/steps/`.
+
+## Hard rules
+1. No schema change and no migration. `uv run alembic check` stays clean.
+2. No change to catalog data, loaders, `calc_v1`, tag rules, planner or optimizer. `docs/reports/f1_scenario_report.md`, `planner_comparison_report.md` and `catalog_coverage_report.md` stay byte-identical. Only `docs/reports/catalog_scenario_report.md` may be regenerated (section 6).
+3. Services never import from `app/api` (#124). Routers parse, call one service function, map to the schema.
+4. The contract changes only where section 7 says. Regenerate `docs/api/openapi.json`, drift test green.
+5. Do not commit anything.
+
+## 1. Catalog version (#183)
+Problem found in I.3: `meals.dataset_version` holds the batch id (`team_recipes_v1` to `team_recipes_v5`), while the catalog version (`catalog_v3`) lives in `backend/data/catalog/DATASET_MANIFEST.yaml` (`dataset_version` and `meal_batches.*.dataset_version`). `/health` therefore returns `null` and `/reference` returns `"unknown"`.
+- `app/services/catalog_version.py`: `active_dataset_version(session) -> str | None` now:
+  1. Reads the manifest once per process (cached; path from settings, default the file above; add `CATALOG_MANIFEST_PATH` to settings and `.env.example`).
+  2. Collects the distinct `dataset_version` of active meals.
+  3. Returns the manifest `dataset_version` when that set equals the set of `meal_batches` versions in the manifest. Otherwise logs one warning (expected vs found, no other data) and returns `None`. A missing or unreadable manifest also gives `None` with a warning, never a 500.
+- Replace the `from app.api.observability import API_LOGGER_NAME` import in this service with a module logger (`logging.getLogger(__name__)`): services must not import the API package.
+- Note in the README deploy notes that the manifest must ship with the server image.
+- Tests: the dev-like case (five batches, manifest `catalog_v3`) → `catalog_v3`; a missing batch, an extra batch, no manifest → `None` and one warning; `/health` and `/reference` both show `catalog_v3` on a database loaded from the catalog. Update the health tests that assumed one meal version.
+- `HealthResponse` example: `api_version` from the `API_VERSION` constant, not a literal.
+
+## 2. Shared text search (#185)
+- New `app/services/text_search.py` with the pieces now inside `ingredient_search.py`: `normalize_query(q) -> str` (raises `EmptySearchError` when empty after `normalize_search_text`), `like_pattern(...)`, `match_rank(column, normalized)` (3 exact, 2 prefix, 1 contains, 0 otherwise), `SIMILARITY_MIN = 0.3`.
+- `ingredient_search.py` uses them; its behaviour and tests stay the same (the existing tests prove it). `EmptySearchError` keeps its `422 VALIDATION_ERROR` mapping.
+
+## 3. Meal reading service `app/services/meal_catalog.py` (#184)
+Shared rules for list, detail and snapshot:
+- Only active meals (`is_active = true`). An inactive or unknown id → `MealNotFoundError` (404 `MEAL_NOT_FOUND`).
+- Name: if `lang == meal.default_lang` use `meal.name`; else the `meal_translations` row in `lang` when present; else `meal.name`.
+- Steps: `meal_steps` in `lang` ordered by `position`; if none in `lang`, the Arabic steps; else `[]`.
+- Nutrition per serving and per 100 g from `meal_nutrients` (computed by `calc_v1`; never recomputed here). `kcal` = the stored `energy_kcal` per serving (`ENERGY_NUTRIENT`), not 4/4/9. `protein_g`, `carb_g`, `fat_g` from their stored nutrients. `serving_grams = total_grams / servings`. Numbers rounded to 3 places (#128).
+- `nutrients`: every stored nutrient of the meal with its code and unit, ordered by the nutrient's display order if one exists, else by code.
+- `ingredients`: by `position`, name through `pick_name` (ingredient Arabic/English canonical names), `grams_per_serving = grams / servings`, `is_optional`.
+- `allergens`: allergen codes; `tags`: dietary tag codes; both sorted. `cuisine`: cuisine code or null.
+- `dataset_version` of a meal = its own batch id (`meals.dataset_version`). The snapshot's top-level `dataset_version` = the catalog version of section 1.
+- `source` = `meals.source`.
+- Load related rows in batched queries (one per related table for the whole page), not one query per meal. A test counts queries for a 20-meal page and asserts a fixed small number.
+
+## 4. `GET /meals` and `GET /meals/{meal_id}`
+- `list_meals(session, user_id, query, lang) -> (summaries, total)`:
+  - `q` given: normalize with `normalize_query`; match `meals.name_normalized` and `meal_translations.name_normalized` (any language) with the same rank rule as ingredients and `similarity >= SIMILARITY_MIN`; one row per meal ranked by best match, then similarity, then `meal_id`.
+  - No `q`: ordered by the normalized displayed name, then `meal_id`.
+  - `slot` filter: the meal carries that slot's occasion tag (`SLOT_OCCASION` in `meal_filter.py`, reuse it, do not copy it).
+  - `cuisine` filter: cuisine code; an unknown code returns an empty page (no error, the contract lists none).
+  - `total` before paging. `my_stance` from the caller's `user_meal_prefs`.
+- `get_meal(session, user_id, meal_id, lang)` → `MealDetail` with `my_stance`.
+- Browsing is not filtered by the user's health or allergies (the planner does that); the app can mark allergens from the `allergens` list. State this in the route description.
+
+## 5. `GET /catalog/snapshot` (#186)
+- `catalog_snapshot(session, lang) -> (snapshot, etag)`: every active meal as `SnapshotMeal` (no stance), ordered by `meal_id`, `generated_at = now`.
+- ETag = strong tag `"<sha256 hex>"` of the canonical JSON of the snapshot without `generated_at` (sorted keys, no spaces) plus the language. So the tag changes exactly when the content or language changes.
+- `If-None-Match` equal to the tag (also accept the list form and `*`) → `304` with the `ETag` header and an empty body. Otherwise `200` with `ETag`, `Vary: Accept-Language, Authorization`, `Cache-Control: private, no-cache`.
+- Add Starlette `GZipMiddleware(minimum_size=1024)` in `create_app` (outside the service-error middleware, inside CORS; keep the existing comment about order accurate). A test asserts the snapshot is gzip-encoded when the client sends `Accept-Encoding: gzip`, and report the uncompressed and compressed sizes of the dev snapshot.
+- Move the router's docstring from "(I.7)" to "(I.4)".
+
+## 6. F.1 scenario `--catalog` (#187)
+In I.0d the `--catalog` mode failed on the catalog-only dev database because persona P3 logs a meal from the F.1 slice that is not in the catalog. Find where that meal is chosen, and in `--catalog` mode only choose an active catalog meal by a fixed rule (for example the lowest `meal_id` that the scenario's own filter accepts for that slot), so the run is reproducible. The bench (#88) mode is untouched and its report stays byte-identical. Regenerate `docs/reports/catalog_scenario_report.md` and report what changed in it compared with the hand-edited version.
+
+## 7. Contract changes (regenerate `openapi.json`)
+- `API_VERSION` → `"0.5.0"`.
+- Descriptions only: `/meals` (ranking, filters, unknown cuisine gives an empty page, not filtered by health), `/meals/{id}` (name and steps language fallback, `dataset_version` is the meal's batch), `/catalog/snapshot` (ETag rule, 304, gzip). The `HealthResponse` example change of section 1.
+- No schema, field or status change. If a field cannot be filled as specified, stop and report instead of changing the schema.
+- `docs/api/API_GUIDE.md`: a short "Offline catalog" section (store the ETag, send `If-None-Match`, 304 means keep the local copy).
+
+## 8. Tests
+Service and API tests for everything above, at least:
+- List: token required; Arabic search with and without hamza/tashkeel finds the same meal; English search finds a meal through its translation; prefix ranks above contains; `slot=BREAKFAST` returns only meals with `breakfast_suitable`; `cuisine=LIBYAN`; unknown cuisine → empty page with `total 0`; paging and `total`; `my_stance` shows the caller's LIKE and not another user's; inactive meals never listed; `q` only spaces → 422.
+- Detail: Arabic default; `Accept-Language: en` gives the English name when a translation exists and Arabic otherwise; steps fall back to Arabic; a meal without steps gives `[]`; `kcal` equals the stored energy nutrient; inactive and unknown id → 404.
+- Snapshot: 200 with ETag; same request with `If-None-Match` → 304 empty body; different language → different ETag; deactivating a meal inside the test transaction → different ETag; gzip.
+- Catalog version tests of section 1.
+- Every remaining stub still answers 401 without a token and 501 with one.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, then the FULL `CI=true uv run pytest -q` (0 skipped; run it again in full after any fix). Then run the server and by `curl` on the dev database: `GET /health` (dataset_version), register, `GET /meals?q=شكشوكة`, `GET /meals?slot=BREAKFAST&limit=3`, one `GET /meals/{id}` with and without `Accept-Language: en`, `GET /catalog/snapshot` (status, ETag, size) and the same with `If-None-Match` (304), then `DELETE /me`.
+
+## Report back
+1. Files created/changed.
+2. The catalog version result on the dev database and the warnings, if any.
+3. The `curl` session: status codes and the important fields, tokens shortened; snapshot sizes plain and gzip.
+4. The query count for a 20-meal page.
+5. What changed in `catalog_scenario_report.md`.
+6. `git diff --stat docs/api/openapi.json` and the contract changes.
+7. Test counts and check outputs.
+8. Findings (one line each, with the section number) and assumptions.

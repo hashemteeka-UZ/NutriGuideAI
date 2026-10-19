@@ -3,22 +3,22 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Final
 
-from sqlalchemy import case, func, or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
-from app.core.text import normalize_search_text, pick_name
+from app.core.text import pick_name
 from app.db.models import Ingredient, IngredientAlias
 from app.db.models.reference import ReviewStatus
+from app.services.text_search import (
+    SIMILARITY_MIN,
+    EmptySearchError,
+    like_pattern,
+    match_rank,
+    normalize_query,
+)
 
-# pg_trgm similarity that still catches a small typo without matching unrelated words.
-SIMILARITY_MIN: Final = 0.3
-
-
-class EmptySearchError(ValueError):
-    def __init__(self) -> None:
-        super().__init__("q is empty after normalization")
+__all__ = ["EmptySearchError", "IngredientHit", "search_ingredients"]
 
 
 @dataclass(frozen=True)
@@ -29,34 +29,17 @@ class IngredientHit:
     food_id: int | None
 
 
-def _like_pattern(fragment: str, *, prefix: bool) -> str:
-    escaped = fragment.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-    if prefix:
-        return f"{escaped}%"
-    return f"%{escaped}%"
-
-
 def search_ingredients(
     session: Session, q: str, limit: int, offset: int, lang: str
 ) -> tuple[tuple[IngredientHit, ...], int]:
     """One row per ingredient, best alias first. Rejected ingredients are left out."""
-    normalized = normalize_search_text(q)
-    if not normalized:
-        raise EmptySearchError
-
+    normalized = normalize_query(q)
     alias = IngredientAlias.alias_normalized
-    contains = _like_pattern(normalized, prefix=False)
-    prefix = _like_pattern(normalized, prefix=True)
-    rank = case(
-        (alias == normalized, 3),
-        (alias.like(prefix, escape="\\"), 2),
-        (alias.like(contains, escape="\\"), 1),
-        else_=0,
-    )
+    contains = like_pattern(normalized, prefix=False)
     matched = (
         select(
             IngredientAlias.ingredient_id.label("ingredient_id"),
-            func.max(rank).label("match_rank"),
+            func.max(match_rank(alias, normalized)).label("match_rank"),
             func.max(func.similarity(alias, normalized)).label("similarity"),
         )
         .where(

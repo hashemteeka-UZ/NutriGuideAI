@@ -3,6 +3,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from app.api.schemas.common import with_example
+from app.api.version import API_VERSION
 
 
 class HealthResponse(BaseModel):
@@ -15,7 +16,7 @@ class HealthResponse(BaseModel):
     model_config = with_example(
         {
             "status": "ok",
-            "api_version": "0.3.0",
+            "api_version": API_VERSION,
             "database": "ok",
             "dataset_version": "catalog_v3",
             "default_planner": "cpsat",

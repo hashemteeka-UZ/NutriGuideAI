@@ -148,6 +148,9 @@ _LIVE = {
     "list_meal_prefs",
     "set_meal_pref",
     "delete_meal_pref",
+    "list_meals",
+    "get_meal",
+    "get_catalog_snapshot",
 }
 
 _FUTURE_CODES = (

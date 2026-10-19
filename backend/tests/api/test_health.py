@@ -22,21 +22,31 @@ def test_health_returns_ok_with_exact_keys(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.json() == {
         "status": "ok",
-        "api_version": "0.4.0",
+        "api_version": "0.5.0",
         "database": "ok",
         "dataset_version": None,
         "default_planner": "cpsat",
     }
 
 
-def test_health_dataset_version_matches_the_active_meal(
+def test_health_dataset_version_matches_the_manifest_when_batches_match(
     client: TestClient, integrity_conn: Connection
 ) -> None:
-    make_meal(integrity_conn, dataset_version="catalog-2026.10", is_active=True)
+    for version in (
+        "team_recipes_v1",
+        "team_recipes_v2",
+        "team_recipes_v3",
+        "team_recipes_v4",
+        "team_recipes_v5",
+    ):
+        make_meal(integrity_conn, dataset_version=version, is_active=True)
     response = client.get("/api/v1/health")
     assert response.status_code == 200
-    assert response.json()["dataset_version"] == "catalog-2026.10"
+    assert response.json()["dataset_version"] == "catalog_v3"
     assert response.json()["default_planner"] == "cpsat"
+    reference = client.get("/api/v1/reference")
+    assert reference.status_code == 200
+    assert reference.json()["dataset_version"] == "catalog_v3"
 
 
 def test_health_dataset_version_is_none_when_active_versions_differ(
@@ -51,15 +61,19 @@ def test_health_dataset_version_is_none_when_active_versions_differ(
             records.append(record)
 
     handler = _Capture()
-    api_log = logging.getLogger("nutriguide.api")
-    api_log.addHandler(handler)
+    version_log = logging.getLogger("app.services.catalog_version")
+    version_log.addHandler(handler)
+    version_log.setLevel(logging.WARNING)
     try:
         response = client.get("/api/v1/health")
     finally:
-        api_log.removeHandler(handler)
+        version_log.removeHandler(handler)
     assert response.status_code == 200
     assert response.json()["dataset_version"] is None
-    assert any("more than one dataset_version" in record.getMessage() for record in records)
+    warnings = [record for record in records if record.levelno >= logging.WARNING]
+    assert len(warnings) == 1
+    assert "expected" in warnings[0].getMessage()
+    assert "found" in warnings[0].getMessage()
 
 
 def test_health_returns_database_unavailable_when_execute_raises() -> None:

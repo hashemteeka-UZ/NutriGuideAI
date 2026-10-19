@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.4.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.5.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -88,9 +88,11 @@ Write a new UUID into `client_uuid` (and `op_id` for sync) before the request le
 
 `POST /plans/days` can answer **503** `PLANNER_BUSY` with a `Retry-After` header. Wait that long, then try the same day again. A week plan is seven `POST /plans/days` calls, one date at a time, so the UI can show progress. `GET /plans?from=&to=` reads the days that already have a plan.
 
-`GET /catalog/snapshot` sends `ETag`. Store it and send it back as `If-None-Match`. **304** means the catalog on the phone is current.
-
 Logging a plan item, swapping, and saving a meal preference also write learning events on the server. The app only posts `IMPRESSION`, `VIEW`, `SAVE`, `RATE`, `COOK`, and `SKIP` to `POST /interactions`. `RATE` must include `value` from 1 to 5.
+
+## Offline catalog
+
+`GET /catalog/snapshot` returns every active meal and a strong `ETag`. Store the body and the tag on the phone. On the next launch send that tag as `If-None-Match`. **304** with an empty body means the catalog has not changed: keep the local copy. **200** means replace the local copy and store the new tag. The response may be gzip-compressed. The snapshot's `dataset_version` is the catalog version; each meal's `dataset_version` is its own batch.
 
 ## 6. Errors
 

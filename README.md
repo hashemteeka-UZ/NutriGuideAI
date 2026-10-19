@@ -61,6 +61,10 @@ uv run uvicorn app.api.main:app --reload
 
 Open `http://127.0.0.1:8000/api/docs` and `http://127.0.0.1:8000/api/v1/health`.
 
+The catalog version reported by `/health` and `/reference` is read from
+`backend/data/catalog/DATASET_MANIFEST.yaml` (`CATALOG_MANIFEST_PATH`). A
+deployed server image must include that file. Without it the version is null.
+
 Refresh the OpenAPI contract (writes `docs/api/openapi.json`):
 
 ```bash

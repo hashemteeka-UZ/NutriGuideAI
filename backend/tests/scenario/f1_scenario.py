@@ -33,7 +33,12 @@ from app.services.adherence import AdherenceRange, DayAdherence, adherence_range
 from app.services.common import to_decimal
 from app.services.condition_limits import ResolvedLimits, resolve_condition_limits
 from app.services.consumption import correct_log, log_food, log_meal, log_plan_item
-from app.services.meal_filter import MealFacts, load_meal_facts
+from app.services.meal_filter import (
+    MealFacts,
+    evaluate_meal,
+    load_meal_facts,
+    load_user_preferences,
+)
 from app.services.plan_swap import SwapRejectedError, swap_plan_item
 from app.services.planner import (
     KCAL_TOLERANCE,
@@ -202,6 +207,34 @@ def _condition_id(session: Session, code: str) -> int:
     return session.execute(
         select(HealthCondition.condition_id).where(HealthCondition.code == code)
     ).scalar_one()
+
+
+def catalog_slot_meal_id(session: Session, user_id: int, slot: str) -> int:
+    """Lowest meal_id that Layer 1 accepts for this user and slot (#187).
+
+    P3 has no target, so the limits are empty: active, nutritionally complete, and the
+    slot's occasion tag. The bench path does not call this.
+    """
+    limits = ResolvedLimits(
+        target_kcal=Decimal(0),
+        conditions=(),
+        max_per_day={},
+        min_per_day={},
+        max_per_meal={},
+        max_per_meal_percent_energy={},
+        avoid_tags=frozenset(),
+        limit_tags={},
+        tag_restrictions=(),
+    )
+    preferences = load_user_preferences(session, user_id)
+    chosen = [
+        meal.meal_id
+        for meal in load_meal_facts(session)
+        if evaluate_meal(meal, preferences, slot, limits).eligible
+    ]
+    if not chosen:
+        raise RuntimeError(f"no meal passes the {slot} filter")
+    return min(chosen)
 
 
 def _meal_id(session: Session, ref_external: str) -> int:
@@ -820,6 +853,8 @@ def _run_p3(
     start_date: date,
     start_now: datetime,
     nutrient_codes: Sequence[str],
+    *,
+    catalog: bool,
 ) -> None:
     user = make_user(conn, email="f1e.p3@example.com")
     make_user_profile(
@@ -864,10 +899,15 @@ def _run_p3(
     except UserNotEligibleError as exc:
         persona.plan_error = str(exc)
     eaten = _slot_time(start_date, 0, MealSlot.BREAKFAST, 0)
+    meal_id = (
+        catalog_slot_meal_id(session, user, MealSlot.BREAKFAST)
+        if catalog
+        else _meal_id(session, P3_MEAL_REF)
+    )
     log_meal(
         session,
         user,
-        _meal_id(session, P3_MEAL_REF),
+        meal_id,
         Decimal(1),
         eaten,
         MealSlot.BREAKFAST,
@@ -895,14 +935,23 @@ def _run_p3(
 
 
 def run_f1_scenario(
-    session: Session, conn: Connection, start_date: date, start_now: datetime
+    session: Session,
+    conn: Connection,
+    start_date: date,
+    start_now: datetime,
+    *,
+    catalog: bool = False,
 ) -> ScenarioResult:
-    """Drive the three F.1-e personas through public services. Caller owns the transaction."""
+    """Drive the three F.1-e personas through public services. Caller owns the transaction.
+
+    catalog=True is the dev-catalog report only: P3 logs the lowest meal Layer 1 accepts
+    for breakfast, instead of the F.1 slice meal. The bench path leaves this false.
+    """
     if start_now.tzinfo is None:
         raise ValueError("start_now must be timezone-aware")
     nutrient_codes = _nutrient_codes(session)
     result = ScenarioResult(start_date=start_date, start_now=start_now)
     _run_p1(session, conn, result, start_date, start_now, nutrient_codes)
     _run_p2(session, conn, result, start_date, start_now, nutrient_codes)
-    _run_p3(session, conn, result, start_date, start_now, nutrient_codes)
+    _run_p3(session, conn, result, start_date, start_now, nutrient_codes, catalog=catalog)
     return result

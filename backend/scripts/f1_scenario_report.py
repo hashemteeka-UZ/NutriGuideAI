@@ -541,7 +541,7 @@ def drop_f1_bench(base_url: URL) -> None:
         admin.dispose()
 
 
-def write_scenario_report(engine: Engine, output_path: Path) -> int:
+def write_scenario_report(engine: Engine, output_path: Path, *, catalog: bool = False) -> int:
     """Run the scenario in one transaction, write the report, and roll the transaction back."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     before = (0, 0, 0)
@@ -551,7 +551,7 @@ def write_scenario_report(engine: Engine, output_path: Path) -> int:
         try:
             with Session(bind=conn) as session:
                 before = _counts(session)
-                result = run_f1_scenario(session, conn, START_DATE, START_NOW)
+                result = run_f1_scenario(session, conn, START_DATE, START_NOW, catalog=catalog)
                 output_path.write_text(render_report(session, result), encoding="utf-8")
         finally:
             trans.rollback()
@@ -589,7 +589,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.catalog:
         engine = create_engine(base_url)
         try:
-            return write_scenario_report(engine, CATALOG_OUTPUT_PATH)
+            return write_scenario_report(engine, CATALOG_OUTPUT_PATH, catalog=True)
         finally:
             engine.dispose()
     print(f1_bench_name(base_url.database))
