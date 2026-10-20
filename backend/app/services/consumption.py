@@ -32,6 +32,7 @@ from app.db.models import (
 )
 from app.db.models.user import MealSlot
 from app.services.common import (
+    InputRejectedError,
     MealNotFoundError,
     measure,
     require_aware,
@@ -187,7 +188,7 @@ def local_date(session: Session, user_id: int, moment: datetime) -> date:
 def _positive(value: Decimal | int | float, name: str) -> Decimal:
     amount = measure(value, name)
     if amount <= 0:
-        raise ValueError(f"{name} must be > 0, got {amount}")
+        raise InputRejectedError(f"{name} must be > 0, got {amount}")
     return amount
 
 
@@ -197,7 +198,7 @@ def _slot(slot: str | None) -> str | None:
     try:
         return MealSlot(slot).value
     except ValueError as exc:
-        raise ValueError(f"unknown slot {slot!r}") from exc
+        raise InputRejectedError(f"unknown slot {slot!r}") from exc
 
 
 def _existing(session: Session, client_uuid: UUID, wanted: _NewLog) -> LogResult | None:
@@ -380,7 +381,7 @@ def correct_log(
     if consumed_at is not None:
         require_aware(consumed_at, "consumed_at")
     if all(v is None for v in (servings_consumed, grams_consumed, consumed_at, slot)):
-        raise ValueError("correct_log needs at least one changed value")
+        raise InputRejectedError("correct_log needs at least one changed value")
 
     old = session.execute(
         select(ConsumptionLog).where(ConsumptionLog.id == log_id, ConsumptionLog.user_id == user_id)
@@ -388,11 +389,11 @@ def correct_log(
     if old is None:
         raise LogNotFoundError(f"user {user_id} has no log {log_id}")
     if old.meal_id is not None and grams_consumed is not None:
-        raise ValueError("a meal log is corrected in servings; log a food to record grams")
+        raise InputRejectedError("a meal log is corrected in servings; log a food to record grams")
     if old.food_id is not None and servings_consumed is not None:
-        raise ValueError("a food log is corrected in grams; log a meal to record servings")
+        raise InputRejectedError("a food log is corrected in grams; log a meal to record servings")
     if old.plan_item_id is not None and slot is not None and _slot(slot) != old.slot:
-        raise ValueError("the slot of a plan-item log comes from the plan item")
+        raise InputRejectedError("the slot of a plan-item log comes from the plan item")
 
     def amount(
         new: Decimal | int | float | None, stored: float | None, name: str

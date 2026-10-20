@@ -670,32 +670,6 @@ def test_delete_me_removes_logs_water_weights_and_interactions(
         assert remaining == 0
 
 
-def test_sync_stubs_stay_unauthorized_or_not_implemented(client: TestClient) -> None:
-    body = {
-        "operations": [
-            {
-                "op": "WATER_CREATE",
-                "op_id": _UUID,
-                "client_uuid": _UUID,
-                "amount_ml": 250,
-                "consumed_at": AT,
-            }
-        ]
-    }
-    missing = client.post("/api/v1/sync/batch", json=body)
-    assert missing.status_code == 401
-    assert missing.json()["code"] == "UNAUTHORIZED"
-    changes = client.get("/api/v1/sync/changes", params={"since": AT})
-    assert changes.status_code == 401
-    headers = _auth(client, "log-sync@example.com")
-    stub = client.post("/api/v1/sync/batch", json=body, headers=headers)
-    assert stub.status_code == 501
-    assert stub.json()["code"] == "NOT_IMPLEMENTED"
-    feed = client.get("/api/v1/sync/changes", params={"since": AT}, headers=headers)
-    assert feed.status_code == 501
-    assert feed.json()["code"] == "NOT_IMPLEMENTED"
-
-
 def test_logging_routes_require_a_token(client: TestClient) -> None:
     calls = [
         (

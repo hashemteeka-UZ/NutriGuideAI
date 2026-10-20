@@ -168,6 +168,8 @@ _LIVE = {
     "delete_water_log",
     "get_adherence",
     "create_interaction",
+    "sync_batch",
+    "get_sync_changes",
 }
 
 _FUTURE_CODES = (
@@ -283,21 +285,8 @@ def _bearer(client: TestClient) -> dict[str, str]:
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
 
-@pytest.mark.parametrize("operation_id", sorted(set(_CALLS) - _LIVE))
-def test_stub_returns_not_implemented(client: TestClient, operation_id: str) -> None:
-    body, params = _CALLS[operation_id]
-    method, path, _operation = next(
-        item for item in _operations() if item[2]["operationId"] == operation_id
-    )
-    response = client.request(
-        method, _fill(path), json=body, params=params, headers=_bearer(client)
-    )
-    assert response.status_code == 501, response.text
-    assert response.headers["content-type"].startswith("application/problem+json")
-    payload = response.json()
-    assert payload["code"] == "NOT_IMPLEMENTED"
-    assert payload["status"] == 501
-    assert payload["title"] == "Not implemented"
+def test_no_operation_is_unimplemented() -> None:
+    assert set(_CALLS) - _LIVE == set()
 
 
 def test_protected_routes_reject_a_missing_token(client: TestClient) -> None:

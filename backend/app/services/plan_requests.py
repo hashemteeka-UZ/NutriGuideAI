@@ -130,6 +130,13 @@ def _current_plans(
     return [(day, chosen[day]) for day in sorted(chosen)]
 
 
+def current_plans(
+    session: Session, user_id: int, date_from: date, date_to: date
+) -> list[tuple[date, MealPlan]]:
+    """Newest plan covering each day in the inclusive range, ordered by date (#72)."""
+    return _current_plans(session, user_id, date_from, date_to)
+
+
 def generate_day(
     session: Session, user_id: int, plan_date: date, now: datetime, lang: str
 ) -> PlanViewData:

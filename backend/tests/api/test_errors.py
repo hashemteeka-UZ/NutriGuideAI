@@ -12,6 +12,7 @@ from pydantic import BaseModel
 
 from app.api.errors import SERVICE_ERRORS, ApiError
 from app.api.main import create_app
+from app.services.common import InputRejectedError
 from app.services.condition_limits import ConditionConflictError, LimitSource, ResolvedLimit
 from app.services.consumption import PlanItemNotFoundError
 from app.services.ingredient_search import EmptySearchError
@@ -140,10 +141,28 @@ def test_service_error_codes_are_unique() -> None:
     counts: dict[str, int] = {}
     for code in codes:
         counts[code] = counts.get(code, 0) + 1
-    # Empty search, a plan date outside the window, and ValueError checks
-    # (log window, plan date, a meal corrected in grams, a future weight) use VALIDATION_ERROR.
+    # Empty search, a plan date outside the window, and InputRejectedError use VALIDATION_ERROR.
     assert counts["VALIDATION_ERROR"] == 3
     assert {code for code, count in counts.items() if count > 1} == {"VALIDATION_ERROR"}
+
+
+def test_input_rejected_is_validation_error() -> None:
+    exc = InputRejectedError("consumed_at is outside the window")
+    with _client_raising(exc) as client:
+        response = client.get("/_test/raise")
+    assert response.status_code == 422
+    body = response.json()
+    assert body["code"] == "VALIDATION_ERROR"
+    assert body["detail"] == "consumed_at is outside the window"
+
+
+def test_internal_value_error_hides_its_message() -> None:
+    with _client_raising(ValueError("secret-internal-marker")) as client:
+        response = client.get("/_test/raise")
+    assert response.status_code == 500
+    assert response.json()["code"] == "INTERNAL_ERROR"
+    assert "detail" not in response.json()
+    assert "secret-internal-marker" not in response.text
 
 
 def test_unmapped_exception_is_internal_error_without_detail() -> None:

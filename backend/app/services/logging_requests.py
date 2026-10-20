@@ -29,7 +29,13 @@ from app.db.models import (
     UserInteraction,
 )
 from app.db.models.user import InteractionEventType
-from app.services.common import MealNotFoundError, require_aware, round_half_up, to_decimal
+from app.services.common import (
+    InputRejectedError,
+    MealNotFoundError,
+    require_aware,
+    round_half_up,
+    to_decimal,
+)
 from app.services.consumption import (
     SNAPSHOT_NUTRIENTS_KEY,
     FoodNotFoundError,
@@ -87,7 +93,7 @@ class LoggedConsumption:
 def ensure_log_instant(
     session: Session, user_id: int, consumed_at: datetime, now: datetime
 ) -> date:
-    """Local date of consumed_at, or CLOCK_SKEW / ValueError when it is outside the window."""
+    """Local date of consumed_at, or CLOCK_SKEW / InputRejectedError outside the window."""
     require_aware(consumed_at, "consumed_at")
     require_aware(now, "now")
     if consumed_at > now + CLOCK_SKEW_TOLERANCE:
@@ -99,7 +105,7 @@ def ensure_log_instant(
     today = local_date(session, user_id, now)
     earliest = today - timedelta(days=LOG_HISTORY_DAYS)
     if eaten < earliest:
-        raise ValueError(
+        raise InputRejectedError(
             f"consumed_at local date {eaten.isoformat()} is more than {LOG_HISTORY_DAYS} days "
             f"before the user's local today {today.isoformat()}"
         )
@@ -128,7 +134,7 @@ def _require_plan_date(
     item, plan = _owned_item(session, user_id, plan_item_id)
     plan_day = _plan_day(plan, item)
     if eaten != plan_day:
-        raise ValueError(
+        raise InputRejectedError(
             f"consumed_at local date {eaten.isoformat()} is not the plan date "
             f"{plan_day.isoformat()}"
         )
@@ -342,17 +348,17 @@ def correct(
     consumed_at: datetime | None = None,
     slot: str | None = None,
 ) -> LoggedConsumption:
-    """Correct an active log of this user. A new consumed_at obeys the window. No new ACCEPT."""
+    """Correct an active log of this user. A repeated new_client_uuid is a DUPLICATE.
+
+    The window applies only while the old row is still active, so a retry of a correction
+    that already tombstoned it stays a DUPLICATE (#209). No new ACCEPT.
+    """
     old = session.execute(
-        select(ConsumptionLog).where(
-            ConsumptionLog.id == log_id,
-            ConsumptionLog.user_id == user_id,
-            ConsumptionLog.deleted_at.is_(None),
-        )
+        select(ConsumptionLog).where(ConsumptionLog.id == log_id, ConsumptionLog.user_id == user_id)
     ).scalar_one_or_none()
     if old is None:
-        raise LogNotFoundError(f"user {user_id} has no active log {log_id}")
-    if consumed_at is not None:
+        raise LogNotFoundError(f"user {user_id} has no log {log_id}")
+    if consumed_at is not None and old.deleted_at is None:
         eaten = ensure_log_instant(session, user_id, consumed_at, now)
         if old.plan_item_id is not None:
             _require_plan_date(session, user_id, old.plan_item_id, eaten)
@@ -375,6 +381,13 @@ def delete(session: Session, user_id: int, log_id: int, now: datetime) -> None:
     """Tombstone the caller's active log. Writes no interaction row."""
     delete_log(session, user_id, log_id, now)
     _write(user_id, "CONSUMPTION", "DELETED")
+
+
+def consumption_views(
+    session: Session, logs: list[ConsumptionLog], lang: str
+) -> list[LoggedConsumption]:
+    """Active rows mapped like GET /consumption-logs. Names are loaded once per kind."""
+    return _views(session, logs, LogStatus.CREATED, lang)
 
 
 def logs_of_day(

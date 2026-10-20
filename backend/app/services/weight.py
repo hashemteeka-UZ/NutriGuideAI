@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import UserProfile, UserTarget, WeightLog
 from app.db.models.user import TargetReason, WeightSource
-from app.services.common import measure, require_aware, to_decimal, zone
+from app.services.common import InputRejectedError, measure, require_aware, to_decimal, zone
 from app.services.screening import ProfileNotFoundError
 from app.services.targets import TargetValidationError, UserNotEligibleError, create_user_target
 
@@ -33,8 +33,8 @@ WEIGHT_MAX_KG: Final = Decimal(400)
 # ---------------------------------------------------------------------------------------------
 
 
-class ClockSkewError(ValueError):
-    pass
+class ClockSkewError(InputRejectedError):
+    """A client clock more than five minutes ahead of the server."""
 
 
 class WeightStatus(StrEnum):
@@ -63,7 +63,7 @@ class WeightResult:
 def _weight(value: Decimal | int | float) -> Decimal:
     weight = measure(value, "weight_kg")
     if not WEIGHT_MIN_KG <= weight <= WEIGHT_MAX_KG:
-        raise ValueError(f"weight_kg must be between {WEIGHT_MIN_KG} and {WEIGHT_MAX_KG}")
+        raise InputRejectedError(f"weight_kg must be between {WEIGHT_MIN_KG} and {WEIGHT_MAX_KG}")
     return weight
 
 
@@ -169,7 +169,9 @@ def record_weight(
         raise ProfileNotFoundError(f"user {user_id} has no user_profiles row")
     local_today = (now + CLOCK_SKEW_TOLERANCE).astimezone(zone(profile.timezone)).date()
     if measured_on > local_today:
-        raise ValueError(f"measured_on {measured_on} is after the user's local date {local_today}")
+        raise InputRejectedError(
+            f"measured_on {measured_on} is after the user's local date {local_today}"
+        )
 
     row, status = upsert_weight(session, user_id, measured_on, weight, updated_at, now)
     latest_on, latest_weight = _latest_weight(session, user_id)
@@ -182,3 +184,20 @@ def record_weight(
         goal is not None and abs(latest_weight - to_decimal(goal)) <= GOAL_REACHED_DELTA_KG
     )
     return WeightResult(row, status, target_status, new_target_id, goal_reached)
+
+
+def weights_between(
+    session: Session, user_id: int, date_from: date, date_to: date
+) -> list[WeightLog]:
+    """The user's weights in the inclusive range, ordered by measured_on."""
+    return list(
+        session.scalars(
+            select(WeightLog)
+            .where(
+                WeightLog.user_id == user_id,
+                WeightLog.measured_on >= date_from,
+                WeightLog.measured_on <= date_to,
+            )
+            .order_by(WeightLog.measured_on)
+        ).all()
+    )

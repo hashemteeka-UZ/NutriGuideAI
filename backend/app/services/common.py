@@ -10,6 +10,10 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 MEASURE_PLACES = 3  # NUMERIC(12,3), §15.2
 
 
+class InputRejectedError(ValueError):
+    """A request the user can fix (bad input), mapped to 422."""
+
+
 class MealNotFoundError(LookupError):
     pass
 
@@ -29,10 +33,10 @@ def measure(value: float | int | Decimal, name: str) -> Decimal:
     """An input stored in a NUMERIC(12,3) column: rejected rather than silently rounded."""
     amount = to_decimal(value)
     if not amount.is_finite():
-        raise ValueError(f"{name} must be a finite number, got {amount}")
+        raise InputRejectedError(f"{name} must be a finite number, got {amount}")
     exponent = amount.as_tuple().exponent
     if isinstance(exponent, int) and exponent < -MEASURE_PLACES:
-        raise ValueError(f"{name} has more than {MEASURE_PLACES} decimal places: {amount}")
+        raise InputRejectedError(f"{name} has more than {MEASURE_PLACES} decimal places: {amount}")
     return amount
 
 

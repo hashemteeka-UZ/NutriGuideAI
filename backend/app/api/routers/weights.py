@@ -5,15 +5,13 @@ from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request
-from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbSession, Now, get_current_user
 from app.api.errors import PROBLEM_RESPONSES, error_codes
 from app.api.limiting import DEFAULT_RATE_LIMIT, limiter, plan_generation_key
 from app.api.schemas.common import HistoryDateRange
 from app.api.schemas.weights import WeightOut, WeightPoint, WeightUpdate
-from app.db.models import WeightLog
-from app.services.weight import record_weight
+from app.services.weight import record_weight, weights_between
 
 logger = logging.getLogger("nutriguide.api")
 
@@ -73,13 +71,5 @@ def list_weights(
     session: DbSession,
     user_id: CurrentUser,
 ) -> list[WeightPoint]:
-    rows = session.scalars(
-        select(WeightLog)
-        .where(
-            WeightLog.user_id == user_id,
-            WeightLog.measured_on >= span.date_from,
-            WeightLog.measured_on <= span.date_to,
-        )
-        .order_by(WeightLog.measured_on)
-    ).all()
+    rows = weights_between(session, user_id, span.date_from, span.date_to)
     return [WeightPoint(measured_on=row.measured_on, weight_kg=row.weight_kg) for row in rows]

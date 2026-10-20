@@ -22,7 +22,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.db.models import ConsumptionLog, MealPlan, MealPlanItem, Nutrient, UserProfile, UserTarget
-from app.services.common import round_half_up, to_decimal, zone
+from app.services.common import InputRejectedError, round_half_up, to_decimal, zone
 from app.services.condition_limits import (
     ENERGY_NUTRIENT,
     ConditionConflictError,
@@ -222,7 +222,7 @@ def adherence_range(
 ) -> AdherenceRange:
     """One DayAdherence per day; the streak may reach back before date_from."""
     if date_to < date_from:
-        raise ValueError(f"date_to {date_to} is before date_from {date_from}")
+        raise InputRejectedError(f"date_to {date_to} is before date_from {date_from}")
     days = tuple(
         daily_adherence(session, user_id, date_from + timedelta(days=offset))
         for offset in range((date_to - date_from).days + 1)

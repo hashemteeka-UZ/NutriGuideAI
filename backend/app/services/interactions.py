@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Meal, MealPlan, MealPlanItem, UserInteraction
 from app.db.models.user import InteractionEventType
-from app.services.common import MealNotFoundError
+from app.services.common import InputRejectedError, MealNotFoundError
 from app.services.consumption import ClientUuidConflictError, LogStatus, PlanItemNotFoundError
 
 logger = logging.getLogger("nutriguide.api")
@@ -31,7 +31,7 @@ CLIENT_EVENT_TYPES: Final = frozenset(
 
 def _event(event_type: str) -> str:
     if event_type not in CLIENT_EVENT_TYPES:
-        raise ValueError(f"event_type {event_type!r} is not a client event")
+        raise InputRejectedError(f"event_type {event_type!r} is not a client event")
     return event_type
 
 
@@ -64,7 +64,7 @@ def _context(
         raise PlanItemNotFoundError(f"plan item {plan_item_id} is not in a plan of user {user_id}")
     item, plan = found
     if item.meal_id != meal_id:
-        raise ValueError(f"plan item {plan_item_id} meal does not match meal_id {meal_id}")
+        raise InputRejectedError(f"plan item {plan_item_id} meal does not match meal_id {meal_id}")
     context["plan_id"] = plan.plan_id
     context["plan_item_id"] = item.id
     context["slot"] = item.slot
@@ -86,7 +86,7 @@ def record_interaction(
     """Store one client event. The same client_uuid and content is a DUPLICATE."""
     kind = _event(event_type)
     if kind == InteractionEventType.RATE.value and value is None:
-        raise ValueError("value is required when event_type is RATE")
+        raise InputRejectedError("value is required when event_type is RATE")
     _active_meal(session, meal_id)
     context = _context(session, user_id, meal_id, plan_item_id, screen)
     existing = session.execute(

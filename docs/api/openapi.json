@@ -1289,7 +1289,7 @@
       },
       "HealthResponse": {
         "example": {
-          "api_version": "0.7.0",
+          "api_version": "0.8.0",
           "database": "ok",
           "dataset_version": "catalog_v3",
           "default_planner": "cpsat",
@@ -4958,7 +4958,7 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "0.7.0"
+    "version": "0.8.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -6786,7 +6786,7 @@
     },
     "/api/v1/sync/batch": {
       "post": {
-        "description": "Apply 1 to 500 operations. Each op_id is chosen by the client. A rejected operation sets status REJECTED and code.\nError codes: UNAUTHORIZED, VALIDATION_ERROR, RATE_LIMITED",
+        "description": "Apply 1 to 500 operations in the order given. Each operation runs in its own savepoint and the request commits once. A known error sets that operation to REJECTED with its code and the rest continue. An unexpected error returns 500 and stores nothing; resending the same batch is safe. A create or a correction whose client id and content are already stored, and a delete of a log this user already deleted, come back DUPLICATE. A weight with an older updated_at is DUPLICATE; a weight that replaced the stored value is UPDATED. server_time is the instant to send as the next since.\nError codes: UNAUTHORIZED, VALIDATION_ERROR, RATE_LIMITED",
         "operationId": "sync_batch",
         "requestBody": {
           "content": {
@@ -6843,7 +6843,7 @@
     },
     "/api/v1/sync/changes": {
       "get": {
-        "description": "Rows changed after `since`, plus ids deleted since then.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "since may be at most 5 minutes after the server clock (CLOCK_SKEW) and not more than 30 days before it (VALIDATION_ERROR; the app reloads). Rows are read from since minus 2 minutes. Consumption and water include logs created after that cutoff and ids deleted after it. Weights are every weight of the last 30 local days, because their updated_at comes from the phone. meal_prefs is the full current list. plans are the current plan of each day from local yesterday onward when that plan was created after the cutoff or one of its items was updated after it, so a swap appears. profile_changed is true when the profile, health conditions, allergies, ingredient preferences, or a new target changed after the cutoff. Send server_time back as the next since.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, CLOCK_SKEW, VALIDATION_ERROR",
         "operationId": "get_sync_changes",
         "parameters": [
           {

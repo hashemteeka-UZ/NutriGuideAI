@@ -1,0 +1,67 @@
+You are implementing **Step I.7 (offline sync: batch upload and change feed; plus two fixes from I.6; Decisions #138, #208 to #213)**. Step I.6 is committed (`49e04ce`, CI green). This pass replaces the last two 501 stubs (`POST /sync/batch`, `GET /sync/changes`) and fixes the broad ValueError mapping and the weight query in the router.
+
+The user has just placed updated documents (do not edit their content; report contradictions): `docs/project/DEV_JOURNAL.md` (J-044), `docs/project/CONTEXT_INDEX.md`, `docs/project/steps/STEP_I_plan.md` (Decisions #208 to #213, the source of truth), and this file.
+
+## Hard rules
+1. No schema change, no migration. `uv run alembic check` clean.
+2. `docs/reports/*` byte-identical.
+3. Services never import from `app/api`. Routers parse, call one service function, commit, map.
+4. Contract: only section 6. Regenerate `openapi.json`, drift test green.
+5. Never log health values, food names, amounts or weights. One log line per batch: user id, operation count, counts per status, wall time.
+6. Do not commit anything.
+
+## 1. Input errors (#212), do this first
+- Add `class InputRejectedError(ValueError)` in `app/services/common.py` with a one-line docstring: a request the user can fix (bad input), mapped to 422.
+- Go through every `raise ValueError` in `app/services/` (23 today). A raise caused by user or client input (amounts, dates, slots, kinds, ranges, correction rules, windows) becomes `InputRejectedError` with the same message. A raise that guards an internal invariant (a programming error) stays `ValueError`. List each one with your classification in the report.
+- `app/api/errors.py`: map `InputRejectedError` to `422 VALIDATION_ERROR`; remove the plain `ValueError` mapping so an unexpected `ValueError` becomes a 500 with the generic problem body (no internal message in the response). `ClockSkewError` keeps `CLOCK_SKEW`; check whether it should subclass `InputRejectedError` and keep the more specific mapping first.
+- Existing tests using `pytest.raises(ValueError)` keep working because of the subclass. Add one API test proving an internal `ValueError` gives 500 without its message, and one proving an `InputRejectedError` gives 422.
+
+## 2. Weight read (#213)
+Move the `GET /weights` query into `weight.py` as `weights_between(session, user_id, date_from, date_to) -> list[WeightLog]` (ordered by date). The router calls it. Behaviour unchanged.
+
+## 3. Batch service `app/services/sync_batch.py` (#208, #209)
+- `apply_batch(session, user_id, operations, now) -> list[OpOutcome]`, where `OpOutcome` holds `op_id`, `status` (`CREATED`, `UPDATED`, `DUPLICATE`, `REJECTED`), `entity_id`, and, when rejected, the caught exception.
+- Operations run in the given order, each inside `session.begin_nested()`, through the SAME request-layer functions the single routes use (`logging_requests`, `water.log_water/delete_water`, `weight.record_weight`, `interactions.record_interaction`). No rule is copied.
+- An exception that the router's error table knows (the `SERVICE_ERRORS` classes, including `InputRejectedError`) rolls back that savepoint only, and the operation is `REJECTED`. Anything else propagates: the router returns 500 and nothing of the batch is committed (retrying is safe because every operation is idempotent).
+- Idempotent outcomes (#209): create with a known `client_uuid` and same content → `DUPLICATE`; correction with a known `new_client_uuid` and same content → `DUPLICATE`; deleting a log the same user already deleted → `DUPLICATE` (another user's or unknown id stays `LOG_NOT_FOUND`); a weight with an older `updated_at` (`STALE_IGNORED`) → `DUPLICATE`; a weight that replaced a value → `UPDATED`.
+- `entity_id`: the log, water log, interaction id, or null for weights.
+- Router `POST /sync/batch`: rate limit `SYNC_RATE_LIMIT` (per user key). It maps each rejected exception to its code with the same table used for problem responses (one shared lookup function in `app/api/errors.py`, not a copy), commits once, returns `SyncResult` with `server_time = now`.
+- A plan-item log in the batch writes ACCEPT exactly as the single route does.
+
+## 4. Change feed `app/services/sync_changes.py` (#211)
+`changes_since(session, user_id, since, now, lang)`:
+- `since` after `now + CLOCK_SKEW_TOLERANCE` → `ClockSkewError`; older than 30 days before `now` → `InputRejectedError` with a detail telling the app to reload. One constant `SYNC_MAX_AGE_DAYS = 30` and `SYNC_OVERLAP = timedelta(minutes=2)`.
+- `cutoff = since - SYNC_OVERLAP`. Then:
+  - `consumption_logs`: the user's active logs with `created_at > cutoff`, mapped like `GET /consumption-logs` (batched names). `deleted_consumption_log_ids`: logs with `deleted_at > cutoff`.
+  - `water_logs` / `deleted_water_log_ids`: same rule.
+  - `weights`: every weight of the last 30 local days (the stored `updated_at` comes from the phone clock, so it cannot be compared with the server's `since`).
+  - `meal_prefs`: the caller's full current list (small; deletions then need no tombstones).
+  - `plans`: for each date from local yesterday onward, the current plan when it was created after `cutoff` or any of its items was updated after `cutoff` (a swap must appear), through `plan_view`.
+  - `profile_changed`: true when the profile, health conditions, allergies or ingredient preferences changed after `cutoff`, or a target was created after `cutoff`.
+- `server_time = now`. The app sends it back as the next `since`.
+- Verify which tables have a server-side `updated_at` that really changes on update (for example plan items after a swap). If one does not, report it instead of adding a migration.
+
+## 5. Tests
+At least:
+- InputRejectedError and the 500 case (section 1).
+- Batch: one of each operation type created; the same batch sent again gives all `DUPLICATE` and no new rows; a batch with a create then a delete of an already-synced log; an operation rejected in the middle (for example a meal that does not exist) while the others are created, with the right code; another user's log id → `REJECTED LOG_NOT_FOUND`; a weight `STALE_IGNORED` → `DUPLICATE`; ACCEPT written once for a plan-item log; 500 operations accepted, 501 → 422; an unexpected exception (monkeypatched) → 500 and nothing committed; rate limit → 429.
+- Feed: since in the future → 422 `CLOCK_SKEW`; 31 days old → 422; a log created after `since` appears, one before does not; a deletion appears in the deleted ids; a log created 1 minute before `since` still appears (overlap); a swap after `since` returns that plan; a new target sets `profile_changed`; another user's rows never appear.
+- No route answers 501 any more (update the stub tests).
+
+## 6. Contract changes (regenerate `openapi.json`)
+- `API_VERSION` → `"0.8.0"`.
+- Descriptions only: batch (order, per-operation savepoint, statuses, 500 operations, idempotent retries), feed (bounds, overlap, weights 30 days, full meal_prefs list, plans rule, `server_time` as the next `since`). No schema, field or status change; if a field cannot be filled as specified, stop and report.
+- `docs/api/API_GUIDE.md`: "Offline sync" section: keep an outbox of operations with their `op_id`; never send a correction or delete for a log the server has not confirmed, edit or drop the queued create instead (#210); send the outbox in order, up to 500; on network failure resend the same batch; then call the feed with the last `server_time` and upsert by id, remove deleted ids.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, then the FULL `CI=true uv run pytest -q` (0 skipped; again in full after any fix). Then run the server on the dev database and by `curl`: register, profile, `POST /plans/days` for today, `GET /sync/changes?since=<now - 1 min>` (plans present), one batch with: the breakfast plan-item log, a water log, a weight, a VIEW interaction and one invalid meal log; then the same batch again (all DUPLICATE except the rejected one), one swap through the normal route, `GET /sync/changes?since=<server_time of the first feed>` (the log, water, weight, swapped plan), then `DELETE /me`. Also time a batch of 500 water operations: wall time and query count.
+
+## Report back
+1. Files created/changed.
+2. The list of the 23 `raise ValueError` with your classification.
+3. The curl session with statuses and the important fields, tokens shortened.
+4. The 500-operation timing and query count.
+5. Which tables' `updated_at` really change on update, and what the feed relies on.
+6. Confirmation that `docs/reports` has no diff; `git diff --stat docs/api/openapi.json` and the contract changes.
+7. Test counts and check outputs.
+8. Findings (one line each, with the section number) and assumptions.

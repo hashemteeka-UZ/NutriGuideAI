@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.7.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.8.0`). If this guide and that file disagree, the file wins. Every route in this version is implemented. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -109,6 +109,10 @@ Send `consumed_at` as an ISO-8601 instant that includes its offset (`2026-10-20T
 `GET /adherence?from=&to=` returns one row per day in the inclusive range and `streak`, the number of consecutive `ACHIEVED` days ending on `to`. The range is at most **92** days. A longer range is **422** `VALIDATION_ERROR`. Each day uses the same fields as the adherence block of `GET /days/{date}`.
 
 `GET /weights?from=&to=` returns that user's weights in the same kind of range, ordered by date, also at most 92 days. `PUT /weights/{measured_on}` sends the device time in `updated_at`. An older `updated_at` comes back as `STALE_IGNORED` and leaves the stored weight in place. A change of 1 kg or more on the latest day can replace the calorie target; `new_target_id` is set when that happens. `goal_reached` is true when the latest weight is within 1 kg of the goal weight.
+
+## Offline sync
+
+Keep an outbox of operations, each with its own `op_id`. Never send a correction or a delete for a log the server has not confirmed: edit or drop the queued create instead. Send the outbox in order, at most 500 operations in one `POST /sync/batch`. On a network failure, resend that same batch. Each operation has its own result: `CREATED`, `UPDATED`, `DUPLICATE`, or `REJECTED` with a `code`. `DUPLICATE` means that operation was already stored. Then call `GET /sync/changes?since=` with the last `server_time` and upsert rows by id, and remove the ids in the deleted lists.
 
 ## Offline catalog
 
