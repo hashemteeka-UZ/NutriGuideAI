@@ -74,25 +74,25 @@
 
 ## Load counts (inserted / updated / unchanged / deactivated)
 
-  categories                     0 /    0 /   17 /    0
-  cuisines                       0 /    0 /    5 /    0
-  allergens                      0 /    0 /    9 /    0
-  dietary_tags                   0 /    0 /   11 /    0
-  health_conditions              0 /    0 /    4 /    0
-  nutrients                      0 /    0 /   10 /    0
-  condition_nutrient_limits      0 /    0 /    7 /    0
-  condition_tag_restrictions     0 /    0 /    4 /    0
-  foods                          0 /    0 /  177 /    0
-  food_nutrients                 0 /    0 / 1770 /    0
-  ingredients                    0 /    0 /  177 /    0
-  ingredient_aliases             0 /    0 /  389 /    0
-  ingredient_allergens           0 /    0 /   45 /    0
-  ingredient_tags                0 /    0 /    4 /    0
-  meals                          0 /    0 /  158 /    0
-  meal_translations              0 /    0 /  158 /    0
-  meal_steps                     0 /    0 /  477 /    0
-  meal_ingredients               0 /    0 / 1271 /    0
-  meal_tags                      0 /    0 /  422 /    0
+  categories                    17 /    0 /    0 /    0
+  cuisines                       5 /    0 /    0 /    0
+  allergens                      9 /    0 /    0 /    0
+  dietary_tags                  11 /    0 /    0 /    0
+  health_conditions              4 /    0 /    0 /    0
+  nutrients                     10 /    0 /    0 /    0
+  condition_nutrient_limits      7 /    0 /    0 /    0
+  condition_tag_restrictions     4 /    0 /    0 /    0
+  foods                        177 /    0 /    0 /    0
+  food_nutrients              1770 /    0 /    0 /    0
+  ingredients                  177 /    0 /    0 /    0
+  ingredient_aliases           389 /    0 /    0 /    0
+  ingredient_allergens          45 /    0 /    0 /    0
+  ingredient_tags                4 /    0 /    0 /    0
+  meals                        158 /    0 /    0 /    0
+  meal_translations            158 /    0 /    0 /    0
+  meal_steps                   477 /    0 /    0 /    0
+  meal_ingredients            1271 /    0 /    0 /    0
+  meal_tags                    422 /    0 /    0 /    0
 
 - deactivated meals: []
 - reactivated meals: []

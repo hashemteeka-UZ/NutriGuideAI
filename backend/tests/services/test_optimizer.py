@@ -499,3 +499,112 @@ def test_exact_sodium_total_equal_to_the_limit_is_accepted() -> None:
     assert result.plan.kcal_within_10pct
     assert result.plan.totals["sodium"] == D(600)
     assert result.solver_status == "OPTIMAL"
+
+
+def test_slot_band_prefers_balanced_mains_over_an_exact_lopsided_day() -> None:
+    """A 2.0/2.0/2.0 day plus two snacks totals 2000 kcal and misses every main-slot band.
+
+    The balanced meals sit on the only in-band step of each main position and total 2000.
+    """
+    balanced = [
+        _meal(
+            1,
+            ("BREAKFAST",),
+            ref="B",
+            kcal=560,
+            protein=20,
+            carbohydrate=70,
+            total_fat=17,
+            fiber=8,
+        ),
+        _meal(
+            2,
+            ("LUNCH",),
+            ref="L",
+            kcal=760,
+            protein=30,
+            carbohydrate=90,
+            total_fat=25,
+            fiber=10,
+        ),
+        _meal(
+            3,
+            ("DINNER",),
+            ref="D",
+            kcal=680,
+            protein=30,
+            carbohydrate=90,
+            total_fat=25,
+            fiber=10,
+        ),
+    ]
+    lopsided = [
+        _meal(4, ("BREAKFAST",), ref="B-LOP", kcal=150),
+        _meal(5, ("LUNCH",), ref="L-LOP", kcal=200),
+        _meal(6, ("DINNER",), ref="D-LOP", kcal=150),
+        _meal(7, ("SNACK",), ref="S1", kcal=250),
+        _meal(8, ("SNACK",), ref="S2", kcal=250),
+    ]
+    assert D(150) * 2 + D(200) * 2 + D(150) * 2 + D(250) * 2 + D(250) * 2 == D(2000)
+    result = _optimize(balanced + lopsided)
+    assert result.slot_band_pass is True
+    target = _target()
+    shares = {"BREAKFAST": D("0.25"), "LUNCH": D("0.35"), "DINNER": D("0.25")}
+    for item in result.plan.items:
+        if item.slot == "SNACK":
+            continue
+        low = D("0.7") * shares[item.slot] * target.kcal
+        high = D("1.4") * shares[item.slot] * target.kcal
+        assert low <= item.nutrients["energy_kcal"] <= high
+    assert [(item.meal_id, item.multiplier) for item in result.plan.items] == [
+        (1, D("1.0")),
+        (2, D("1.0")),
+        (3, D("1.0")),
+    ]
+
+
+def test_a_main_slot_outside_the_band_uses_phase1() -> None:
+    from app.services.optimizer import W_KCAL, _required_nutrients, _solve, _specs
+
+    meals = [
+        _meal(1, ("BREAKFAST",), ref="B", kcal=600),
+        _meal(2, ("LUNCH",), ref="L", kcal=800),
+        _meal(3, ("DINNER",), ref="D", kcal=100),
+    ]
+    result = _optimize(meals)
+    assert result.slot_band_pass is False
+    limits = _limits()
+    specs = _specs(meals, _prefs(), limits, frozenset(), _required_nutrients(limits))
+    phase1, _elapsed = _solve(specs, _prefs(), limits, _target(), True, W_KCAL)
+    assert sorted((item.meal_id, item.multiplier) for item in result.plan.items) == sorted(
+        (choice.meal.meal_id, choice.step) for choice in phase1.chosen
+    )
+
+
+def test_unknown_status_retries_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    from ortools.sat.python import cp_model
+
+    from app.services.optimizer import SOLVER_DETERMINISTIC_TIME, SOLVER_RETRY_DETERMINISTIC_TIME
+
+    seen: list[float] = []
+    real_solve = cp_model.CpSolver.Solve
+
+    def solve(self: cp_model.CpSolver, model: cp_model.CpModel) -> cp_model.CpSolverStatus:
+        seen.append(self.parameters.max_deterministic_time)
+        if len(seen) == 1:
+            return cp_model.UNKNOWN
+        return real_solve(self, model)
+
+    monkeypatch.setattr(cp_model.CpSolver, "Solve", solve)
+    meals = [
+        _meal(1, ("BREAKFAST",), ref="B", kcal=560),
+        _meal(2, ("LUNCH",), ref="L", kcal=760),
+        _meal(3, ("DINNER",), ref="D", kcal=680),
+    ]
+    result = _optimize(meals)
+    assert seen == [SOLVER_DETERMINISTIC_TIME, SOLVER_RETRY_DETERMINISTIC_TIME]
+    assert [(item.meal_id, item.multiplier) for item in result.plan.items] == [
+        (1, D("1.0")),
+        (2, D("1.0")),
+        (3, D("1.0")),
+    ]

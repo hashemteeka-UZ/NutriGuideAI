@@ -755,9 +755,11 @@ def test_cpsat_plan_records_general_limits_and_excludes_the_previous_day(
         "excluded_meal_ids",
         "solve_seconds",
         "candidate_meals",
+        "slot_band_pass",
     }
     assert solver["candidate_meals"] > 0
     assert solver["solve_seconds"] >= 0
+    assert solver["slot_band_pass"] in {True, False}
     assert solver["excluded_meal_ids"] == []
     assert solver["solver_status"] in {"OPTIMAL", "FEASIBLE"}
     for nutrient in ("sodium", "saturated_fat"):

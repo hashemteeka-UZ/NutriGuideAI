@@ -619,6 +619,7 @@ def create_day_plan(
                 "excluded_meal_ids": sorted(excluded),
                 "solve_seconds": float(round_half_up(Decimal(str(optimized.solve_seconds)), 3)),
                 "candidate_meals": optimized.candidate_meals,
+                "slot_band_pass": optimized.slot_band_pass,
             },
         )
 

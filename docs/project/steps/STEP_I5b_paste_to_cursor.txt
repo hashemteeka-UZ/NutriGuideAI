@@ -1,0 +1,53 @@
+You are implementing **Step I.5b (CP-SAT search fix: plan quality and speed; Decisions #197 to #200)**. Step I.5 is committed (`3c2b467`, CI green). This pass changes only the cpsat optimizer's search, adds one candidate pass, and regenerates one report.
+
+The user has just placed updated documents (do not edit their content; report contradictions): `docs/project/DEV_JOURNAL.md` (J-042), `docs/project/CONTEXT_INDEX.md`, `docs/project/steps/STEP_I_plan.md` (Decisions #197 to #200, the source of truth), and this file.
+
+## Why (measured on the dev database, full catalog_v3)
+Profile: male, 1996-01-15, 180 cm, 90 kg, LOSE, HYPERTENSION, target 2364 kcal. Today cpsat returns FEASIBLE after 16 s with breakfast 1087 / lunch 1153 / dinner 121 kcal (slot targets 591 / 827 / 591). The objective is correct: the proven optimum under the CURRENT weights is objective 539 (breakfast 587, lunch 817, dinner 591, snacks 368) against 17968 for the returned plan. The search is the problem: at the default linearization level the objective lower bound stays 0 (the LP relaxation mixes fractional meals), so single-worker search keeps its first solution for the whole budget. `linearization_level = 2` makes the bound climb; all six test personas then prove OPTIMAL in 1 to 9 s.
+
+## Hard rules
+1. No schema change, no migration, no contract change (`openapi.json` byte-identical, `API_VERSION` stays 0.6.0). `uv run alembic check` clean.
+2. Objective weights unchanged (`W_KCAL`, `W_KCAL_RELAXED`, `W_MACRO`, `W_FIBER`, `W_SLOT`, `LIKED_BONUS`). Hard limits, Layer 1, `_verify`, phase 2 and the meaning of `kcal_relaxed` unchanged. greedy unchanged.
+3. Determinism kept: `num_workers = 1`, `random_seed = 0`, a deterministic-time budget (not wall time). Same inputs give the same plan.
+4. Only `docs/reports/planner_comparison_report.md` and its copy `docs/project/report/from_repo/planner_comparison_report.md` may change. `f1_scenario_report.md`, `catalog_scenario_report.md` and `catalog_coverage_report.md` stay byte-identical.
+5. Do not commit anything.
+
+## 1. Solver configuration (#197, #198) in `app/services/optimizer.py`
+- New constants next to the weights, with a short comment each:
+  `SOLVER_DETERMINISTIC_TIME: Final = 2.0`, `SOLVER_RETRY_DETERMINISTIC_TIME: Final = 10.0`, `SOLVER_LINEARIZATION_LEVEL: Final = 2`.
+- `_configure(solver, deterministic_time=SOLVER_DETERMINISTIC_TIME)`: keep `num_workers = 1`, `random_seed = 0`, `log_search_progress = False`; set `max_deterministic_time = deterministic_time` and `linearization_level = SOLVER_LINEARIZATION_LEVEL`.
+- In `_solve`: if the status is `UNKNOWN` (budget ended with no solution), solve the same model once more with a new `CpSolver` configured with `SOLVER_RETRY_DETERMINISTIC_TIME`. The measured elapsed time covers both solves. Other statuses keep their current handling.
+
+## 2. Main-slot band pass (#199)
+- Constants: `SLOT_BAND_LOW: Final = Decimal("0.7")`, `SLOT_BAND_HIGH: Final = Decimal("1.4")`.
+- `_slot_banded(specs, target) -> tuple[_Choice, ...] | None`: keep every snack candidate; keep a main-position candidate only when its energy (`amounts[ENERGY_NUTRIENT]`, i.e. at its step) lies within `[LOW, HIGH] x SLOT_ENERGY_SHARE[slot] x target.kcal`. Return `None` if any main position is left with no candidate.
+- `optimize_day`: when `_slot_banded` is not `None`, solve phase 1 (kcal band, `W_KCAL`) on the banded candidates first. If that is INFEASIBLE (or the banded set is `None`), run today's phase 1 on all candidates, then today's phase 2 if needed. Nothing else in the phase logic changes.
+- `OptimizedDay` gets `slot_band_pass: bool` (True when the returned plan came from the banded pass). `create_day_plan` adds `"slot_band_pass"` to the `solver` dict of `target_snapshot` (additive; `PlanStats` and the contract are NOT changed).
+- Docstring of `optimize_day` updated to describe the three passes in order.
+
+## 3. Report (#200)
+- `scripts/planner_comparison_report.py`: do not hard-code the budget; read the solver constants from `optimizer` (deterministic time, retry budget, linearization level) for the header line, and add `slot_band_pass` to the cpsat rows if the table has a natural place for it (one extra column; otherwise a count line under each section).
+- Regenerate on a dev database that holds ONLY the catalog: run `uv run python -m scripts.rebuild_dev_db --yes` first (the dev data is disposable), then the report, then copy it to `docs/project/report/from_repo/`.
+- Report what changed: header line, section 1 (expected: same verdicts, row order of two P2 snack rows and timings may change), section 2 (expected: every cpsat row changes, verdicts stay 6/6, no 2.0x/2.0x/0.5x pattern).
+
+## 4. Tests
+- Unit (synthetic `MealFacts`, no database):
+  - a "trap" day where a lopsided choice matches the day total exactly while a balanced choice exists: each main slot of the result lies within the band and `slot_band_pass` is True;
+  - a day where one main position has no candidate inside the band: falls back, `slot_band_pass` False, result equal to what phase 1 alone returns;
+  - phase 2 still relaxes only the kcal band (existing test must stay green unchanged);
+  - determinism: same inputs twice and with shuffled meal order give the same plan;
+  - UNKNOWN retry: monkeypatch so the first solve reports UNKNOWN; assert one retry with the retry budget and a returned plan.
+- `test_healthy_day_is_optimal_and_inside_the_kcal_band` and every other existing optimizer/planner test must pass unchanged. If any existing test needs a change, stop and report which and why before changing it.
+- `create_day_plan` stores `slot_band_pass` in the snapshot solver dict.
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, then the FULL `CI=true uv run pytest -q` (0 skipped; again in full after any fix). Then run the server on the rebuilt dev database and by `curl`: register, `PUT /me/profile` (male, born 1996-01-15, 180 cm, 90 kg, `LOSE`, `HYPERTENSION`), `POST /plans/days` for today and tomorrow (each item: name, multiplier, kcal; slot totals vs slot targets 25/35/25%; day totals; `kcal_within_10pct`; stats), then `DELETE /me`. Time ten sequential `POST /plans/days` calls (different users or dates): min, median, max wall time, and how many ended OPTIMAL vs FEASIBLE.
+
+## Report back
+1. Files changed.
+2. The curl session with per-slot kcal for both days, tokens shortened.
+3. The ten-call timing and status counts, compared with I.5 (min 14.3, median 15.5, max 17.7 s).
+4. What changed in `planner_comparison_report.md` (header, section 1, section 2), and confirmation that the other three reports have no diff.
+5. `git diff --stat docs/api/openapi.json` (must be empty).
+6. Test counts and check outputs.
+7. Findings (one line each, with the section number) and assumptions.

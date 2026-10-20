@@ -53,6 +53,9 @@ from app.services.meal_filter import (
 from app.services.meal_nutrition import COMPUTATION_VERSION
 from app.services.optimizer import (
     LIKED_BONUS,
+    SOLVER_DETERMINISTIC_TIME,
+    SOLVER_LINEARIZATION_LEVEL,
+    SOLVER_RETRY_DETERMINISTIC_TIME,
     W_FIBER,
     W_KCAL,
     W_KCAL_RELAXED,
@@ -90,7 +93,6 @@ PERSONAS: Final = ("P1", "P2")
 # Literals assigned in optimizer._configure. They are not module constants.
 SOLVER_WORKERS: Final = 1
 SOLVER_SEED: Final = 0
-SOLVER_DETERMINISTIC_TIME: Final = 10.0
 FIBER_NUTRIENT: Final = "fiber"
 SODIUM_NUTRIENT: Final = "sodium"
 SATURATED_FAT_NUTRIENT: Final = "saturated_fat"
@@ -195,6 +197,7 @@ class DayReport:
     sat_fat_limit_g: Decimal | None
     elapsed_ms: float
     diagnosis: BandDiagnosis | None = None
+    slot_band_pass: str = "n/a"
 
 
 def _total(items: Sequence[PlannedItem], nutrient: str) -> Decimal | None:
@@ -307,6 +310,13 @@ def _solver_fields(snapshot: Mapping[str, object]) -> tuple[str, str, bool]:
     status = solver.get("solver_status", "n/a")
     relaxed = solver.get("kcal_relaxed")
     return str(status), str(relaxed).lower(), relaxed is True
+
+
+def _slot_band_pass(snapshot: Mapping[str, object]) -> str:
+    solver = _solver_mapping(snapshot)
+    if solver is None or "slot_band_pass" not in solver:
+        return "n/a"
+    return "true" if solver["slot_band_pass"] is True else "false"
 
 
 def _excluded_ids(snapshot: Mapping[str, object]) -> frozenset[int]:
@@ -523,6 +533,7 @@ def _capture(
         sat_fat_limit_g=sat_limit,
         elapsed_ms=elapsed_ms,
         diagnosis=diagnosis,
+        slot_band_pass=_slot_band_pass(snapshot),
     )
 
 
@@ -596,6 +607,7 @@ def _criteria_rows(days: Sequence[DayReport]) -> list[list[object]]:
                 _fmt(day.sat_fat_g),
                 day.solver_status,
                 day.kcal_relaxed,
+                day.slot_band_pass,
             ]
         )
     return rows
@@ -806,6 +818,7 @@ def _section_body(title: str, days: Sequence[DayReport]) -> list[str]:
                 "sat fat g",
                 "solver status",
                 "kcal_relaxed",
+                "slot_band_pass",
             ),
             _criteria_rows(days),
         ),
@@ -867,6 +880,8 @@ def render_report(f1_days: Sequence[DayReport], catalog_days: Sequence[DayReport
             f"Solver parameters from optimizer._configure: num_workers={SOLVER_WORKERS}, "
             f"random_seed={SOLVER_SEED}, "
             f"max_deterministic_time={SOLVER_DETERMINISTIC_TIME}, "
+            f"retry max_deterministic_time={SOLVER_RETRY_DETERMINISTIC_TIME}, "
+            f"linearization_level={SOLVER_LINEARIZATION_LEVEL}, "
             "log_search_progress=False."
         ),
         (

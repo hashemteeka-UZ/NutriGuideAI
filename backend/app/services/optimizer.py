@@ -93,6 +93,15 @@ W_MACRO: Final = 1
 W_FIBER: Final = 1
 W_SLOT: Final = 1
 LIKED_BONUS: Final = 10
+# First search budget in deterministic time units. One worker and seed 0 stay (#198).
+SOLVER_DETERMINISTIC_TIME: Final = 2.0
+# One more solve of the same model when the first budget ends with no solution (#198).
+SOLVER_RETRY_DETERMINISTIC_TIME: Final = 10.0
+# Level 2 lets the objective bound rise; the default level stays at 0 (#197).
+SOLVER_LINEARIZATION_LEVEL: Final = 2
+# Main-slot energy must sit in this fraction of the slot share on the first pass (#199).
+SLOT_BAND_LOW: Final = Decimal("0.7")
+SLOT_BAND_HIGH: Final = Decimal("1.4")
 # Fiber's shortfall is converted at the carbohydrate energy factor (4 kcal/g, §30.4b).
 _FIBER_KCAL_PER_G: Final = int(KCAL_PER_G_CARB)
 
@@ -110,6 +119,7 @@ class OptimizedDay:
     objective: int
     solve_seconds: float
     candidate_meals: int
+    slot_band_pass: bool
 
 
 @dataclass(frozen=True)
@@ -133,25 +143,39 @@ def optimize_day(
 ) -> OptimizedDay:
     """One day from the CP-SAT model. Raises NoFeasiblePlanError or PlanError.
 
-    Phase 1 keeps day energy inside ±KCAL_TOLERANCE. If that model is infeasible, phase 2
+    Three passes, in order. Pass 1 is phase 1 (day energy inside ±KCAL_TOLERANCE, weight
+    W_KCAL) on the slot-banded candidates: every snack, and a main-position candidate only
+    when its energy is inside [SLOT_BAND_LOW, SLOT_BAND_HIGH] of that slot's share. It is
+    skipped when a main position has no such candidate. Pass 2 is today's phase 1 on every
+    candidate, used when pass 1 is skipped or INFEASIBLE. Pass 3 is today's phase 2: it
     drops only the energy band (kcal_relaxed) and weights the energy deviation more. No
     nutrient limit is relaxed and no main position is dropped.
     """
     required = _required_nutrients(limits)
     specs = _specs(meals, preferences, limits, excluded_meal_ids, required)
     seconds = 0.0
-
-    solved, elapsed = _solve(specs, preferences, limits, target, True, W_KCAL)
-    seconds += elapsed
-    relaxed = False
-    if solved.status == _INFEASIBLE:
-        solved, elapsed = _solve(specs, preferences, limits, target, False, W_KCAL_RELAXED)
+    slot_band_pass = False
+    solved: _PhaseResult | None = None
+    banded = _slot_banded(specs, target)
+    if banded is not None:
+        solved, elapsed = _solve(banded, preferences, limits, target, True, W_KCAL)
         seconds += elapsed
-        relaxed = True
+        if solved.status in _ACCEPTED:
+            slot_band_pass = True
+        elif solved.status != _INFEASIBLE:
+            raise PlanError(f"cpsat solver status {solved.status}")
+    relaxed = False
+    if not slot_band_pass:
+        solved, elapsed = _solve(specs, preferences, limits, target, True, W_KCAL)
+        seconds += elapsed
         if solved.status == _INFEASIBLE:
-            raise NoFeasiblePlanError("day", solved.reasons, len(specs))
-    if solved.status not in _ACCEPTED:
-        raise PlanError(f"cpsat solver status {solved.status}")
+            solved, elapsed = _solve(specs, preferences, limits, target, False, W_KCAL_RELAXED)
+            seconds += elapsed
+            relaxed = True
+            if solved.status == _INFEASIBLE:
+                raise NoFeasiblePlanError("day", solved.reasons, len(specs))
+    if solved is None or solved.status not in _ACCEPTED:
+        raise PlanError(f"cpsat solver status {solved.status if solved else 'missing'}")
 
     chosen = solved.chosen
     _verify(
@@ -171,6 +195,7 @@ def optimize_day(
         objective=solved.objective,
         solve_seconds=seconds,
         candidate_meals=_layer1_candidates(meals, preferences, limits),
+        slot_band_pass=slot_band_pass,
     )
 
 
@@ -278,11 +303,31 @@ def _specs(
     return tuple(specs)
 
 
-def _configure(solver: Any) -> None:
+def _slot_banded(specs: Sequence[_Choice], target: PlanTarget) -> tuple[_Choice, ...] | None:
+    """Snack candidates, plus main candidates inside the slot energy band (#199)."""
+    kept: list[_Choice] = []
+    present = {position: False for position in MAIN_POSITIONS}
+    for spec in specs:
+        if spec.position in SNACK_POSITIONS:
+            kept.append(spec)
+            continue
+        share = SLOT_ENERGY_SHARE[_layer1_slot(spec.position)]
+        low = SLOT_BAND_LOW * share * target.kcal
+        high = SLOT_BAND_HIGH * share * target.kcal
+        if low <= spec.amounts[ENERGY_NUTRIENT] <= high:
+            kept.append(spec)
+            present[spec.position] = True
+    if not all(present.values()):
+        return None
+    return tuple(kept)
+
+
+def _configure(solver: Any, deterministic_time: float = SOLVER_DETERMINISTIC_TIME) -> None:
     solver.parameters.num_workers = 1
     solver.parameters.random_seed = 0
-    solver.parameters.max_deterministic_time = 10.0
     solver.parameters.log_search_progress = False
+    solver.parameters.max_deterministic_time = deterministic_time
+    solver.parameters.linearization_level = SOLVER_LINEARIZATION_LEVEL
 
 
 def _solve(
@@ -318,8 +363,13 @@ def _solve(
     _configure(solver)
     started = time.perf_counter()
     status_code = solver.Solve(model)
-    elapsed = time.perf_counter() - started
     status = solver.StatusName(status_code)
+    if status == "UNKNOWN":
+        solver = cp_model.CpSolver()
+        _configure(solver, SOLVER_RETRY_DETERMINISTIC_TIME)
+        status_code = solver.Solve(model)
+        status = solver.StatusName(status_code)
+    elapsed = time.perf_counter() - started
     if status == _INFEASIBLE:
         return _PhaseResult(status, (), 0, _core_reasons(solver, names)), elapsed
     if status not in _ACCEPTED:
