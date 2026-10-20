@@ -16,11 +16,12 @@ from app.db.models import UserTarget
 from app.db.models.user import TargetReason
 from app.services.screening import ProfileNotFoundError
 from app.services.targets import (
+    TARGET_INSTANT_STEP,
     MissingWeightError,
-    TargetError,
     TargetValidationError,
     UserNotEligibleError,
     create_user_target,
+    target_instant,
 )
 from tests.builders import (
     make_health_condition,
@@ -176,13 +177,46 @@ def test_missing_profile_raises(session: Session) -> None:
         create_user_target(session, 999_999_999, TargetReason.INITIAL, NOW)
 
 
-def test_new_target_must_start_after_the_current_one(
+def test_target_instant_orders_equal_earlier_and_later() -> None:
+    current = NOW
+    assert target_instant(current, current) == current + TARGET_INSTANT_STEP
+    assert target_instant(current, current - timedelta(seconds=1)) == current + TARGET_INSTANT_STEP
+    later = current + timedelta(seconds=1)
+    assert target_instant(current, later) == later
+
+
+def test_same_instant_opens_the_next_target_one_microsecond_later(
+    session: Session, integrity_conn: Connection, caplog: pytest.LogCaptureFixture
+) -> None:
+    user = _case_1_user(integrity_conn)
+    with caplog.at_level(logging.WARNING, logger="app.services.targets"):
+        first = create_user_target(session, user, TargetReason.INITIAL, NOW)
+        second = create_user_target(session, user, TargetReason.PROFILE_CHANGE, NOW)
+    session.expire_all()
+    session.refresh(first)
+    session.refresh(second)
+    step = NOW + TARGET_INSTANT_STEP
+    assert first.valid_to == second.valid_from == step
+    assert second.valid_to is None
+    assert _current(session, user) == [second]
+    advanced = [r for r in caplog.records if "advanced" in r.getMessage()]
+    assert len(advanced) == 1
+    assert advanced[0].args == (user,)
+    assert "90" not in advanced[0].getMessage()
+
+
+def test_earlier_now_still_opens_after_the_current_target(
     session: Session, integrity_conn: Connection
 ) -> None:
     user = _case_1_user(integrity_conn)
-    create_user_target(session, user, TargetReason.INITIAL, NOW)
-    with pytest.raises(TargetError, match="must be after"):
-        create_user_target(session, user, TargetReason.PROFILE_CHANGE, NOW)
+    first = create_user_target(session, user, TargetReason.INITIAL, NOW)
+    earlier = NOW - timedelta(seconds=1)
+    second = create_user_target(session, user, TargetReason.WEIGHT_UPDATE, earlier)
+    session.expire_all()
+    session.refresh(first)
+    session.refresh(second)
+    assert first.valid_to == second.valid_from == NOW + TARGET_INSTANT_STEP
+    assert _current(session, user) == [second]
 
 
 def test_naive_now_is_rejected(session: Session, integrity_conn: Connection) -> None:

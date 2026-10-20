@@ -50,6 +50,7 @@ from app.services.planner import (
     NoFeasiblePlanError,
     PlanError,
     PlanItem,
+    PlannerTimeoutError,
     PlanTarget,
     reason_codes,
     slot_target_kcal,
@@ -108,6 +109,7 @@ _FIBER_KCAL_PER_G: Final = int(KCAL_PER_G_CARB)
 _INFEASIBLE: Final = "INFEASIBLE"
 _OPTIMAL: Final = "OPTIMAL"
 _FEASIBLE: Final = "FEASIBLE"
+_UNKNOWN: Final = "UNKNOWN"
 _ACCEPTED: Final = frozenset({_OPTIMAL, _FEASIBLE})
 
 
@@ -141,14 +143,16 @@ def optimize_day(
     nutrient_codes: Sequence[str],
     excluded_meal_ids: frozenset[int] = frozenset(),
 ) -> OptimizedDay:
-    """One day from the CP-SAT model. Raises NoFeasiblePlanError or PlanError.
+    """One day from the CP-SAT model.
+
+    Raises NoFeasiblePlanError, PlannerTimeoutError, or PlanError.
 
     Three passes, in order. Pass 1 is phase 1 (day energy inside ±KCAL_TOLERANCE, weight
     W_KCAL) on the slot-banded candidates: every snack, and a main-position candidate only
     when its energy is inside [SLOT_BAND_LOW, SLOT_BAND_HIGH] of that slot's share. It is
     skipped when a main position has no such candidate. Pass 2 is today's phase 1 on every
-    candidate, used when pass 1 is skipped or INFEASIBLE. Pass 3 is today's phase 2: it
-    drops only the energy band (kcal_relaxed) and weights the energy deviation more. No
+    candidate, used when pass 1 is skipped, INFEASIBLE, or UNKNOWN. Pass 3 is today's phase 2:
+    it drops only the energy band (kcal_relaxed) and weights the energy deviation more. No
     nutrient limit is relaxed and no main position is dropped.
     """
     required = _required_nutrients(limits)
@@ -162,7 +166,7 @@ def optimize_day(
         seconds += elapsed
         if solved.status in _ACCEPTED:
             slot_band_pass = True
-        elif solved.status != _INFEASIBLE:
+        elif solved.status not in {_INFEASIBLE, _UNKNOWN}:
             raise PlanError(f"cpsat solver status {solved.status}")
     relaxed = False
     if not slot_band_pass:
@@ -175,7 +179,8 @@ def optimize_day(
             if solved.status == _INFEASIBLE:
                 raise NoFeasiblePlanError("day", solved.reasons, len(specs))
     if solved is None or solved.status not in _ACCEPTED:
-        raise PlanError(f"cpsat solver status {solved.status if solved else 'missing'}")
+        status = solved.status if solved is not None else "missing"
+        raise PlannerTimeoutError(f"cpsat solver status {status}")
 
     chosen = solved.chosen
     _verify(

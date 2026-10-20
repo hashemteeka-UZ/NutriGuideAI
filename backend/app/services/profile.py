@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, time
@@ -26,9 +27,16 @@ from app.db.models import (
 from app.db.models.user import GoalType, TargetReason
 from app.services.common import to_decimal, zone
 from app.services.screening import ProfileNotFoundError, ScreeningResult, screen_user
-from app.services.targets import MissingWeightError, TargetError, create_user_target, validate_goal
+from app.services.targets import (
+    MissingWeightError,
+    create_user_target,
+    target_instant,
+    validate_goal,
+)
 from app.services.water import WaterGoalResult, water_goal
 from app.services.weight import WEIGHT_RECOMPUTE_DELTA_KG, upsert_weight
+
+logger = logging.getLogger(__name__)
 
 
 class UnknownCodeError(ValueError):
@@ -342,12 +350,10 @@ def _current_target(session: Session, user_id: int, *, lock: bool) -> UserTarget
 
 
 def _close_target(current: UserTarget, now: datetime) -> None:
-    if now <= current.valid_from:
-        raise TargetError(
-            f"user {current.user_id}: now ({now.isoformat()}) must be after the current target's "
-            f"valid_from ({current.valid_from.isoformat()})"
-        )
-    current.valid_to = now
+    closed_at = target_instant(current.valid_from, now)
+    if closed_at != now:
+        logger.warning("user_id=%s target instant was advanced", current.user_id)
+    current.valid_to = closed_at
 
 
 def _target_reason(

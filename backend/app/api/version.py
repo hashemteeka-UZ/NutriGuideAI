@@ -2,4 +2,4 @@
 
 from typing import Final
 
-API_VERSION: Final = "0.8.0"
+API_VERSION: Final = "1.0.0"

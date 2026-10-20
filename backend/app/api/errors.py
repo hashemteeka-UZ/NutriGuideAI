@@ -33,7 +33,7 @@ from app.services.consumption import (
 )
 from app.services.plan_requests import PlanDateOutOfRangeError
 from app.services.plan_swap import SwapRejectedError
-from app.services.planner import MissingTargetError, NoFeasiblePlanError
+from app.services.planner import MissingTargetError, NoFeasiblePlanError, PlannerTimeoutError
 from app.services.profile import UnknownCodeError
 from app.services.screening import ProfileNotFoundError
 from app.services.targets import MissingWeightError, TargetValidationError, UserNotEligibleError
@@ -58,6 +58,7 @@ SERVICE_ERRORS: Mapping[type[Exception], tuple[int, str]] = {
     PlanItemAlreadyLoggedError: (409, "PLAN_ITEM_ALREADY_LOGGED"),
     ClientUuidConflictError: (409, "CLIENT_UUID_CONFLICT"),
     NoFeasiblePlanError: (422, "NO_FEASIBLE_PLAN"),
+    PlannerTimeoutError: (503, "PLANNER_TIMEOUT"),
     IncompleteNutritionError: (422, "INCOMPLETE_NUTRITION"),
     SwapRejectedError: (422, "SWAP_REJECTED"),
     ClockSkewError: (422, "CLOCK_SKEW"),
@@ -130,8 +131,8 @@ def error_codes(*codes: str) -> str:
     return "Error codes: " + ", ".join(codes)
 
 
-# Every code named by an operation description, sorted. Later passes raise the ones
-# that are not in SERVICE_ERRORS yet: PLANNER_BUSY, RATE_LIMITED, UNAUTHORIZED.
+# Every code named by an operation description, sorted. Framework codes that are not
+# service exceptions: PLANNER_BUSY, RATE_LIMITED, UNAUTHORIZED.
 PLANNED_ERROR_CODES: Final[tuple[str, ...]] = (
     "CLIENT_UUID_CONFLICT",
     "CLOCK_SKEW",
@@ -148,6 +149,7 @@ PLANNED_ERROR_CODES: Final[tuple[str, ...]] = (
     "NO_TARGET",
     "NO_WEIGHT",
     "PLANNER_BUSY",
+    "PLANNER_TIMEOUT",
     "PLAN_ITEM_ALREADY_LOGGED",
     "PLAN_ITEM_NOT_FOUND",
     "PROFILE_NOT_FOUND",

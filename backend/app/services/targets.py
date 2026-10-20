@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Final
 from zoneinfo import ZoneInfo
@@ -74,6 +74,8 @@ FIBER_G_PER_1000_KCAL: Final = Decimal(14)
 KCAL_PLACES: Final = 1
 TARGET_KCAL_PLACES: Final = 0
 GRAM_PLACES: Final = 1
+# PostgreSQL timestamptz keeps microseconds, so this step survives a round trip (#214).
+TARGET_INSTANT_STEP: Final = timedelta(microseconds=1)
 # ---------------------------------------------------------------------------------------------
 
 FAT_LOWERED: Final = "FAT_LOWERED"
@@ -262,6 +264,11 @@ def compute_targets(inputs: TargetInputs) -> TargetResult:
     )
 
 
+def target_instant(current_valid_from: datetime, now: datetime) -> datetime:
+    """Open or close at now, or one microsecond after the current row when now is not later."""
+    return max(now, current_valid_from + TARGET_INSTANT_STEP)
+
+
 def create_user_target(
     session: Session, user_id: int, reason: TargetReason, now: datetime
 ) -> UserTarget:
@@ -307,18 +314,17 @@ def create_user_target(
         .where(UserTarget.user_id == user_id, UserTarget.valid_to.is_(None))
         .with_for_update()
     ).scalar_one_or_none()
+    start = now
     if current is not None:
-        if now <= current.valid_from:
-            raise TargetError(
-                f"user {user_id}: now ({now.isoformat()}) must be after the current target's "
-                f"valid_from ({current.valid_from.isoformat()})"
-            )
-        current.valid_to = now
+        start = target_instant(current.valid_from, now)
+        if start != now:
+            logger.warning("user_id=%s target instant was advanced", user_id)
+        current.valid_to = start
         session.flush()
 
     target = UserTarget(
         user_id=user_id,
-        valid_from=now,
+        valid_from=start,
         valid_to=None,
         based_on_weight_kg=weight_kg,
         bmr_kcal=float(result.bmr_kcal),

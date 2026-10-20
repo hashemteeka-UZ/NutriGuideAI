@@ -608,3 +608,44 @@ def test_unknown_status_retries_once(monkeypatch: pytest.MonkeyPatch) -> None:
         (2, D("1.0")),
         (3, D("1.0")),
     ]
+
+
+def _in_band_mains() -> list[MealFacts]:
+    return [
+        _meal(1, ("BREAKFAST",), ref="B", kcal=560),
+        _meal(2, ("LUNCH",), ref="L", kcal=760),
+        _meal(3, ("DINNER",), ref="D", kcal=680),
+    ]
+
+
+def test_unknown_banded_pass_continues_unbanded(monkeypatch: pytest.MonkeyPatch) -> None:
+    import app.services.optimizer as optimizer
+
+    real = optimizer._solve
+    calls = 0
+
+    def wrapped(*args: object, **kwargs: object):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return optimizer._PhaseResult("UNKNOWN", (), 0, {}), 0.0
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(optimizer, "_solve", wrapped)
+    result = _optimize(_in_band_mains())
+    assert calls >= 2
+    assert result.slot_band_pass is False
+    assert result.solver_status in {"OPTIMAL", "FEASIBLE"}
+    assert result.plan.items
+
+
+def test_every_pass_unknown_raises_planner_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    import app.services.optimizer as optimizer
+    from app.services.planner import PlannerTimeoutError
+
+    def unknown(*args: object, **kwargs: object):
+        return optimizer._PhaseResult("UNKNOWN", (), 0, {}), 0.0
+
+    monkeypatch.setattr(optimizer, "_solve", unknown)
+    with pytest.raises(PlannerTimeoutError, match="UNKNOWN"):
+        _optimize(_in_band_mains())

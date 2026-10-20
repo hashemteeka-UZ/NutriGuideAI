@@ -1,5 +1,6 @@
 """Profile save: one target per save, children by difference, goal checked before screening."""
 
+import logging
 from datetime import UTC, date, datetime, time, timedelta
 from decimal import Decimal
 
@@ -300,6 +301,29 @@ def test_invalid_goal_rolls_the_save_back(session: Session, integrity_conn: Conn
     assert restored.goal_type == goal_before
     assert restored.target_weight_kg == target_before
     assert _counts(session) == before
+
+
+def test_ineligible_save_at_the_current_instant_closes_the_target(
+    session: Session, integrity_conn: Connection, caplog: pytest.LogCaptureFixture
+) -> None:
+    user = make_user(integrity_conn)
+    _catalog(integrity_conn)
+    first = save_profile(session, user, _input(integrity_conn), NOW)
+    assert first.target is not None
+    with caplog.at_level(logging.WARNING, logger="app.services.profile"):
+        blocked = save_profile(
+            session,
+            user,
+            _input(integrity_conn, conditions=(ConditionInput("DIABETES_INSULIN", None),)),
+            NOW,
+        )
+    assert blocked.screening.eligible is False
+    assert blocked.target is None
+    session.refresh(first.target)
+    assert first.target.valid_to == NOW + timedelta(microseconds=1)
+    advanced = [r for r in caplog.records if "advanced" in r.getMessage()]
+    assert len(advanced) == 1
+    assert advanced[0].args == (user,)
 
 
 def test_unsupported_condition_closes_the_target_and_removing_it_reopens(

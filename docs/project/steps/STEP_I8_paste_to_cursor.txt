@@ -1,0 +1,72 @@
+You are implementing **Step I.8 (API closure; Decisions #214 to #216)**. Step I.7 (offline sync) is committed. This is the last API pass: fix the two remaining 500 paths, prove the whole API end to end over HTTP, measure plan generation over HTTP, and freeze the contract at 1.0.0.
+
+The user has just placed updated documents (do not edit their content; report contradictions): `docs/project/DEV_JOURNAL.md` (J-045), `docs/project/CONTEXT_INDEX.md`, `docs/project/steps/STEP_I_plan.md` (Decisions #214 to #216, the source of truth), and this file. `PROJECT_CONTEXT v4.21` and the closing journal entry are written after this report, not by you.
+
+## Hard rules
+1. No schema change, no migration. `uv run alembic check` clean.
+2. Existing files in `docs/reports/*` byte-identical. The only new report is `docs/reports/plan_latency_http.md` (section 4). If any existing report changes, stop and report why.
+3. Services never import from `app/api`. Routers parse, call one service function, commit, map.
+4. The CP-SAT model itself (variables, constraints, objective, weights, budgets) does not change. Section 2 changes control flow only.
+5. Never log health values, weights, food names or amounts.
+6. Do not commit anything.
+
+## 1. Target time ordering (#214), do this first
+Today `create_user_target` raises `TargetError` when `now <= current.valid_from`, and `profile._close_target` does the same. Both are unmapped, so they become 500. Real trigger: a sync batch shares one `now` for all operations, so two weight operations for the same latest day, each crossing `WEIGHT_RECOMPUTE_DELTA_KG`, open two targets at the same instant. The whole batch then 500s, nothing is committed, and the phone resends the same batch forever. A second trigger is two concurrent requests where the one holding the older `now` gets the row lock last.
+
+- Add in `app/services/targets.py`: `TARGET_INSTANT_STEP: Final = timedelta(microseconds=1)` and `target_instant(current_valid_from: datetime, now: datetime) -> datetime` returning `max(now, current_valid_from + TARGET_INSTANT_STEP)`. PostgreSQL `timestamptz` keeps microseconds, so the step survives the round trip; add a test proving it.
+- `create_user_target`: when a current target exists, compute `start = target_instant(current.valid_from, now)`, set `current.valid_to = start`, and open the new target with `valid_from = start`. Remove the "now must be after the current target's valid_from" raise.
+- `profile._close_target`: `current.valid_to = target_instant(current.valid_from, now)`. Remove its raise.
+- When `start != now`, write ONE warning line: user id and the word that the instant was advanced. No values.
+- History stays append-only (no row is updated except `valid_to` of the closing row, as today), and `CHECK valid_to > valid_from` stays satisfied.
+- Grep for any other `now <= ...valid_from` guard on targets and report it.
+- `TargetError` itself stays (the non-positive macro guard is an internal invariant and stays 500).
+
+Tests:
+- `target_instant`: equal instants, `now` earlier than `valid_from`, `now` later (unchanged).
+- Service: `create_user_target` twice with the same `now` gives two rows, the second `valid_from` = first + 1 µs, the first closed at that instant, exactly one open row. Same with a `now` 1 second before the current `valid_from`.
+- Profile: a profile save that makes the user ineligible at the same `now` as the current target's `valid_from` closes it without error.
+- API regression (the real bug): a sync batch with two weight operations for today (82.5 → 80 → 78, increasing `updated_at`) returns 200 with both applied, two new targets, the latest based on 78; the same batch again returns DUPLICATE for both and no new target.
+
+## 2. Solver timeout (#215)
+In `optimizer.py`, the slot-banded first pass raises `PlanError` when its status (after the existing UNKNOWN retry) is neither accepted nor INFEASIBLE. Change: an UNKNOWN banded pass is treated like INFEASIBLE, so the optimizer continues to the unbanded pass and `slot_band_pass` stays false. Keep the final guard, but raise a new `PlannerTimeoutError(PlanError)` (in `planner.py`, next to `PlanError`, one-line docstring) when the last pass ends without an accepted status.
+- `app/api/errors.py`: map `PlannerTimeoutError` to `503 PLANNER_TIMEOUT`, no `Retry-After`. Add `PLANNER_TIMEOUT` to the documented codes and to the `POST /plans/days` error codes (and any other route that runs the optimizer, for example swap alternatives if they call it; report which).
+- Do not touch budgets, retries, weights or the model.
+- Tests (monkeypatch the solve step): banded UNKNOWN then unbanded OPTIMAL gives a plan with `slot_band_pass` false; every pass UNKNOWN gives `PlannerTimeoutError`, and over HTTP 503 with code `PLANNER_TIMEOUT` and nothing committed.
+- Report the worst-case wall time this fallback can add (banded budget + retry, then the unbanded passes), from the constants.
+
+## 3. End-to-end scenario test (#216)
+New `tests/api/test_scenario.py`, one test that walks a real user through the API with the TestClient on the test database, asserting status and the key fields at each step:
+register → login → refresh (old refresh rejected afterwards) → `GET /me` (`has_profile` false) → reference lists → `PUT /me/profile` (a supported condition, LOSE goal) → `GET /me/targets` → catalog snapshot (ETag, then 304 with `If-None-Match`) → `POST /plans/days` today → `GET /days/{today}` → alternatives for one item, then swap → shopping list → log the breakfast plan item (ACCEPT written once) → a catalog meal log → water ×2 and delete one → weight crossing the delta (new target) → adherence for today → a sync batch (one create, one duplicate resend, one rejected) → `GET /sync/changes` with the first `server_time` → `PUT` a meal like and remove it → logout → `DELETE /me` → the old access token is rejected and the user's rows are gone.
+Keep it readable: one helper per step if needed, no sleeps. It must run in the normal CI suite.
+
+## 4. Plan latency over HTTP (#216)
+New `scripts/measure_plan_latency.py` (run as `uv run python -m scripts.measure_plan_latency --base-url http://127.0.0.1:8000 --days 3`). It talks to a RUNNING server over HTTP only (httpx), never imports services.
+- Six personas, each a fresh registered user. Use the codes from the reference endpoints; if one below does not exist, use the closest and say so in the report:
+  1. male, 35 y, 178 cm, 92 kg, moderate activity, LOSE, HYPERTENSION
+  2. female, 52 y, 160 cm, 78 kg, light activity, LOSE, type 2 DIABETES
+  3. male, 60 y, 172 cm, 85 kg, sedentary, MAINTAIN, HEART condition
+  4. female, 28 y, 165 cm, 60 kg, moderate activity, MAINTAIN, no condition, one allergen
+  5. male, 22 y, 180 cm, 62 kg, active, GAIN, no condition
+  6. female, 45 y, 158 cm, 70 kg, light activity, LOSE, type 2 DIABETES and HYPERTENSION
+- For each persona, `POST /plans/days` for `--days` consecutive local dates starting today, sequentially. Record per request: wall ms, HTTP status, plan status (OPTIMAL/FEASIBLE), `slot_band_pass`, the solver seconds if the response or snapshot exposes them, day kcal versus target.
+- Then one concurrency probe: three `POST /plans/days` fired at the same time for three different personas on a new date. Record each status (expect one `503 PLANNER_BUSY` with `Retry-After` while two solve, per the existing limit).
+- Delete every created user at the end (`DELETE /me`), also on failure (try/finally).
+- Write `docs/reports/plan_latency_http.md`: date, API version, git commit, machine (CPU count, OS), the per-request table, then count, p50, p95, max wall ms, statuses, and the concurrency probe. English, generated, deterministic layout. Do not add it to any byte-identical check.
+
+## 5. Contract freeze (#216)
+- `API_VERSION` → `"1.0.0"`. Regenerate `openapi.json`; the drift test stays green. The only contract changes are the version, the health example, and the new `PLANNER_TIMEOUT` code in descriptions.
+- `docs/api/API_GUIDE.md`: add `PLANNER_TIMEOUT` (show a friendly "could not build the plan now, try again" message; do not auto-retry in a loop), and a short "Contract stability" section: from 1.0.0 changes are additive only (new optional fields, new endpoints, new error codes); clients must ignore unknown fields and treat unknown error codes as generic errors; a breaking change goes to `/api/v2`.
+- Confirm in the report that no route answers 501 and that every code in the documented list is either raised somewhere or explicitly framework-level (UNAUTHORIZED, RATE_LIMITED, PLANNER_BUSY).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, then the FULL `CI=true uv run pytest -q` (0 skipped; again in full after any fix). Then start the dev server on the dev database and run the latency script with `--days 3`.
+
+## Report back
+1. Files created/changed.
+2. Section 1: the code change, any other valid_from guard found, and the batch regression result.
+3. Section 2: which routes can now return `PLANNER_TIMEOUT`, and the worst-case added wall time.
+4. Section 3: the scenario steps covered, and anything that did not behave as described (one line each).
+5. Section 4: the summary block of `plan_latency_http.md` (count, p50, p95, max, statuses, concurrency probe) and the slowest request with its persona.
+6. Confirmation that existing `docs/reports` have no diff; `git diff --stat docs/api/openapi.json` and the contract changes.
+7. Test counts and check outputs.
+8. Findings (one line each, with the section number) and assumptions.

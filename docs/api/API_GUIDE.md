@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.8.0`). If this guide and that file disagree, the file wins. Every route in this version is implemented. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `1.0.0`). If this guide and that file disagree, the file wins. Every route in this version is implemented. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -90,7 +90,7 @@ Write a new UUID into `client_uuid` (and `op_id` for sync) before the request le
 
 ## Weekly plan
 
-The app calls `POST /plans/days` seven times in sequence, one date at a time, and shows progress (day 3 of 7). Each call stores that day, so the first day can be shown as soon as it returns. On **503** `PLANNER_BUSY`, wait the number of seconds in the `Retry-After` header, then retry that same day.
+The app calls `POST /plans/days` seven times in sequence, one date at a time, and shows progress (day 3 of 7). Each call stores that day, so the first day can be shown as soon as it returns. On **503** `PLANNER_BUSY`, wait the number of seconds in the `Retry-After` header, then retry that same day. On **503** `PLANNER_TIMEOUT`, show "could not build the plan now, try again". Do not retry that error in a loop.
 
 Logging a plan item, swapping, and saving a meal preference also write learning events on the server. The app only posts `IMPRESSION`, `VIEW`, `SAVE`, `RATE`, `COOK`, and `SKIP` to `POST /interactions`. `RATE` must include `value` from 1 to 5.
 
@@ -171,6 +171,7 @@ Statuses already produced by the server, and the statuses later passes will use 
 | NOT_IMPLEMENTED | 501 |
 | DATABASE_UNAVAILABLE | 503 |
 | PLANNER_BUSY | 503 |
+| PLANNER_TIMEOUT | 503 |
 | SERVICE_UNAVAILABLE | 503 |
 
 `NOT_IMPLEMENTED` goes away as each route is filled in. Each operation’s description ends with `Error codes:` listing the codes it will return after that. Those lists do not include 501.
@@ -201,3 +202,7 @@ Paths are under `/api/v1`. This is the plan’s screen table, with food search r
 | Offline | `POST /sync/batch`, `GET /sync/changes?since=`, `GET /catalog/snapshot` |
 
 `DIABETES_INSULIN` is in `GET /reference` with `is_supported: false`. Ask it only as the insulin question. The supported conditions are `DIABETES_T2`, `HYPERTENSION`, and `HEART_DISEASE`. There is no pregnancy, lactation, or kidney-disease field.
+
+## 8. Contract stability
+
+From `1.0.0` the contract is stable for the Flutter app. Changes are additive only: new optional fields, new endpoints, and new error codes. Clients must ignore unknown fields and treat an unknown error code as a generic error. A breaking change goes to `/api/v2`.

@@ -119,6 +119,10 @@ class PlanError(Exception):
     pass
 
 
+class PlannerTimeoutError(PlanError):
+    """The last solver pass ended without an accepted status."""
+
+
 class MissingTargetError(PlanError, LookupError):
     pass
 

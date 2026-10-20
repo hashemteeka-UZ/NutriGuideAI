@@ -554,3 +554,54 @@ def test_change_feed_window_overlap_swap_and_target(
     )
     assert changed.json()["profile_changed"] is True
     assert any(row["measured_on"] == TODAY for row in changed.json()["weights"])
+
+
+def test_two_weights_in_one_batch_share_now_and_both_apply(
+    client: TestClient, api_session: Session, integrity_conn: Connection
+) -> None:
+    """82.5 then 80 then 78, one server instant: both writes apply and a resend is duplicate."""
+    load_f1_slice(api_session, DEFAULT_DATA_DIR, now=NOW)
+    headers = _auth(client, "sync-weights@example.com")
+    _save(client, headers)
+    user_id = _user_id(integrity_conn, "sync-weights@example.com")
+    operations = [
+        {
+            "op": "WEIGHT_PUT",
+            "op_id": str(uuid4()),
+            "measured_on": TODAY,
+            "weight_kg": 80,
+            "updated_at": "2026-10-12T09:01:00Z",
+        },
+        {
+            "op": "WEIGHT_PUT",
+            "op_id": str(uuid4()),
+            "measured_on": TODAY,
+            "weight_kg": 78,
+            "updated_at": "2026-10-12T09:02:00Z",
+        },
+    ]
+    first = _post(client, headers, operations)
+    assert first.status_code == 200, first.text
+    assert [row["status"] for row in first.json()["results"]] == ["UPDATED", "UPDATED"]
+    api_session.expire_all()
+    rows = list(
+        api_session.scalars(
+            select(UserTarget)
+            .where(UserTarget.user_id == user_id)
+            .order_by(UserTarget.valid_from, UserTarget.target_id)
+        ).all()
+    )
+    assert len(rows) == 3
+    open_rows = [row for row in rows if row.valid_to is None]
+    assert len(open_rows) == 1
+    assert open_rows[0].based_on_weight_kg == 78
+    assert open_rows[0].reason == "WEIGHT_UPDATE"
+
+    again = _post(client, headers, operations)
+    assert again.status_code == 200, again.text
+    assert [row["status"] for row in again.json()["results"]] == ["DUPLICATE", "DUPLICATE"]
+    api_session.expire_all()
+    after = api_session.scalar(
+        select(func.count()).select_from(UserTarget).where(UserTarget.user_id == user_id)
+    )
+    assert after == 3

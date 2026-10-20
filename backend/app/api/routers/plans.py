@@ -56,6 +56,7 @@ _PLAN_DAY_CODES = error_codes(
     "CONDITION_CONFLICT",
     "NO_FEASIBLE_PLAN",
     "PLANNER_BUSY",
+    "PLANNER_TIMEOUT",
     "RATE_LIMITED",
     "VALIDATION_ERROR",
 )
@@ -248,7 +249,8 @@ def _shopping_item(line: ShoppingLine) -> ShoppingItem:
         "Generate and store that day's plan with the default planner (cpsat). "
         "The date must fall on the user's local today minus 1 day through today plus 13 days; "
         "anything else is VALIDATION_ERROR. At most 20 generations per user per hour. "
-        "PLANNER_BUSY is 503 and carries Retry-After. NOT_ELIGIBLE includes reasons.\n"
+        "PLANNER_BUSY is 503 and carries Retry-After. PLANNER_TIMEOUT is 503 when the "
+        "solver stops without a plan and carries no Retry-After. NOT_ELIGIBLE includes reasons.\n"
         + _PLAN_DAY_CODES
     ),
 )

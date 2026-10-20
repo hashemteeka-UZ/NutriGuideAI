@@ -4,14 +4,15 @@ from __future__ import annotations
 
 from uuid import uuid4
 
+import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
 from app.api.limiting import limiter
 from app.api.planner_limit import planner_semaphore
-from app.db.models import MealNutrient, Nutrient, User, UserTarget
+from app.db.models import MealNutrient, MealPlan, Nutrient, User, UserTarget
 from app.seed.f1_loader import DEFAULT_DATA_DIR, load_f1_slice
 from app.services.consumption import log_plan_item
 from tests.api.conftest import NOW
@@ -242,6 +243,34 @@ def test_day_view_plans_swap_and_shopping_list(
     assert again.status_code == 200, again.text
     assert again.json()[0]["totals"]["fiber_g"] is None
     assert again.json()[0]["totals"]["kcal"] is not None
+
+
+def test_planner_timeout_is_503_and_stores_nothing(
+    client: TestClient, api_session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import app.services.optimizer as optimizer
+
+    load_f1_slice(api_session, DEFAULT_DATA_DIR, now=NOW)
+    headers = _auth(client, "plans-timeout@example.com")
+    _save(client, headers)
+    user_id = client.get("/api/v1/me", headers=headers).json()["user_id"]
+    before = api_session.scalar(
+        select(func.count()).select_from(MealPlan).where(MealPlan.user_id == user_id)
+    )
+
+    def unknown(*args: object, **kwargs: object):
+        return optimizer._PhaseResult("UNKNOWN", (), 0, {}), 0.0
+
+    monkeypatch.setattr(optimizer, "_solve", unknown)
+    response = client.post("/api/v1/plans/days", json={"date": TODAY}, headers=headers)
+    assert response.status_code == 503, response.text
+    assert response.json()["code"] == "PLANNER_TIMEOUT"
+    assert "retry-after" not in response.headers
+    api_session.expire_all()
+    after = api_session.scalar(
+        select(func.count()).select_from(MealPlan).where(MealPlan.user_id == user_id)
+    )
+    assert before == after == 0
 
 
 def test_missing_target_is_409(client: TestClient, api_session: Session) -> None:
