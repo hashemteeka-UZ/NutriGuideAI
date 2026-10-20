@@ -748,7 +748,16 @@ def test_cpsat_plan_records_general_limits_and_excludes_the_previous_day(
     snapshot = first.target_snapshot
     assert snapshot["planner_version"] == "cpsat_v1"
     solver = snapshot["solver"]
-    assert set(solver) == {"solver_status", "kcal_relaxed", "objective", "excluded_meal_ids"}
+    assert set(solver) == {
+        "solver_status",
+        "kcal_relaxed",
+        "objective",
+        "excluded_meal_ids",
+        "solve_seconds",
+        "candidate_meals",
+    }
+    assert solver["candidate_meals"] > 0
+    assert solver["solve_seconds"] >= 0
     assert solver["excluded_meal_ids"] == []
     assert solver["solver_status"] in {"OPTIMAL", "FEASIBLE"}
     for nutrient in ("sodium", "saturated_fat"):

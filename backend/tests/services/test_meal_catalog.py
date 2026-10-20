@@ -1,10 +1,15 @@
-"""A meal page loads related rows in a fixed number of queries (#184)."""
+"""A meal page loads related rows in a fixed number of queries (#184, #189)."""
 
-from sqlalchemy import event
+import logging
+
+import pytest
+from sqlalchemy import delete, event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
-from app.services.meal_catalog import list_meals
+from app.db.models import MealNutrient
+from app.services.common import MealNotFoundError
+from app.services.meal_catalog import catalog_snapshot, get_meal, list_meals
 from tests.builders import (
     make_allergen,
     make_dietary_tag,
@@ -19,10 +24,14 @@ from tests.builders import (
 )
 
 
-def test_a_twenty_meal_page_uses_six_selects(session: Session, integrity_conn: Connection) -> None:
+def test_a_twenty_meal_page_uses_seven_selects(
+    session: Session, integrity_conn: Connection
+) -> None:
     user = make_user(integrity_conn)
     energy = make_nutrient(integrity_conn, code="energy_kcal", unit="kcal")
     protein = make_nutrient(integrity_conn, code="protein", unit="g")
+    carb = make_nutrient(integrity_conn, code="carbohydrate", unit="g")
+    fat = make_nutrient(integrity_conn, code="total_fat", unit="g")
     tag = make_dietary_tag(integrity_conn, code="breakfast_suitable", tag_group="OCCASION")
     allergen = make_allergen(integrity_conn, code="EGG")
     for index in range(20):
@@ -47,6 +56,20 @@ def test_a_twenty_meal_page_uses_six_selects(session: Session, integrity_conn: C
             nutrient_id=protein,
             amount_per_serving=10,
             amount_per_100g=5,
+        )
+        make_meal_nutrient(
+            integrity_conn,
+            meal_id=meal,
+            nutrient_id=carb,
+            amount_per_serving=20,
+            amount_per_100g=10,
+        )
+        make_meal_nutrient(
+            integrity_conn,
+            meal_id=meal,
+            nutrient_id=fat,
+            amount_per_serving=5,
+            amount_per_100g=2,
         )
         make_meal_tag(integrity_conn, meal_id=meal, tag_id=tag)
         make_meal_allergen(integrity_conn, meal_id=meal, allergen_id=allergen)
@@ -83,6 +106,50 @@ def test_a_twenty_meal_page_uses_six_selects(session: Session, integrity_conn: C
 
     assert total == 20
     assert len(items) == 20
-    assert len(statements) == 6
+    assert len(statements) == 7
     assert items[0].kcal == 100
+    assert items[0].protein_g == 10
+    assert items[0].carb_g == 20
+    assert items[0].fat_g == 5
     assert items[0].my_stance == "LIKE"
+
+
+def test_a_meal_missing_energy_is_left_out_and_warned(
+    session: Session, integrity_conn: Connection, caplog: pytest.LogCaptureFixture
+) -> None:
+    user = make_user(integrity_conn)
+    energy = make_nutrient(integrity_conn, code="energy_kcal", unit="kcal")
+    protein = make_nutrient(integrity_conn, code="protein", unit="g")
+    carb = make_nutrient(integrity_conn, code="carbohydrate", unit="g")
+    fat = make_nutrient(integrity_conn, code="total_fat", unit="g")
+    meal = make_meal(integrity_conn, name="plain", name_normalized="plain", default_lang="en")
+    for nutrient, amount in ((energy, 100), (protein, 10), (carb, 20), (fat, 5)):
+        make_meal_nutrient(
+            integrity_conn,
+            meal_id=meal,
+            nutrient_id=nutrient,
+            amount_per_serving=amount,
+            amount_per_100g=amount,
+        )
+    session.execute(
+        delete(MealNutrient).where(MealNutrient.meal_id == meal, MealNutrient.nutrient_id == energy)
+    )
+    session.expire_all()
+
+    with caplog.at_level(logging.WARNING):
+        items, total = list_meals(
+            session, user, q=None, slot=None, cuisine=None, lang="en", limit=20, offset=0
+        )
+        snapshot, _tag = catalog_snapshot(session, "en")
+        with pytest.raises(MealNotFoundError):
+            get_meal(session, user, meal, "en")
+
+    assert total == 0
+    assert items == ()
+    meals = snapshot["meals"]
+    assert isinstance(meals, list)
+    assert meals == []
+    warnings = [
+        record.getMessage() for record in caplog.records if record.levelno >= logging.WARNING
+    ]
+    assert any(str(meal) in message and "energy_kcal" in message for message in warnings)

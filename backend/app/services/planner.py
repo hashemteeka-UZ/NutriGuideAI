@@ -30,7 +30,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import MealPlan, MealPlanItem, Nutrient, UserProfile, UserTarget
 from app.db.models.user import MealSlot
-from app.services.common import to_decimal
+from app.services.common import round_half_up, to_decimal
 from app.services.condition_limits import (
     ENERGY_NUTRIENT,
     ResolvedLimits,
@@ -617,6 +617,8 @@ def create_day_plan(
                 "kcal_relaxed": optimized.kcal_relaxed,
                 "objective": optimized.objective,
                 "excluded_meal_ids": sorted(excluded),
+                "solve_seconds": float(round_half_up(Decimal(str(optimized.solve_seconds)), 3)),
+                "candidate_meals": optimized.candidate_meals,
             },
         )
 

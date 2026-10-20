@@ -66,7 +66,7 @@ def create_app() -> FastAPI:
             allow_origins=settings.CORS_ORIGINS,
             allow_methods=_CORS_METHODS,
             allow_headers=_CORS_HEADERS,
-            expose_headers=["X-Request-ID"],
+            expose_headers=["X-Request-ID", "Retry-After"],
         )
     application.state.limiter = limiter
     application.add_exception_handler(RateLimitExceeded, rate_limit_handler)

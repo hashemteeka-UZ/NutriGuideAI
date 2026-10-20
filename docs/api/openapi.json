@@ -1289,7 +1289,7 @@
       },
       "HealthResponse": {
         "example": {
-          "api_version": "0.5.0",
+          "api_version": "0.6.0",
           "database": "ok",
           "dataset_version": "catalog_v3",
           "default_planner": "cpsat",
@@ -2513,18 +2513,22 @@
         },
         "properties": {
           "candidate_meals": {
+            "description": "Distinct meals that passed Layer 1 for at least one position.",
             "title": "Candidate Meals",
             "type": "integer"
           },
           "kcal_relaxed": {
+            "description": "True when phase 2 dropped the daily energy band.",
             "title": "Kcal Relaxed",
             "type": "boolean"
           },
           "solve_seconds": {
+            "description": "Solver time in seconds, rounded to 3 decimal places.",
             "title": "Solve Seconds",
             "type": "number"
           },
           "solver_status": {
+            "description": "CP-SAT status stored on the plan (OPTIMAL or FEASIBLE).",
             "title": "Solver Status",
             "type": "string"
           }
@@ -4954,7 +4958,7 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -5580,7 +5584,7 @@
     },
     "/api/v1/days/{date}": {
       "get": {
-        "description": "Home screen: that day's plan, meal windows, adherence, and water.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND",
+        "description": "Home screen: that day's plan, meal windows, adherence, and water. Breakfast runs from 30 minutes to 2 hours 30 minutes after waking. Lunch and the snack scale a 16-hour awake day (6 to 8 hours, and 9.5 to 10.5 hours). Dinner ends 2 hours 30 minutes before sleep. Windows are empty when the awake span is under 10 hours.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND",
         "operationId": "get_day_view",
         "parameters": [
           {
@@ -6411,7 +6415,7 @@
     },
     "/api/v1/plan-items/{plan_item_id}/alternatives": {
       "get": {
-        "description": "Up to 10 meals that can replace this item. kcal_delta is the alternative minus the item.\nError codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND",
+        "description": "Up to 10 meals that can replace this item, nearest in kcal first. kcal_delta is the alternative minus the item. Empty when the item has an active log.\nError codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND",
         "operationId": "list_alternatives",
         "parameters": [
           {
@@ -6614,7 +6618,7 @@
     },
     "/api/v1/plans/days": {
       "post": {
-        "description": "Generate and store that day's plan with the default planner. PLANNER_BUSY is 503 and carries Retry-After. NOT_ELIGIBLE includes reasons.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, NOT_ELIGIBLE, NO_TARGET, CONDITION_CONFLICT, NO_FEASIBLE_PLAN, PLANNER_BUSY, RATE_LIMITED",
+        "description": "Generate and store that day's plan with the default planner (cpsat). The date must fall on the user's local today minus 1 day through today plus 13 days; anything else is VALIDATION_ERROR. At most 20 generations per user per hour. PLANNER_BUSY is 503 and carries Retry-After. NOT_ELIGIBLE includes reasons.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, NOT_ELIGIBLE, NO_TARGET, CONDITION_CONFLICT, NO_FEASIBLE_PLAN, PLANNER_BUSY, RATE_LIMITED, VALIDATION_ERROR",
         "operationId": "create_plan_day",
         "requestBody": {
           "content": {
@@ -6671,7 +6675,7 @@
     },
     "/api/v1/reference": {
       "get": {
-        "description": "Conditions, allergens, cuisines, and the closed lists for sex, activity, goal, and slot. Names follow Accept-Language (ar default, en). DIABETES_INSULIN is included with is_supported false. The response sets Cache-Control: public, max-age=3600. dataset_version is \"unknown\" when active meals do not share one version.\nError codes:",
+        "description": "Conditions, allergens, cuisines, and the closed lists for sex, activity, goal, and slot. Names follow Accept-Language (ar default, en). DIABETES_INSULIN is included with is_supported false. The response sets Cache-Control: public, max-age=3600. dataset_version is the catalog version in DATASET_MANIFEST.yaml when the active meals' batch ids are exactly that file's meal batches. A missing or unreadable manifest, or a different set of batches, returns \"unknown\" and logs a warning; the request still succeeds.\nError codes:",
         "operationId": "get_reference",
         "responses": {
           "200": {
@@ -6713,7 +6717,7 @@
     },
     "/api/v1/shopping-list": {
       "get": {
-        "description": "Ingredient grams summed from the current plans in the inclusive range. Maximum 31 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "Ingredient grams summed from the current plans in the inclusive range. Optional ingredients are excluded; the meal page lists them. Maximum 31 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
         "operationId": "get_shopping_list",
         "parameters": [
           {

@@ -212,6 +212,61 @@ class ResolvedLimits:
             },
         }
 
+    @classmethod
+    def from_snapshot(cls, snapshot: Mapping[str, Any]) -> ResolvedLimits:
+        """Inverse of to_snapshot. Amounts stay the strings stored in the plan (#190)."""
+
+        def limits(raw: Mapping[str, Any]) -> dict[str, ResolvedLimit]:
+            return {code: _limit_from_snapshot(value) for code, value in raw.items()}
+
+        avoid = snapshot["avoid_tags"]
+        limited = snapshot["limit_tags"]
+        restrictions: list[TagRestriction] = []
+        for tag, conditions in avoid.items():
+            for condition in conditions:
+                restrictions.append(
+                    TagRestriction(str(condition), str(tag), RestrictionType.AVOID, None)
+                )
+        limit_tags: dict[str, int | None] = {}
+        for tag, info in limited.items():
+            maximum = info["max_servings_per_week"]
+            limit_tags[str(tag)] = None if maximum is None else int(maximum)
+            for condition in info["conditions"]:
+                restrictions.append(
+                    TagRestriction(
+                        str(condition),
+                        str(tag),
+                        RestrictionType.LIMIT,
+                        limit_tags[str(tag)],
+                    )
+                )
+        restrictions.sort(key=lambda row: (row.condition_code, row.tag_code, row.restriction_type))
+        return cls(
+            target_kcal=Decimal(str(snapshot["target_kcal"])),
+            conditions=tuple(str(code) for code in snapshot["conditions"]),
+            max_per_day=limits(snapshot["max_per_day"]),
+            min_per_day=limits(snapshot["min_per_day"]),
+            max_per_meal=limits(snapshot["max_per_meal"]),
+            max_per_meal_percent_energy=limits(snapshot["max_per_meal_percent_energy"]),
+            avoid_tags=frozenset(str(tag) for tag in avoid),
+            limit_tags=limit_tags,
+            tag_restrictions=tuple(restrictions),
+        )
+
+
+def _limit_from_snapshot(raw: Mapping[str, Any]) -> ResolvedLimit:
+    sources = tuple(
+        LimitSource(
+            condition_code=str(source["condition"]),
+            source_reference=str(source["source_reference"]),
+            limit_basis=str(source["limit_basis"]),
+            stated_value=Decimal(str(source["stated_value"])),
+            value=Decimal(str(source["value"])),
+        )
+        for source in raw["sources"]
+    )
+    return ResolvedLimit(value=Decimal(str(raw["value"])), sources=sources)
+
 
 def _grams(nutrient: str, percent: Decimal, target_kcal: Decimal) -> Decimal:
     return percent / PERCENT * target_kcal / KCAL_PER_GRAM[nutrient]

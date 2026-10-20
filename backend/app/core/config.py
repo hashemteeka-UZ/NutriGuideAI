@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_MINUTES: int = 15
     REFRESH_TOKEN_DAYS: int = 30
     RATE_LIMIT_ENABLED: bool = True
+    PLANNER_MAX_CONCURRENT: int = 2
     CATALOG_MANIFEST_PATH: Path = (
         REPO_ROOT / "backend" / "data" / "catalog" / "DATASET_MANIFEST.yaml"
     )

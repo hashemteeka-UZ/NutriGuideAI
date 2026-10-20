@@ -31,6 +31,7 @@ from app.services.consumption import (
     PlanItemAlreadyLoggedError,
     PlanItemNotFoundError,
 )
+from app.services.plan_requests import PlanDateOutOfRangeError
 from app.services.plan_swap import SwapRejectedError
 from app.services.planner import MissingTargetError, NoFeasiblePlanError
 from app.services.profile import UnknownCodeError
@@ -64,6 +65,7 @@ SERVICE_ERRORS: Mapping[type[Exception], tuple[int, str]] = {
     InvalidTimezoneError: (422, "INVALID_TIMEZONE"),
     UnknownCodeError: (422, "UNKNOWN_CODE"),
     EmptySearchError: (422, "VALIDATION_ERROR"),
+    PlanDateOutOfRangeError: (422, "VALIDATION_ERROR"),
     EmailTakenError: (409, "EMAIL_TAKEN"),
     InvalidCredentialsError: (401, "INVALID_CREDENTIALS"),
     TokenInvalidError: (401, "TOKEN_INVALID"),

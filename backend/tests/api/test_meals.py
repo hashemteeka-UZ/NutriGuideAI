@@ -194,8 +194,10 @@ def test_paging_stance_and_inactive_meals(client: TestClient, integrity_conn: Co
     caller_id = _user_id(integrity_conn, "meals-caller@example.com")
     other_id = _user_id(integrity_conn, "meals-other@example.com")
     ids = []
+    macros = _macros(integrity_conn)
     for name in ("a-meal", "b-meal", "c-meal"):
         meal = make_meal(integrity_conn, name=name, name_normalized=name, default_lang="en")
+        _amounts(integrity_conn, meal, macros, kcal=100, protein=10, carb=20, fat=5)
         ids.append(meal)
     liked = ids[0]
     make_user_meal_pref(integrity_conn, user_id=caller_id, meal_id=liked, stance="LIKE")
@@ -268,7 +270,11 @@ def test_detail_language_steps_and_stored_energy(
         name_normalized="\u0645\u0644\u0648\u062e\u064a\u0647",
         default_lang="ar",
     )
+    _amounts(integrity_conn, bare, macros, kcal=1, protein=1, carb=1, fat=1)
     inactive = make_meal(integrity_conn, is_active=False)
+    incomplete = make_meal(
+        integrity_conn, name="incomplete", name_normalized="incomplete", default_lang="ar"
+    )
 
     arabic = client.get(f"/api/v1/meals/{meal}", headers=headers)
     assert arabic.status_code == 200, arabic.text
@@ -306,12 +312,16 @@ def test_detail_language_steps_and_stored_energy(
     gone = client.get(f"/api/v1/meals/{inactive}", headers=headers)
     assert gone.status_code == 404
     assert gone.json()["code"] == "MEAL_NOT_FOUND"
+    no_macros = client.get(f"/api/v1/meals/{incomplete}", headers=headers)
+    assert no_macros.status_code == 404
+    assert no_macros.json()["code"] == "MEAL_NOT_FOUND"
 
 
 def test_snapshot_etag_language_deactivation_and_gzip(
     client: TestClient, integrity_conn: Connection, api_session: Session
 ) -> None:
     headers = _auth(client, "meals-snapshot@example.com")
+    macros = _macros(integrity_conn)
     meal = make_meal(
         integrity_conn,
         name="snapshot meal",
@@ -319,6 +329,7 @@ def test_snapshot_etag_language_deactivation_and_gzip(
         default_lang="ar",
         dataset_version="team_recipes_v1",
     )
+    _amounts(integrity_conn, meal, macros, kcal=100, protein=10, carb=20, fat=5)
     make_meal_step(integrity_conn, meal_id=meal, lang="ar", position=1, text="x" * 1500)
     other = make_meal(
         integrity_conn,
@@ -326,6 +337,7 @@ def test_snapshot_etag_language_deactivation_and_gzip(
         name_normalized="second",
         default_lang="ar",
     )
+    _amounts(integrity_conn, other, macros, kcal=80, protein=8, carb=16, fat=4)
 
     first = client.get("/api/v1/catalog/snapshot", headers=headers)
     assert first.status_code == 200, first.text

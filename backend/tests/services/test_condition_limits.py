@@ -440,3 +440,9 @@ def test_general_limit_conflicts_with_a_higher_minimum() -> None:
     assert error.nutrient == "sodium"
     assert (error.min_per_day, error.max_per_day) == (D(2500), D(2000))
     assert error.conditions == (GENERAL_POPULATION, "SYNTHETIC")
+
+
+def test_resolved_limits_snapshot_round_trip() -> None:
+    original = apply_general_limits(_empty_limits())
+    restored = ResolvedLimits.from_snapshot(original.to_snapshot())
+    assert restored.to_snapshot() == original.to_snapshot()

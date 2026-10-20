@@ -18,7 +18,10 @@ router = APIRouter(tags=["reference"])
         "Conditions, allergens, cuisines, and the closed lists for sex, activity, goal, and slot. "
         "Names follow Accept-Language (ar default, en). DIABETES_INSULIN is included with "
         "is_supported false. The response sets Cache-Control: public, max-age=3600. "
-        'dataset_version is "unknown" when active meals do not share one version.\n' + error_codes()
+        "dataset_version is the catalog version in DATASET_MANIFEST.yaml when the active meals' "
+        "batch ids are exactly that file's meal batches. A missing or unreadable manifest, or a "
+        'different set of batches, returns "unknown" and logs a warning; the request still '
+        "succeeds.\n" + error_codes()
     ),
 )
 def get_reference(session: DbSession, lang: Lang, response: Response) -> Reference:

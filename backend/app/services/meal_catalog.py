@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -45,6 +47,10 @@ UNKNOWN_DATASET_VERSION = "unknown"
 _PROTEIN = "protein"
 _CARB = "carbohydrate"
 _FAT = "total_fat"
+# Shown on a meal card. A missing value is not zero (§9.8, #189).
+_REQUIRED_MACROS: tuple[str, ...] = (ENERGY_NUTRIENT, _PROTEIN, _CARB, _FAT)
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -96,6 +102,14 @@ class _Loaded:
     meal: Meal
     cuisine: str | None
     name: str
+
+
+@dataclass(frozen=True)
+class StoredMeal:
+    """Summary plus the stored per-serving amounts a plan view multiplies (#190)."""
+
+    summary: MealSummaryData
+    per_serving: Mapping[str, Decimal]
 
 
 def _round(value: Decimal) -> float:
@@ -199,7 +213,47 @@ def _filtered(
     if cuisine is not None:
         # An unknown code matches no row, so the page is empty (#185).
         stmt = stmt.where(Cuisine.code == cuisine)
+    # Nutritionally complete meals only: the four card macros must be stored (#189).
+    stmt = stmt.where(Meal.meal_id.in_(_complete_meal_ids()))
     return stmt
+
+
+def _complete_meal_ids() -> Select[Any]:
+    return (
+        select(MealNutrient.meal_id)
+        .join(Nutrient, Nutrient.nutrient_id == MealNutrient.nutrient_id)
+        .where(Nutrient.code.in_(_REQUIRED_MACROS))
+        .group_by(MealNutrient.meal_id)
+        .having(func.count(Nutrient.code) == len(_REQUIRED_MACROS))
+    )
+
+
+def _warn_incomplete(session: Session, meal_id: int | None = None) -> None:
+    """One warning per active meal that is missing a card macro (#189)."""
+    stmt = (
+        select(Meal.meal_id, Nutrient.code)
+        .outerjoin(MealNutrient, MealNutrient.meal_id == Meal.meal_id)
+        .outerjoin(
+            Nutrient,
+            and_(
+                Nutrient.nutrient_id == MealNutrient.nutrient_id,
+                Nutrient.code.in_(_REQUIRED_MACROS),
+            ),
+        )
+        .where(Meal.is_active.is_(True))
+    )
+    if meal_id is not None:
+        stmt = stmt.where(Meal.meal_id == meal_id)
+    present: dict[int, set[str]] = defaultdict(set)
+    seen: set[int] = set()
+    for found_id, code in session.execute(stmt).all():
+        seen.add(found_id)
+        if code is not None:
+            present[found_id].add(code)
+    for found_id in sorted(seen):
+        missing = [code for code in _REQUIRED_MACROS if code not in present[found_id]]
+        if missing:
+            logger.warning("meal %s is missing nutrients: %s", found_id, ", ".join(missing))
 
 
 def _count(session: Session, stmt: Select[Any]) -> int:
@@ -319,11 +373,11 @@ def _steps(session: Session, meal_ids: list[int], lang: str) -> dict[int, tuple[
     return chosen
 
 
-def _macro(lines: list[NutrientLine], code: str) -> float:
+def _amount(lines: list[NutrientLine], code: str) -> float | None:
     for line in lines:
         if line.code == code:
             return line.per_serving
-    return 0.0
+    return None
 
 
 def _summary(
@@ -332,7 +386,24 @@ def _summary(
     allergens: tuple[str, ...],
     tags: tuple[str, ...],
     stance: str | None,
-) -> MealSummaryData:
+) -> MealSummaryData | None:
+    kcal = _amount(lines, ENERGY_NUTRIENT)
+    protein = _amount(lines, _PROTEIN)
+    carb = _amount(lines, _CARB)
+    fat = _amount(lines, _FAT)
+    missing = [
+        code
+        for code, amount in (
+            (ENERGY_NUTRIENT, kcal),
+            (_PROTEIN, protein),
+            (_CARB, carb),
+            (_FAT, fat),
+        )
+        if amount is None
+    ]
+    if kcal is None or protein is None or carb is None or fat is None:
+        logger.warning("meal %s is missing nutrients: %s", loaded.meal.meal_id, ", ".join(missing))
+        return None
     meal = loaded.meal
     return MealSummaryData(
         meal_id=meal.meal_id,
@@ -340,10 +411,10 @@ def _summary(
         cuisine=loaded.cuisine,
         dish_form=meal.dish_form,
         serving_grams=_round(to_decimal(meal.total_grams) / Decimal(meal.servings)),
-        kcal=_macro(lines, ENERGY_NUTRIENT),
-        protein_g=_macro(lines, _PROTEIN),
-        carb_g=_macro(lines, _CARB),
-        fat_g=_macro(lines, _FAT),
+        kcal=kcal,
+        protein_g=protein,
+        carb_g=carb,
+        fat_g=fat,
         allergens=allergens,
         tags=tags,
         my_stance=stance,
@@ -361,16 +432,18 @@ def _summaries(
     allergens = _codes(session, meal_ids, allergens=True)
     tags = _codes(session, meal_ids, allergens=False)
     stances = _stances(session, user_id, meal_ids) if user_id is not None else {}
-    return [
-        _summary(
+    summaries: list[MealSummaryData] = []
+    for row in loaded:
+        summary = _summary(
             row,
             nutrients.get(row.meal.meal_id, []),
             allergens.get(row.meal.meal_id, ()),
             tags.get(row.meal.meal_id, ()),
             stances.get(row.meal.meal_id),
         )
-        for row in loaded
-    ]
+        if summary is not None:
+            summaries.append(summary)
+    return summaries
 
 
 def _details(
@@ -390,15 +463,18 @@ def _details(
     for row in loaded:
         meal_id = row.meal.meal_id
         lines = nutrients.get(meal_id, [])
+        summary = _summary(
+            row,
+            lines,
+            allergens.get(meal_id, ()),
+            tags.get(meal_id, ()),
+            stances.get(meal_id),
+        )
+        if summary is None:
+            continue
         details.append(
             MealDetailData(
-                summary=_summary(
-                    row,
-                    lines,
-                    allergens.get(meal_id, ()),
-                    tags.get(meal_id, ()),
-                    stances.get(meal_id),
-                ),
+                summary=summary,
                 servings=row.meal.servings,
                 total_grams=_round(to_decimal(row.meal.total_grams)),
                 nutrients=tuple(lines),
@@ -423,6 +499,7 @@ def list_meals(
     offset: int,
 ) -> tuple[tuple[MealSummaryData, ...], int]:
     """One page of active meals and the total before paging."""
+    _warn_incomplete(session)
     stmt = _filtered(lang, q=q, slot=slot, cuisine=cuisine)
     total = _count(session, stmt)
     page = _loaded(session, stmt.limit(limit).offset(offset))
@@ -434,8 +511,93 @@ def get_meal(session: Session, user_id: int, meal_id: int, lang: str) -> MealDet
     stmt = _filtered(lang, q=None, slot=None, cuisine=None).where(Meal.meal_id == meal_id)
     loaded = _loaded(session, stmt)
     if not loaded:
+        _warn_incomplete(session, meal_id)
         raise MealNotFoundError(f"meal {meal_id} is not an active meal")
     return _details(session, loaded, lang, user_id)[0]
+
+
+def summaries_for(
+    session: Session, user_id: int, meal_ids: list[int], lang: str
+) -> dict[int, StoredMeal]:
+    """Name and stance rules of the catalog, for specific meals, including inactive ones.
+
+    A plan can still point at a meal that was later deactivated. A meal missing a card
+    macro is omitted and warned, the same as a list (#189).
+    """
+    if not meal_ids:
+        return {}
+    translation = aliased(MealTranslation)
+    display_name = case(
+        (Meal.default_lang == lang, Meal.name),
+        else_=func.coalesce(translation.name, Meal.name),
+    )
+    rows = _loaded(
+        session,
+        select(
+            Meal,
+            Cuisine.code.label("cuisine_code"),
+            display_name.label("display_name"),
+            Meal.meal_id.label("sort_name"),
+        )
+        .outerjoin(Cuisine, Cuisine.cuisine_id == Meal.cuisine_id)
+        .outerjoin(
+            translation,
+            and_(translation.meal_id == Meal.meal_id, translation.lang == lang),
+        )
+        .where(Meal.meal_id.in_(meal_ids)),
+    )
+    if not rows:
+        return {}
+    ids = [row.meal.meal_id for row in rows]
+    nutrients, amounts = _nutrients_and_amounts(session, ids)
+    allergens = _codes(session, ids, allergens=True)
+    tags = _codes(session, ids, allergens=False)
+    stances = _stances(session, user_id, ids)
+    stored: dict[int, StoredMeal] = {}
+    for row in rows:
+        meal_id = row.meal.meal_id
+        lines = nutrients.get(meal_id, [])
+        summary = _summary(
+            row,
+            lines,
+            allergens.get(meal_id, ()),
+            tags.get(meal_id, ()),
+            stances.get(meal_id),
+        )
+        if summary is None:
+            continue
+        stored[meal_id] = StoredMeal(summary=summary, per_serving=amounts.get(meal_id, {}))
+    return stored
+
+
+def _nutrients_and_amounts(
+    session: Session, meal_ids: list[int]
+) -> tuple[dict[int, list[NutrientLine]], dict[int, dict[str, Decimal]]]:
+    rows = session.execute(
+        select(
+            MealNutrient.meal_id,
+            Nutrient.code,
+            Nutrient.unit,
+            MealNutrient.amount_per_serving,
+            MealNutrient.amount_per_100g,
+        )
+        .join(Nutrient, Nutrient.nutrient_id == MealNutrient.nutrient_id)
+        .where(MealNutrient.meal_id.in_(meal_ids))
+        .order_by(MealNutrient.meal_id, Nutrient.code)
+    ).all()
+    lines: dict[int, list[NutrientLine]] = defaultdict(list)
+    amounts: dict[int, dict[str, Decimal]] = defaultdict(dict)
+    for meal_id, code, unit, per_serving, per_100g in rows:
+        lines[meal_id].append(
+            NutrientLine(
+                code=code,
+                unit=unit,
+                per_serving=_round(to_decimal(per_serving)),
+                per_100g=_round(to_decimal(per_100g)),
+            )
+        )
+        amounts[meal_id][code] = to_decimal(per_serving)
+    return lines, amounts
 
 
 def _meal_body(detail: MealDetailData) -> dict[str, object]:
@@ -484,6 +646,7 @@ def catalog_snapshot(session: Session, lang: str) -> tuple[dict[str, object], st
     generated_at is not part of the tag, so the tag changes only when the meals or the
     language change.
     """
+    _warn_incomplete(session)
     stmt = _filtered(lang, q=None, slot=None, cuisine=None).order_by(None).order_by(Meal.meal_id)
     details = _details(session, _loaded(session, stmt), lang, None)
     version = active_dataset_version(session) or UNKNOWN_DATASET_VERSION

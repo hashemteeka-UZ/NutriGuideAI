@@ -1,0 +1,78 @@
+You are implementing **Step I.5 (plans over HTTP: generate a day, read plans, the home day view, alternatives and swap, shopping list; Decisions #131, #134, #137, #171, #189 to #196)**. Step I.4 is committed and green. This pass replaces the 501 stubs of the six operations in `app/api/routers/plans.py` and fixes two small items left from I.4.
+
+The user has just placed updated documents (do not edit their content; report contradictions): `docs/project/DEV_JOURNAL.md` (J-041), `docs/project/CONTEXT_INDEX.md`, `docs/project/steps/STEP_I_plan.md` (Decisions #189 to #196, the source of truth), and this file.
+
+## Hard rules
+1. No schema change and no migration. `uv run alembic check` stays clean.
+2. The planner and optimizer choose exactly the same meals as before for the same inputs. Do not regenerate any report; `docs/reports/*` stays byte-identical and the report tests stay green. The only allowed changes inside `planner.py`, `optimizer.py`, `plan_swap.py` and `meal_filter.py` are the additive ones named below.
+3. Services never import from `app/api`. Routers parse, call one service function, commit (writes), map to the schema.
+4. Contract: only the changes of section 9. Regenerate `openapi.json`, drift test green.
+5. Do not commit anything.
+
+## 1. Two fixes left from I.4
+- Missing is not zero (§9.8, #189): in `meal_catalog.py` a meal without a stored `energy_kcal`, `protein`, `carbohydrate` or `total_fat` value must not be shown with 0. Leave it out of lists and the snapshot with one warning (meal id and missing codes), and answer `404 MEAL_NOT_FOUND` for its detail, the same rule Layer 1 uses (nutritionally complete meals only). Test with a meal whose `energy_kcal` row is deleted inside the test transaction.
+- `/reference` route description: replace the old text about meal versions with the manifest rule of #183.
+
+## 2. Plan view service `app/services/plan_view.py` (#190)
+One function builds the response data of a stored plan, used by every route that returns a plan or plan item:
+- `plan_view(session, user_id, plan, lang) -> PlanViewData`: target from `plan.target_snapshot["target"]` (never from the current target); items ordered BREAKFAST, LUNCH, SNACK(s), DINNER then id; each item: meal summary through `meal_catalog` (batched, same name and stance rules), `servings_multiplier`, `grams = serving_grams * multiplier`, `kcal/protein_g/carb_g/fat_g` = stored per-serving values × multiplier, `reason_codes`, `was_swapped`, `logged = has_active_log`.
+- `totals`: sum over items of the eight `NutrientTotals` nutrients from `meal_nutrients` × multiplier. If any item lacks a nutrient, that total is `null`, never a partial sum (§9.8).
+- `kcal_within_10pct`: `abs(totals.kcal - target.kcal) <= 0.10 * target.kcal`; false when `totals.kcal` is null.
+- `unmet_minimums`: `planner.unmet_minimums(totals, limits)` with the limits rebuilt from `plan.target_snapshot["limits"]`. Add `ResolvedLimits.from_snapshot(...)` next to `to_snapshot` (additive) with a round-trip test.
+- `stats`: only for `cpsat` plans, from `target_snapshot["solver"]`: `solver_status`, `kcal_relaxed`, `solve_seconds`, `candidate_meals`. `null` for greedy plans and for older cpsat plans whose snapshot lacks the two new keys.
+- For the two new keys (additive, #191): `OptimizedDay` gets `candidate_meals: int` (distinct meal ids that passed Layer 1 for at least one position), and `create_day_plan` adds `solve_seconds` (rounded to 3 places) and `candidate_meals` to the `solver` dict it already stores. Nothing else in the snapshot changes. Confirm the reports and their tests are unchanged.
+- Queries: a fixed number per plan regardless of item count (test it like I.4).
+
+## 3. `POST /plans/days` (#131, #192)
+- Service `app/services/plan_requests.py`: `generate_day(session, user_id, plan_date, now, lang)`:
+  - The profile must exist (`PROFILE_NOT_FOUND`). `plan_date` must lie between the user's local today − 1 and local today + 13; otherwise `PlanDateOutOfRangeError` → `422 VALIDATION_ERROR` with a clear detail. Reason: plans for far dates would use a target that may change before then.
+  - Calls `create_day_plan(session, user_id, plan_date, now)` (default planner `cpsat`). Existing errors keep their mappings (`NOT_ELIGIBLE` with reasons, `NO_TARGET`, `CONDITION_CONFLICT`, `NO_FEASIBLE_PLAN`).
+  - A new plan for a day that already has one is allowed: the newest becomes current (#72); older plans and their logs are kept.
+  - Returns `plan_view(...)`. 201.
+- Concurrency (#131): a process-wide `threading.BoundedSemaphore(PLANNER_MAX_CONCURRENT)` with `PLANNER_MAX_CONCURRENT = 2` in settings. Acquire without blocking; if it is full raise `PlannerBusyError` → `503 PLANNER_BUSY` with header `Retry-After: 5`. Always released in `finally`. The semaphore lives in the API layer (a dependency or a small module in `app/api/`), not in the planner. Test: hold both slots from the test, then the request gets 503 with `Retry-After`; after release it gets 201.
+- Rate limit (#132): `20/hour` per user on this route. In `get_current_user` store the user id on `request.state`; a second limiter key function uses it (falls back to the client IP). Test with the limiter enabled: the 21st call within an hour → `429 RATE_LIMITED`. Use the named constant from I.2.
+- Log one line per generation: user id, date, algorithm, solver status, solve seconds, candidate count. No targets, no meal names.
+
+## 4. `GET /plans` and `GET /days/{date}` (#134, #193)
+- `GET /plans?date_from&date_to` (max 31 days, already in the schema): the current plan of each day that has one (`current_plan_id`), ordered by date, each through `plan_view`.
+- `GET /days/{date}`: `PROFILE_NOT_FOUND` without a profile. Returns:
+  - `plan`: the current plan of that day or `null`.
+  - `meal_windows` (#193), new pure function `meal_windows(wake_time, sleep_time) -> list[MealWindow]` in `app/services/meal_windows.py`. Awake span D = sleep − wake in hours, wrapping past midnight. Reference day D = 16 h (wake 07:00, sleep 23:00). Breakfast [wake + 0:30, wake + 2:30]. Lunch [wake + 6 h·k, wake + 8 h·k] and snack [wake + 9.5 h·k, wake + 10.5 h·k] with k = D / 16. Dinner [sleep − 4:30, sleep − 2:30]. Times are local clock times modulo 24 h, rounded to 5 minutes. If D < 10 h, return `[]` (no sensible schedule). Order BREAKFAST, LUNCH, SNACK, DINNER. Tests: 07:00/23:00 gives 07:30–09:30, 13:00–15:00, 16:30–17:30, 18:30–20:30; a late sleeper 10:00/02:00; D < 10 h gives `[]`.
+  - `adherence`: `daily_adherence(session, user_id, date)` mapped to `DayAdherenceOut`.
+  - `water`: new read function `water_day(session, user_id, day) -> (total_ml, goal, logs)` in `water.py`: active (`deleted_at IS NULL`) logs of that local date ordered by `consumed_at`, their sum, and `water_goal(...)` from I.3. Writing water stays for I.6.
+
+## 5. Alternatives and swap (#137, #194)
+- Refactor `plan_swap.py` without changing behaviour: extract a read-only `swap_rejections(session, user_id, item, plan, meal, *, meals, preferences, limits) -> list[str]` holding the current checks (same meal, Layer 1 evaluation, `placement_rejections`). `swap_plan_item` calls it. The existing swap tests must pass unchanged.
+- `GET /plan-items/{id}/alternatives`: the item must belong to the caller (`PLAN_ITEM_NOT_FOUND`). If the item has an active log, return `[]` (it cannot be swapped). Otherwise evaluate every active complete meal with `swap_rejections` (load meals, preferences and limits once), keep the accepted ones, sort by `abs(kcal_delta)` then `meal_id`, return at most 10. `kcal` = the alternative's per-serving energy × the item's multiplier; `kcal_delta` = that minus the item's current kcal. Meal summaries through `meal_catalog`.
+- `POST /plan-items/{id}/swap`: call `swap_plan_item`, then write one `user_interactions` row `SWAP_OUT` for the OLD meal with context `{"replaced_by": new_meal_id, "plan_id", "plan_item_id", "algorithm_version"}` (#169). Commit. Return the item through `plan_view`'s item mapping. `SWAP_REJECTED` keeps its reasons in the problem body.
+- Test: every alternative returned is accepted by a real swap (pick three and swap them in separate transactions); a rejected meal gives 422 with reasons; the SWAP_OUT row and its context.
+
+## 6. `GET /shopping-list` (#171, #195)
+- For each day in the range, its current plan; for each item, each NON-optional ingredient: `grams = meal_ingredients.grams / meals.servings × multiplier`. Sum by ingredient. `meals` = number of plan items that use the ingredient. Name through `pick_name`. Order by the normalized displayed name. Grams rounded to 1 place.
+- Optional ingredients are left out (the app shows them on the meal page). Say so in the route description.
+- Days without a plan are skipped; an empty range gives `items: []`.
+
+## 7. Interactions written by the server in this pass
+Only `SWAP_OUT` (section 5). `ACCEPT` belongs to logging (I.6). Impressions come from the app.
+
+## 8. Tests
+Service and API tests for everything above, at least: generate for today (201, items, totals, target equals the snapshot, stats present); generate twice for the same day (second is current, first kept); out-of-range date → 422; not eligible → 409 with reasons; no target → 409; busy → 503 with `Retry-After`; rate limit → 429; `GET /plans` with gaps; day view with no plan (plan null, windows, adherence, water); day view after logging one item (`logged` true, adherence updated) using the existing consumption service; totals null when a nutrient is missing; alternatives and swap as in section 5; shopping list sums across two days and excludes optional ingredients; another user's plan item → 404 everywhere. Every remaining stub still answers 401 without a token and 501 with one.
+
+## 9. Contract changes (regenerate `openapi.json`)
+- `API_VERSION` → `"0.6.0"`.
+- Descriptions only: `POST /plans/days` (date range today − 1 to today + 13, `VALIDATION_ERROR` added to its code list, 20 per hour), `GET /days/{date}` (window rule, empty when the awake span is under 10 hours), alternatives (empty when the item is logged), shopping list (optional ingredients excluded), `/reference` (section 1), `PlanStats` field descriptions.
+- No schema, field or status change. If a field cannot be filled as specified, stop and report.
+- `docs/api/API_GUIDE.md`: "Weekly plan" section (the app calls `POST /plans/days` seven times in sequence and shows progress; on 503 wait `Retry-After` seconds and retry).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, then the FULL `CI=true uv run pytest -q` (0 skipped; again in full after any fix). Then run the server and by `curl` on the dev database: register, `PUT /me/profile` (a male adult with `HYPERTENSION`, goal `LOSE`), `POST /plans/days` for today (show items with names, kcal per item, totals, `kcal_within_10pct`, stats), the same for tomorrow, `GET /days/{today}` (windows, adherence status, water), `GET /plan-items/{first item}/alternatives` (count and the first two with `kcal_delta`), one swap, `GET /shopping-list` for both days (first five items), then `DELETE /me`. Also time ten sequential `POST /plans/days` calls (different users or dates) and give min, median and max wall time.
+
+## Report back
+1. Files created/changed.
+2. The `curl` session with the important fields, tokens shortened.
+3. The ten-call timing.
+4. Query counts per plan view.
+5. Confirmation that the reports and their tests are unchanged, and the planner chose the same meals (name the test that proves it).
+6. `git diff --stat docs/api/openapi.json` and the contract changes.
+7. Test counts and check outputs.
+8. Findings (one line each, with the section number) and assumptions.

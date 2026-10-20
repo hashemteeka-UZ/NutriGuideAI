@@ -4,7 +4,7 @@ from collections.abc import Iterator
 from datetime import UTC, datetime
 from typing import Annotated, Literal
 
-from fastapi import Depends, Header
+from fastapi import Depends, Header, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -51,6 +51,7 @@ def _unauthorized() -> ApiError:
 
 
 def get_current_user(
+    request: Request,
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
     session: DbSession,
     now: Now,
@@ -67,6 +68,7 @@ def get_current_user(
     ).scalar_one_or_none()
     if exists is None:
         raise _unauthorized()
+    request.state.user_id = user_id
     return user_id
 
 

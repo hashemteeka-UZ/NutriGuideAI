@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.api.schemas.adherence import DAY_ADHERENCE_EXAMPLE, DayAdherenceOut
 from app.api.schemas.common import ClockTime, NutrientTotals, UnmetMinimumOut, with_example
@@ -161,10 +161,14 @@ class PlanItemOut(BaseModel):
 
 
 class PlanStats(BaseModel):
-    solver_status: str
-    kcal_relaxed: bool
-    solve_seconds: float
-    candidate_meals: int
+    solver_status: str = Field(
+        description="CP-SAT status stored on the plan (OPTIMAL or FEASIBLE)."
+    )
+    kcal_relaxed: bool = Field(description="True when phase 2 dropped the daily energy band.")
+    solve_seconds: float = Field(description="Solver time in seconds, rounded to 3 decimal places.")
+    candidate_meals: int = Field(
+        description="Distinct meals that passed Layer 1 for at least one position."
+    )
 
     model_config = with_example(DAY_PLAN_EXAMPLE["stats"])
 

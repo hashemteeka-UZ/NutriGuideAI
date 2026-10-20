@@ -27,6 +27,14 @@ def _client_address(request: Request) -> str:
     return get_remote_address(request)
 
 
+def plan_generation_key(request: Request) -> str:
+    """Per-user key for plan generation. Falls back to the client IP (#132)."""
+    user_id = getattr(request.state, "user_id", None)
+    if isinstance(user_id, int):
+        return f"user:{user_id}"
+    return get_remote_address(request)
+
+
 limiter = Limiter(
     key_func=_client_address,
     enabled=get_settings().RATE_LIMIT_ENABLED,

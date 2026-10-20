@@ -151,6 +151,12 @@ _LIVE = {
     "list_meals",
     "get_meal",
     "get_catalog_snapshot",
+    "create_plan_day",
+    "list_plans",
+    "get_day_view",
+    "list_alternatives",
+    "swap_plan_item",
+    "get_shopping_list",
 }
 
 _FUTURE_CODES = (

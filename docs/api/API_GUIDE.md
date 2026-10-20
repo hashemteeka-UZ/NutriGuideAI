@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.5.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.6.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -86,7 +86,11 @@ Write a new UUID into `client_uuid` (and `op_id` for sync) before the request le
 
 `POST /sync/batch` sends 1 to 500 of those writes. `GET /sync/changes?since=` pulls what the server has stored since that instant.
 
-`POST /plans/days` can answer **503** `PLANNER_BUSY` with a `Retry-After` header. Wait that long, then try the same day again. A week plan is seven `POST /plans/days` calls, one date at a time, so the UI can show progress. `GET /plans?from=&to=` reads the days that already have a plan.
+`GET /plans?from=&to=` reads the days that already have a plan. Generating a week is described under Weekly plan.
+
+## Weekly plan
+
+The app calls `POST /plans/days` seven times in sequence, one date at a time, and shows progress (day 3 of 7). Each call stores that day, so the first day can be shown as soon as it returns. On **503** `PLANNER_BUSY`, wait the number of seconds in the `Retry-After` header, then retry that same day.
 
 Logging a plan item, swapping, and saving a meal preference also write learning events on the server. The app only posts `IMPRESSION`, `VIEW`, `SAVE`, `RATE`, `COOK`, and `SKIP` to `POST /interactions`. `RATE` must include `value` from 1 to 5.
 

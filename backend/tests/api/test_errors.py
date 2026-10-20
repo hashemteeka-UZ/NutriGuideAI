@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
 
 import pytest
@@ -14,6 +15,7 @@ from app.api.main import create_app
 from app.services.condition_limits import ConditionConflictError, LimitSource, ResolvedLimit
 from app.services.consumption import PlanItemNotFoundError
 from app.services.ingredient_search import EmptySearchError
+from app.services.plan_requests import PlanDateOutOfRangeError
 from app.services.plan_swap import SwapRejectedError
 from app.services.planner import NoFeasiblePlanError
 from app.services.profile import UnknownCodeError
@@ -51,6 +53,8 @@ def _instance(exc_type: type[Exception]) -> Exception:
         return UnknownCodeError("condition", ["NOPE"])
     if exc_type is EmptySearchError:
         return EmptySearchError()
+    if exc_type is PlanDateOutOfRangeError:
+        return PlanDateOutOfRangeError(date(2020, 1, 1), date(2026, 10, 11), date(2026, 10, 25))
     return exc_type("failure")
 
 
@@ -133,8 +137,12 @@ def test_service_error_subclass_uses_the_most_specific_mapping() -> None:
 
 def test_service_error_codes_are_unique() -> None:
     codes = [code for _status, code in SERVICE_ERRORS.values()]
-    assert len(codes) == len(set(codes))
-    assert len(codes) == len(SERVICE_ERRORS)
+    counts: dict[str, int] = {}
+    for code in codes:
+        counts[code] = counts.get(code, 0) + 1
+    # Empty search and a plan date outside the window both use VALIDATION_ERROR (#192).
+    assert counts["VALIDATION_ERROR"] == 2
+    assert {code for code, count in counts.items() if count > 1} == {"VALIDATION_ERROR"}
 
 
 def test_unmapped_exception_is_internal_error_without_detail() -> None:

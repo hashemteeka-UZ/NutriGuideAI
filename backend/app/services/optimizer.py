@@ -109,6 +109,7 @@ class OptimizedDay:
     kcal_relaxed: bool
     objective: int
     solve_seconds: float
+    candidate_meals: int
 
 
 @dataclass(frozen=True)
@@ -169,6 +170,7 @@ def optimize_day(
         kcal_relaxed=relaxed,
         objective=solved.objective,
         solve_seconds=seconds,
+        candidate_meals=_layer1_candidates(meals, preferences, limits),
     )
 
 
@@ -192,6 +194,33 @@ def _layer1_slot(position: str) -> MealSlot:
     if position in SNACK_POSITIONS:
         return MealSlot.SNACK
     return MealSlot[position.upper()]
+
+
+def _layer1_candidates(
+    meals: Sequence[MealFacts],
+    preferences: UserPreferences,
+    limits: ResolvedLimits,
+) -> int:
+    """Distinct meals eligible for at least one position at one multiplier (#191).
+
+    This count is not an input to the model. Previous-day exclusion and unknown amounts
+    are not Layer 1, so they do not remove a meal from the count.
+    """
+    slots: list[MealSlot] = []
+    for position in POSITIONS:
+        slot = _layer1_slot(position)
+        if slot not in slots:
+            slots.append(slot)
+    found: set[int] = set()
+    for meal in meals:
+        for slot in slots:
+            if any(
+                evaluate_meal(meal, preferences, slot, limits, step).eligible
+                for step in MULTIPLIERS
+            ):
+                found.add(meal.meal_id)
+                break
+    return len(found)
 
 
 def _rules_for(
