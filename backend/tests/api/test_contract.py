@@ -157,6 +157,17 @@ _LIVE = {
     "list_alternatives",
     "swap_plan_item",
     "get_shopping_list",
+    "create_consumption_log",
+    "list_consumption_logs",
+    "correct_consumption_log",
+    "delete_consumption_log",
+    "put_weight",
+    "list_weights",
+    "get_water_day",
+    "create_water_log",
+    "delete_water_log",
+    "get_adherence",
+    "create_interaction",
 }
 
 _FUTURE_CODES = (

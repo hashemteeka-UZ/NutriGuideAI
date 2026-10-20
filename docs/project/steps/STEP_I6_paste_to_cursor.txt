@@ -1,0 +1,80 @@
+You are implementing **Step I.6 (logging and progress over HTTP: consumption logs, correction, delete, water, weight, adherence range, client interactions; Decisions #169, #201 to #207)**. Step I.5b is committed (`e75a63c`, CI green). This pass replaces the 501 stubs of `consumption.py`, `water.py`, `weights.py`, `adherence.py` and `interactions.py` routers. Only the two `sync` routes stay 501 (I.7).
+
+The user has just placed updated documents (do not edit their content; report contradictions): `docs/project/DEV_JOURNAL.md` (J-043), `docs/project/CONTEXT_INDEX.md`, `docs/project/steps/STEP_I_plan.md` (Decisions #201 to #207, the source of truth), and this file.
+
+## Hard rules
+1. No schema change, no migration. `uv run alembic check` clean.
+2. `docs/reports/*` byte-identical. The existing functions in `consumption.py`, `weight.py` and `adherence.py` keep their behaviour; the new rules of this pass live in a request-layer service (section 1). Additive functions only in `water.py`.
+3. Services never import from `app/api`. Routers parse, call one service function, commit (writes), map to the schema.
+4. Contract: only section 8. Regenerate `openapi.json`, drift test green.
+5. Never log food names, amounts, weights or any health value. One log line per write is allowed with user id, kind and status only.
+6. Do not commit anything.
+
+## 1. Request-layer service `app/services/logging_requests.py` (#201, #202, #203)
+Functions used by the routers (each takes `session, user_id, ..., now`):
+- `create_log(body-equivalent args)` for the three kinds:
+  - Time window (#202): `consumed_at` after `now + CLOCK_SKEW_TOLERANCE` (reuse the constant from `weight.py`) → `ClockSkewError` (`422 CLOCK_SKEW`). Its local date (user's timezone, existing `local_date`) earlier than local today − 30 days → `ValueError`-family error mapped to `422 VALIDATION_ERROR` with a clear detail. Put `LOG_HISTORY_DAYS = 30` in one place.
+  - PLAN_ITEM: the local date of `consumed_at` must equal the item's plan date, otherwise `422 VALIDATION_ERROR`. Then `log_plan_item`. When the result is CREATED (not DUPLICATE), write one `user_interactions` row `ACCEPT` for the item's meal with context `{"plan_id", "plan_item_id", "slot", "algorithm_version", "servings_ratio"}` where `servings_ratio = servings_consumed / item.servings_multiplier` rounded to 3 places (#201). Its `client_uuid` stays null.
+  - MEAL: `log_meal`; the meal must be active (inactive or unknown → `404 MEAL_NOT_FOUND`).
+  - FOOD: `log_food` (#203). Never set `entry_group` or `entry_label`.
+- `correct(...)`: the old log must be active and the caller's (`LOG_NOT_FOUND` otherwise). If `consumed_at` is given it obeys the same window, and for a plan-item log the same plan-date rule. Then `correct_log`. No new ACCEPT.
+- `delete(...)`: `delete_log`; no interaction row.
+- `logs_of_day(...)`: `active_logs`, mapped with names.
+- Response mapping (`ConsumptionLogOut`): `kind` from which id is set; `name` through the same rules as `meal_catalog` for meals (language fallback) and `pick_name` for foods; `nutrients` from the stored snapshot; a nutrient missing from the snapshot is `null`, never 0 (§9.8). `status` from `LogResult`. Load names in batch for the day list (fixed query count; test it like I.4).
+- Status codes: 201 on CREATED, 200 on DUPLICATE (set by the router from the status).
+
+## 2. Water writes in `water.py` (#204)
+- `log_water(session, user_id, amount_ml, consumed_at, client_uuid, now) -> (WaterLog, status)`: same window as section 1; `log_date` from the user's timezone; same `client_uuid` and same content → DUPLICATE (200), different content → `CLIENT_UUID_CONFLICT` (409). Content = amount and consumed_at.
+- `delete_water(session, user_id, log_id, now)`: active and the caller's, else `LOG_NOT_FOUND`; tombstone with server time.
+- `GET /water?date=` uses the existing `water_day`. `PROFILE_NOT_FOUND` without a profile.
+
+## 3. Weight
+- `PUT /weights/{measured_on}` → `record_weight` (existing; `updated_at` from the body, `now` from the server). Map `WeightResult` to `WeightOut`. A new target created by the weight is committed in the same transaction.
+- `GET /weights?date_from&date_to` (max 92 days, already in the schema): rows ordered by date.
+
+## 4. Adherence range (#206)
+- `GET /adherence?date_from&date_to` → `adherence_range`, mapped to `AdherenceRangeOut` with the same day mapping as `GET /days/{date}` (reuse it, do not copy it). `PROFILE_NOT_FOUND` without a profile.
+- Measure and report the query count and wall time for 31 and 92 days on a user with logs. Do not optimise in this pass; report the numbers.
+
+## 5. Client interactions `app/services/interactions.py` (#169, #205)
+- `record_interaction(session, user_id, client_uuid, meal_id, event_type, value, plan_item_id, screen, now)`:
+  - only `IMPRESSION, VIEW, SAVE, RATE, COOK, SKIP` (the schema already limits this; keep a service guard too);
+  - the meal must be active (`MEAL_NOT_FOUND`);
+  - `plan_item_id`, if given, must belong to the caller (`PLAN_ITEM_NOT_FOUND`) and its meal must equal `meal_id` (`422 VALIDATION_ERROR`);
+  - context: `screen` when given, and from the item `plan_id`, `plan_item_id`, `slot`, `algorithm_version`;
+  - same `client_uuid` with the same content → DUPLICATE (200); different content → `CLIENT_UUID_CONFLICT`.
+
+## 6. Rate limits
+Write routes of this pass use the existing `DEFAULT_RATE_LIMIT` (per user key from I.5). No new limit.
+
+## 7. Tests
+Service and API tests for everything above, at least:
+- each log kind: 201, the same request again → 200 DUPLICATE, same uuid with different content → 409;
+- PLAN_ITEM: ACCEPT row written once with its context, not on the duplicate; second log of the same item → 409 `PLAN_ITEM_ALREADY_LOGGED`; date not equal to the plan date → 422;
+- window: 10 minutes in the future → 422 `CLOCK_SKEW`; 31 days in the past → 422 `VALIDATION_ERROR`; 29 days → 201;
+- inactive meal → 404; unknown food → 404; a meal whose snapshot misses a nutrient gives `null` for it in the response;
+- correction: returns the new row, old one tombstoned, no new ACCEPT, a meal log corrected in grams → 422; delete → 204 then 404 on a second delete; `GET /consumption-logs?date=` lists only active rows, query count fixed;
+- after logging all items of today's plan, `GET /days/{today}` shows `logged` true and the adherence updated;
+- water: create, duplicate, conflict, delete, `GET /water` total and goal; a heart-disease user has no default goal;
+- weight: CREATED then UPDATED, older `updated_at` → STALE_IGNORED, future date → 422, a weight change that crosses the recompute rule creates a target (`new_target_id` set), `goal_reached`;
+- adherence range: streak across days; a range over 92 days → 422;
+- interactions: each event type, RATE without value → 422, item/meal mismatch → 422, another user's item → 404, duplicate/conflict;
+- every route of this pass: 401 without a token; another user's ids → 404; `DELETE /me` removes all rows of the user (logs, water, weights, interactions);
+- the two sync stubs still answer 401 without a token and 501 with one.
+
+## 8. Contract changes (regenerate `openapi.json`)
+- `API_VERSION` → `"0.7.0"`.
+- Descriptions only: the 30-day window and the plan-date rule on `POST /consumption-logs` and the correction route, ACCEPT written by the server, FOOD = one food from ingredient search (composite off-catalog dishes not supported yet), the water window, adherence range limits. No schema, field or status change; if a field cannot be filled as specified, stop and report.
+- `docs/api/API_GUIDE.md`: "Logging" section (generate one `client_uuid` per user action and keep it for retries; 200 means already stored; a correction needs a new uuid; times are sent with their offset) and "Progress" section (adherence range, streak, weights).
+
+## Checks before you report
+`uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy`, `uv run python -m scripts.export_openapi --check`, `uv run python -m app.pipeline.manifest --check`, `uv run alembic check`, then the FULL `CI=true uv run pytest -q` (0 skipped; again in full after any fix). Then run the server on the dev database and by `curl`: register, `PUT /me/profile` (male adult, `HYPERTENSION`, `LOSE`), `POST /plans/days` for today, log the breakfast item (201) and the same request again (200), log one catalog meal as a snack and one food by grams, correct the food log, delete the snack, `GET /consumption-logs?date=today`, `GET /days/{today}` (logged flags and adherence), two water logs and one delete, `GET /water`, `PUT /weights/{today}` with a lower weight (target status), `GET /weights` and `GET /adherence` for the last 7 days, one `POST /interactions` (VIEW) and its duplicate, then `DELETE /me`.
+
+## Report back
+1. Files created/changed.
+2. The curl session with status codes and the important fields, tokens shortened.
+3. Query counts and wall time for the adherence range (31 and 92 days) and for the day log list.
+4. Confirmation that `docs/reports` has no diff.
+5. `git diff --stat docs/api/openapi.json` and the contract changes.
+6. Test counts and check outputs.
+7. Findings (one line each, with the section number) and assumptions.

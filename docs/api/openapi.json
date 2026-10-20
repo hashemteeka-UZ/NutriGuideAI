@@ -1289,7 +1289,7 @@
       },
       "HealthResponse": {
         "example": {
-          "api_version": "0.6.0",
+          "api_version": "0.7.0",
           "database": "ok",
           "dataset_version": "catalog_v3",
           "default_planner": "cpsat",
@@ -4958,13 +4958,13 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "openapi": "3.1.0",
   "paths": {
     "/api/v1/adherence": {
       "get": {
-        "description": "One row per day in the inclusive range, plus the streak of ACHIEVED days. Maximum 92 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "One row per day in the inclusive range, plus the streak of consecutive ACHIEVED days ending on the last day. Maximum 92 days; a longer range is VALIDATION_ERROR.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, VALIDATION_ERROR",
         "operationId": "get_adherence",
         "parameters": [
           {
@@ -5379,7 +5379,7 @@
         ]
       },
       "post": {
-        "description": "Log a plan item, a catalog meal, or one food. 201 when created, 200 when the same client_uuid and content were already stored. A plan item also writes ACCEPT.\nError codes: UNAUTHORIZED, PLAN_ITEM_NOT_FOUND, MEAL_NOT_FOUND, FOOD_NOT_FOUND, PLAN_ITEM_ALREADY_LOGGED, CLIENT_UUID_CONFLICT, INCOMPLETE_NUTRITION, VALIDATION_ERROR",
+        "description": "Log a plan item, a catalog meal, or one food from ingredient search. A composite off-catalog dish is not supported yet. consumed_at may be at most 5 minutes after the server clock (CLOCK_SKEW) and its local date may not be more than 30 days before the user's local today (VALIDATION_ERROR). A plan item's local date must equal the item's plan date. 201 when created, 200 when the same client_uuid and content were already stored. The server writes ACCEPT when a plan-item log is created.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, PLAN_ITEM_NOT_FOUND, MEAL_NOT_FOUND, FOOD_NOT_FOUND, PLAN_ITEM_ALREADY_LOGGED, CLIENT_UUID_CONFLICT, INCOMPLETE_NUTRITION, CLOCK_SKEW, VALIDATION_ERROR",
         "operationId": "create_consumption_log",
         "requestBody": {
           "content": {
@@ -5516,7 +5516,7 @@
     },
     "/api/v1/consumption-logs/{log_id}/correction": {
       "post": {
-        "description": "Tombstone the old row and return the new one. At least one measured field must change.\nError codes: UNAUTHORIZED, LOG_NOT_FOUND, CLIENT_UUID_CONFLICT, VALIDATION_ERROR",
+        "description": "Tombstone the old row and return the new one. At least one measured field must change. The correction uses a new client_uuid. If consumed_at is sent, it follows the same 30-day window and clock skew, and a plan-item log must stay on its plan date. No new ACCEPT is written.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, LOG_NOT_FOUND, PLAN_ITEM_NOT_FOUND, CLIENT_UUID_CONFLICT, INCOMPLETE_NUTRITION, CLOCK_SKEW, VALIDATION_ERROR",
         "operationId": "correct_consumption_log",
         "parameters": [
           {
@@ -6902,7 +6902,7 @@
     },
     "/api/v1/water": {
       "get": {
-        "description": "Total, goal, and logs for one local date.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "Total, goal, and active logs for one local date.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, VALIDATION_ERROR",
         "operationId": "get_water_day",
         "parameters": [
           {
@@ -6961,7 +6961,7 @@
     },
     "/api/v1/water-logs": {
       "post": {
-        "description": "Add a glass. 201 when created, 200 when the same client_uuid and content were already stored.\nError codes: UNAUTHORIZED, CLIENT_UUID_CONFLICT, VALIDATION_ERROR",
+        "description": "Add a glass. consumed_at may be at most 5 minutes after the server clock (CLOCK_SKEW) and its local date may not be more than 30 days before the user's local today (VALIDATION_ERROR). 201 when created, 200 when the same client_uuid and content were already stored.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, CLIENT_UUID_CONFLICT, CLOCK_SKEW, VALIDATION_ERROR",
         "operationId": "create_water_log",
         "requestBody": {
           "content": {
@@ -7079,7 +7079,7 @@
     },
     "/api/v1/weights": {
       "get": {
-        "description": "Weights in the inclusive range. Maximum 92 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "Weights in the inclusive range, ordered by date. Maximum 92 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
         "operationId": "list_weights",
         "parameters": [
           {
@@ -7152,7 +7152,7 @@
     },
     "/api/v1/weights/{measured_on}": {
       "put": {
-        "description": "Create or replace the weight of that local date. STALE_IGNORED keeps the stored row when updated_at is older.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, CLOCK_SKEW, VALIDATION_ERROR",
+        "description": "Create or replace the weight of that local date. STALE_IGNORED keeps the stored row when updated_at is older. A new target created by the weight is stored in the same transaction.\nError codes: UNAUTHORIZED, PROFILE_NOT_FOUND, CLOCK_SKEW, VALIDATION_ERROR",
         "operationId": "put_weight",
         "parameters": [
           {

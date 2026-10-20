@@ -66,6 +66,8 @@ SERVICE_ERRORS: Mapping[type[Exception], tuple[int, str]] = {
     UnknownCodeError: (422, "UNKNOWN_CODE"),
     EmptySearchError: (422, "VALIDATION_ERROR"),
     PlanDateOutOfRangeError: (422, "VALIDATION_ERROR"),
+    # Log window, plan-item date, a meal corrected in grams, a future weight date.
+    ValueError: (422, "VALIDATION_ERROR"),
     EmailTakenError: (409, "EMAIL_TAKEN"),
     InvalidCredentialsError: (401, "INVALID_CREDENTIALS"),
     TokenInvalidError: (401, "TOKEN_INVALID"),

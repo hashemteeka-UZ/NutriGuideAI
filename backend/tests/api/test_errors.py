@@ -140,8 +140,9 @@ def test_service_error_codes_are_unique() -> None:
     counts: dict[str, int] = {}
     for code in codes:
         counts[code] = counts.get(code, 0) + 1
-    # Empty search and a plan date outside the window both use VALIDATION_ERROR (#192).
-    assert counts["VALIDATION_ERROR"] == 2
+    # Empty search, a plan date outside the window, and ValueError checks
+    # (log window, plan date, a meal corrected in grams, a future weight) use VALIDATION_ERROR.
+    assert counts["VALIDATION_ERROR"] == 3
     assert {code for code, count in counts.items() if count > 1} == {"VALIDATION_ERROR"}
 
 

@@ -164,7 +164,7 @@ def _adherence_totals(day: DayAdherence) -> NutrientTotals:
     return NutrientTotals(**{field: _amount(day.totals.get(code)) for field, code in codes.items()})
 
 
-def _adherence(day: DayAdherence) -> DayAdherenceOut:
+def day_adherence_out(day: DayAdherence) -> DayAdherenceOut:
     return DayAdherenceOut(
         date=day.log_date,
         status=None if day.status is None else day.status.value,
@@ -203,7 +203,7 @@ def _day(data: DayViewData) -> DayView:
             MealWindow(slot=MealSlot(window.slot), start=window.start, end=window.end)
             for window in data.meal_windows
         ],
-        adherence=_adherence(data.adherence),
+        adherence=day_adherence_out(data.adherence),
         water=WaterDay(
             date=data.day,
             total_ml=data.water_total_ml,

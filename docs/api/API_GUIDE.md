@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.6.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `0.7.0`). If this guide and that file disagree, the file wins. Routes that are not implemented yet answer **501** `NOT_IMPLEMENTED`. That code is temporary and is not part of the lasting error list. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -93,6 +93,22 @@ Write a new UUID into `client_uuid` (and `op_id` for sync) before the request le
 The app calls `POST /plans/days` seven times in sequence, one date at a time, and shows progress (day 3 of 7). Each call stores that day, so the first day can be shown as soon as it returns. On **503** `PLANNER_BUSY`, wait the number of seconds in the `Retry-After` header, then retry that same day.
 
 Logging a plan item, swapping, and saving a meal preference also write learning events on the server. The app only posts `IMPRESSION`, `VIEW`, `SAVE`, `RATE`, `COOK`, and `SKIP` to `POST /interactions`. `RATE` must include `value` from 1 to 5.
+
+## Logging
+
+Generate one `client_uuid` per user action and keep that same id for every retry of that action. A log, a glass of water, and a learning event each get their own id. **200** with `status: DUPLICATE` means the action was already stored; do not create a second row. The same id with different content is **409** `CLIENT_UUID_CONFLICT`.
+
+A correction is a new action. Send a new id in `new_client_uuid`. Reusing the original log's `client_uuid` conflicts with the row already stored.
+
+Send `consumed_at` as an ISO-8601 instant that includes its offset (`2026-10-20T08:15:00+02:00` or `Z`). The server turns that instant into the user's local date. A time more than 5 minutes ahead of the server is **422** `CLOCK_SKEW`. A local date more than 30 days before the user's today is **422** `VALIDATION_ERROR`. A plan item can be logged only on that item's plan date.
+
+`POST /consumption-logs` with `kind: FOOD` logs one food from ingredient search (`food_id` and grams). A composite off-catalog dish is not supported yet. When a plan-item log is created, the server writes `ACCEPT`. The app does not send `ACCEPT`. A duplicate plan-item log does not write `ACCEPT` again, and neither a correction nor a deletion writes one.
+
+## Progress
+
+`GET /adherence?from=&to=` returns one row per day in the inclusive range and `streak`, the number of consecutive `ACHIEVED` days ending on `to`. The range is at most **92** days. A longer range is **422** `VALIDATION_ERROR`. Each day uses the same fields as the adherence block of `GET /days/{date}`.
+
+`GET /weights?from=&to=` returns that user's weights in the same kind of range, ordered by date, also at most 92 days. `PUT /weights/{measured_on}` sends the device time in `updated_at`. An older `updated_at` comes back as `STALE_IGNORED` and leaves the stored weight in place. A change of 1 kg or more on the latest day can replace the calorie target; `new_target_id` is set when that happens. `goal_reached` is true when the latest weight is within 1 kg of the goal weight.
 
 ## Offline catalog
 
