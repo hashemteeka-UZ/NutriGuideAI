@@ -1,13 +1,49 @@
-# PROJECT_CONTEXT.md — v4.20
+# PROJECT_CONTEXT.md — v4.21
 # Fresh-Start Data Architecture & PostgreSQL Rebuild — Nutrition / Meal Recommendation Project
 
 > **Purpose:** This document is the authoritative compact handoff for the project and for any AI assistant/coding agent working on it (chat AI or IDE coding agent).
 >
-> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_19.md`, `PROJECT_CONTEXT_v4_18.md`, `PROJECT_CONTEXT_v4_17.md`, `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
+> **Read this file first.** Do not reconstruct prior conversation history to recover project decisions — everything that matters is captured here. This file supersedes `PROJECT_CONTEXT_v4_20.md`, `PROJECT_CONTEXT_v4_19.md`, `PROJECT_CONTEXT_v4_18.md`, `PROJECT_CONTEXT_v4_17.md`, `PROJECT_CONTEXT_v4_16.md`, `PROJECT_CONTEXT_v4_15.md`, `PROJECT_CONTEXT_v4_14.md`, `PROJECT_CONTEXT_v4_13.md`, `PROJECT_CONTEXT_v4_12.md`, `PROJECT_CONTEXT_v4_11.md`, `PROJECT_CONTEXT_v4_10.md`, `PROJECT_CONTEXT_v4_9.md`, `PROJECT_CONTEXT_v4_8.md`, `PROJECT_CONTEXT_v4_7.md`, `PROJECT_CONTEXT_v4_6.md`, `PROJECT_CONTEXT_v4_5.md`, `PROJECT_CONTEXT_v4_4.md`, `PROJECT_CONTEXT_v4_3.md`, `PROJECT_CONTEXT_v4_2.md`, `PROJECT_CONTEXT_v4_1.md`, `PROJECT_CONTEXT_v4.md` and `PROJECT_CONTEXT_v3.md`.
 >
 > **Critical clarification:** This project is a **fresh rebuild from scratch**. The previous (pre-v2) project is not the codebase to be repaired or extended. Its architecture, code, migrations, generated data, and implementation are not the foundation of the new system. Previous work is used only as lessons, requirements, and evidence about what the new architecture must avoid.
 >
 > **Role split:** The user does the architectural thinking together with an AI assistant (Claude) in chat. Implementation (actual code, models, migrations) is executed separately by the user with **Cursor Pro** as the IDE coding agent. This document is a **decision record**, not a place to look for ready-made code.
+
+---
+
+## CHANGELOG — v4.20 → v4.21
+
+v4.21 records the **closure of Step I (the API phase, 2026-10-12 → 2026-10-20; DEV_JOURNAL J-038 to J-046)**. No schema change after migration `0006`; `alembic check` clean; the frozen #88 reports are unchanged except the deliberate regeneration in I.5b (#200). The full decision text (Arabic) is in `claude/steps/STEP_I_plan.md`; this changelog gives the binding summary.
+
+**Passes and commits (all CI green):** I.0 foundation `62b1336` · I.0b schema `08055df` · I.0c data `c2b2553` · I.0d removal pass (migration `0006`) · I.1 full contract `b5c8607` · I.2 auth `93e66f7` · I.3 profile and targets `6643183` · I.4 catalog `fda54da` · I.5 plans `3c2b467` · I.5b optimizer search fix `e75a63c` · I.6 logging `49e04ce` · I.7 sync `b2329f0` · I.8 closure `f37ac8e`. Final suite: 1561 tests, 0 skipped.
+
+| # | Topic | Binding rule (summary) |
+|---|---|---|
+| #123–#124 | Execution and layout | Sync `def` endpoints in the threadpool with one session per request and an explicit commit in the router; all routes under `/api/v1`; `app/api` (`main`, `deps`, `errors`, `observability`, `routers/`, `schemas/`); business rules only in `app/services`; services never import `app/api`. |
+| #125, #173 | Contract first (P-07) | Every operation defined in I.1 with full Pydantic schemas before implementation; `docs/api/openapi.json` generated and drift-tested; operation id = function name (Dart client); each operation lists its error codes; pagination `limit/offset`; date ranges ≤ 31 days for plans and ≤ 92 days for progress; realistic examples for a mock server. |
+| #126, #212 | Errors | RFC 9457 `application/problem+json` with a stable upper-case `code` and `request_id`; one service-exception → (status, code) table. User-fixable input raises `InputRejectedError(ValueError)` → `422 VALIDATION_ERROR`; any other `ValueError` is a programming error → generic 500 without internal detail. |
+| #127–#129 | Time, numbers, language | Server `now` from an injectable UTC clock; device times only for `consumed_at` and weight `updated_at`; measures as JSON numbers rounded to 3 dp (Decimal inside); ISO 8601 / RFC 3339; `Accept-Language` `ar` (default) or `en` with Arabic fallback; reason and error codes sent as codes. |
+| #130, #170, #174 | Authentication and account | `pwdlib` Argon2id; JWT HS256 access 15 min; opaque 32-byte refresh token stored as SHA-256, 30 days, rotated on every use, reuse revokes the family; login password max 128; `DELETE /me` removes the account and all its data; `GET /me` returns `has_profile`. |
+| #131, #192 | Plans over HTTP | One day per request (`POST /plans/days`, default planner `cpsat_v1`), dates from local yesterday to +13 days; a week = 7 client calls; at most 2 concurrent solves per server, the excess gets `503 PLANNER_BUSY` with `Retry-After: 5`; 20 generations per user per hour; regenerating a day is allowed and the newest plan is current (#72). |
+| #132–#133 | Rate limits and observability | `slowapi` in memory: auth 10/min per IP, plans 20/h per user, sync 60/h per user, others 300/min per user → `429 RATE_LIMITED`. JSON logs to stdout; `request_id` accepted from a safe `X-Request-ID` or generated, returned in the header, the problem body and every log line; no bodies, passwords, tokens or health values in logs. |
+| #134, #190, #193, #196 | Home day view | `GET /days/{date}` returns plan items (meal summary, `reason_codes`, logged flag), daily adherence (§30.5), water total and goal. A plan is always shown with the target frozen in its snapshot; totals are null when any item value is missing; meal windows derived from wake/sleep times (none when awake < 10 h). |
+| #135, #179, #204 | Water | `app/services/water.py`: `water_goal` per §30.7 (user value; heart condition → no default goal and reminders off; ineligible → no goal), `log_water` idempotent by `client_uuid` (`CLIENT_UUID_CONFLICT` on different content), `delete_water` tombstone with server time. |
+| #136, #176–#178 | Profile and targets | `PUT /me/profile` replaces the profile in one transaction; condition, allergen, ingredient and cuisine lists replaced by difference (unchanged rows keep their timestamps); at most one new target per save, reason priority `GOAL_CHANGE` → `PROFILE_CHANGE` → `WEIGHT_UPDATE`, `INITIAL` only for a user who never had one; the weight sent with the profile is written as today's local weight via `upsert_weight` without the automatic recompute. |
+| #137, #194 | Alternatives and swap | One read-only eligibility check shared by `GET /plan-items/{id}/alternatives` and the swap, so every listed alternative is accepted; ordered by energy closeness, max 10, none for a logged item; the swap writes `SWAP_OUT` with `replaced_by`. |
+| #168, #172, #203 | Logging scope | Single foods are logged by grams through ingredient search (`GET /ingredients`, the ingredient's default `food_id`); the free-form multi-ingredient off-catalog dish is **deferred to Future Work** (user decision): `consumption_logs.entry_group` / `entry_label` (§11.9) stay reserved and are never written by the API. |
+| #169, #182, #201, #205 | Learning signals | The app sends IMPRESSION/VIEW/SAVE/RATE/COOK/SKIP via `POST /interactions` (`app/services/interactions.py`, idempotent by `client_uuid`); the server alone writes ACCEPT (first log of a plan item, with plan, item, slot, algorithm and eaten/planned ratio), SWAP_OUT and PREF_* (only on a real state change). Every plan-linked event carries `plan_id`, `plan_item_id`, `algorithm_version`. |
+| #171, #195 | Shopping list | `GET /shopping-list` sums grams of non-optional ingredients over the current plans of a date range. |
+| #180–#181, #185 | Reference lists and search | `GET /reference` is public, read from the database, cached 1 h. Ingredient and meal search share `app/services/text_search.py`: the single normalizer (§15.9), partial match plus `pg_trgm` similarity; ranking exact → prefix → contains → similarity. |
+| #183–#189 | Catalog | Catalog version read from `DATASET_MANIFEST.yaml` and checked against the active batches (mismatch → null + warning, never a failure); energy shown from stored `calc_v1` values; `GET /catalog/snapshot` with a strong SHA-256 ETag per language, 304 and gzip; browsing is not filtered by conditions (only the planner applies hard filters) but meals carry allergen codes; a meal missing energy or a macro is never shown as zero (excluded, details 404). |
+| #191, #197–#200 | Optimizer in production | Solver seconds and candidate counts added to the plan snapshot (JSONB only). Search fix: `linearization_level = 2`, deterministic budget 2.0 with one retry at 10 on `UNKNOWN`, a first pass restricted to main-slot candidates within 0.7–1.4 of the slot's energy share; comparison report regenerated on a catalog-only database. |
+| #202 | Log time window | Food and water: `consumed_at` ≤ server now + 5 min (`CLOCK_SKEW`), not older than 30 local days; a plan-item log must fall on its plan date. |
+| #206 | Adherence range | `GET /adherence` uses `adherence_range` (92 days ≈ 463 queries, 0.5 s; re-measured at hosting). |
+| #208–#211, #213 | Offline sync (§33.4) | `POST /sync/batch` (≤ 500 ops) runs each op in order inside its own `SAVEPOINT` through the same request services as the single routes; a known error marks only that op `REJECTED` with its code; an unknown error is a 500 for the whole batch (safe to resend). Statuses `CREATED` / `UPDATED` / `DUPLICATE` / `REJECTED`; idempotent duplicates for creates, corrections, repeated deletes of the user's own tombstone and stale weights. The phone never sends a correction or delete for an unconfirmed create: it edits or drops the queued op (outbox compaction). `GET /sync/changes?since=` with `since` ≤ now + 5 min and ≥ now − 30 days (else full reload), queried from `since − 2 min` (overlap), returning new and tombstoned logs and water, all weights of the last 30 local days, the full meal-preference list, current plans from local yesterday that changed (including swaps), `profile_changed`, and `server_time` as the next `since`. Weight reads moved to `weight.weights_between`. |
+| #214 | Target instants | `targets.target_instant(current_valid_from, now) = max(now, current_valid_from + 1 µs)` closes the current target and opens the next one (also when `profile` closes a target for an ineligible user). Removes the last 500 on weight recompute (two same-day weights in one sync batch share `now`, or two concurrent requests); history stays append-only and `CHECK valid_to > valid_from` holds; one warning log line (user id only) when the instant is advanced. |
+| #215 | Solver timeout | A slot-banded pass still `UNKNOWN` after its retry is treated like `INFEASIBLE` and the optimizer continues; when the last pass has no accepted status, `PlannerTimeoutError(PlanError)` → `503 PLANNER_TIMEOUT` (no `Retry-After`), only on `POST /plans/days`. Worst-case path: 36 deterministic-time units (not a wall-clock guarantee). |
+| #216 | Closure | End-to-end scenario test over HTTP (register → … → `DELETE /me`); `scripts/measure_plan_latency.py` and `docs/reports/plan_latency_http.md` (6 personas × 3 days: p50 3.9 s, p95 5.6 s, max 6.2 s; 10 OPTIMAL, 8 FEASIBLE; concurrency probe 2 × 201 + 1 × `503 PLANNER_BUSY`). **Contract frozen at `1.0.0`:** later changes are additive only (new optional fields, endpoints, codes); clients ignore unknown fields and treat unknown codes as generic errors; a breaking change goes to `/api/v2`. |
+
+**Theory:** DEV_JOURNAL J-038 (contract), J-039 (auth), J-040 (profile), J-041 (catalog), J-042 (plans), J-043 (optimizer fix), J-044 (logging), J-045 (sync), J-046 (closure and evaluation).
 
 ---
 
@@ -852,7 +888,7 @@ Direction consistency between `goal_type` and `target_weight_kg` vs current weig
 - `servings_consumed` — nullable numeric (for meals; supports partial, e.g. 0.5)
 - `grams_consumed` — **NEW** — nullable numeric (for foods)
 - `created_at` — `TIMESTAMPTZ NOT NULL` (server receive time)
-- `entry_group` — **NEW in v4.19 (#165)** — `UUID` nullable, indexed: rows with the same value are one eaten dish entered as ingredients (off-catalog); set by the phone, only on `food_id` rows: `CHECK (entry_group IS NULL OR food_id IS NOT NULL)` (name `entry_group_food_only`)
+- `entry_group` — **NEW in v4.19 (#165); reserved, never written by the API — the off-catalog dish entry is Future Work (v4.21, #172/#203)** — `UUID` nullable, indexed: rows with the same value are one eaten dish entered as ingredients (off-catalog); set by the phone, only on `food_id` rows: `CHECK (entry_group IS NULL OR food_id IS NOT NULL)` (name `entry_group_food_only`)
 - `entry_label` — **NEW in v4.19 (#165)** — `TEXT` nullable, the user's name for that dish (e.g. a restaurant meal); `CHECK (entry_label IS NULL OR (entry_group IS NOT NULL AND length(btrim(entry_label)) > 0))` (name `entry_label_needs_group`). The same label is repeated on every row of the group.
 - `deleted_at` — **NEW in v4.5 (Decision #43)** — `TIMESTAMPTZ` nullable — **tombstone**: a log is never physically deleted or edited; a correction tombstones the old row and inserts a new one (new `client_uuid`). Adherence, summaries and ML rewards ignore rows with `deleted_at IS NOT NULL`
 - `client_uuid` — **NEW in v4.4 (Decision #37)** — `UUID` nullable — generated on the phone for offline-created logs; idempotent sync (listed here as a column in v4.8; previously under Constraints)
@@ -1361,10 +1397,13 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
 - **v4.18: Step H decisions (#108–#122), no schema change**
 - **v4.14: first post-freeze change (#74–#79), migration `0003`**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
+- **v4.19–v4.20 (Step I.0b–I.0d):** migration `0005` (wake/sleep, `user_meal_prefs`, `meal_steps`, `dish_form`), catalog_v3 data with 477 preparation steps, migration `0006` removing cancelled conditions (#165–#167, #175)
+- **Step I done (2026-10-20): the API phase** — 33 operations under `/api/v1`, contract `1.0.0`, no 501 left, offline sync, end-to-end scenario test, HTTP latency report; 1561 tests, 0 skipped; last commit `f37ac8e`, CI green (DEV_JOURNAL J-038–J-046)
+- **v4.21: Step I decisions (#123–#140, #168–#216), no schema change after `0006`**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
 ## Current task
-**Step I — to be planned: the API phase** (§34.2–§34.5) that the Flutter app needs. Step H is closed (v4.18): plans are generated by `cpsat_v1` by default. Open points carried into Step I: optimizer latency behind an HTTP request (§28.4c), and recipe batches from the dish proposal (#101), which can run alongside.
+**Step J — Hosting (to be planned with the user):** deploy the frozen `1.0.0` API and PostgreSQL to a public host for the beta. Promised scope (§34, security notes): HTTPS only, CORS limited to the app's origins, trusted proxy headers so per-IP rate limits see the real client, secrets only in the host's environment, automated database backups with a tested restore, `pip-audit` dependency scan in CI, and re-measuring plan latency and the 92-day adherence read on the host. Then **Step K — Flutter app** (built by the user; flutter_secure_storage for tokens, feature-first layered structure, generated Dart client from `openapi.json`, local `drift` store and outbox per §33).
 
 ---
 
@@ -1388,7 +1427,9 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
   - **H.0** pure CP-SAT `optimize_day` + `apply_general_limits` (#108–#116)
   - **H.1** database wiring, swap consistency, comparison report (#117–#121)
   - **H.2** `cpsat_v1` default planner (#122) + closure
-- **Step I — API phase** ← **next, to be planned with the user** (§34.2–§34.5)
+- **Step I — API phase** ✅ done (2026-10-20, v4.21; plan `claude/steps/STEP_I_plan.md`): I.0 foundation, I.0b–I.0d schema/data/removal, I.1 contract, I.2 auth, I.3 profile, I.4 catalog, I.5/I.5b plans and optimizer search fix, I.6 logging, I.7 sync, I.8 closure
+- **Step J — Hosting** ← **next, to be planned with the user** (see §24 Current task)
+- **Step K — Flutter app** (user builds it; contract `1.0.0`, §33, §34.3)
   - The extended xlsx template is replaced by YAML files (#94).
 
 ---
@@ -1525,7 +1566,7 @@ Built in Step H (`app/services/optimizer.py`, pure `optimize_day`; `build_optimi
 - **Exactness and reproducibility:** integer scaling with outward rounding, exact `Decimal` re-verification (#114); one worker, seed 0, deterministic time limit 10 (#115).
 - **Snapshot:** `generated_by = cpsat`, `algorithm_version = cpsat_v1`, merged limits with `GENERAL_POPULATION` sources, and `"solver"` (status, `kcal_relaxed`, objective, excluded meal ids) (#117).
 - **Result against #88:** see the v4.18 changelog and `docs/reports/planner_comparison_report.md`.
-- **Latency:** seconds, not milliseconds (catalog median ≈ 3.8 s, max ≈ 13 s on the developer machine). Acceptable for one plan per day; the API phase must not block a request thread on it without a timeout policy, and catalog growth may turn `OPTIMAL` into `FEASIBLE` at the time limit (still deterministic and verified).
+- **Latency (updated v4.21):** after the I.5b search fix (#197–#199) and over HTTP (#216): p50 3.9 s, p95 5.6 s, max 6.2 s for 18 persona-days; requests are bounded by 2 concurrent solves (`503 PLANNER_BUSY`) and an unsolved final pass returns `503 PLANNER_TIMEOUT` (#215). Original Step H note: seconds, not milliseconds (catalog median ≈ 3.8 s, max ≈ 13 s on the developer machine). Acceptable for one plan per day; the API phase must not block a request thread on it without a timeout policy, and catalog growth may turn `OPTIMAL` into `FEASIBLE` at the time limit (still deterministic and verified).
 
 **Theoretical note (for the thesis):** `greedy_v1` is a constructive heuristic: it fixes one slot at a time and never revisits a choice, so an early choice can consume a sodium or energy budget and leave later slots without a good option; it can neither prove that its plan is the best nor that no better plan exists. `cpsat_v1` formulates the whole day as an integer linear program (binary choice variables, linear health constraints, a weighted linear objective) solved exactly by CP-SAT (constraint programming with SAT-based clause learning and linear relaxation). It returns a plan that is optimal under the model, or a certificate that no plan meets the hard constraints. The comparison report shows the practical effect: on the full catalog the optimizer meets every #88 criterion on all persona-days while greedy meets them on one; on the F.1 slice it proves that the energy band is unreachable for the hypertension + diabetes persona instead of silently returning a −30% plan.
 
@@ -1638,7 +1679,7 @@ For a user and `log_date`: sum `consumption_logs.nutrients_snapshot`, compare wi
 - Streaks and weekly summaries are derived from these daily statuses.
 
 ## 30.6 Recompute triggers
-*(v4.15, #86: a weight triggers `WEIGHT_UPDATE` only when it is the user's latest `measured_on` and a current target exists; if the new target cannot be computed the weight is kept and the old target stays.)* A new `user_targets` row (closing the previous one) is created on: onboarding (`INITIAL`), a new weight differing ≥ 1 kg from `based_on_weight_kg` (`WEIGHT_UPDATE`), goal/rate/target-weight change (`GOAL_CHANGE`), activity/height/sex/birth-date change (`PROFILE_CHANGE`), or a new `formula_version` (`FORMULA_CHANGE`).
+*(v4.15, #86: a weight triggers `WEIGHT_UPDATE` only when it is the user's latest `measured_on` and a current target exists; if the new target cannot be computed the weight is kept and the old target stays.)* A new `user_targets` row (closing the previous one) is created on: onboarding (`INITIAL`), a new weight differing ≥ 1 kg from `based_on_weight_kg` (`WEIGHT_UPDATE`), goal/rate/target-weight change (`GOAL_CHANGE`), activity/height/sex/birth-date change (`PROFILE_CHANGE`), or a new `formula_version` (`FORMULA_CHANGE`). *(v4.21, #214: the new row starts at `max(now, current.valid_from + 1 µs)`, so two recomputes at the same server instant, e.g. two same-day weights in one sync batch, never fail; profile saves create at most one target, #177.)*
 
 ## 30.7 Water goal & fluid safety — NEW in v4.6 (Decisions #49, #50)
 - **Default goal** (used only when `user_profiles.water_goal_ml IS NULL`): beverage-water target derived from EFSA (2010) adequate intake of total water (2.0 L women / 2.5 L men), minus ~20% supplied by food → **1600 ml (women) / 2000 ml (men)**. Computed in application logic, not stored. The "8 glasses a day" rule is not used (no scientific basis).
@@ -1750,7 +1791,7 @@ Provenance/reference columns (`source_reference`, `external_source`, `external_c
 | ML personalization updates | — | ✅ server (learns from synced interactions) |
 | Account registration / login | — | ✅ server |
 
-## 33.4 Sync rules (direction — implemented in the app phase, not Phase 1)
+## 33.4 Sync rules (server side built in Step I.7, #208–#213; device side in Step K)
 - **Catalog:** the device downloads a read-only snapshot tagged with `dataset_version`; when the server's version changes, the device replaces its snapshot (a curated catalog of ≈300 meals / ≈500 foods is only a few MB). No per-row catalog sync.
 - **User data:** device → server uploads of offline-created rows carry `client_uuid`; the server upserts by `client_uuid` (idempotent). Server → device downloads plans and targets.
 - **Weekly plans** are generated while online and cached, so the whole week remains usable offline.
@@ -1762,6 +1803,7 @@ Provenance/reference columns (`source_reference`, `external_source`, `external_c
 - **Tombstone time (v4.12, #72):** `deleted_at` on `consumption_logs` and `water_logs` is the **server receive time** of the tombstone, not the device time. Both `created_at` and `deleted_at` are therefore server times, and another device (or a reinstall) can download "changed since the last sync" with `created_at > T OR deleted_at > T`.
 - **Catalog version (v4.12, #72):** every catalog release carries **one** `dataset_version`, written to all active meals by the import pipeline; the device compares that single value to decide whether to replace its snapshot.
 - **Uploads use one batch endpoint** (`POST /sync/batch`, max 500 records per request) with its own rate limit (§34.4); each record is processed idempotently by `client_uuid` and the response reports per-record status (`created` / `duplicate` / `rejected`).
+- **As built (v4.21):** statuses are `CREATED` / `UPDATED` / `DUPLICATE` / `REJECTED` (with the error code); each op runs in its own `SAVEPOINT` through the same services as the single routes; an unknown error fails the whole batch (500, nothing committed, safe to resend). Outbox compaction on the device (#210). Change feed `GET /sync/changes?since=`: bounds now + 5 min / now − 30 days, 2-minute overlap window, weights of the last 30 local days in full, the full meal-preference list, changed current plans from local yesterday (including swaps), `profile_changed`, and `server_time` as the next `since` (#211).
 - **Auth while offline:** the upload queue is kept on the device until the user signs in again if the refresh token has expired; queued records are never discarded (§34.2).
 
 ## 33.5 Why not fully local (no server)
@@ -1776,18 +1818,18 @@ Each item below passed the change-impact checklist (§26; DEV_JOURNAL J-017, J-0
 ## 34.1 Configuration (P-06) — Step B
 All settings (database URL, secrets, token lifetimes) come from environment variables via `pydantic-settings`; a committed `.env.example` lists them without values; `.env` is git-ignored. No secret ever appears in code or in Docker Compose files committed to the repository.
 
-## 34.2 Authentication (P-05) — API phase *(later)*
+## 34.2 Authentication (P-05) — built in Step I.2 (#130)
 - Passwords: **Argon2id** (`argon2-cffi` / `pwdlib`).
 - Access token: JWT, 15-minute lifetime. Refresh token: opaque random value, 30-day lifetime, **rotated on every use**, stored only as a hash in `refresh_tokens` (§11.12); reuse of a rotated token revokes the whole family.
 - Offline interaction: an expired refresh token never causes loss of queued offline records (§33.4).
 
-## 34.3 API contract (P-07) — API phase *(later)*
+## 34.3 API contract (P-07) — built in Step I.1, frozen at 1.0.0 in I.8 (#125, #173, #216)
 FastAPI's OpenAPI schema is the single contract; the Flutter API client is generated from it (`openapi-generator`, Dart). Local `drift` tables are defined independently and connected to API models through an explicit mapper layer — generated API models are never used as local table definitions.
 
-## 34.4 Rate limiting (P-09) — API phase *(later)*
-Per-user limits: strict on plan generation (computationally expensive optimizer), separate higher limit on `POST /sync/batch` so a device returning from a long offline period can upload its queue; auth endpoints limited per IP. Single-instance in-memory limiter is sufficient for the project (`slowapi`).
+## 34.4 Rate limiting (P-09) — built in Step I (#132, #192)
+Per-user limits: strict on plan generation (computationally expensive optimizer), separate higher limit on `POST /sync/batch` so a device returning from a long offline period can upload its queue; auth endpoints limited per IP. Single-instance in-memory limiter is sufficient for the project (`slowapi`). As built: auth 10/min per IP, plans 20/h per user plus 2 concurrent solves per server, sync 60/h per user, others 300/min per user.
 
-## 34.5 Observability (P-08) — API phase *(later)*
+## 34.5 Observability (P-08) — built in Step I.0 (#133)
 Structured JSON logs; every request gets a `request_id` (accepted from `X-Request-ID` or generated), returned in the response and included in every log line; sync batch responses echo it for tracing a device upload end-to-end.
 
 ## 34.6 Code quality (P-10) — Step B/C
