@@ -1,0 +1,108 @@
+You are implementing **Step K.0 (Flutter app skeleton; Decisions #217 to #227)** for NutriGuideAI. The backend (FastAPI, contract `1.0.0`) is finished and frozen. This pass creates the mobile app, its structure, theme, localization, configuration, the generated API client and its contract test, error mapping, one real screen that calls `GET /api/v1/health`, and a CI workflow. No feature screens yet.
+
+You are running in Cursor on **Windows**, in the clone `C:\dev\NutriGuideAI`. Use the Cursor terminal (PowerShell). Read first: `docs/project/steps/STEP_K_plan.md` (decisions, source of truth), `docs/api/API_GUIDE.md` (auth, errors, contract stability), `docs/api/openapi.json` (OpenAPI 3.1, 37 operations, 84 schemas). Do not edit their content; report contradictions.
+
+## Hard rules
+1. Create and change files ONLY under `mobile/` and the new file `.github/workflows/mobile.yml`. Never touch `backend/`, `docs/` (except reading), `docker-compose.yml`, or `.github/workflows/ci.yml`.
+2. Android only (`--platforms android`). No iOS, web or desktop folders.
+3. Add packages with `flutter pub add` / `flutter pub add --dev` so you get the newest versions compatible with Flutter 3.47.7 / Dart 3.13.5. Commit `pubspec.lock` (it is an app). Report every direct dependency with its resolved version.
+4. Never log tokens, passwords, or any health/profile/food values. The `dio` log interceptor is debug-only and logs method, path, status and duration only (no headers, no bodies).
+5. Fonts are bundled assets, never fetched at runtime (no `google_fonts` package).
+6. Do not commit anything. The user commits after review.
+
+## 0. Preconditions (check, report, do not fix backend)
+- `flutter --version` shows 3.47.7 stable; `git status` in `C:\dev\NutriGuideAI` is clean and up to date with `origin/main`.
+- The backend is running in WSL. From PowerShell: `Invoke-RestMethod http://localhost:8000/api/v1/health` returns `status: ok`. If it fails, stop and report the exact error.
+- An Android emulator is running (`flutter devices` lists it).
+
+## 1. Create the project (#217, #218)
+- From the repo root: `flutter create --org com.nutriguideai --project-name nutriguide --platforms android --empty mobile`.
+- `android/app/build.gradle.kts`: `applicationId = "com.nutriguideai.app"`, `namespace` unchanged is fine if the build works; `minSdk = 24`. Report the final `minSdk`, `targetSdk`, `compileSdk`.
+- App label: `NutriGuide` (AndroidManifest `android:label`).
+- `AndroidManifest.xml` (main): `android:allowBackup="false"`, `android:fullBackupContent="false"`, `android:dataExtractionRules` pointing to a rules file that excludes everything (#226). Add `<uses-permission android:name="android.permission.INTERNET"/>` to the main manifest.
+- Cleartext HTTP (#222): add `android/app/src/debug/res/xml/network_security_config.xml` that permits cleartext ONLY for `10.0.2.2` and `localhost`, referenced from `android/app/src/debug/AndroidManifest.xml` via `android:networkSecurityConfig` (manifest merge, `tools:replace` if needed). The main/release manifest has no cleartext permission. Prove it: `flutter build apk --debug` succeeds, and report the merged release manifest has no `usesCleartextTraffic` and no debug network config (`android/app/build/intermediates/merged_manifests/...` or `apkanalyzer`).
+- `mobile/.gitattributes`: `* text=auto eol=lf` (the repo is edited from Windows and Linux).
+- `mobile/README.md`: how to run (backend first, emulator, `flutter run --dart-define=API_BASE_URL=...`), how to regenerate the API client, how to run checks. Short, English.
+
+## 2. Packages (#219)
+Runtime: `flutter_riverpod`, `go_router`, `dio`, `flutter_secure_storage`, `drift`, `sqlite3_flutter_libs`, `path_provider`, `path`, `json_annotation`, `retrofit`, `intl`, `flutter_localizations` (sdk), `uuid`.
+Dev: `build_runner`, `json_serializable`, `retrofit_generator`, `swagger_parser`, `drift_dev`, `flutter_lints`, `mocktail`.
+- No Riverpod code generation (no `riverpod_generator`). Use `Provider`, `Notifier`, `AsyncNotifier` by hand.
+- `drift` is added now but only wired as an empty `AppDatabase` (schema version 1, no tables yet) with a provider and a test that opens it in memory. Tables come in K.3/K.5.
+- If a package does not resolve with this Flutter version, stop and report; do not downgrade Flutter.
+
+## 3. Structure (#221)
+```
+mobile/lib/
+  main.dart                      // runApp(ProviderScope(child: App()))
+  app/app.dart                   // MaterialApp.router, theme, locale, l10n
+  app/router.dart                // go_router: '/' -> ServerCheckScreen (only route in K.0)
+  core/config/app_config.dart    // API_BASE_URL from --dart-define, default http://10.0.2.2:8000
+  core/network/dio_provider.dart // Dio: baseUrl, timeouts (connect 10 s, receive 30 s), debug log interceptor (rule 4)
+  core/network/app_failure.dart  // #224
+  core/api/generated/            // swagger_parser output, never edited by hand
+  core/api/api_provider.dart     // providers for the generated clients
+  core/storage/secure_store.dart // thin wrapper over flutter_secure_storage (read/write/delete by key), unused until K.1
+  core/db/app_database.dart      // empty drift database (section 2)
+  core/theme/app_colors.dart     // tokens (section 5)
+  core/theme/app_theme.dart      // light + dark ThemeData, Material 3
+  core/l10n/                     // generated localizations (see section 6)
+  features/server_check/
+    data/server_check_repository.dart
+    domain/server_status.dart    // app model, NOT the generated HealthResponse
+    presentation/server_check_screen.dart
+    presentation/server_check_controller.dart
+```
+- Layer rules: `presentation` never imports `dio` or `core/api/generated`. Only `data` uses the generated client and maps generated models to `domain` models with an explicit mapper. Add a test that scans `lib/features/**/presentation/**.dart` and `lib/features/**/domain/**.dart` and fails if any imports `package:dio` or `core/api/generated`.
+
+## 4. Generated API client (#220)
+- `mobile/swagger_parser.yaml`: `schema_path: ../docs/api/openapi.json`, output under `lib/core/api/generated`, `json_serializer: json_serializable`, retrofit clients, one client per tag, `put_clients_in_folder: true`, `enums_to_json: true`, `unknown_enum_value: true` (unknown enum values from a future server must not crash, per the contract stability rule). Use whatever exact option names the installed swagger_parser version supports; report the final file.
+- Generate: `dart run swagger_parser` then `dart run build_runner build --delete-conflicting-outputs`. Commit the generated files (CI checks they are fresh).
+- `mobile/tool/regenerate_api.ps1` and `mobile/tool/regenerate_api.sh`: the two commands above.
+- `analysis_options.yaml` excludes `lib/core/api/generated/**` and `**/*.g.dart` from analysis; formatting check excludes them too.
+- **Contract example test** (the important part): write `mobile/tool/gen_contract_examples_test.dart` (a Dart script run with `dart run tool/gen_contract_examples_test.dart`) that reads `../docs/api/openapi.json` and writes `test/contract/schema_examples_test.dart`. For every component schema that has an `example` (49 of 84 today), the generated test does `final model = <GeneratedClass>.fromJson(example); final back = model.toJson();` and asserts `back` equals `example` after this normalization only: keys whose value is `null` are dropped on both sides; date-time strings are compared as instants (`DateTime.parse`), dates as `YYYY-MM-DD`; numbers compared by value (`1` == `1.0`). The schema-name to class-name mapping comes from the generator's naming; if a class cannot be found, the generated test contains a failing test with the schema name (never a silent skip). Also add one hand-written test that parses the `ProblemDetail` example.
+- Expected risk areas (report each explicitly): `anyOf: [X, null]` nullable fields (72 uses), `const` fields (13), enums (22), formats `uuid`/`date`/`date-time`/`email`, and the discriminated union in `SyncBatch.operations` (`oneOf` + `discriminator` on `op`, 7 variants).
+- If the generator cannot represent a schema correctly (the union is the likely one), do NOT hand-edit generated code. Write that model by hand in `lib/core/api/manual/` with `json_serializable`, cover it in the same example test, and report which schemas needed it and why. If more than 5 schemas fail, stop after the report and do not hand-write them.
+
+## 5. Theme (#223)
+Tokens from the approved UI v2 design. `AppColors` as a `ThemeExtension` with light and dark values; `ColorScheme` built from `brand` as primary.
+Light: bg `#F3F7F5`, bg2 `#E8F1ED`, surface `#FFFFFF`, surface2 `#F2F6F4`, surface3 `#E7EEEB`, line `#DDE7E3`, fg `#0F1D1A`, fg2 `#4A5D58`, fg3 `#7E8F8B`, brand `#0FA473`, brand2 `#0B8A61`, brandSoft `#D7F3E8`, onBrand `#FFFFFF`, signal `#0EA5E9`, signalSoft `#DCF2FC`, kcal `#F2781F`, protein `#E5536A`, carb `#3D7FE6`, fat `#E3A21A`, fiber `#22A866`, water `#1A9BE0`, ok `#16A36B`, part `#D99511`, miss `#8A97A3`, warn `#E26A2C`, danger `#D9434F`; hero gradient 135° `#0FA473` → `#12B39A` (45%) → `#1AA7E0`.
+Dark: bg `#0A111C`, bg2 `#0E1726`, surface `#131D2D`, surface2 `#192538`, surface3 `#203046`, line `#24334A`, fg `#EEF3F8`, fg2 `#A7B4C6`, fg3 `#6F7E94`, brand `#2BD49A`, brand2 `#5BE3B4`, brandSoft `#123B33`, onBrand `#04241A`, signal `#38BDF8`, signalSoft `#0F3148`, kcal `#FF9147`, protein `#FF6B81`, carb `#5C9BFF`, fat `#FFC23D`, fiber `#3DD68C`, water `#3FB7F5`, ok `#34D399`, part `#FBBF24`, miss `#7C8BA0`, warn `#FB923C`, danger `#F87171`; hero gradient `#0E8F68` → `#0F8C86` (45%) → `#1478B8`.
+- `ThemeMode.system` for now (the user setting comes in K.7).
+- Fonts: download from the official google/fonts GitHub repository the OFL files for **IBM Plex Sans Arabic** (Regular 400, Medium 500, SemiBold 600, Bold 700) and **Readex Pro** (the variable font, or static 400/500/600/700). Put them in `mobile/assets/fonts/` with their `OFL.txt` license files. Text theme uses IBM Plex Sans Arabic; add a `numeric` text style (Readex Pro, tabular figures) in the theme extension for numbers. Report the exact files and their source URLs.
+- Reduce motion: an `animationsEnabled(BuildContext)` helper that returns false when `MediaQuery.disableAnimationsOf(context)` is true. Use it for the one animation in K.0 (the status icon fade).
+
+## 6. Localization (#218)
+- `flutter: generate: true`, `l10n.yaml` with ARB dir `lib/l10n`, template `app_ar.arb`, plus `app_en.arb`, output class `AppLocalizations`.
+- Supported locales `ar`, `en`; the app starts in Arabic (`locale: Locale('ar')` for now; the switch is a K.7 setting). Everything renders right-to-left in Arabic.
+- No hard-coded user-facing strings in widgets; all from ARB.
+
+## 7. Errors (#224)
+`AppFailure` (sealed class) with: `ApiProblem(status, code, title, detail, requestId, retryAfter)`, `NetworkUnavailable`, `Timeout`, `UnexpectedResponse(status)`.
+- A mapper from `DioException` and from responses: RFC 9457 body (`application/problem+json` or JSON with `code`) gives `ApiProblem` with the server `code`; `Retry-After` header parsed to seconds when present; no body or non-JSON (for example a proxy 502 HTML page) gives `UnexpectedResponse`.
+- `failureMessage(AppLocalizations, AppFailure)`: Arabic and English messages for these codes now: `RATE_LIMITED`, `PLANNER_BUSY`, `PLANNER_TIMEOUT`, `UNAUTHORIZED`, `TOKEN_REUSED`, `VALIDATION_ERROR`, `SERVICE_UNAVAILABLE`, `INTERNAL_ERROR` (use the exact code names from API_GUIDE.md; report any I named that does not exist), plus network, timeout and a generic message for any unknown code.
+- Unit tests for every branch, including an unknown code and a 502 HTML body.
+
+## 8. The one screen: server check
+`ServerCheckScreen` (route `/`), Arabic, RTL, uses the theme tokens:
+- Loading state; success state shows a check icon (fade in, respecting reduce motion), "الخادم متصل", the API version, the catalog dataset version, and the planner name; error state shows the mapped failure message and a retry button.
+- In debug builds only, a small line with the base URL being used.
+- Repository calls `GET /api/v1/health` through the generated client and maps to `ServerStatus(apiVersion, datasetVersion, plannerName)`.
+- If the server's `api_version` major is not `1`, show a clear "التطبيق يحتاج تحديثًا" state (the contract rule: a breaking change moves to `/api/v2`). Unit-test this.
+- Widget tests with a fake repository: loading, success, error with retry, major-version mismatch. Test in Arabic locale and check the `Directionality` is RTL.
+
+## 9. Quality and CI (#225)
+- `analysis_options.yaml`: include `package:flutter_lints/flutter.yaml`; `strict-casts`, `strict-inference`, `strict-raw-types` true; enable at least `prefer_final_locals`, `prefer_const_constructors`, `always_declare_return_types`, `avoid_print`, `require_trailing_commas`, `directives_ordering`, `unawaited_futures`. Zero issues outside excluded generated code.
+- `.github/workflows/mobile.yml`: on push and pull_request with `paths: ['mobile/**', 'docs/api/openapi.json', '.github/workflows/mobile.yml']`; ubuntu-latest; `subosito/flutter-action@v2` with `flutter-version: 3.47.7`, channel stable, cache on; working directory `mobile`; steps: `flutter pub get`; regenerate the client and the contract test exactly as the tool scripts do, then `git diff --exit-code` on `mobile/` (fails if generated files are stale or the contract changed without regeneration); `dart format --output=none --set-exit-if-changed` on `lib` and `test` excluding generated files; `flutter analyze`; `flutter test`; `flutter build apk --debug`.
+
+## Checks before you report
+From `mobile/`: `flutter pub get`, the regeneration commands, `dart format` check, `flutter analyze` (0 issues), `flutter test` (all pass, 0 skipped), `flutter build apk --debug`. Then `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000` on the running emulator with the backend up: the success state must appear. Then stop the backend (Ctrl+C in WSL is the user's job: ask the user, or test with a wrong port `--dart-define=API_BASE_URL=http://10.0.2.2:8999`) and confirm the error state and retry. Take two screenshots (success, error) into `mobile/docs/screenshots/k0_success.png` and `k0_error.png` (`adb exec-out screencap -p`).
+
+## Report back
+1. Files created (tree of `mobile/` excluding generated files and `build/`), plus `.github/workflows/mobile.yml`.
+2. Direct dependencies with resolved versions; Android `minSdk`/`targetSdk`/`compileSdk`; the release-manifest cleartext proof.
+3. Generator: final `swagger_parser.yaml`; how each risk area in section 4 came out; the contract example test result (count passed / total, one line per failure); any hand-written models and why.
+4. The font files and their source URLs.
+5. Error codes found or missing in API_GUIDE.md (section 7).
+6. Output summaries of every check, test counts, and whether the emulator run showed success and error states (with the two screenshot paths).
+7. Findings (one line each, with the section number) and assumptions.
