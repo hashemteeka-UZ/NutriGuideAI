@@ -1398,7 +1398,7 @@ A formal versioning/provenance table is still not needed (v4.16, #99): the froze
 - **v4.14: first post-freeze change (#74–#79), migration `0003`**
 - **v4.8: pre-Step-C consistency audit — PK type (#56), FK index rule (#57), numeric precision (#58), `meals.owner_user_id` removed (#59), explicit details (#60)**
 - **v4.19–v4.20 (Step I.0b–I.0d):** migration `0005` (wake/sleep, `user_meal_prefs`, `meal_steps`, `dish_form`), catalog_v3 data with 477 preparation steps, migration `0006` removing cancelled conditions (#165–#167, #175)
-- **Step I done (2026-10-20): the API phase** — 33 operations under `/api/v1`, contract `1.0.0`, no 501 left, offline sync, end-to-end scenario test, HTTP latency report; 1561 tests, 0 skipped; last commit `f37ac8e`, CI green (DEV_JOURNAL J-038–J-046)
+- **Step I done (2026-10-20): the API phase** — 37 operations under `/api/v1`, contract `1.0.0`, no 501 left, offline sync, end-to-end scenario test, HTTP latency report; 1561 tests, 0 skipped; last commit `f37ac8e`, CI green (DEV_JOURNAL J-038–J-046)
 - **v4.21: Step I decisions (#123–#140, #168–#216), no schema change after `0006`**
 - **v4.6: scope change — water tracking moved to Core with a fluid-safety rule (#49, #50); on-device reminders (#51); UI/UX direction (#52); chatbot design constraints fixed, still deferred (#53)**
 
