@@ -1,0 +1,120 @@
+You are implementing **Step K.1 (sign up, sign in, sessions; Decisions #228 to #235)** for NutriGuideAI. K.0 is done and committed (d4f6bfd): skeleton, generated API client, theme, l10n, AppFailure, server check screen, mobile CI. This pass adds the welcome, register and login screens, secure token storage, automatic session refresh, logout, routing by session state, and the language switch. Onboarding and Home are placeholders until K.2 and K.4.
+
+You are running in Cursor on **Windows**, in the clone `C:\dev\NutriGuideAI`. Use the Cursor terminal (PowerShell). First run `git pull` and confirm `git status` is clean. Read first: `docs/project/steps/STEP_K_plan.md` (decisions #228-#235 are the source of truth), `docs/api/API_GUIDE.md` sections on auth and errors, `docs/api/openapi.json` (`/api/v1/auth/*`, `/api/v1/me`, schemas `TokenPair`, `RegisterRequest`, `LoginRequest`, `RefreshRequest`, `Account`, `ProblemDetail`, `ValidationIssue`). Visual reference: `docs/project/ui/prototype_v3/5_ui.js` functions `welcome()` and `login()`, and `docs/project/ui/prototype_v3/1_head.html` for tokens. The prototype is inspiration, not a spec: where it differs from this file, this file wins.
+
+## Hard rules
+1. Change files ONLY under `mobile/` (and `.github/workflows/mobile.yml` only if a check needs it). Never touch `backend/`, `docs/`, `docker-compose.yml`, `.github/workflows/ci.yml`.
+2. Never log, print, or put in exception messages: tokens, passwords, emails, or the Authorization header. The existing debug interceptor must stay method/path/status/duration only. Add a test that proves the log line for a login request contains no body and no header.
+3. Presentation and domain never import `package:dio`, `flutter_secure_storage`, or `core/api/generated`. Extend `test/architecture/layer_imports_test.dart` to also forbid `flutter_secure_storage` there, and add a second test: no file outside `lib/core/api/generated/` imports `generated/export.dart`, `generated/rest_client.dart`, or `generated/clients/sync_client.dart` (those pull the excluded sync models and do not compile; K.5 hand-writes them).
+4. New packages only via `flutter pub add`. Allowed new runtime packages: `flutter_svg`, `shared_preferences`. Nothing else without asking. Report resolved versions.
+5. Network is slow on this machine: build/run for the emulator with `--target-platform android-x64` when a full build is not needed. Keep any network workaround out of the repo.
+6. Do not commit. The user commits after review.
+
+## 0. Preconditions
+- Backend running in WSL: `Invoke-RestMethod http://localhost:8000/api/v1/health` returns `status: ok`. Emulator listed by `flutter devices`.
+- `flutter analyze` and `flutter test` are green on the pulled code before you start (69 tests).
+
+## 1. Domain and data (#229, #230)
+```
+lib/features/auth/
+  domain/session.dart              // sealed SessionState: SessionUnknown, SignedOut, SignedIn(account: AccountInfo?)
+  domain/account_info.dart         // userId, email, createdAt, hasProfile (app model, not generated Account)
+  domain/auth_repository.dart      // abstract: register, login, logout, currentAccount, restore
+  data/token_store.dart            // abstract TokenStore + SecureTokenStore (flutter_secure_storage via core SecureStore)
+  data/auth_repository_impl.dart   // uses generated AuthClient + AccountClient; mappers generated->domain
+  data/auth_interceptor.dart       // QueuedInterceptor, section 2
+  presentation/session_controller.dart  // Notifier<SessionState>, the single owner of session state
+```
+- `TokenStore` keeps: access token, refresh token, access expiry (absolute UTC, computed as now + `expires_in` seconds at receipt), and cached `has_profile`. Keys prefixed `ng.auth.`. Secure storage is the only place tokens are persisted (#229). The access token is also held in memory to avoid a Keystore read per request.
+- If reading secure storage throws (Keystore can be invalidated after a device restore or lock-screen change), treat as signed out, delete all `ng.auth.` keys, and continue. Never crash on start.
+- Startup (`restore`): no refresh token -> `SignedOut`. Refresh token present -> `SignedIn` immediately using the cached `has_profile` (works offline), then in the background call `GET /api/v1/me` to refresh `AccountInfo`; a network failure keeps the session, a `TOKEN_REUSED` / `TOKEN_INVALID` outcome signs out (via the interceptor, section 2).
+- Register/login: on 200/201 save the token pair, then call `GET /api/v1/me`, cache `has_profile`, emit `SignedIn`. Trim the email and lowercase nothing else (the server owns normalization). Send it exactly as typed after trim.
+
+## 2. Auth interceptor (#230) — the core of this pass
+Implement as a `QueuedInterceptor` on the single app `Dio` (from `dioProvider`); the refresh call itself uses a **separate bare Dio** (same baseUrl/timeouts, debug log interceptor allowed, no auth interceptor) so a refresh can never recurse.
+1. Public paths get no Authorization header: `/api/v1/health`, `/api/v1/reference`, and everything under `/api/v1/auth/`. Every other `/api/v1/` path gets `Authorization: Bearer <access>`.
+2. Proactive refresh: if the access token expires within 60 seconds, refresh before sending.
+3. Reactive refresh: on 401 with `code == UNAUTHORIZED` for a non-public request, refresh, then retry the original request **once** with the new token (mark the retry in `RequestOptions.extra` so it is never retried twice).
+4. **Single flight:** concurrent requests that need a refresh share ONE in-flight refresh `Future`. Two parallel refreshes with the same refresh token would make the server see reuse and revoke the family (`TOKEN_REUSED`). Test this explicitly (section 7).
+5. Persist the new pair immediately after a successful refresh, before retrying anything (rotation: the old refresh token is now dead on the server).
+6. Refresh outcomes: success -> continue. `TOKEN_REUSED` or `TOKEN_INVALID` -> clear the token store, set session `SignedOut` with reason `sessionExpired`, fail the original request with that `ApiProblem`; never retry. `RATE_LIMITED`, network error, timeout, 5xx -> keep tokens and session, fail the original request with the mapped `AppFailure` (the user may just be offline).
+7. A 401 `TOKEN_REUSED` on any request (not only refresh) also signs out.
+8. `Accept-Language` header on every request from the current app locale (`ar` or `en`), set by a tiny interceptor or `BaseOptions.headers` updated when the locale changes. Not a generated parameter.
+9. The session controller is told about sign-out through a callback or a provider the interceptor can read; avoid a provider cycle (interceptor -> controller -> repository -> dio -> interceptor). Describe the wiring in the report.
+
+## 3. Logout (#231)
+- Local first: clear the token store and set `SignedOut` immediately, then call `POST /api/v1/auth/logout` with the old refresh token best-effort (ignore its result; do not block the UI on it). Logging out offline must work.
+- Clear only `ng.auth.` keys. The drift database has no user data yet; leave a `// K.5: clear user tables on logout` note at the single place where that will go.
+
+## 4. Errors (#224 extension)
+- Extend `ApiProblem` with `errors` (list of a small domain-safe `FieldIssue {List<Object> loc, String msg, String type}`) parsed from `ProblemDetail.errors`, and `reasons` (`List<String>?`). Keep `mapResponse` tolerant: unknown or malformed `errors` -> empty list, never a throw. Update `problem_detail_test.dart`.
+- New Arabic/English messages in both ARB files, used by `failureMessage`: `EMAIL_TAKEN` («هذا البريد مسجل مسبقًا. سجّل الدخول بدلًا من ذلك.»), `INVALID_CREDENTIALS` («البريد أو كلمة المرور غير صحيحة.» — one message for both, never say which one is wrong), `TOKEN_INVALID` and session expiry («انتهت الجلسة. سجّل الدخول من جديد.»), `RATE_LIMITED` with seconds when `retryAfter` is known («محاولات كثيرة. حاول بعد {seconds} ثانية.», ICU plural for Arabic).
+- `VALIDATION_ERROR` on register/login: map `loc` ending in `email` / `password` to that field's error text; anything else to the generic validation message.
+
+## 5. Screens and routing (#228, #232, #233, #234)
+Routes (go_router, all under the existing `routerProvider`):
+- `/splash` (shown while `SessionUnknown`; logo + soft progress; no network call blocks it longer than the token read).
+- `/welcome`: hero gradient from the theme tokens, three slides that auto-advance every 5 s and can be swiped (PageView; auto-advance stops when reduce-motion is on), dots, two buttons: «ابدأ رحلتك» -> `/register`, «لدي حساب» -> `/login`. Language pill top-left in RTL (top-right in LTR): «English» / «العربية». Slide texts:
+  1. «خطة تُبنى لك أنت» / «محرك ذكي يختار وجباتك من مطبخنا المحلي حسب جسمك وهدفك وما تحب.»
+  2. «تناسب يومك» / «مواعيد الوجبات والماء تُرتب حسب وقت استيقاظك ونومك.»
+  3. «ترى تقدمك» / «رسوم واضحة وتقرير أسبوعي وإنجازات تحفزك.»
+  English texts are in `prototype_v3/5_ui.js` `welcome()`.
+- `/register`: title «أنشئ حسابك», subtitle «دقيقة واحدة، ثم نبني خطتك», email, password with show/hide toggle, a live hint «٨ أحرف على الأقل» that turns to a check when length >= 8, button «إنشاء الحساب», footer «لديك حساب؟ سجّل دخولك».
+- `/login`: «أهلًا بعودتك» / «سجل دخولك لتكمل خطتك», email, password with show/hide, «دخول», footer «ليس لديك حساب؟ أنشئ حسابًا». No "forgot password" (the API has no reset; do not add a dead link).
+- `/onboarding` placeholder (K.2): «سنجهز خطتك هنا قريبًا» + logout button. `/home` placeholder (K.4): «أهلًا» + the account email + logout button. Both placeholders are clearly marked `// K.2` / `// K.4` and contain no fake data.
+- `/dev/server-check`: the K.0 screen, reachable only in debug builds (route not registered in release; a small debug-only button on `/welcome`).
+- Redirect: `SessionUnknown` -> `/splash`; `SignedOut` -> allowed only `/welcome`, `/register`, `/login` (default `/welcome`); `SignedIn` with `hasProfile == false` -> `/onboarding`; `SignedIn` with `hasProfile == true` -> `/home`. Router refreshes on session changes (`refreshListenable` bridged from the Notifier). When signed out because the session expired, `/login` shows a one-time banner with the session-expired message.
+
+Form rules (#232, NIST SP 800-63B rev 4):
+- Client validation mirrors the server and nothing more: email non-empty and matches `^[^@\s]+@[^@\s]+\.[^@\s]+$`; register password length 8..128; login password non-empty, max 128. No composition rules (no "must contain a digit/symbol").
+- Allow paste and password managers: wrap fields in `AutofillGroup`, `autofillHints` email / newPassword (register) / password (login), call `TextInput.finishAutofillContext()` on success.
+- Email field: `TextDirection.ltr`, `keyboardType: emailAddress`, `autocorrect: false`, `enableSuggestions: false`. Password: `obscureText` toggle with a semantic label, ltr.
+- While a request is running: button shows a spinner, fields and button disabled; prevent double submit. On error show the mapped message under the form (and field errors under the field); keep what the user typed except clear the password after `INVALID_CREDENTIALS`.
+- On `RATE_LIMITED` with `retryAfter`, disable the button with a countdown.
+
+Visuals (#233):
+- Illustrations are **Fluent Emoji Flat** (Microsoft, MIT). Do not download: write `mobile/tool/extract_emoji.dart` that reads `../docs/project/ui/prototype_v3/2_fe.js` (a JS object `const FE={name:"<svg body>",...}`), and writes each entry to `mobile/assets/emoji/<name>.svg` wrapped as `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">…</svg>`. Extract all entries (they are reused in later passes). Add `mobile/assets/emoji/LICENSE` with the MIT text and copyright line from github.com/microsoft/fluentui-emoji, and a line in `mobile/README.md` on regeneration. Render with `flutter_svg` through one widget `Emoji(name, size)` in `lib/core/ui/emoji.dart` with `excludeFromSemantics: true` (decorative).
+- Welcome uses: `seedling` (logo), `green-salad` on a plate with an orbit of `avocado, fish, broccoli, red-apple, bread, carrot, egg, lemon`, slide icons `brain`, `alarm-clock`, `chart-increasing`. Login and register use `waving-hand`.
+- Entrance animations: short fade+rise (stagger ~60 ms), orbit slow rotation; all disabled when `MediaQuery.disableAnimations` is true (use the existing `core/theme/motion.dart`).
+- RTL first; every screen also checked in English (LTR). Touch targets >= 48 dp. Text scales to 1.3 without overflow.
+
+## 6. Language switch (#235)
+- `localeProvider` (Notifier) with `ar` default, persisted in `shared_preferences` key `ng.locale` (not secret, so not secure storage). `App` reads it instead of the hard-coded `Locale('ar')`. The welcome pill toggles it; the Accept-Language header follows it (section 2.8).
+
+## 7. Tests (all must pass; no skips)
+- Interceptor, with a fake `HttpClientAdapter` (no real network):
+  - public paths have no Authorization header; protected paths have it;
+  - 401 UNAUTHORIZED -> one refresh -> retry succeeds; tokens persisted before retry;
+  - **three concurrent** 401s -> exactly one refresh call, all three retried and succeed;
+  - access expiring within 60 s -> proactive refresh before the request;
+  - refresh returns TOKEN_REUSED -> store cleared, session SignedOut(sessionExpired), no retry;
+  - refresh returns TOKEN_INVALID -> same;
+  - refresh fails with network error -> tokens kept, session kept, original fails with NetworkUnavailable;
+  - a retried request that gets 401 again is not retried a second time.
+- Token store: round trip; read error -> signed out and keys cleared (fake storage that throws).
+- Session restore: no token -> SignedOut; token + cached has_profile -> SignedIn without network; `/me` failure offline keeps session.
+- Router redirect table (all session states x target routes).
+- Widget tests (Arabic locale, in-memory fakes, no network): register validation messages; login success routes to onboarding or home by `has_profile`; `INVALID_CREDENTIALS` message and password cleared; `EMAIL_TAKEN` message; button disabled while loading; one RTL golden-free layout test at text scale 1.3 with no overflow.
+- Error mapping: `errors` and `reasons` parsing incl. malformed input; RATE_LIMITED message with seconds.
+- Architecture tests from hard rule 3. Log test from hard rule 2.
+
+## 8. Manual run on the emulator (backend in WSL)
+Run `flutter run --target-platform android-x64` and walk through, then report each as pass/fail:
+1. Fresh install -> Welcome (Arabic, RTL); switch to English and back.
+2. Register a new email -> lands on the onboarding placeholder.
+3. Close the app fully and reopen -> still signed in, no login screen.
+4. Logout -> Welcome. Login with the same account -> onboarding placeholder.
+5. Wrong password -> one generic message, password cleared.
+6. Register with the same email again -> "already registered" message.
+7. Stop the backend, reopen the app -> still signed in (offline start). Start the backend again.
+8. Screenshots saved under `mobile/docs/screenshots/`: `k1_welcome_ar.png`, `k1_welcome_en.png`, `k1_register_error.png`, `k1_login.png`, `k1_onboarding_placeholder.png`.
+
+## Checks before you report
+From `mobile/`: `bash tool/regenerate_api.sh` (or the PowerShell equivalent) leaves no diff; `dart format --output=none --set-exit-if-changed` on non-generated code; `flutter analyze` clean; `flutter test` all green; `flutter build apk --debug --target-platform android-x64` succeeds.
+
+## Report back
+1. Files created/changed (tree, excluding generated and `build/`), new packages with versions.
+2. How the interceptor, single-flight refresh, and sign-out callback are wired (short, with file paths), and how the provider cycle was avoided.
+3. Test counts (before/after), and the list of new test names.
+4. Manual run results 1-7 and the screenshot paths.
+5. Any contradiction found between API_GUIDE.md, openapi.json, and this file; any assumption you made. One line each, with the section number.
