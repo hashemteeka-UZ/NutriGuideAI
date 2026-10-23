@@ -1,0 +1,51 @@
+{
+  "@@locale": "ar",
+  "appTitle": "NutriGuide",
+  "@appTitle": {
+    "description": "Application name shown in the interface."
+  },
+  "serverCheckLoading": "جارٍ التحقق من الخادم",
+  "@serverCheckLoading": {
+    "description": "Accessibility label while the health check is running."
+  },
+  "serverCheckConnected": "الخادم متصل",
+  "@serverCheckConnected": {
+    "description": "Shown when GET /api/v1/health succeeds on a compatible API."
+  },
+  "serverCheckNeedsUpdate": "التطبيق يحتاج تحديثًا",
+  "@serverCheckNeedsUpdate": {
+    "description": "Shown when the server API major version is not 1."
+  },
+  "serverCheckRetry": "إعادة المحاولة",
+  "@serverCheckRetry": {
+    "description": "Button that repeats the health check."
+  },
+  "serverCheckApiVersionLabel": "إصدار الواجهة",
+  "@serverCheckApiVersionLabel": {
+    "description": "Label for the API version value."
+  },
+  "serverCheckDatasetVersionLabel": "إصدار الكتالوج",
+  "@serverCheckDatasetVersionLabel": {
+    "description": "Label for the catalog dataset version."
+  },
+  "serverCheckPlannerLabel": "المخطّط",
+  "@serverCheckPlannerLabel": {
+    "description": "Label for the default planner name."
+  },
+  "serverCheckUnknownValue": "غير معروف",
+  "@serverCheckUnknownValue": {
+    "description": "Placeholder when a health field is null."
+  },
+  "failureRateLimited": "طلبات كثيرة. حاول بعد قليل.",
+  "failurePlannerBusy": "المخطّط مشغول الآن. حاول بعد قليل.",
+  "failurePlannerTimeout": "تعذر بناء الخطة الآن. حاول مرة أخرى.",
+  "failureUnauthorized": "انتهت الجلسة. سجّل الدخول من جديد.",
+  "failureTokenReused": "انتهت الجلسة لأسباب أمنية. سجّل الدخول من جديد.",
+  "failureValidation": "بعض البيانات غير صالحة.",
+  "failureServiceUnavailable": "الخدمة غير متاحة الآن. حاول لاحقًا.",
+  "failureInternal": "حدث خطأ في الخادم. حاول لاحقًا.",
+  "failureNetwork": "لا يوجد اتصال بالخادم.",
+  "failureTimeout": "انتهت مهلة الاتصال بالخادم.",
+  "failureUnexpectedResponse": "تعذر قراءة رد الخادم.",
+  "failureGeneric": "حدث خطأ غير متوقع."
+}
