@@ -11,6 +11,9 @@ void main() {
     '/login',
     '/onboarding',
     '/home',
+    '/meals',
+    '/meals/favourites',
+    '/meals/12',
     '/dev/server-check',
     '/elsewhere',
   ];
@@ -57,11 +60,20 @@ String? _expected(
   return switch (session) {
     SessionUnknown() => location == '/splash' ? null : '/splash',
     SignedOut(:final reason) => _signedOut(location, reason),
-    SignedIn(:final hasProfile) =>
-      location == (hasProfile ? '/home' : '/onboarding')
-          ? null
-          : (hasProfile ? '/home' : '/onboarding'),
+    SignedIn(:final hasProfile) => _signedIn(location, hasProfile),
   };
+}
+
+String? _signedIn(String location, bool hasProfile) {
+  if (!hasProfile) {
+    return location == '/onboarding' ? null : '/onboarding';
+  }
+  if (location == '/home' ||
+      location == '/meals' ||
+      location.startsWith('/meals/')) {
+    return null;
+  }
+  return '/home';
 }
 
 String? _signedOut(String location, SignOutReason? reason) {

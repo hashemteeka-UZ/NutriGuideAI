@@ -6,6 +6,7 @@ import '../core/l10n/app_localizations.dart';
 import '../core/locale/locale_controller.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/data/auth_interceptor.dart';
+import '../features/catalog/presentation/catalog_lifecycle.dart';
 import 'router.dart';
 
 class App extends ConsumerWidget {
@@ -16,6 +17,7 @@ class App extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
     ref.watch(authInterceptorProvider);
+    ref.watch(catalogLifecycleProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,

@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/locale/locale_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../auth/domain/session.dart';
 import '../../auth/presentation/session_controller.dart';
@@ -18,6 +20,7 @@ class HomePlaceholderScreen extends ConsumerWidget {
     final colors = context.appColors;
     final session = ref.watch(sessionControllerProvider);
     final email = session is SignedIn ? session.account?.email : null;
+    final arabic = Localizations.localeOf(context).languageCode == 'ar';
     return Scaffold(
       backgroundColor: colors.bg,
       body: SafeArea(
@@ -41,6 +44,22 @@ class HomePlaceholderScreen extends ConsumerWidget {
               ),
             ],
             const SizedBox(height: 24),
+            FilledButton(
+              key: const Key('browse-meals'),
+              style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
+              onPressed: () => context.push('/meals'),
+              child: Text(l10n.browseMeals),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              key: const Key('home-language'),
+              style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+              onPressed: () {
+                unawaited(ref.read(localeProvider.notifier).toggle());
+              },
+              child: Text(arabic ? 'English' : 'العربية'),
+            ),
+            const SizedBox(height: 12),
             _LogoutButton(label: l10n.logout),
           ],
         ),

@@ -61,7 +61,9 @@ class LocaleController extends Notifier<Locale> {
     if (!ref.mounted) {
       return;
     }
-    state = locale;
+    // Listeners read this code while handling the locale change. It has to
+    // move first, or a catalog reload still queries the previous language.
     ref.read(localeCodeProvider).code = locale.languageCode;
+    state = locale;
   }
 }

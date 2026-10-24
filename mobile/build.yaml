@@ -1,12 +1,9 @@
 targets:
   $default:
     builders:
-      json_serializable:
-        generate_for:
-          include:
-            - lib/**
-          exclude:
-            - lib/core/api/generated/models/sync_batch_operations_sealed.dart
-            - lib/core/api/generated/models/sync_consumption_create.dart
+      drift_dev:
         options:
-          explicit_to_json: true
+          databases:
+            app_database: lib/core/db/app_database.dart
+          schema_dir: drift_schemas/
+          test_dir: test/drift/

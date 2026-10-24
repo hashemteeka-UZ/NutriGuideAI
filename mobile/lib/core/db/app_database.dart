@@ -1,32 +1,41 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+
+import 'tables.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase()
+@DriftDatabase(
+  tables: <Type>[
+    CatalogMeta,
+    Meals,
+    MealTags,
+    MealAllergens,
+    MealIngredients,
+    MealNutrients,
+    MealSteps,
+    Cuisines,
+    LocalMealPrefs,
+    UserAllergens,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
-}
+  int get schemaVersion => 2;
 
-final appDatabaseProvider = Provider<AppDatabase>((ref) {
-  final database = AppDatabase(
-    LazyDatabase(() async {
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File(p.join(directory.path, 'nutriguide.sqlite'));
-      return NativeDatabase.createInBackground(file);
-    }),
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.createAll();
+      }
+    },
+    beforeOpen: (OpeningDetails details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
   );
-  ref.onDispose(() {
-    unawaited(database.close());
-  });
-  return database;
-});
+}

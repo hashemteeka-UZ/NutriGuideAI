@@ -12,6 +12,17 @@ flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
 
 `10.0.2.2` is the emulator's alias for the host. The debug build allows cleartext HTTP only for `10.0.2.2` and `localhost`. Release builds do not. If `API_BASE_URL` is omitted, the app uses `http://10.0.2.2:8000`.
 
+## Emulator and a backend inside WSL
+
+`10.0.2.2` does not reach an API that is listening only inside WSL. Forward the emulator's port to the Windows host, then point the app at `localhost`, which the debug build already allows:
+
+```powershell
+adb reverse tcp:8000 tcp:8000
+flutter run -d emulator-5554 --dart-define=API_BASE_URL=http://localhost:8000
+```
+
+Use this when `Invoke-RestMethod http://localhost:8000/api/v1/health` succeeds on Windows but the emulator still cannot open `10.0.2.2:8000`. Run `adb reverse` again after the emulator restarts.
+
 ## Regenerate the API client
 
 From `mobile/`, after `docs/api/openapi.json` changes:

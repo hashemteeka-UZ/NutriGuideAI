@@ -6,6 +6,7 @@ import 'package:nutriguide/core/locale/locale_controller.dart';
 import 'package:nutriguide/features/auth/data/auth_repository_impl.dart';
 import 'package:nutriguide/features/auth/data/token_store.dart';
 import 'package:nutriguide/features/auth/domain/auth_repository.dart';
+import 'package:nutriguide/features/catalog/data/catalog_sync.dart';
 import 'package:nutriguide/features/profile/data/device_timezone.dart';
 import 'package:nutriguide/features/profile/data/profile_repository.dart';
 import 'package:nutriguide/features/profile/domain/profile_repository.dart';
@@ -55,6 +56,7 @@ Future<void> pumpNutriguide(
         profileRepositoryProvider.overrideWithValue(
           profile ?? FakeProfileRepository(),
         ),
+        catalogSyncProvider.overrideWithValue(const NoopCatalogSync()),
         timezoneSourceProvider.overrideWithValue(FakeTimezone('Asia/Riyadh')),
         onboardingNowProvider.overrideWithValue(
           now ?? () => DateTime.utc(2026, 10, 24),

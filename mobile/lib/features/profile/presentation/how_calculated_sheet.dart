@@ -115,7 +115,7 @@ class _Line extends StatelessWidget {
       case CalcLineKind.activity:
         final factor = line.secondary == null
             ? '—'
-            : formatCount(context, line.secondary!, fractionDigits: 2);
+            : formatCount(context, line.secondary!, fractionDigits: 3);
         return (
           title: l10n.onbHowActivityTitle,
           body: l10n.onbHowActivityBody(factor),

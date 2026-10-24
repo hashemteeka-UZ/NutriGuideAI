@@ -14,6 +14,7 @@ import '../../../core/api/generated/models/login_request.dart';
 import '../../../core/api/generated/models/refresh_request.dart';
 import '../../../core/api/generated/models/register_request.dart';
 import '../../../core/api/generated/models/token_pair.dart';
+import '../../../core/db/personal_data.dart';
 import '../../../core/network/app_failure.dart';
 import '../domain/account_info.dart';
 import '../domain/auth_repository.dart';
@@ -25,15 +26,18 @@ final class AuthRepositoryImpl implements AuthRepository {
     required AuthClient auth,
     required AccountClient account,
     required TokenStore tokens,
+    PersonalDataStore? personal,
     DateTime Function()? now,
   }) : _auth = auth,
        _account = account,
        _tokens = tokens,
+       _personal = personal,
        _now = now ?? DateTime.now;
 
   final AuthClient _auth;
   final AccountClient _account;
   final TokenStore _tokens;
+  final PersonalDataStore? _personal;
   final DateTime Function() _now;
 
   @override
@@ -62,6 +66,7 @@ final class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> logout() async {
     final refresh = _tokens.current?.refreshToken;
+    await _personal?.clear();
     await _tokens.clear();
     if (refresh == null || refresh.isEmpty) {
       return;
@@ -79,6 +84,7 @@ final class AuthRepositoryImpl implements AuthRepository {
     try {
       final account = accountInfoFrom(await _account.getMe());
       await _tokens.updateHasProfile(account.hasProfile);
+      await _personal?.claim(account.userId);
       return account;
     } on DioException catch (error) {
       throw mapDioException(error);
@@ -157,5 +163,6 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
     auth: ref.watch(authClientProvider),
     account: ref.watch(accountClientProvider),
     tokens: ref.watch(tokenStoreProvider),
+    personal: ref.watch(personalDataStoreProvider),
   );
 });

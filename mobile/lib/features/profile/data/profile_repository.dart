@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/generated/models/profile_state.dart';
 import '../../../core/api/generated/models/targets_view.dart';
+import '../../../core/db/personal_data.dart';
 import '../../../core/network/app_failure.dart';
 import '../../../core/network/dio_provider.dart';
 import '../domain/profile_draft.dart';
@@ -12,9 +13,10 @@ import 'profile_mapper.dart';
 import 'profile_update_body.dart';
 
 final class ProfileRepositoryImpl implements ProfileRepository {
-  ProfileRepositoryImpl(this._api);
+  ProfileRepositoryImpl(this._api, {this.onSaved});
 
   final ProfileApi _api;
+  final Future<void> Function(Map<String, String> allergens)? onSaved;
 
   @override
   Future<ProfileSaveOutcome> save(
@@ -24,6 +26,7 @@ final class ProfileRepositoryImpl implements ProfileRepository {
     try {
       final state = await _put(profileUpdateBody(draft, timezone: timezone));
       final targets = await _targets();
+      await onSaved?.call(draft.allergens);
       return ProfileSaveOutcome(
         result: mapProfileResult(state, targets),
         usedUtcFallback: false,
@@ -38,6 +41,7 @@ final class ProfileRepositoryImpl implements ProfileRepository {
       }
       final state = await _put(profileUpdateBody(draft, timezone: 'UTC'));
       final targets = await _targets();
+      await onSaved?.call(draft.allergens);
       return ProfileSaveOutcome(
         result: mapProfileResult(state, targets),
         usedUtcFallback: true,
@@ -63,5 +67,14 @@ final class ProfileRepositoryImpl implements ProfileRepository {
 }
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return ProfileRepositoryImpl(DioProfileApi(ref.watch(dioProvider)));
+  final personal = ref.watch(personalDataStoreProvider);
+  return ProfileRepositoryImpl(
+    DioProfileApi(ref.watch(dioProvider)),
+    onSaved: (Map<String, String> allergens) {
+      return personal.replaceAllergens([
+        for (final entry in allergens.entries)
+          (code: entry.key, severity: entry.value),
+      ]);
+    },
+  );
 });

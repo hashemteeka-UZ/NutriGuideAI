@@ -125,7 +125,6 @@ final class SecureTokenStore implements TokenStore {
 
   @override
   Future<void> clear() async {
-    // K.5: clear user tables on logout
     _memory = null;
     _loaded = true;
     await _deleteKeys();

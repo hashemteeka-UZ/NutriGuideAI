@@ -1,0 +1,851 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": false
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "catalog_meta",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "etag",
+            "getter_name": "etag",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "dataset_version",
+            "getter_name": "datasetVersion",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal_count",
+            "getter_name": "mealCount",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fetched_at",
+            "getter_name": "fetchedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "lang"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "meals",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal_id",
+            "getter_name": "mealId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "search_key",
+            "getter_name": "searchKey",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "cuisine",
+            "getter_name": "cuisine",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "dish_form",
+            "getter_name": "dishForm",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "serving_grams",
+            "getter_name": "servingGrams",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "servings",
+            "getter_name": "servings",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "total_grams",
+            "getter_name": "totalGrams",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kcal",
+            "getter_name": "kcal",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "protein_g",
+            "getter_name": "proteinG",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "carb_g",
+            "getter_name": "carbG",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fat_g",
+            "getter_name": "fatG",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source",
+            "getter_name": "source",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "dataset_version",
+            "getter_name": "datasetVersion",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "lang",
+          "meal_id"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "meal_tags",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal_id",
+            "getter_name": "mealId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "tag",
+            "getter_name": "tag",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "lang",
+          "meal_id",
+          "tag"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "meal_allergens",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal_id",
+            "getter_name": "mealId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "code",
+            "getter_name": "code",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "lang",
+          "meal_id",
+          "code"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "meal_ingredients",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal_id",
+            "getter_name": "mealId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ingredient_id",
+            "getter_name": "ingredientId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "grams_per_serving",
+            "getter_name": "gramsPerServing",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_optional",
+            "getter_name": "isOptional",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_optional\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_optional\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "lang",
+          "meal_id",
+          "position"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "meal_nutrients",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal_id",
+            "getter_name": "mealId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "code",
+            "getter_name": "code",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "unit",
+            "getter_name": "unit",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "per_100g",
+            "getter_name": "per100g",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "per_serving",
+            "getter_name": "perServing",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "lang",
+          "meal_id",
+          "code"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "meal_steps",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal_id",
+            "getter_name": "mealId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "text",
+            "getter_name": "stepText",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "lang",
+          "meal_id",
+          "position"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "cuisines",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lang",
+            "getter_name": "lang",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "code",
+            "getter_name": "code",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "lang",
+          "code"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "meal_prefs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "meal_id",
+            "getter_name": "mealId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "stance",
+            "getter_name": "stance",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "meal_id"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "user_allergens",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "code",
+            "getter_name": "code",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "severity",
+            "getter_name": "severity",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "code"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "references": [
+        1
+      ],
+      "type": "index",
+      "data": {
+        "on": 1,
+        "name": "meals_lang_search_key",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "lang",
+            "order_by": null
+          },
+          {
+            "column": "search_key",
+            "order_by": null
+          }
+        ]
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "catalog_meta",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"catalog_meta\" (\"lang\" TEXT NOT NULL, \"etag\" TEXT NOT NULL, \"dataset_version\" TEXT NOT NULL, \"meal_count\" INTEGER NOT NULL, \"fetched_at\" INTEGER NOT NULL, PRIMARY KEY (\"lang\"));"
+        }
+      ]
+    },
+    {
+      "name": "meals",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meals\" (\"lang\" TEXT NOT NULL, \"meal_id\" INTEGER NOT NULL, \"name\" TEXT NOT NULL, \"search_key\" TEXT NOT NULL, \"cuisine\" TEXT NULL, \"dish_form\" TEXT NULL, \"serving_grams\" REAL NOT NULL, \"servings\" INTEGER NOT NULL, \"total_grams\" REAL NOT NULL, \"kcal\" REAL NOT NULL, \"protein_g\" REAL NOT NULL, \"carb_g\" REAL NOT NULL, \"fat_g\" REAL NOT NULL, \"source\" TEXT NOT NULL, \"dataset_version\" TEXT NOT NULL, PRIMARY KEY (\"lang\", \"meal_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "meal_tags",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meal_tags\" (\"lang\" TEXT NOT NULL, \"meal_id\" INTEGER NOT NULL, \"tag\" TEXT NOT NULL, PRIMARY KEY (\"lang\", \"meal_id\", \"tag\"), FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "meal_allergens",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meal_allergens\" (\"lang\" TEXT NOT NULL, \"meal_id\" INTEGER NOT NULL, \"code\" TEXT NOT NULL, PRIMARY KEY (\"lang\", \"meal_id\", \"code\"), FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "meal_ingredients",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meal_ingredients\" (\"lang\" TEXT NOT NULL, \"meal_id\" INTEGER NOT NULL, \"position\" INTEGER NOT NULL, \"ingredient_id\" INTEGER NOT NULL, \"name\" TEXT NOT NULL, \"grams_per_serving\" REAL NOT NULL, \"is_optional\" INTEGER NOT NULL CHECK (\"is_optional\" IN (0, 1)), PRIMARY KEY (\"lang\", \"meal_id\", \"position\"), FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "meal_nutrients",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meal_nutrients\" (\"lang\" TEXT NOT NULL, \"meal_id\" INTEGER NOT NULL, \"code\" TEXT NOT NULL, \"unit\" TEXT NOT NULL, \"per_100g\" REAL NULL, \"per_serving\" REAL NULL, PRIMARY KEY (\"lang\", \"meal_id\", \"code\"), FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "meal_steps",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meal_steps\" (\"lang\" TEXT NOT NULL, \"meal_id\" INTEGER NOT NULL, \"position\" INTEGER NOT NULL, \"text\" TEXT NOT NULL, PRIMARY KEY (\"lang\", \"meal_id\", \"position\"), FOREIGN KEY(lang, meal_id) REFERENCES meals(lang, meal_id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "cuisines",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"cuisines\" (\"lang\" TEXT NOT NULL, \"code\" TEXT NOT NULL, \"name\" TEXT NOT NULL, PRIMARY KEY (\"lang\", \"code\"));"
+        }
+      ]
+    },
+    {
+      "name": "meal_prefs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meal_prefs\" (\"meal_id\" INTEGER NOT NULL, \"stance\" TEXT NOT NULL, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"meal_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "user_allergens",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"user_allergens\" (\"code\" TEXT NOT NULL, \"severity\" TEXT NOT NULL, PRIMARY KEY (\"code\"));"
+        }
+      ]
+    },
+    {
+      "name": "meals_lang_search_key",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX meals_lang_search_key ON meals (lang, search_key)"
+        }
+      ]
+    }
+  ]
+}

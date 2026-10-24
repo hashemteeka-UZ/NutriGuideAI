@@ -4,13 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_provider.dart';
 import '../../../core/api/generated/clients/reference_client.dart';
 import '../../../core/api/generated/models/reference.dart';
+import '../../../core/db/app_database.dart';
+import '../../../core/db/database_provider.dart';
 import '../../../core/network/app_failure.dart';
+import '../../catalog/data/catalog_mapper.dart';
 import '../domain/reference_data.dart';
 
 final class ReferenceRepositoryImpl implements ReferenceRepository {
-  ReferenceRepositoryImpl(this._client);
+  ReferenceRepositoryImpl(this._client, this._database);
 
   final ReferenceClient _client;
+  final AppDatabase _database;
   ReferenceData? _cached;
   String? _locale;
 
@@ -21,7 +25,16 @@ final class ReferenceRepositoryImpl implements ReferenceRepository {
       return cached;
     }
     try {
-      final data = mapReference(await _client.getReference());
+      final raw = await _client.getReference();
+      await replaceCuisines(
+        _database,
+        lang: locale,
+        rows: <({String code, String name})>[
+          for (final cuisine in raw.cuisines)
+            (code: cuisine.code, name: cuisine.name),
+        ],
+      );
+      final data = mapReference(raw);
       _cached = data;
       _locale = locale;
       return data;
@@ -62,5 +75,8 @@ ReferenceData mapReference(Reference raw) {
 }
 
 final referenceRepositoryProvider = Provider<ReferenceRepository>((ref) {
-  return ReferenceRepositoryImpl(ref.watch(referenceClientProvider));
+  return ReferenceRepositoryImpl(
+    ref.watch(referenceClientProvider),
+    ref.watch(appDatabaseProvider),
+  );
 });

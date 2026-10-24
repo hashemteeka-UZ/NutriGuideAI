@@ -24,6 +24,7 @@ String failureMessage(AppLocalizations l10n, AppFailure failure) {
       'INVALID_TIMEZONE' => l10n.failureInvalidTimezone,
       'UNKNOWN_CODE' => l10n.failureUnknownCode,
       'PROFILE_NOT_FOUND' => l10n.failureProfileNotFound,
+      'MEAL_NOT_FOUND' => l10n.failureMealNotFound,
       'SERVICE_UNAVAILABLE' => l10n.failureServiceUnavailable,
       'INTERNAL_ERROR' => l10n.failureInternal,
       _ => l10n.failureGeneric,

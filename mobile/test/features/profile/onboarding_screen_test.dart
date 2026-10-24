@@ -63,7 +63,7 @@ void main() {
 
       final factor = NumberFormat.decimalPatternDigits(
         locale: 'ar',
-        decimalDigits: 2,
+        decimalDigits: 3,
       ).format(2325 / 1500);
       expect(find.textContaining(factor), findsWidgets);
       expect(find.byKey(const Key('calc-resting')), findsOneWidget);

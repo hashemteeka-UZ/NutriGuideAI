@@ -476,6 +476,12 @@ abstract class AppLocalizations {
   /// **'الملف غير موجود.'**
   String get failureProfileNotFound;
 
+  /// No description provided for @failureMealNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذه الوجبة لم تعد في الكتالوج.'**
+  String get failureMealNotFound;
+
   /// No description provided for @onbContinue.
   ///
   /// In ar, this message translates to:
@@ -1333,6 +1339,342 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت UTC.'**
   String get onbTimezoneNote;
+
+  /// No description provided for @browseMeals.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفح الوجبات'**
+  String get browseMeals;
+
+  /// No description provided for @mealSearchHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن وجبة'**
+  String get mealSearchHint;
+
+  /// No description provided for @mealSlotAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get mealSlotAll;
+
+  /// No description provided for @mealSlotBreakfast.
+  ///
+  /// In ar, this message translates to:
+  /// **'فطور'**
+  String get mealSlotBreakfast;
+
+  /// No description provided for @mealSlotLunch.
+  ///
+  /// In ar, this message translates to:
+  /// **'غداء'**
+  String get mealSlotLunch;
+
+  /// No description provided for @mealSlotDinner.
+  ///
+  /// In ar, this message translates to:
+  /// **'عشاء'**
+  String get mealSlotDinner;
+
+  /// No description provided for @mealSlotSnack.
+  ///
+  /// In ar, this message translates to:
+  /// **'خفيفة'**
+  String get mealSlotSnack;
+
+  /// No description provided for @mealHideAvoided.
+  ///
+  /// In ar, this message translates to:
+  /// **'إخفاء ما يحتوي على ما أتجنبه'**
+  String get mealHideAvoided;
+
+  /// No description provided for @mealFooter.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} وجبة · آخر تحديث {updated}'**
+  String mealFooter(int count, String updated);
+
+  /// No description provided for @mealOfflineEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحتاج اتصالًا مرة واحدة لتحميل الوجبات، ثم تعمل دون إنترنت'**
+  String get mealOfflineEmpty;
+
+  /// No description provided for @mealNoResults.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد وجبات بهذا الاسم'**
+  String get mealNoResults;
+
+  /// No description provided for @mealClearFilters.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسح التصفية'**
+  String get mealClearFilters;
+
+  /// No description provided for @mealRetry.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get mealRetry;
+
+  /// No description provided for @mealKcal.
+  ///
+  /// In ar, this message translates to:
+  /// **'{kcal} سعرة'**
+  String mealKcal(String kcal);
+
+  /// No description provided for @mealProtein.
+  ///
+  /// In ar, this message translates to:
+  /// **'{grams} غ بروتين'**
+  String mealProtein(String grams);
+
+  /// No description provided for @mealServing.
+  ///
+  /// In ar, this message translates to:
+  /// **'{grams} غ'**
+  String mealServing(String grams);
+
+  /// No description provided for @mealAllergenBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحتوي على ما تتجنبه'**
+  String get mealAllergenBadge;
+
+  /// No description provided for @mealAllergenWarning.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحتوي على {names} مما سجلت أنك تتجنبه'**
+  String mealAllergenWarning(String names);
+
+  /// No description provided for @mealMacroKcal.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعرة'**
+  String get mealMacroKcal;
+
+  /// No description provided for @mealSodium.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصوديوم (الملح)'**
+  String get mealSodium;
+
+  /// No description provided for @mealSaturatedFat.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدهون المشبعة'**
+  String get mealSaturatedFat;
+
+  /// No description provided for @mealFacts.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيم الغذائية كاملة'**
+  String get mealFacts;
+
+  /// No description provided for @mealIngredients.
+  ///
+  /// In ar, this message translates to:
+  /// **'المكونات'**
+  String get mealIngredients;
+
+  /// No description provided for @mealOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختياري'**
+  String get mealOptional;
+
+  /// No description provided for @mealSteps.
+  ///
+  /// In ar, this message translates to:
+  /// **'التحضير'**
+  String get mealSteps;
+
+  /// No description provided for @mealStepsSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطوات التحضير ستضاف قريبًا'**
+  String get mealStepsSoon;
+
+  /// No description provided for @mealDislike.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا أحب هذه الوجبة، لا تقترحها مجددًا'**
+  String get mealDislike;
+
+  /// No description provided for @mealDislikeUndo.
+  ///
+  /// In ar, this message translates to:
+  /// **'لن نقترحها مجددًا · تراجع'**
+  String get mealDislikeUndo;
+
+  /// No description provided for @mealFavourite.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفضلة'**
+  String get mealFavourite;
+
+  /// No description provided for @mealPrefSaveFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر الحفظ، تحقق من الاتصال'**
+  String get mealPrefSaveFailed;
+
+  /// No description provided for @mealFavouritesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجباتي المفضلة'**
+  String get mealFavouritesTitle;
+
+  /// No description provided for @mealFavouritesHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'يقترحها المحرك أكثر في خطتك'**
+  String get mealFavouritesHint;
+
+  /// No description provided for @mealDislikesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا أحبها'**
+  String get mealDislikesTitle;
+
+  /// No description provided for @mealDislikesHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'لن تظهر في خطتك'**
+  String get mealDislikesHint;
+
+  /// No description provided for @mealFavouritesEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد بعد. اضغط القلب في أي وجبة.'**
+  String get mealFavouritesEmpty;
+
+  /// No description provided for @mealDislikesEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد.'**
+  String get mealDislikesEmpty;
+
+  /// No description provided for @mealRemove.
+  ///
+  /// In ar, this message translates to:
+  /// **'إزالة'**
+  String get mealRemove;
+
+  /// No description provided for @mealMg.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملغ'**
+  String get mealMg;
+
+  /// No description provided for @nutrientEnergy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطاقة'**
+  String get nutrientEnergy;
+
+  /// No description provided for @nutrientProtein.
+  ///
+  /// In ar, this message translates to:
+  /// **'بروتين'**
+  String get nutrientProtein;
+
+  /// No description provided for @nutrientCarbs.
+  ///
+  /// In ar, this message translates to:
+  /// **'كربوهيدرات'**
+  String get nutrientCarbs;
+
+  /// No description provided for @nutrientFat.
+  ///
+  /// In ar, this message translates to:
+  /// **'دهون'**
+  String get nutrientFat;
+
+  /// No description provided for @nutrientFiber.
+  ///
+  /// In ar, this message translates to:
+  /// **'ألياف'**
+  String get nutrientFiber;
+
+  /// No description provided for @nutrientSugars.
+  ///
+  /// In ar, this message translates to:
+  /// **'سكريات'**
+  String get nutrientSugars;
+
+  /// No description provided for @nutrientSaturatedFat.
+  ///
+  /// In ar, this message translates to:
+  /// **'دهون مشبعة'**
+  String get nutrientSaturatedFat;
+
+  /// No description provided for @nutrientCholesterol.
+  ///
+  /// In ar, this message translates to:
+  /// **'كوليسترول'**
+  String get nutrientCholesterol;
+
+  /// No description provided for @nutrientSodium.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوديوم'**
+  String get nutrientSodium;
+
+  /// No description provided for @nutrientPotassium.
+  ///
+  /// In ar, this message translates to:
+  /// **'بوتاسيوم'**
+  String get nutrientPotassium;
+
+  /// No description provided for @allergenGluten.
+  ///
+  /// In ar, this message translates to:
+  /// **'الغلوتين'**
+  String get allergenGluten;
+
+  /// No description provided for @allergenMilk.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحليب'**
+  String get allergenMilk;
+
+  /// No description provided for @allergenEgg.
+  ///
+  /// In ar, this message translates to:
+  /// **'البيض'**
+  String get allergenEgg;
+
+  /// No description provided for @allergenFish.
+  ///
+  /// In ar, this message translates to:
+  /// **'السمك'**
+  String get allergenFish;
+
+  /// No description provided for @allergenPeanut.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفول السوداني'**
+  String get allergenPeanut;
+
+  /// No description provided for @allergenTreeNuts.
+  ///
+  /// In ar, this message translates to:
+  /// **'المكسرات'**
+  String get allergenTreeNuts;
+
+  /// No description provided for @allergenSesame.
+  ///
+  /// In ar, this message translates to:
+  /// **'السمسم'**
+  String get allergenSesame;
+
+  /// No description provided for @allergenSoy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصويا'**
+  String get allergenSoy;
 }
 
 class _AppLocalizationsDelegate

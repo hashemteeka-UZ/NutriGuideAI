@@ -62,7 +62,11 @@ final class AuthInterceptor extends QueuedInterceptor {
     RequestInterceptorHandler handler,
   ) async {
     try {
-      options.headers['Accept-Language'] = _locale.code;
+      // A caller that names a language (the catalog snapshot) keeps it.
+      // Overwriting it would store one language's body under the other.
+      if (!options.headers.containsKey('Accept-Language')) {
+        options.headers['Accept-Language'] = _locale.code;
+      }
       if (isPublicApiPath(options.uri.path)) {
         options.headers.remove('Authorization');
         handler.next(options);
@@ -204,7 +208,7 @@ final class AuthInterceptor extends QueuedInterceptor {
     if (access != null && access.isNotEmpty) {
       headers['Authorization'] = 'Bearer $access';
     }
-    headers['Accept-Language'] = _locale.code;
+    headers.putIfAbsent('Accept-Language', () => _locale.code);
     final extra = Map<String, dynamic>.of(options.extra)
       ..[authRetriedExtraKey] = true;
     final request = options.copyWith(headers: headers, extra: extra);

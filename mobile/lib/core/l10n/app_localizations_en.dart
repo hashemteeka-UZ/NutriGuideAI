@@ -216,6 +216,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failureProfileNotFound => 'The profile was not found.';
 
   @override
+  String get failureMealNotFound => 'This meal is no longer in the catalog.';
+
+  @override
   String get onbContinue => 'Continue';
 
   @override
@@ -763,4 +766,183 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onbTimezoneNote =>
       'The device timezone was not accepted, so the profile was saved with UTC.';
+
+  @override
+  String get browseMeals => 'Browse meals';
+
+  @override
+  String get mealSearchHint => 'Search meals';
+
+  @override
+  String get mealSlotAll => 'All';
+
+  @override
+  String get mealSlotBreakfast => 'Breakfast';
+
+  @override
+  String get mealSlotLunch => 'Lunch';
+
+  @override
+  String get mealSlotDinner => 'Dinner';
+
+  @override
+  String get mealSlotSnack => 'Snack';
+
+  @override
+  String get mealHideAvoided => 'Hide meals with something I avoid';
+
+  @override
+  String mealFooter(int count, String updated) {
+    return '$count meals · updated $updated';
+  }
+
+  @override
+  String get mealOfflineEmpty =>
+      'We need a connection once to download meals, then they work offline';
+
+  @override
+  String get mealNoResults => 'No meals with this name';
+
+  @override
+  String get mealClearFilters => 'Clear filters';
+
+  @override
+  String get mealRetry => 'Try again';
+
+  @override
+  String mealKcal(String kcal) {
+    return '$kcal kcal';
+  }
+
+  @override
+  String mealProtein(String grams) {
+    return '$grams g protein';
+  }
+
+  @override
+  String mealServing(String grams) {
+    return '$grams g';
+  }
+
+  @override
+  String get mealAllergenBadge => 'Contains something you avoid';
+
+  @override
+  String mealAllergenWarning(String names) {
+    return 'Contains $names, which you said you avoid';
+  }
+
+  @override
+  String get mealMacroKcal => 'kcal';
+
+  @override
+  String get mealSodium => 'Sodium (salt)';
+
+  @override
+  String get mealSaturatedFat => 'Saturated fat';
+
+  @override
+  String get mealFacts => 'Full nutrition facts';
+
+  @override
+  String get mealIngredients => 'Ingredients';
+
+  @override
+  String get mealOptional => 'Optional';
+
+  @override
+  String get mealSteps => 'Preparation';
+
+  @override
+  String get mealStepsSoon => 'Preparation steps will be added soon';
+
+  @override
+  String get mealDislike => 'I don’t like this meal, don’t suggest it again';
+
+  @override
+  String get mealDislikeUndo => 'We won’t suggest it again · Undo';
+
+  @override
+  String get mealFavourite => 'Favourite';
+
+  @override
+  String get mealPrefSaveFailed => 'Couldn’t save, check your connection';
+
+  @override
+  String get mealFavouritesTitle => 'Favourite meals';
+
+  @override
+  String get mealFavouritesHint => 'The engine suggests these more often';
+
+  @override
+  String get mealDislikesTitle => 'I don’t like';
+
+  @override
+  String get mealDislikesHint => 'They won’t appear in your plan';
+
+  @override
+  String get mealFavouritesEmpty => 'None yet. Tap the heart on any meal.';
+
+  @override
+  String get mealDislikesEmpty => 'None.';
+
+  @override
+  String get mealRemove => 'Remove';
+
+  @override
+  String get mealMg => 'mg';
+
+  @override
+  String get nutrientEnergy => 'Energy';
+
+  @override
+  String get nutrientProtein => 'Protein';
+
+  @override
+  String get nutrientCarbs => 'Carbs';
+
+  @override
+  String get nutrientFat => 'Fat';
+
+  @override
+  String get nutrientFiber => 'Fiber';
+
+  @override
+  String get nutrientSugars => 'Sugars';
+
+  @override
+  String get nutrientSaturatedFat => 'Saturated fat';
+
+  @override
+  String get nutrientCholesterol => 'Cholesterol';
+
+  @override
+  String get nutrientSodium => 'Sodium';
+
+  @override
+  String get nutrientPotassium => 'Potassium';
+
+  @override
+  String get allergenGluten => 'Gluten';
+
+  @override
+  String get allergenMilk => 'Milk';
+
+  @override
+  String get allergenEgg => 'Egg';
+
+  @override
+  String get allergenFish => 'Fish';
+
+  @override
+  String get allergenPeanut => 'Peanuts';
+
+  @override
+  String get allergenTreeNuts => 'Tree nuts';
+
+  @override
+  String get allergenSesame => 'Sesame';
+
+  @override
+  String get allergenSoy => 'Soy';
 }

@@ -8,6 +8,9 @@ import '../features/auth/presentation/auth_form_screen.dart';
 import '../features/auth/presentation/session_controller.dart';
 import '../features/auth/presentation/splash_screen.dart';
 import '../features/auth/presentation/welcome_screen.dart';
+import '../features/catalog/presentation/favourites_screen.dart';
+import '../features/catalog/presentation/meal_detail_screen.dart';
+import '../features/catalog/presentation/meals_screen.dart';
 import '../features/home/presentation/placeholder_screens.dart';
 import '../features/profile/presentation/onboarding_screen.dart';
 import '../features/server_check/presentation/server_check_screen.dart';
@@ -34,8 +37,15 @@ String? authRedirect({
       }
       return expired ? '/login' : '/welcome';
     case SignedIn():
-      final target = session.hasProfile ? '/home' : '/onboarding';
-      return location == target ? null : target;
+      if (!session.hasProfile) {
+        return location == '/onboarding' ? null : '/onboarding';
+      }
+      if (location == '/home' ||
+          location == '/meals' ||
+          location.startsWith('/meals/')) {
+        return null;
+      }
+      return '/home';
   }
 }
 
@@ -91,6 +101,28 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (BuildContext context, GoRouterState state) {
           return const HomePlaceholderScreen();
         },
+      ),
+      GoRoute(
+        path: '/meals',
+        builder: (BuildContext context, GoRouterState state) {
+          return const MealsScreen();
+        },
+        routes: <RouteBase>[
+          GoRoute(
+            path: 'favourites',
+            builder: (BuildContext context, GoRouterState state) {
+              return const FavouritesScreen();
+            },
+          ),
+          GoRoute(
+            path: ':mealId',
+            builder: (BuildContext context, GoRouterState state) {
+              return MealDetailScreen(
+                mealId: int.tryParse(state.pathParameters['mealId'] ?? ''),
+              );
+            },
+          ),
+        ],
       ),
       if (kDebugMode)
         GoRoute(

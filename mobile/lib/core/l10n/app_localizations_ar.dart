@@ -215,6 +215,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get failureProfileNotFound => 'الملف غير موجود.';
 
   @override
+  String get failureMealNotFound => 'هذه الوجبة لم تعد في الكتالوج.';
+
+  @override
   String get onbContinue => 'متابعة';
 
   @override
@@ -758,4 +761,183 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get onbTimezoneNote =>
       'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت UTC.';
+
+  @override
+  String get browseMeals => 'تصفح الوجبات';
+
+  @override
+  String get mealSearchHint => 'ابحث عن وجبة';
+
+  @override
+  String get mealSlotAll => 'الكل';
+
+  @override
+  String get mealSlotBreakfast => 'فطور';
+
+  @override
+  String get mealSlotLunch => 'غداء';
+
+  @override
+  String get mealSlotDinner => 'عشاء';
+
+  @override
+  String get mealSlotSnack => 'خفيفة';
+
+  @override
+  String get mealHideAvoided => 'إخفاء ما يحتوي على ما أتجنبه';
+
+  @override
+  String mealFooter(int count, String updated) {
+    return '$count وجبة · آخر تحديث $updated';
+  }
+
+  @override
+  String get mealOfflineEmpty =>
+      'نحتاج اتصالًا مرة واحدة لتحميل الوجبات، ثم تعمل دون إنترنت';
+
+  @override
+  String get mealNoResults => 'لا توجد وجبات بهذا الاسم';
+
+  @override
+  String get mealClearFilters => 'مسح التصفية';
+
+  @override
+  String get mealRetry => 'إعادة المحاولة';
+
+  @override
+  String mealKcal(String kcal) {
+    return '$kcal سعرة';
+  }
+
+  @override
+  String mealProtein(String grams) {
+    return '$grams غ بروتين';
+  }
+
+  @override
+  String mealServing(String grams) {
+    return '$grams غ';
+  }
+
+  @override
+  String get mealAllergenBadge => 'تحتوي على ما تتجنبه';
+
+  @override
+  String mealAllergenWarning(String names) {
+    return 'تحتوي على $names مما سجلت أنك تتجنبه';
+  }
+
+  @override
+  String get mealMacroKcal => 'سعرة';
+
+  @override
+  String get mealSodium => 'الصوديوم (الملح)';
+
+  @override
+  String get mealSaturatedFat => 'الدهون المشبعة';
+
+  @override
+  String get mealFacts => 'القيم الغذائية كاملة';
+
+  @override
+  String get mealIngredients => 'المكونات';
+
+  @override
+  String get mealOptional => 'اختياري';
+
+  @override
+  String get mealSteps => 'التحضير';
+
+  @override
+  String get mealStepsSoon => 'خطوات التحضير ستضاف قريبًا';
+
+  @override
+  String get mealDislike => 'لا أحب هذه الوجبة، لا تقترحها مجددًا';
+
+  @override
+  String get mealDislikeUndo => 'لن نقترحها مجددًا · تراجع';
+
+  @override
+  String get mealFavourite => 'مفضلة';
+
+  @override
+  String get mealPrefSaveFailed => 'تعذر الحفظ، تحقق من الاتصال';
+
+  @override
+  String get mealFavouritesTitle => 'وجباتي المفضلة';
+
+  @override
+  String get mealFavouritesHint => 'يقترحها المحرك أكثر في خطتك';
+
+  @override
+  String get mealDislikesTitle => 'لا أحبها';
+
+  @override
+  String get mealDislikesHint => 'لن تظهر في خطتك';
+
+  @override
+  String get mealFavouritesEmpty => 'لا توجد بعد. اضغط القلب في أي وجبة.';
+
+  @override
+  String get mealDislikesEmpty => 'لا توجد.';
+
+  @override
+  String get mealRemove => 'إزالة';
+
+  @override
+  String get mealMg => 'ملغ';
+
+  @override
+  String get nutrientEnergy => 'الطاقة';
+
+  @override
+  String get nutrientProtein => 'بروتين';
+
+  @override
+  String get nutrientCarbs => 'كربوهيدرات';
+
+  @override
+  String get nutrientFat => 'دهون';
+
+  @override
+  String get nutrientFiber => 'ألياف';
+
+  @override
+  String get nutrientSugars => 'سكريات';
+
+  @override
+  String get nutrientSaturatedFat => 'دهون مشبعة';
+
+  @override
+  String get nutrientCholesterol => 'كوليسترول';
+
+  @override
+  String get nutrientSodium => 'صوديوم';
+
+  @override
+  String get nutrientPotassium => 'بوتاسيوم';
+
+  @override
+  String get allergenGluten => 'الغلوتين';
+
+  @override
+  String get allergenMilk => 'الحليب';
+
+  @override
+  String get allergenEgg => 'البيض';
+
+  @override
+  String get allergenFish => 'السمك';
+
+  @override
+  String get allergenPeanut => 'الفول السوداني';
+
+  @override
+  String get allergenTreeNuts => 'المكسرات';
+
+  @override
+  String get allergenSesame => 'السمسم';
+
+  @override
+  String get allergenSoy => 'الصويا';
 }
