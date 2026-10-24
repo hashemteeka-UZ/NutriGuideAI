@@ -1,0 +1,126 @@
+You are implementing **Step K.2 (adaptive onboarding, profile, daily targets; Decisions #236 to #243)** for NutriGuideAI. K.0 and K.1 are done and committed (68d5294): skeleton, generated client, sign up/in, secure session with single-flight refresh, routing by session state, locale. This pass replaces the onboarding placeholder with the real adaptive onboarding, saves the profile with ONE `PUT /api/v1/me/profile`, and shows the results screen with "how we calculated it". Home stays a placeholder until K.4.
+
+You are running in Cursor on **Windows**, in the clone `C:\dev\NutriGuideAI`. Use the Cursor terminal (PowerShell). First run `git pull` and confirm `git status` is clean. Read first: `docs/project/steps/STEP_K_plan.md` (decisions #236-#243 are the source of truth), `docs/api/API_GUIDE.md` (onboarding flow, errors), `docs/api/openapi.json` (`GET /api/v1/reference`, `PUT /api/v1/me/profile`, `GET /api/v1/me/profile`, `GET /api/v1/me/targets`; schemas `ProfileUpdate`, `ProfileState`, `Screening`, `Target`, `TargetsView`, `WaterGoal`, `Reference`, `ConditionRef`, `CodeName`). Visual reference: `docs/project/ui/prototype_v3/6_onb.js` (functions `steps()`, `onbStep`, `bmiCard`, `paceInfo`, `wheel`, `opt`), `4b_persona.js` (`G()` for gendered Arabic), `4_data.js` (`ALG`), `1_head.html` (tokens and component styles).
+
+**The prototype contains cancelled features. Do NOT build any of these, even though they appear in prototype_v3:** the name step, the muscle-building goal (`MUSCLE`), protein preference/protein targets per meal, training days and training time, "post-workout" items, the app colour/theme picker («لون تطبيقك»), and any mention of kidney disease, pregnancy, breastfeeding or gout. Only three goals exist: `LOSE`, `MAINTAIN`, `GAIN`. Only these conditions are offered: `DIABETES_T2`, `HYPERTENSION`, `HEART_DISEASE` (plus `DIABETES_INSULIN` set only by the insulin question). If you find any of the cancelled items in text you copy, drop it.
+
+## Hard rules
+1. Change files ONLY under `mobile/`. Never touch `backend/`, `docs/`, CI files.
+2. Never log or print profile values (birth date, height, weight, conditions, allergens, targets). The debug interceptor stays method/path/status/duration only.
+3. Onboarding answers live in memory only (a Notifier), never in shared_preferences, files, or drift. If the app is killed mid-onboarding, the user starts the questions again (about one minute). Do not persist health data unencrypted.
+4. The app never computes calories, macros, BMR, TDEE or water itself. All numbers on the results screen come from the server response. The app only derives display values from server fields (section 6).
+5. Layer rules from K.0/K.1 stay (presentation/domain never import dio, flutter_secure_storage, or `core/api/generated`; architecture tests must still pass).
+6. New packages only via `flutter pub add`. Allowed: `flutter_timezone` (device IANA timezone). Nothing else without asking.
+7. Slow network: use `flutter run -d emulator-5554` and `flutter build apk --debug --target-platform android-x64`. Keep workarounds out of the repo.
+8. Do not commit. The user commits after review.
+
+## 0. Preconditions
+- Backend running in WSL: `Invoke-RestMethod http://localhost:8000/api/v1/health` returns `status: ok`. Emulator listed by `flutter devices`.
+- `flutter analyze` clean and `flutter test` green (196) before you start.
+
+## 1. Structure
+```
+lib/features/reference/
+  domain/reference_data.dart        // conditions (code, name, isSupported, fluidGoalRequiresClinician), allergens (code, name), activity levels, goals, sexes
+  data/reference_repository.dart    // GET /api/v1/reference, kept in memory for the app session; re-fetched when the locale changes
+lib/features/profile/
+  domain/profile_draft.dart         // immutable answers being collected
+  domain/profile_result.dart        // eligible, reasons, target (kcal, protein_g, carb_g, fat_g, fiber_g, bmr, tdee, floorApplied, basedOnWeight), water (goalMl, source, requiresClinician)
+  domain/onboarding_steps.dart      // pure function: draft -> ordered list of steps (section 2), unit-tested
+  domain/pace_rules.dart            // pure functions for section 4 (allowed rates, target weight bounds, estimated weeks), unit-tested
+  data/profile_repository.dart      // PUT /me/profile, GET /me/targets, mappers generated -> domain
+  presentation/onboarding_controller.dart
+  presentation/onboarding_screen.dart     // one route, steps as pages with a progress bar
+  presentation/steps/*.dart              // one widget per step
+  presentation/result_screen.dart
+  presentation/how_calculated_sheet.dart
+```
+
+## 2. Adaptive steps (#236)
+The step list is computed from the answers (pure function, like `steps()` in the prototype, minus the cancelled steps):
+1. `about`: sex (MALE/FEMALE, two large cards) and birth date (section 3).
+2. `measure`: height (cm, 100-250, step 1) and current weight (kg, 20-400, step 0.5) as wheels; a live BMI card (`bmiCard()` style: value, label «أقل من الطبيعي / طبيعي / فوق الطبيعي / مرتفع» at 18.5/25/30, coloured scale) with an expandable «ما هو مؤشر كتلة الجسم؟».
+3. `goal`: LOSE «إنقاص الوزن» / MAINTAIN «المحافظة على وزني» / GAIN «زيادة الوزن», with the prototype subtitles (GAIN subtitle: «فائض مدروس في السعرات», not the protein text).
+4. `pace` (only if LOSE or GAIN): target weight wheel + pace options + estimated arrival (section 4). Show the adaptive badge «سؤال خاص بك · لأن هدفك تغيير الوزن».
+5. `activity`: SEDENTARY, LIGHT, MODERATE, HIGH, ATHLETE with the prototype titles and subtitles.
+6. `care`: conditions from `/reference` where `is_supported == true` (multi-select) plus «لا شيء · أريد أكلًا صحيًا ومتوازنًا فقط» (exclusive). Expandable «كيف نراعي ذلك؟» with the prototype explanation. Wellness tone: we avoid worsening, we do not treat.
+7. `allergy`: allergens from `/reference` as a 3-column grid; tap once = `AVOID` «تجنب», twice = `SEVERE` «شديدة», third tap clears. Subtitle «اضغط مرة للتجنب، ومرتين إذا كانت حساسية شديدة».
+8. `safety` (only if `DIABETES_T2` selected): «سؤال أخير للاطمئنان» / «هل تستخدم الإنسولين؟» Yes/No, with «لماذا نسأل؟» explaining that insulin users need carbohydrate planning tied to their doses, which this app does not cover, so they get the general mode. Yes adds `{code: DIABETES_INSULIN}` to `conditions`.
+9. `rhythm`: wake time and sleep time (`HH:MM`, 15-minute steps; defaults 07:00 and 23:00), with a small "your suggested day" preview of meal windows text only (no training items).
+10. `fluid` (only if a selected condition has `fluid_goal_requires_clinician == true`, today `HEART_DISEASE`): «متابعة الماء مع طبيبك». Option A «لم يحدد لي طبيبي كمية» -> `water_goal_ml: null`. Option B «حدد لي طبيبي كمية يومية» -> number field 500-5000 ml -> `water_goal_ml`.
+11. `submit + result` (section 5 and 6).
+Buttons «متابعة» and «رجوع»; Android back goes to the previous step; the progress bar reflects the current computed list. Changing an earlier answer recomputes the list (e.g. switching to MAINTAIN removes `pace` and clears target weight and rate). Each step's «متابعة» is disabled until its answer is valid.
+
+## 3. Birth date (#237)
+- The API needs `birth_date`, not age. Use three wheels (day, month name, year) or a calendar picker styled with the theme; default 30 years before today; range 100 years ago to today. Show the computed age live («العمر: 34 سنة»).
+- Do NOT block under-18 users in the app: the server screening decides (`UNDER_18`) and the result screen shows the general mode.
+
+## 4. Pace and target weight (#238)
+- Rates: LOSE offers 0.25 «هادئة · الأسهل للاستمرار», 0.5 «متوازنة · ننصح بها» (default), 0.75 «أسرع», 1.0 «الأقصى». An option whose rate is above 1% of the current weight is disabled with «غير متاحة لوزنك الحالي (أكثر من 1% أسبوعيًا)». GAIN offers 0.25 and 0.5 (default 0.25) with the note «الحد الآمن للزيادة نصف كغ أسبوعيًا». These mirror the server caps (1% of body weight per week for loss, 0.5 kg for gain) so the user never picks a rate the server would silently reduce.
+- Target weight: LOSE must be below the current weight, GAIN above it; overall 30-300 kg; step 0.5. **Safety rule (app side): for LOSE the lowest selectable target is the weight at BMI 18.5 for the entered height** (round up to the next 0.5 kg). Show the reason under the wheel: «لا نقترح هدفًا أقل من الوزن الطبيعي لطولك». If the current weight is already at or below that weight, LOSE is not offered in step 3 (show it disabled with the same reason).
+- Estimated arrival: weeks = ceil(|current - target| / rate); show «تصل إلى X كغ بعد نحو N أسبوعًا، تقريبًا في <month> <year>» (gendered, section 7), month names from `intl`.
+- All of this is in `pace_rules.dart` with unit tests (boundaries: 1% exactly, BMI 18.5 rounding, MAINTAIN has no rate/target).
+
+## 5. Saving (#239, #240)
+- On the last question, build `ProfileUpdate`: `sex`, `birth_date` (YYYY-MM-DD), `height_cm`, `current_weight_kg`, `activity_level`, `goal_type`, `target_weight_kg` and `weekly_rate_kg` (null for MAINTAIN), `conditions` (codes, severity null), `allergens` (code + severity), `ingredient_prefs: []` and `cuisines: []` (edited later in settings, not in onboarding), `wake_time`, `sleep_time`, `water_goal_ml` (only from the fluid step, else null), `timezone` (section 8).
+- Show a short building animation («نحسب احتياجاتك...») while `PUT /api/v1/me/profile` runs, then `GET /api/v1/me/targets` for the water goal. Total visible wait at least 1.2 s so the moment is perceived (skip the minimum when reduce-motion is on).
+- Errors: `VALIDATION_ERROR` and `TARGET_VALIDATION` -> go back to the step that owns the field (`loc` or the target fields) with the mapped message; `INVALID_TIMEZONE` -> retry once with `UTC` and report it; `NO_WEIGHT` should never happen (the app always sends the weight) -> generic message; network error -> stay on the last step with a retry button, answers kept in memory. Add Arabic/English messages for `TARGET_VALIDATION`, `NO_WEIGHT`, `INVALID_TIMEZONE`, `UNKNOWN_CODE`, `PROFILE_NOT_FOUND`.
+- Only after the user taps the final button on the result screen does the session controller set `hasProfile = true` (and cache it), which routes to `/home`. Until then the results stay visible even though the server already has the profile. Carry-over from K.1: when `/onboarding` opens, the controller first calls `GET /api/v1/me` (a quick check with a small loader); if `has_profile` is already true, set it and route to `/home` instead of asking the questions again. A network failure here shows the questions normally.
+
+## 6. Result screen and "how we calculated" (#240)
+Eligible (`screening.eligible == true`, `target` present):
+- Header «هذه احتياجاتك اليومية، محسوبة لك أنت», a large calorie ring with `kcal` and the goal line («لإنقاص وزنك» / «للمحافظة على وزنك» / «لزيادة وزنك»), three macro cards (protein, carbs, fat in g with their share of calories), fiber (g), water (ml; or «بالتنسيق مع طبيبك» when `requires_clinician` and no user goal).
+- Expandable «كيف حسبناها؟» (bottom sheet) built ONLY from server fields:
+  1. «الطاقة وقت الراحة (معادلة Mifflin-St Jeor)»: `bmr_kcal`.
+  2. «× معامل نشاطك»: `tdee_kcal / bmr_kcal` shown with 2 decimals (derived, not hard-coded), and the result `tdee_kcal`.
+  3. «− عجز إنقاص الوزن» or «+ فائض الزيادة»: `kcal - tdee_kcal` (absolute value), omitted for MAINTAIN.
+  4. If `was_floor_applied`: «رفعنا السعرات إلى الحد الأدنى الآمن» with the explanation that the plan never goes below a safe minimum.
+  5. «هدفك اليومي»: `kcal`, and a line «محسوبة على وزن X كغ» from `based_on_weight_kg`.
+  Each line has a one-sentence plain explanation. Numbers formatted with `intl` for the locale.
+- Button «ابنِ خطتي الأولى» -> sets hasProfile and goes to `/home` (plan generation comes in K.4).
+Not eligible (`eligible == false`, `target` null):
+- «حسابك جاهز في الوضع العام», a gentle explanation mapped from `reasons` (`UNDER_18` -> «الخطة الشخصية مخصصة للبالغين»; `UNSUPPORTED_CONDITION:DIABETES_INSULIN` -> «استخدام الإنسولين يحتاج تخطيطًا مع طبيبك لا يغطيه التطبيق»; unknown reason -> generic line, never crash), then «ماذا يمكنك أن تفعل؟» with the four prototype items, and button «ادخل التطبيق» -> sets hasProfile, `/home`.
+- No celebration animation for the general mode; a calm illustration instead.
+
+## 7. Arabic grammar and texts (#242)
+- Questions addressed to the user use the grammatical gender from the `sex` answer, like `G()` in the prototype (e.g. «هل تتجنب أي مكون؟» / «هل تتجنبين أي مكون؟», «تصل» / «تصلين»). Implement with ICU `select` in the ARB files (`{sex, select, FEMALE{...} other{...}}`); before sex is chosen use the masculine/neutral form. English has no gender variant.
+- Every new string in both `app_ar.arb` and `app_en.arb`; English texts from the prototype.
+
+## 8. Timezone (#241)
+- Read the device IANA timezone with `flutter_timezone` (e.g. `Asia/Riyadh`). If it fails or is empty, send `UTC` and log nothing sensitive. Behind a small `TimezoneSource` interface so tests use a fake.
+
+## 9. Visuals (#233 continued)
+- Use the bundled Fluent Emoji SVGs with the prototype's choices (goal: chart-decreasing / balance-scale / chart-increasing; activity: chair, person-walking, person-biking, person-running, person-lifting-weights; care: drop-of-blood, salt, red-heart, green-salad; insulin: syringe; rhythm: sunrise, crescent-moon; water: droplet; result: party-popper). Allergen icons: GLUTEN sheaf-of-rice, MILK glass-of-milk, EGG egg, FISH fish, PEANUT peanuts, TREE_NUTS chestnut, SESAME jar, SOY beans; any code without an icon (e.g. SHELLFISH, or a future code) uses fork-and-knife. Never crash on an unknown code.
+- Option cards like `opt()`: large touch target (>= 56 dp), icon box, title, subtitle, selected state with check; semantic labels and `Semantics(selected: ...)`.
+- Page transitions slide in reading direction (RTL aware); the calorie ring animates from 0; macro bars grow. All motion off when `MediaQuery.disableAnimations`.
+- Works at text scale 1.3 and in English (LTR) with no overflow.
+
+## 10. Tests (all must pass; no skips)
+- `onboarding_steps` table tests: LOSE/MAINTAIN/GAIN, with/without DIABETES_T2, with/without HEART_DISEASE, recompute after changing goal.
+- `pace_rules`: allowed rates at several weights (e.g. 60 kg: 1% is 0.6, so 0.75 and 1.0 are disabled; 100 kg: 1.0 is allowed), BMI 18.5 lower bound and rounding, LOSE hidden when already at the bound, weeks estimate.
+- `ProfileUpdate` mapping: MAINTAIN sends null target/rate; insulin adds DIABETES_INSULIN; fluid A/B; empty ingredient_prefs/cuisines; birth date format.
+- Profile repository with a fake adapter: success eligible, success ineligible, TARGET_VALIDATION mapped, INVALID_TIMEZONE retried once with UTC.
+- Widget tests (Arabic, fakes, no network): full happy path to the result screen; "how we calculated" shows the five lines from given server numbers and the activity factor derived (e.g. bmr 1500, tdee 2325 -> 1.55); floor line shown only when `was_floor_applied`; general mode screen for UNDER_18 and for DIABETES_INSULIN; female wording appears after choosing FEMALE; unknown allergen code gets the fallback icon; back button returns to the previous step with answers kept; onboarding entry with `has_profile` true goes to home.
+- Architecture and log tests still pass; add a test that `ProfileDraft` is not written to shared_preferences (e.g. the prefs fake stays empty after a full flow).
+
+## 11. Manual run on the emulator (backend in WSL)
+Report each as pass/fail:
+1. Register a new account -> onboarding starts with `about`.
+2. Female, 30 years, 165 cm, 80 kg, LOSE to 70 kg at 0.5, LIGHT, HYPERTENSION, allergy MILK=AVOID -> result screen shows calories, macros, water; open «كيف حسبناها؟».
+3. Tap «ابنِ خطتي الأولى» -> home placeholder. Close and reopen -> home (not onboarding).
+4. New account: male, MAINTAIN, DIABETES_T2, insulin = yes -> general mode screen.
+5. New account: HEART_DISEASE -> the fluid step appears; choose a doctor goal 1500 ml -> result shows 1500 ml.
+6. New account: 17 years old -> general mode with the adults message.
+7. Kill the app in the middle of the questions, reopen -> onboarding starts again, nothing saved.
+8. English locale: run one full flow, no overflow.
+9. Screenshots under `mobile/docs/screenshots/`: `k2_measure_bmi.png`, `k2_pace.png`, `k2_care.png`, `k2_result.png`, `k2_how_calculated.png`, `k2_general_mode.png`.
+
+## Checks before you report
+From `mobile/`: regenerate API leaves no diff; `dart format` clean on non-generated code; `flutter analyze` clean; `flutter test` all green; `flutter build apk --debug --target-platform android-x64` succeeds.
+
+## Report back
+1. Files created/changed (tree, excluding generated and `build/`), new packages with versions.
+2. The final step list logic (short), and how the result screen derives its lines from server fields.
+3. Test counts (before/after) and new test names.
+4. Manual run results 1-8 with the server's numbers for run 2 (kcal, protein, carbs, fat, water) and screenshot paths.
+5. Any contradiction between API_GUIDE.md, openapi.json, the prototype and this file; any assumption. One line each, with the section number.
