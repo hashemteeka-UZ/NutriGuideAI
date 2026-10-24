@@ -1,0 +1,109 @@
+You are implementing **Step K.3 (encrypted local database, offline catalog with ETag, browse/search/details, favourites; Decisions #244 to #251)** for NutriGuideAI. K.0, K.1 and K.2 are done and committed: skeleton, generated client, auth with single-flight refresh, adaptive onboarding, profile save, results screen. This pass gives the app its local drift database (encrypted), downloads the catalog snapshot once and keeps it in sync with `ETag`, and adds meal browsing, offline search, meal details and favourites. Home stays a placeholder until K.4, with one new button to open the meals screen.
+
+You are running in Cursor on **Windows**, in the clone `C:\dev\NutriGuideAI`. Use the Cursor terminal (PowerShell). First run `git pull` and confirm `git status` is clean. Read first: `docs/project/steps/STEP_K_plan.md` (decisions #244-#251 are the source of truth), `docs/api/API_GUIDE.md` (section "Offline catalog"), `docs/api/openapi.json` (`GET /api/v1/catalog/snapshot`, `GET /api/v1/me/meal-prefs`, `PUT/DELETE /api/v1/me/meal-prefs/{meal_id}`, `GET /api/v1/me/profile`, `GET /api/v1/reference`; schemas `CatalogSnapshot`, `SnapshotMeal`, `MealIngredientOut`, `NutrientAmount`, `MealPref`, `MealPrefUpdate`, `MealStance`, `CodeName`). Visual reference: `docs/project/ui/prototype_v3/8_screens.js` (`mealSheet`: hero, macro ring, sodium/saturated-fat lines, full nutrition facts, ingredients, dislike button), `8_screens.js` `swapSheet` (list card layout), `9_tabs.js` `favSheet` (favourites and "I don't like" lists), `1_head.html` (tokens).
+
+Cancelled features stay out: no muscle goal, protein preference, training items, theme picker, kidney, pregnancy, breastfeeding or gout anywhere. Do not show "% of daily limit" or the portion multiplier in this pass (they need plan context, K.4). Do not send interaction events yet (they go through the outbox in K.5).
+
+## Hard rules
+1. Change files ONLY under `mobile/`. Never touch `backend/`, `docs/`, CI files.
+2. Never log meal preferences, allergens, the database key, or response bodies. The debug interceptor stays method/path/status/duration only.
+3. The app never computes nutrition. Every number shown comes from the snapshot fields.
+4. Local tables are defined independently in drift and filled through explicit mappers from the generated models. Generated models never leave `data/` (PROJECT_CONTEXT 34.3, decision #221). Architecture tests must still pass and must cover the new features.
+5. New packages only via `flutter pub add`. Allowed: `sqlite3` (3.x, latest that `drift` accepts). Remove `sqlite3_flutter_libs` (end of life). Nothing else without asking.
+6. Slow network: `flutter run -d emulator-5554`, `flutter build apk --debug --target-platform android-x64`. Keep workarounds out of the repo.
+7. Do not commit. The user commits after review.
+
+## 0. Preconditions
+- Backend running in WSL. The emulator reaches it with `adb reverse tcp:8000 tcp:8000` and `--dart-define=API_BASE_URL=http://localhost:8000` (this worked in K.2; `10.0.2.2` does not reach a WSL-only bind). `Invoke-RestMethod http://localhost:8000/api/v1/health` returns `status: ok`.
+- `flutter analyze` clean and `flutter test` green (218) before you start.
+
+## 1. Encrypted database (#244)
+- Replace `sqlite3_flutter_libs` with `sqlite3` 3.x build hooks and select SQLite3MultipleCiphers in `mobile/pubspec.yaml`:
+  ```yaml
+  hooks:
+    user_defines:
+      sqlite3:
+        source: sqlite3mc
+  ```
+  Read `sqlite3/doc/hook.md` of the version you install and follow it exactly. If `sqlite3mc` is not available for android-x64 or the host test platform, STOP and report; do not fall back to an unencrypted database.
+- Key: 32 random bytes from `Random.secure()`, hex-encoded, stored in `flutter_secure_storage` under `db_key_v1`, created on first open. Open with `NativeDatabase.createInBackground(file, setup: (db) { db.execute("PRAGMA hexkey = '<hex>'"); })` (key first, before any other statement), then verify with a simple `SELECT count(*) FROM sqlite_master`. Put this in `lib/core/db/` behind a `DatabaseKeyStore` interface so tests use a fake.
+- Recovery: if the key is missing but a database file exists (e.g. the K.0-K.2 plaintext file, or Keystore lost after a device restore), delete the file (and `-wal`/`-shm`) and create a fresh encrypted one. If opening with the stored key fails, do the same. Nothing in the database is irreplaceable at this stage: the catalog re-downloads and the user data comes from the server.
+- `schemaVersion` 2 with a drift migration strategy. Export schemas with `dart run drift_dev make-migrations` (or `schema dump` + generated migration tests per the drift docs) into `mobile/drift_schemas/`, and add the generated migration test.
+
+## 2. Local tables (#245)
+All catalog rows carry `lang` (`ar` or `en`) because the snapshot is language-specific; one language is replaced without touching the other.
+- `catalog_meta`: `lang` PK, `etag`, `dataset_version`, `meal_count`, `fetched_at` (UTC).
+- `meals`: (`lang`, `meal_id`) PK, `name`, `search_key` (section 4), `cuisine` (nullable), `dish_form` (nullable), `serving_grams`, `servings`, `total_grams`, `kcal`, `protein_g`, `carb_g`, `fat_g`, `source`, `dataset_version`.
+- `meal_tags` (`lang`, `meal_id`, `tag`), `meal_allergens` (`lang`, `meal_id`, `code`), `meal_ingredients` (`lang`, `meal_id`, `position`, `ingredient_id`, `name`, `grams_per_serving`, `is_optional`), `meal_nutrients` (`lang`, `meal_id`, `code`, `unit`, `per_100g`, `per_serving`), `meal_steps` (`lang`, `meal_id`, `position`, `text`). Primary keys on the natural columns, foreign keys to `meals` with cascade delete, index on `meals(lang, search_key)`.
+- `cuisines` (`lang`, `code`, `name`): written whenever `/reference` loads (the K.2 reference repository), so cuisine names work offline.
+- User tables: `meal_prefs` (`meal_id` PK, `stance`, `updated_at`) and `user_allergens` (`code` PK, `severity`). These are personal and are deleted on logout and when another account signs in (hook into the K.1 local-first logout). The catalog tables stay.
+
+## 3. Snapshot sync (#246)
+- `lib/features/catalog/data/catalog_sync.dart`. The generated client cannot read response headers or accept 304, so make this ONE request with the app's `Dio` (same interceptors: auth, locale, logging): `GET /api/v1/catalog/snapshot`, header `If-None-Match` = stored ETag for the current language (omit if none), `Options(validateStatus: (s) => s == 200 || s == 304)`.
+- 304: update `fetched_at` only. 200: parse with the generated `CatalogSnapshot.fromJson` inside `Isolate.run`, map to companions, and replace that language's rows plus `catalog_meta` in ONE transaction (all or nothing; a failed parse leaves the old copy untouched). Store the new `ETag` exactly as received.
+- When: after the session is ready (app start with a session, and right after sign-in), when the locale changes, and on pull-to-refresh in the meals screen. Never blocks the UI. At most one sync in flight (share the running future). Network failure is silent when a local copy exists; with no local copy, the meals screen shows the empty state (section 5).
+- Also on the same triggers, fetch `GET /me/meal-prefs` into `meal_prefs` (replace all) and the allergens from `GET /me/profile` into `user_allergens` (replace all; `PROFILE_NOT_FOUND` = empty). Right after the K.2 profile save, write `user_allergens` from the saved answers too.
+
+## 4. Offline search and filters (#247)
+- `lib/features/catalog/domain/search_normalizer.dart` (pure, unit-tested), applied to the stored `search_key` and to the query: Unicode NFC; remove Arabic diacritics (U+064B-U+0652, U+0670) and tatweel (U+0640); unify أ إ آ ٱ -> ا, ى -> ي, ة -> ه, ؤ -> و, ئ -> ي; Arabic-Indic digits -> ASCII; Latin lowercase; collapse spaces.
+- Ranking: exact match, then prefix of the name, then prefix of any word, then contains; ties by normalized name, then `meal_id`. Run in drift (SQL `LIKE` on `search_key` with escaped `%`/`_`), debounced 200 ms. No trigram similarity locally (this is the only difference from the server's search; say so in a code comment).
+- Filters (combine with search): slot chips «الكل / فطور / غداء / عشاء / خفيفة» mapped to occasion tags `breakfast_suitable`, `lunch_suitable`, `dinner_suitable`, `snack_suitable`; cuisine chips from the `cuisines` table (only cuisines present in the catalog); toggle «إخفاء ما يحتوي على ما أتجنبه», ON by default, hides meals that share any code with `user_allergens`. When OFF, those meals stay in the list with a warning badge.
+- Repository returns domain models (`MealSummary`, `MealDetail` in `features/catalog/domain`), never drift rows, to presentation.
+
+## 5. Screens (#250, #251)
+Routes: `/meals` (browse and search), `/meals/:id` (details), `/meals/favourites`. Entry: a button «تصفح الوجبات» on the home placeholder. No new bottom tab (the approved design has five tabs, built in K.4).
+- `/meals`: search field at the top, filter chips, then a list of cards like `swapSheet` (icon box, name, kcal, protein, cuisine name, allergen warning badge if applicable, heart if LIKE). A heart icon in the app bar opens favourites. Footer line: «N وجبة · آخر تحديث ...» from `catalog_meta`. Pull-to-refresh. Empty states: no local catalog and offline «نحتاج اتصالًا مرة واحدة لتحميل الوجبات، ثم تعمل دون إنترنت» with retry; no results «لا توجد وجبات بهذا الاسم» with a button to clear filters.
+- `/meals/:id` (from local data only, no `GET /meals/{id}`): hero with an icon chosen from the bundled emoji by the first occasion tag (fallback fork-and-knife), name, cuisine, serving grams; allergen warning card «تحتوي على X مما سجلت أنك تتجنبه» when it shares codes with `user_allergens`; macro ring (kcal centre, protein/carbs/fat in g; ring shares are display-only protein×4, carb×4, fat×9); sodium and saturated fat values (absolute only); expandable «القيم الغذائية كاملة» listing nutrients by code with Arabic/English labels for known codes (`energy_kcal`, `protein`, `carbohydrate`, `total_fat`, `fiber`, `sugars`, `saturated_fat`, `cholesterol`, `sodium`, `potassium`); unknown codes are skipped, never crash; ingredients with grams per serving and «اختياري» for optional ones; preparation steps numbered, or «خطوات التحضير ستضاف قريبًا» when the list is empty (37 meals have none yet); heart button (LIKE) and the text button «لا أحب هذه الوجبة، لا تقترحها مجددًا» (DISLIKE) with the undo text from the prototype.
+- `/meals/favourites`: two sections like `favSheet`: «وجباتي المفضلة» (LIKE) «يقترحها المحرك أكثر في خطتك» and «لا أحبها» (DISLIKE) «لن تظهر في خطتك», each row with a remove button.
+
+## 6. Favourites (#249)
+- LIKE = favourite (heart), DISLIKE = «لا أحبها». Tapping the active stance again clears it (`DELETE`). Switching LIKE <-> DISLIKE is one `PUT`.
+- Online only in this pass: optimistic update in `meal_prefs`, then the request; on failure roll back and show «تعذر الحفظ، تحقق من الاتصال». When the last request already failed with a network error, still try (no separate connectivity package). `MEAL_NOT_FOUND` -> roll back and re-sync the catalog.
+- Map new error code messages in Arabic and English: `MEAL_NOT_FOUND`.
+
+## 7. K.2 carry-over (small)
+- In «كيف حسبناها؟» show the activity factor with 3 decimals (e.g. 1.375, not 1.37), still derived as `tdee_kcal / bmr_kcal`. Update the existing test.
+- `mobile/README.md`: add a section "Emulator and a backend inside WSL" with the `adb reverse tcp:8000 tcp:8000` + `API_BASE_URL=http://localhost:8000` recipe and when to use it.
+
+## 8. Quality, accessibility, motion
+- RTL and LTR, text scale 1.3 without overflow, `Semantics` on cards (name, kcal, favourite state, allergen warning), touch targets >= 48 dp, motion off with `MediaQuery.disableAnimations`.
+- `ListView.builder` for the list. Measure search time on the emulator for a two-letter query over the full catalog and report it (target under 50 ms).
+
+## 9. Tests (all must pass; no skips)
+- `search_normalizer`: harakat removed, alef forms unified, ة/ه and ى/ي equal, tatweel, Arabic-Indic digits, Latin case; e.g. «شَكشُوكة», «شكشوكه» and «شكشوكة» give the same key.
+- Search ranking in an in-memory drift database: exact before prefix before word-prefix before contains; `%` and `_` in the query are literal; slot, cuisine and allergen filters combine.
+- `catalog_sync` with a fake adapter: first 200 stores rows + ETag; second call sends `If-None-Match` and a 304 keeps rows; 200 for one language does not touch the other; a malformed body leaves the old rows (transaction); two concurrent calls make one request.
+- Mappers: snapshot meal -> tables -> domain round trip (positions keep order, optional flag, null cuisine/dish_form, unknown nutrient code).
+- Encryption: a database file written with a key does not start with the bytes `SQLite format 3`; opening it with another key fails; the recovery path deletes and recreates. Key never appears in logs.
+- Logout clears `meal_prefs` and `user_allergens` and keeps the catalog.
+- Favourites: optimistic LIKE then server error rolls back; LIKE then tap again sends DELETE; LIKE -> DISLIKE sends one PUT.
+- Widget tests (Arabic, fakes, no network): browse list with filters, search updates the list, details with steps and with the «ستضاف قريبًا» fallback, allergen warning shown, favourites screen sections, offline empty state, English LTR at text scale 1.3.
+- Migration test from schema 1 to 2. Architecture tests cover `features/catalog`.
+
+## 10. Manual run on the emulator (backend in WSL)
+Report each as pass/fail:
+1. Sign in with an existing account -> open «تصفح الوجبات» -> the list shows all meals; the footer count equals the server's catalog (158).
+2. Restart the app with the server on -> debug log shows `GET /api/v1/catalog/snapshot 304`.
+3. Stop the backend (or airplane mode) -> browse, search «شكشوكه» and «شَكشُوكة» -> the same meal; open details with steps; open a meal without steps -> fallback text.
+4. Switch to English with the server on -> English names; stop the server, switch back to Arabic -> Arabic names still there.
+5. Favourite a meal online -> it appears in favourites; sign out and in again -> still favourite (came from the server).
+6. With the server stopped, tap the heart -> rolled back with the connection message.
+7. Account with MILK = AVOID (K.2 run 2) -> meals with MILK hidden by default; toggle off -> shown with the warning badge; details show the warning card.
+8. Sign out, sign in with another account -> no favourites from the first account.
+9. Encryption check (debug build):
+   ```
+   adb shell run-as com.nutriguideai.app ls app_flutter
+   adb shell run-as com.nutriguideai.app head -c 16 app_flutter/nutriguide.sqlite
+   ```
+   The bytes are not `SQLite format 3`.
+10. Screenshots under `mobile/docs/screenshots/`: `k3_browse.png`, `k3_search.png`, `k3_details.png`, `k3_details_no_steps.png`, `k3_favourites.png`, `k3_offline_empty.png`.
+
+## Checks before you report
+From `mobile/`: regenerate API leaves no diff; `dart format` clean on non-generated code; `flutter analyze` clean; `flutter test` all green; `flutter build apk --debug --target-platform android-x64` succeeds; `sqlite3_flutter_libs` no longer in `pubspec.lock`.
+
+## Report back
+1. Files created/changed (tree, excluding generated and `build/`), packages added/removed with versions, the exact `hooks` block used.
+2. Table list with keys, and how the sync decides 200/304 and replaces rows.
+3. Test counts (before/after) and new test names.
+4. Manual run results 1-9, snapshot size on the wire (gzip) and after decompression, first download time, and search time from section 8. Screenshot paths.
+5. Any contradiction between API_GUIDE.md, openapi.json, the prototype and this file; any assumption. One line each, with the section number.
