@@ -223,6 +223,234 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'حدث خطأ غير متوقع.'**
   String get failureGeneric;
+
+  /// Rate limit message when Retry-After is known.
+  ///
+  /// In ar, this message translates to:
+  /// **'{seconds, plural, zero{محاولات كثيرة. حاول بعد {seconds} ثانية.} one{محاولات كثيرة. حاول بعد ثانية واحدة.} two{محاولات كثيرة. حاول بعد ثانيتين.} few{محاولات كثيرة. حاول بعد {seconds} ثوانٍ.} many{محاولات كثيرة. حاول بعد {seconds} ثانية.} other{محاولات كثيرة. حاول بعد {seconds} ثانية.}}'**
+  String failureRateLimitedSeconds(int seconds);
+
+  /// No description provided for @failureEmailTaken.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا البريد مسجل مسبقًا. سجّل الدخول بدلًا من ذلك.'**
+  String get failureEmailTaken;
+
+  /// No description provided for @failureInvalidCredentials.
+  ///
+  /// In ar, this message translates to:
+  /// **'البريد أو كلمة المرور غير صحيحة.'**
+  String get failureInvalidCredentials;
+
+  /// No description provided for @failureTokenInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'انتهت الجلسة. سجّل الدخول من جديد.'**
+  String get failureTokenInvalid;
+
+  /// No description provided for @splashLoading.
+  ///
+  /// In ar, this message translates to:
+  /// **'جارٍ فتح التطبيق'**
+  String get splashLoading;
+
+  /// No description provided for @welcomeSlide1Title.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطة تُبنى لك أنت'**
+  String get welcomeSlide1Title;
+
+  /// No description provided for @welcomeSlide1Body.
+  ///
+  /// In ar, this message translates to:
+  /// **'محرك ذكي يختار وجباتك من مطبخنا المحلي حسب جسمك وهدفك وما تحب.'**
+  String get welcomeSlide1Body;
+
+  /// No description provided for @welcomeSlide2Title.
+  ///
+  /// In ar, this message translates to:
+  /// **'تناسب يومك'**
+  String get welcomeSlide2Title;
+
+  /// No description provided for @welcomeSlide2Body.
+  ///
+  /// In ar, this message translates to:
+  /// **'مواعيد الوجبات والماء تُرتب حسب وقت استيقاظك ونومك.'**
+  String get welcomeSlide2Body;
+
+  /// No description provided for @welcomeSlide3Title.
+  ///
+  /// In ar, this message translates to:
+  /// **'ترى تقدمك'**
+  String get welcomeSlide3Title;
+
+  /// No description provided for @welcomeSlide3Body.
+  ///
+  /// In ar, this message translates to:
+  /// **'رسوم واضحة وتقرير أسبوعي وإنجازات تحفزك.'**
+  String get welcomeSlide3Body;
+
+  /// No description provided for @welcomeStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ رحلتك'**
+  String get welcomeStart;
+
+  /// No description provided for @welcomeHaveAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'لدي حساب'**
+  String get welcomeHaveAccount;
+
+  /// No description provided for @authBack.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجوع'**
+  String get authBack;
+
+  /// No description provided for @registerTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ حسابك'**
+  String get registerTitle;
+
+  /// No description provided for @registerSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'دقيقة واحدة، ثم نبني خطتك'**
+  String get registerSubtitle;
+
+  /// No description provided for @registerSubmit.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء الحساب'**
+  String get registerSubmit;
+
+  /// No description provided for @registerFooterPrompt.
+  ///
+  /// In ar, this message translates to:
+  /// **'لديك حساب؟'**
+  String get registerFooterPrompt;
+
+  /// No description provided for @registerFooterAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل دخولك'**
+  String get registerFooterAction;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلًا بعودتك'**
+  String get loginTitle;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل دخولك لتكمل خطتك'**
+  String get loginSubtitle;
+
+  /// No description provided for @loginSubmit.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخول'**
+  String get loginSubmit;
+
+  /// No description provided for @loginFooterPrompt.
+  ///
+  /// In ar, this message translates to:
+  /// **'ليس لديك حساب؟'**
+  String get loginFooterPrompt;
+
+  /// No description provided for @loginFooterAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ حسابًا'**
+  String get loginFooterAction;
+
+  /// No description provided for @authEmailLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'البريد الإلكتروني'**
+  String get authEmailLabel;
+
+  /// No description provided for @authPasswordLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور'**
+  String get authPasswordLabel;
+
+  /// No description provided for @authShowPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'إظهار كلمة المرور'**
+  String get authShowPassword;
+
+  /// No description provided for @authHidePassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'إخفاء كلمة المرور'**
+  String get authHidePassword;
+
+  /// No description provided for @authPasswordHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'٨ أحرف على الأقل'**
+  String get authPasswordHint;
+
+  /// No description provided for @authEmailRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل البريد الإلكتروني.'**
+  String get authEmailRequired;
+
+  /// No description provided for @authEmailInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'البريد الإلكتروني غير صالح.'**
+  String get authEmailInvalid;
+
+  /// No description provided for @authPasswordRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل كلمة المرور.'**
+  String get authPasswordRequired;
+
+  /// No description provided for @authPasswordTooShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'٨ أحرف على الأقل.'**
+  String get authPasswordTooShort;
+
+  /// No description provided for @authPasswordTooLong.
+  ///
+  /// In ar, this message translates to:
+  /// **'١٢٨ حرفًا كحد أقصى.'**
+  String get authPasswordTooLong;
+
+  /// No description provided for @authPasswordInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور غير صالحة.'**
+  String get authPasswordInvalid;
+
+  /// No description provided for @onboardingPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنجهز خطتك هنا قريبًا'**
+  String get onboardingPlaceholder;
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلًا'**
+  String get homeGreeting;
+
+  /// No description provided for @logout.
+  ///
+  /// In ar, this message translates to:
+  /// **'خروج'**
+  String get logout;
 }
 
 class _AppLocalizationsDelegate

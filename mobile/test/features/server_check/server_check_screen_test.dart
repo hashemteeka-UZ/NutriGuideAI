@@ -6,9 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nutriguide/app/app.dart';
 import 'package:nutriguide/core/network/app_failure.dart';
 import 'package:nutriguide/core/theme/motion.dart';
+import 'package:nutriguide/features/auth/data/auth_repository_impl.dart';
+import 'package:nutriguide/features/auth/data/token_store.dart';
 import 'package:nutriguide/features/server_check/data/server_check_repository.dart';
 import 'package:nutriguide/features/server_check/domain/server_status.dart';
 import 'package:nutriguide/features/server_check/presentation/server_check_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../support/fake_auth_repository.dart';
+import '../../support/memory_secure.dart';
 
 void main() {
   testWidgets('shows a loading indicator in Arabic RTL', (tester) async {
@@ -145,14 +151,31 @@ final class _ScriptedRepository implements ServerCheckRepository {
   }
 }
 
-Future<void> _pumpApp(WidgetTester tester, ServerCheckRepository repository) {
-  return tester.pumpWidget(
+Future<void> _pumpApp(
+  WidgetTester tester,
+  ServerCheckRepository repository,
+) async {
+  SharedPreferences.setMockInitialValues(<String, Object>{});
+  tester.platformDispatcher.accessibilityFeaturesTestValue =
+      const FakeAccessibilityFeatures(disableAnimations: true);
+  addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+  await tester.pumpWidget(
     ProviderScope(
       retry: (int retryCount, Object error) => null,
-      overrides: [serverCheckRepositoryProvider.overrideWithValue(repository)],
+      overrides: [
+        serverCheckRepositoryProvider.overrideWithValue(repository),
+        authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+        tokenStoreProvider.overrideWithValue(SecureTokenStore(MemorySecure())),
+      ],
       child: const App(),
     ),
   );
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(const Key('debug-server-check')));
+  await tester.pump();
+  // Welcome needed reduced motion so its auto-advance timer could settle.
+  // The server check screen itself is measured with motion enabled.
+  tester.platformDispatcher.clearAccessibilityFeaturesTestValue();
 }
 
 TextDirection _directionOf(WidgetTester tester) {

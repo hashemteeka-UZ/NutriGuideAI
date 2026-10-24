@@ -26,6 +26,16 @@ bash tool/regenerate_api.sh
 
 That runs `dart run swagger_parser`, `dart run build_runner build --delete-conflicting-outputs`, and `dart run tool/gen_contract_examples_test.dart`. Do not edit `lib/core/api/generated/` by hand.
 
+## Emoji
+
+Fluent Emoji Flat (MIT) is stored in `assets/emoji/`. After `docs/project/ui/prototype_v3/2_fe.js` changes, regenerate it from `mobile/`:
+
+```powershell
+dart run tool/extract_emoji.dart
+```
+
+See `assets/emoji/LICENSE`.
+
 ## Checks
 
 From `mobile/`:

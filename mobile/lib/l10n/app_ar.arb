@@ -47,5 +47,51 @@
   "failureNetwork": "لا يوجد اتصال بالخادم.",
   "failureTimeout": "انتهت مهلة الاتصال بالخادم.",
   "failureUnexpectedResponse": "تعذر قراءة رد الخادم.",
-  "failureGeneric": "حدث خطأ غير متوقع."
+  "failureGeneric": "حدث خطأ غير متوقع.",
+  "failureRateLimitedSeconds": "{seconds, plural, zero{محاولات كثيرة. حاول بعد {seconds} ثانية.} one{محاولات كثيرة. حاول بعد ثانية واحدة.} two{محاولات كثيرة. حاول بعد ثانيتين.} few{محاولات كثيرة. حاول بعد {seconds} ثوانٍ.} many{محاولات كثيرة. حاول بعد {seconds} ثانية.} other{محاولات كثيرة. حاول بعد {seconds} ثانية.}}",
+  "@failureRateLimitedSeconds": {
+    "description": "Rate limit message when Retry-After is known.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "failureEmailTaken": "هذا البريد مسجل مسبقًا. سجّل الدخول بدلًا من ذلك.",
+  "failureInvalidCredentials": "البريد أو كلمة المرور غير صحيحة.",
+  "failureTokenInvalid": "انتهت الجلسة. سجّل الدخول من جديد.",
+  "splashLoading": "جارٍ فتح التطبيق",
+  "welcomeSlide1Title": "خطة تُبنى لك أنت",
+  "welcomeSlide1Body": "محرك ذكي يختار وجباتك من مطبخنا المحلي حسب جسمك وهدفك وما تحب.",
+  "welcomeSlide2Title": "تناسب يومك",
+  "welcomeSlide2Body": "مواعيد الوجبات والماء تُرتب حسب وقت استيقاظك ونومك.",
+  "welcomeSlide3Title": "ترى تقدمك",
+  "welcomeSlide3Body": "رسوم واضحة وتقرير أسبوعي وإنجازات تحفزك.",
+  "welcomeStart": "ابدأ رحلتك",
+  "welcomeHaveAccount": "لدي حساب",
+  "authBack": "رجوع",
+  "registerTitle": "أنشئ حسابك",
+  "registerSubtitle": "دقيقة واحدة، ثم نبني خطتك",
+  "registerSubmit": "إنشاء الحساب",
+  "registerFooterPrompt": "لديك حساب؟",
+  "registerFooterAction": "سجّل دخولك",
+  "loginTitle": "أهلًا بعودتك",
+  "loginSubtitle": "سجل دخولك لتكمل خطتك",
+  "loginSubmit": "دخول",
+  "loginFooterPrompt": "ليس لديك حساب؟",
+  "loginFooterAction": "أنشئ حسابًا",
+  "authEmailLabel": "البريد الإلكتروني",
+  "authPasswordLabel": "كلمة المرور",
+  "authShowPassword": "إظهار كلمة المرور",
+  "authHidePassword": "إخفاء كلمة المرور",
+  "authPasswordHint": "٨ أحرف على الأقل",
+  "authEmailRequired": "أدخل البريد الإلكتروني.",
+  "authEmailInvalid": "البريد الإلكتروني غير صالح.",
+  "authPasswordRequired": "أدخل كلمة المرور.",
+  "authPasswordTooShort": "٨ أحرف على الأقل.",
+  "authPasswordTooLong": "١٢٨ حرفًا كحد أقصى.",
+  "authPasswordInvalid": "كلمة المرور غير صالحة.",
+  "onboardingPlaceholder": "سنجهز خطتك هنا قريبًا",
+  "homeGreeting": "أهلًا",
+  "logout": "خروج"
 }

@@ -154,6 +154,32 @@ void main() {
           l10n.failureRateLimited,
         );
         expect(
+          failureMessage(
+            l10n,
+            const ApiProblem(
+              status: 429,
+              code: 'RATE_LIMITED',
+              title: null,
+              detail: null,
+              requestId: null,
+              retryAfter: 12,
+            ),
+          ),
+          l10n.failureRateLimitedSeconds(12),
+        );
+        expect(
+          failureMessage(l10n, _problem('EMAIL_TAKEN')),
+          l10n.failureEmailTaken,
+        );
+        expect(
+          failureMessage(l10n, _problem('INVALID_CREDENTIALS')),
+          l10n.failureInvalidCredentials,
+        );
+        expect(
+          failureMessage(l10n, _problem('TOKEN_INVALID')),
+          l10n.failureTokenInvalid,
+        );
+        expect(
           failureMessage(l10n, _problem('PLANNER_BUSY')),
           l10n.failurePlannerBusy,
         );

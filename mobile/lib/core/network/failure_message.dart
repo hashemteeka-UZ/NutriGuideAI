@@ -6,8 +6,14 @@ String failureMessage(AppLocalizations l10n, AppFailure failure) {
     NetworkUnavailable() => l10n.failureNetwork,
     Timeout() => l10n.failureTimeout,
     UnexpectedResponse() => l10n.failureUnexpectedResponse,
-    ApiProblem(:final code) => switch (code) {
+    ApiProblem(:final code, :final retryAfter) => switch (code) {
+      'RATE_LIMITED' when retryAfter != null => l10n.failureRateLimitedSeconds(
+        retryAfter,
+      ),
       'RATE_LIMITED' => l10n.failureRateLimited,
+      'EMAIL_TAKEN' => l10n.failureEmailTaken,
+      'INVALID_CREDENTIALS' => l10n.failureInvalidCredentials,
+      'TOKEN_INVALID' => l10n.failureTokenInvalid,
       'PLANNER_BUSY' => l10n.failurePlannerBusy,
       'PLANNER_TIMEOUT' => l10n.failurePlannerTimeout,
       'UNAUTHORIZED' => l10n.failureUnauthorized,
