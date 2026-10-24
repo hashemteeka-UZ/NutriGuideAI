@@ -9,6 +9,7 @@ import '../features/auth/presentation/session_controller.dart';
 import '../features/auth/presentation/splash_screen.dart';
 import '../features/auth/presentation/welcome_screen.dart';
 import '../features/home/presentation/placeholder_screens.dart';
+import '../features/profile/presentation/onboarding_screen.dart';
 import '../features/server_check/presentation/server_check_screen.dart';
 
 String? authRedirect({
@@ -82,7 +83,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/onboarding',
         builder: (BuildContext context, GoRouterState state) {
-          return const OnboardingPlaceholderScreen();
+          return const OnboardingScreen();
         },
       ),
       GoRoute(

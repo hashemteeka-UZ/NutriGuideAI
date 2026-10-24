@@ -11,6 +11,8 @@ final class FakeAuthRepository implements AuthRepository {
   Future<AccountInfo> Function(String email, String password)? onRegister;
   int accountCalls = 0;
   int logoutCalls = 0;
+  int profileMarks = 0;
+  Future<AccountInfo> Function()? onAccount;
   String? lastEmail;
   String? lastPassword;
 
@@ -45,8 +47,17 @@ final class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> markHasProfile() async {
+    profileMarks += 1;
+  }
+
+  @override
   Future<AccountInfo> currentAccount() async {
     accountCalls += 1;
+    final handler = onAccount;
+    if (handler != null) {
+      return handler();
+    }
     throw const NetworkUnavailable();
   }
 

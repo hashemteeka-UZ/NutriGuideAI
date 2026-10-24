@@ -434,12 +434,6 @@ abstract class AppLocalizations {
   /// **'كلمة المرور غير صالحة.'**
   String get authPasswordInvalid;
 
-  /// No description provided for @onboardingPlaceholder.
-  ///
-  /// In ar, this message translates to:
-  /// **'سنجهز خطتك هنا قريبًا'**
-  String get onboardingPlaceholder;
-
   /// No description provided for @homeGreeting.
   ///
   /// In ar, this message translates to:
@@ -451,6 +445,894 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'خروج'**
   String get logout;
+
+  /// No description provided for @failureTargetValidation.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن المستهدف أو السرعة غير صالحة.'**
+  String get failureTargetValidation;
+
+  /// No description provided for @failureNoWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن غير موجود. حاول مرة أخرى.'**
+  String get failureNoWeight;
+
+  /// No description provided for @failureInvalidTimezone.
+  ///
+  /// In ar, this message translates to:
+  /// **'المنطقة الزمنية غير مقبولة.'**
+  String get failureInvalidTimezone;
+
+  /// No description provided for @failureUnknownCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'أحد الاختيارات غير معروف.'**
+  String get failureUnknownCode;
+
+  /// No description provided for @failureProfileNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف غير موجود.'**
+  String get failureProfileNotFound;
+
+  /// No description provided for @onbContinue.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة'**
+  String get onbContinue;
+
+  /// No description provided for @onbBack.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجوع'**
+  String get onbBack;
+
+  /// No description provided for @onbRetry.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get onbRetry;
+
+  /// No description provided for @onbStepProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطوة {current} من {total}'**
+  String onbStepProgress(int current, int total);
+
+  /// No description provided for @onbChecking.
+  ///
+  /// In ar, this message translates to:
+  /// **'نتحقق من حسابك...'**
+  String get onbChecking;
+
+  /// No description provided for @onbCalculating.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحسب احتياجاتك...'**
+  String get onbCalculating;
+
+  /// No description provided for @onbReferenceError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر تحميل قوائم الإعداد.'**
+  String get onbReferenceError;
+
+  /// No description provided for @onbJustForYou.
+  ///
+  /// In ar, this message translates to:
+  /// **'سؤال خاص بك'**
+  String get onbJustForYou;
+
+  /// No description provided for @onbBecauseWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'لأن هدفك تغيير الوزن'**
+  String get onbBecauseWeight;
+
+  /// No description provided for @onbBecauseHeart.
+  ///
+  /// In ar, this message translates to:
+  /// **'لأن صحة القلب تحتاج متابعة الماء مع الطبيب'**
+  String get onbBecauseHeart;
+
+  /// No description provided for @onbAboutTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرّفنا بنفسك'**
+  String get onbAboutTitle;
+
+  /// No description provided for @onbAboutSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجنس والعمر يغيران احتياجك اليومي من الطاقة'**
+  String get onbAboutSubtitle;
+
+  /// No description provided for @onbSexMale.
+  ///
+  /// In ar, this message translates to:
+  /// **'ذكر'**
+  String get onbSexMale;
+
+  /// No description provided for @onbSexFemale.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنثى'**
+  String get onbSexFemale;
+
+  /// No description provided for @onbAge.
+  ///
+  /// In ar, this message translates to:
+  /// **'العمر: {age} سنة'**
+  String onbAge(String age);
+
+  /// No description provided for @onbMeasureTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول والوزن'**
+  String get onbMeasureTitle;
+
+  /// No description provided for @onbMeasureSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحسب بهما احتياجك ونتابع تقدمك'**
+  String get onbMeasureSubtitle;
+
+  /// No description provided for @onbHeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول'**
+  String get onbHeight;
+
+  /// No description provided for @onbWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن'**
+  String get onbWeight;
+
+  /// No description provided for @onbCm.
+  ///
+  /// In ar, this message translates to:
+  /// **'سم'**
+  String get onbCm;
+
+  /// No description provided for @onbKg.
+  ///
+  /// In ar, this message translates to:
+  /// **'كغ'**
+  String get onbKg;
+
+  /// No description provided for @onbBmi.
+  ///
+  /// In ar, this message translates to:
+  /// **'مؤشر كتلة الجسم'**
+  String get onbBmi;
+
+  /// No description provided for @onbBmiUnder.
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل من الطبيعي'**
+  String get onbBmiUnder;
+
+  /// No description provided for @onbBmiNormal.
+  ///
+  /// In ar, this message translates to:
+  /// **'طبيعي'**
+  String get onbBmiNormal;
+
+  /// No description provided for @onbBmiOver.
+  ///
+  /// In ar, this message translates to:
+  /// **'فوق الطبيعي'**
+  String get onbBmiOver;
+
+  /// No description provided for @onbBmiHigh.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرتفع'**
+  String get onbBmiHigh;
+
+  /// No description provided for @onbBmiExplainTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما هو مؤشر كتلة الجسم؟'**
+  String get onbBmiExplainTitle;
+
+  /// No description provided for @onbBmiExplainBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم تقريبي من الوزن والطول (الوزن ÷ مربع الطول بالمتر). نستخدمه كمؤشر عام فقط، ولا يقيس نسبة الدهون أو العضلات.'**
+  String get onbBmiExplainBody;
+
+  /// No description provided for @onbGoalTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{ما هدفكِ؟} other{ما هدفك؟}}'**
+  String onbGoalTitle(String sex);
+
+  /// No description provided for @onbGoalSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'نبني سعراتك اليومية حول هدفك'**
+  String get onbGoalSubtitle;
+
+  /// No description provided for @onbGoalLose.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنقاص الوزن'**
+  String get onbGoalLose;
+
+  /// No description provided for @onbGoalLoseBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'عجز معتدل وآمن في السعرات'**
+  String get onbGoalLoseBody;
+
+  /// No description provided for @onbGoalMaintain.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحافظة على وزني'**
+  String get onbGoalMaintain;
+
+  /// No description provided for @onbGoalMaintainBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكل متوازن يحافظ على طاقتك'**
+  String get onbGoalMaintainBody;
+
+  /// No description provided for @onbGoalGain.
+  ///
+  /// In ar, this message translates to:
+  /// **'زيادة الوزن'**
+  String get onbGoalGain;
+
+  /// No description provided for @onbGoalGainBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'فائض مدروس في السعرات'**
+  String get onbGoalGainBody;
+
+  /// No description provided for @onbLoseUnavailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا نقترح هدفًا أقل من الوزن الطبيعي لطولك'**
+  String get onbLoseUnavailable;
+
+  /// No description provided for @onbPaceLoseTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{إلى أين تريدين أن تصلي؟} other{إلى أين تريد أن تصل؟}}'**
+  String onbPaceLoseTitle(String sex);
+
+  /// No description provided for @onbPaceGainTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{كم تريدين أن تزيدي؟} other{كم تريد أن تزيد؟}}'**
+  String onbPaceGainTitle(String sex);
+
+  /// No description provided for @onbPaceSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{اختاري وزنكِ المستهدف وسرعة الوصول} other{اختر وزنك المستهدف وسرعة الوصول}}'**
+  String onbPaceSubtitle(String sex);
+
+  /// No description provided for @onbTargetWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن المستهدف'**
+  String get onbTargetWeight;
+
+  /// No description provided for @onbPaceHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'السرعة'**
+  String get onbPaceHeading;
+
+  /// No description provided for @onbRateGentle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هادئة · الأسهل للاستمرار'**
+  String get onbRateGentle;
+
+  /// No description provided for @onbRateGentleBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'ربع كغ أسبوعيًا'**
+  String get onbRateGentleBody;
+
+  /// No description provided for @onbRateBalanced.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوازنة · ننصح بها'**
+  String get onbRateBalanced;
+
+  /// No description provided for @onbRateBalancedBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'نصف كغ أسبوعيًا'**
+  String get onbRateBalancedBody;
+
+  /// No description provided for @onbRateFaster.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسرع'**
+  String get onbRateFaster;
+
+  /// No description provided for @onbRateFasterBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'ثلاثة أرباع كغ أسبوعيًا'**
+  String get onbRateFasterBody;
+
+  /// No description provided for @onbRateMax.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقصى'**
+  String get onbRateMax;
+
+  /// No description provided for @onbRateMaxBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'كغ أسبوعيًا'**
+  String get onbRateMaxBody;
+
+  /// No description provided for @onbRateUnavailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير متاحة لوزنك الحالي (أكثر من 1% أسبوعيًا)'**
+  String get onbRateUnavailable;
+
+  /// No description provided for @onbGainCap.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحد الآمن للزيادة نصف كغ أسبوعيًا'**
+  String get onbGainCap;
+
+  /// No description provided for @onbArrival.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{تصلين إلى {weight} كغ بعد نحو {weeks} أسبوعًا، تقريبًا في {when}} other{تصل إلى {weight} كغ بعد نحو {weeks} أسبوعًا، تقريبًا في {when}}}'**
+  String onbArrival(String sex, String weight, String weeks, String when);
+
+  /// No description provided for @onbActivityTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{كم تتحركين في يومكِ؟} other{كم تتحرك في يومك؟}}'**
+  String onbActivityTitle(String sex);
+
+  /// No description provided for @onbActivitySubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{اختاري ما يصف أسبوعكِ المعتاد} other{اختر ما يصف أسبوعك المعتاد}}'**
+  String onbActivitySubtitle(String sex);
+
+  /// No description provided for @onbActSedentary.
+  ///
+  /// In ar, this message translates to:
+  /// **'قليل الحركة'**
+  String get onbActSedentary;
+
+  /// No description provided for @onbActSedentaryBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'عمل مكتبي، مشي قليل'**
+  String get onbActSedentaryBody;
+
+  /// No description provided for @onbActLight.
+  ///
+  /// In ar, this message translates to:
+  /// **'نشاط خفيف'**
+  String get onbActLight;
+
+  /// No description provided for @onbActLightBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشي أو رياضة خفيفة 1 إلى 3 أيام'**
+  String get onbActLightBody;
+
+  /// No description provided for @onbActModerate.
+  ///
+  /// In ar, this message translates to:
+  /// **'نشاط معتدل'**
+  String get onbActModerate;
+
+  /// No description provided for @onbActModerateBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'رياضة متوسطة 3 إلى 5 أيام'**
+  String get onbActModerateBody;
+
+  /// No description provided for @onbActHigh.
+  ///
+  /// In ar, this message translates to:
+  /// **'نشيط جدًا'**
+  String get onbActHigh;
+
+  /// No description provided for @onbActHighBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'رياضة قوية 6 إلى 7 أيام'**
+  String get onbActHighBody;
+
+  /// No description provided for @onbActAthlete.
+  ///
+  /// In ar, this message translates to:
+  /// **'رياضي'**
+  String get onbActAthlete;
+
+  /// No description provided for @onbActAthleteBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'تدريب يومي مكثف أو عمل بدني شاق'**
+  String get onbActAthleteBody;
+
+  /// No description provided for @onbActivityTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{نشاطكِ يحدد كم تحرقين يوميًا. إن ترددتِ بين خيارين، اختاري الأقل لتكون الخطة أدق.} other{نشاطك يحدد كم تحرق يوميًا. إن ترددت بين خيارين، اختر الأقل لتكون الخطة أدق.}}'**
+  String onbActivityTip(String sex);
+
+  /// No description provided for @onbCareTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{هل نراعي شيئًا في أكلكِ؟} other{هل نراعي شيئًا في أكلك؟}}'**
+  String onbCareTitle(String sex);
+
+  /// No description provided for @onbCareSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{اختاري ما ينطبق عليكِ، ونختار لكِ وجبات لا تتعارض معه} other{اختر ما ينطبق عليك، ونختار لك وجبات لا تتعارض معه}}'**
+  String onbCareSubtitle(String sex);
+
+  /// No description provided for @onbCareNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا شيء'**
+  String get onbCareNone;
+
+  /// No description provided for @onbCareNoneBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'أريد أكلًا صحيًا ومتوازنًا فقط'**
+  String get onbCareNoneBody;
+
+  /// No description provided for @onbCareDiabetesBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'سكريات أقل وكربوهيدرات موزعة على وجباتك'**
+  String get onbCareDiabetesBody;
+
+  /// No description provided for @onbCarePressureBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملح أقل في وجباتك اليومية'**
+  String get onbCarePressureBody;
+
+  /// No description provided for @onbCareHeartBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'دهون صحية وملح أقل'**
+  String get onbCareHeartBody;
+
+  /// No description provided for @onbCareExplainTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف نراعي ذلك؟'**
+  String get onbCareExplainTitle;
+
+  /// No description provided for @onbCareExplainBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'NutriGuide لا يعالج أي حالة، ولا يغني عن طبيبك. هو فقط يتجنب في خطتك ما قد لا يناسبك، مثل الملح الزائد أو السكريات، حسب توصيات منظمة الصحة العالمية وجمعيات الصحة.'**
+  String get onbCareExplainBody;
+
+  /// No description provided for @onbAllergyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{هل تتجنبين أي مكون؟} other{هل تتجنب أي مكون؟}}'**
+  String onbAllergyTitle(String sex);
+
+  /// No description provided for @onbAllergySubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{اضغطي مرة للتجنب، ومرتين إذا كانت حساسية شديدة} other{اضغط مرة للتجنب، ومرتين إذا كانت حساسية شديدة}}'**
+  String onbAllergySubtitle(String sex);
+
+  /// No description provided for @onbAvoid.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجنب'**
+  String get onbAvoid;
+
+  /// No description provided for @onbSevere.
+  ///
+  /// In ar, this message translates to:
+  /// **'شديدة'**
+  String get onbSevere;
+
+  /// No description provided for @onbAllergyTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'«تجنب» يعني أننا لا نضعه في خطتك. «شديدة» تعني أيضًا أننا نحذرك بوضوح إذا ظهر في أي وجبة تتصفحها.'**
+  String get onbAllergyTip;
+
+  /// No description provided for @onbSafetyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سؤال أخير للاطمئنان'**
+  String get onbSafetyTitle;
+
+  /// No description provided for @onbSafetySubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{حتى نتأكد أن الخطة الشخصية مناسبة لكِ} other{حتى نتأكد أن الخطة الشخصية مناسبة لك}}'**
+  String onbSafetySubtitle(String sex);
+
+  /// No description provided for @onbInsulinQuestion.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{هل تستخدمين الإنسولين؟} other{هل تستخدم الإنسولين؟}}'**
+  String onbInsulinQuestion(String sex);
+
+  /// No description provided for @onbYes.
+  ///
+  /// In ar, this message translates to:
+  /// **'نعم'**
+  String get onbYes;
+
+  /// No description provided for @onbNo.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا'**
+  String get onbNo;
+
+  /// No description provided for @onbWhyAsk.
+  ///
+  /// In ar, this message translates to:
+  /// **'لماذا نسأل؟'**
+  String get onbWhyAsk;
+
+  /// No description provided for @onbWhyAskBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدام الإنسولين يحتاج تخطيط الكربوهيدرات مرتبطًا بالجرعات، وهذا لا يغطيه التطبيق، فيُستخدم الوضع العام.'**
+  String get onbWhyAskBody;
+
+  /// No description provided for @onbRhythmTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, FEMALE{كيف يبدو يومكِ؟} other{كيف يبدو يومك؟}}'**
+  String onbRhythmTitle(String sex);
+
+  /// No description provided for @onbRhythmSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'نرتب مواعيد وجباتك ومائك حول وقت استيقاظك ونومك'**
+  String get onbRhythmSubtitle;
+
+  /// No description provided for @onbWake.
+  ///
+  /// In ar, this message translates to:
+  /// **'أستيقظ'**
+  String get onbWake;
+
+  /// No description provided for @onbSleep.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنام'**
+  String get onbSleep;
+
+  /// No description provided for @onbSuggestedDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'يومك المقترح'**
+  String get onbSuggestedDay;
+
+  /// No description provided for @onbBreakfast.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفطور'**
+  String get onbBreakfast;
+
+  /// No description provided for @onbLunch.
+  ///
+  /// In ar, this message translates to:
+  /// **'الغداء'**
+  String get onbLunch;
+
+  /// No description provided for @onbSnack.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبة خفيفة'**
+  String get onbSnack;
+
+  /// No description provided for @onbDinner.
+  ///
+  /// In ar, this message translates to:
+  /// **'العشاء'**
+  String get onbDinner;
+
+  /// No description provided for @onbWindow.
+  ///
+  /// In ar, this message translates to:
+  /// **'{start} – {end}'**
+  String onbWindow(String start, String end);
+
+  /// No description provided for @onbFluidTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة الماء مع طبيبك'**
+  String get onbFluidTitle;
+
+  /// No description provided for @onbFluidSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بعض حالات القلب يحدد لها الطبيب كمية سوائل يومية'**
+  String get onbFluidSubtitle;
+
+  /// No description provided for @onbFluidNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يحدد لي طبيبي كمية'**
+  String get onbFluidNone;
+
+  /// No description provided for @onbFluidNoneBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا بأس. سنسجل ما تشربه ونعرضه لك دون أن نضع هدفًا أو نذكرك بالشرب.'**
+  String get onbFluidNoneBody;
+
+  /// No description provided for @onbFluidDoctor.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدد لي طبيبي كمية يومية'**
+  String get onbFluidDoctor;
+
+  /// No description provided for @onbFluidRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'بين 500 و5000 مل'**
+  String get onbFluidRange;
+
+  /// No description provided for @onbMl.
+  ///
+  /// In ar, this message translates to:
+  /// **'مل'**
+  String get onbMl;
+
+  /// No description provided for @onbResultTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذه احتياجاتك اليومية، محسوبة لك أنت'**
+  String get onbResultTitle;
+
+  /// No description provided for @onbDailyCalories.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعراتك اليومية'**
+  String get onbDailyCalories;
+
+  /// No description provided for @onbLineLose.
+  ///
+  /// In ar, this message translates to:
+  /// **'لإنقاص وزنك'**
+  String get onbLineLose;
+
+  /// No description provided for @onbLineMaintain.
+  ///
+  /// In ar, this message translates to:
+  /// **'للمحافظة على وزنك'**
+  String get onbLineMaintain;
+
+  /// No description provided for @onbLineGain.
+  ///
+  /// In ar, this message translates to:
+  /// **'لزيادة وزنك'**
+  String get onbLineGain;
+
+  /// No description provided for @onbProtein.
+  ///
+  /// In ar, this message translates to:
+  /// **'بروتين'**
+  String get onbProtein;
+
+  /// No description provided for @onbCarbs.
+  ///
+  /// In ar, this message translates to:
+  /// **'كربوهيدرات'**
+  String get onbCarbs;
+
+  /// No description provided for @onbFat.
+  ///
+  /// In ar, this message translates to:
+  /// **'دهون'**
+  String get onbFat;
+
+  /// No description provided for @onbFiber.
+  ///
+  /// In ar, this message translates to:
+  /// **'ألياف'**
+  String get onbFiber;
+
+  /// No description provided for @onbWater.
+  ///
+  /// In ar, this message translates to:
+  /// **'الماء'**
+  String get onbWater;
+
+  /// No description provided for @onbGrams.
+  ///
+  /// In ar, this message translates to:
+  /// **'غ'**
+  String get onbGrams;
+
+  /// No description provided for @onbMacroShare.
+  ///
+  /// In ar, this message translates to:
+  /// **'{share} من السعرات'**
+  String onbMacroShare(String share);
+
+  /// No description provided for @onbWaterClinician.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالتنسيق مع طبيبك'**
+  String get onbWaterClinician;
+
+  /// No description provided for @onbWaterNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدون هدف'**
+  String get onbWaterNone;
+
+  /// No description provided for @onbHowTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف حسبناها؟'**
+  String get onbHowTitle;
+
+  /// No description provided for @onbHowRestTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطاقة وقت الراحة (معادلة Mifflin-St Jeor)'**
+  String get onbHowRestTitle;
+
+  /// No description provided for @onbHowRestBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا ما يحتاجه جسمك للطاقة وأنت مرتاح تمامًا، بحسب معادلة ميفلين-سانت جيور.'**
+  String get onbHowRestBody;
+
+  /// No description provided for @onbHowActivityTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'× معامل نشاطك'**
+  String get onbHowActivityTitle;
+
+  /// No description provided for @onbHowActivityBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'نضرب طاقة الراحة في معامل نشاطك ({factor}) لنحصل على ما تحرقه في يومك المعتاد.'**
+  String onbHowActivityBody(String factor);
+
+  /// No description provided for @onbHowDeficitTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'− عجز إنقاص الوزن'**
+  String get onbHowDeficitTitle;
+
+  /// No description provided for @onbHowDeficitBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الفرق الذي نخصمه من احتياجك حتى ينخفض الوزن بالسرعة التي اخترتها.'**
+  String get onbHowDeficitBody;
+
+  /// No description provided for @onbHowSurplusTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'+ فائض الزيادة'**
+  String get onbHowSurplusTitle;
+
+  /// No description provided for @onbHowSurplusBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذه الزيادة فوق احتياجك حتى يرتفع الوزن بالسرعة التي اخترتها.'**
+  String get onbHowSurplusBody;
+
+  /// No description provided for @onbHowFloorTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'رفعنا السعرات إلى الحد الأدنى الآمن'**
+  String get onbHowFloorTitle;
+
+  /// No description provided for @onbHowFloorBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة لا تنزل تحت حد أدنى آمن، لذلك رفعنا السعرات إليه.'**
+  String get onbHowFloorBody;
+
+  /// No description provided for @onbHowDailyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدفك اليومي'**
+  String get onbHowDailyTitle;
+
+  /// No description provided for @onbHowBasedOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'محسوبة على وزن {weight} كغ'**
+  String onbHowBasedOn(String weight);
+
+  /// No description provided for @onbBuildPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابنِ خطتي الأولى'**
+  String get onbBuildPlan;
+
+  /// No description provided for @onbGeneralTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابك جاهز في الوضع العام'**
+  String get onbGeneralTitle;
+
+  /// No description provided for @onbReasonUnder18.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة الشخصية مخصصة للبالغين'**
+  String get onbReasonUnder18;
+
+  /// No description provided for @onbReasonInsulin.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدام الإنسولين يحتاج تخطيطًا مع طبيبك لا يغطيه التطبيق'**
+  String get onbReasonInsulin;
+
+  /// No description provided for @onbReasonGeneric.
+  ///
+  /// In ar, this message translates to:
+  /// **'وضعك يحتاج تقديرًا لا تغطيه الخطة الشخصية.'**
+  String get onbReasonGeneric;
+
+  /// No description provided for @onbCanDo.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا يمكنك أن تفعل؟'**
+  String get onbCanDo;
+
+  /// No description provided for @onbCanMeals.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصفح وجبات صحية مع قيمها الغذائية'**
+  String get onbCanMeals;
+
+  /// No description provided for @onbCanLog.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل أكلك ومائك يوميًا'**
+  String get onbCanLog;
+
+  /// No description provided for @onbCanProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'تابع وزنك وتقدمك برسوم واضحة'**
+  String get onbCanProgress;
+
+  /// No description provided for @onbCanShop.
+  ///
+  /// In ar, this message translates to:
+  /// **'اصنع قائمة مشترياتك'**
+  String get onbCanShop;
+
+  /// No description provided for @onbEnterApp.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادخل التطبيق'**
+  String get onbEnterApp;
+
+  /// No description provided for @onbTimezoneNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت UTC.'**
+  String get onbTimezoneNote;
 }
 
 class _AppLocalizationsDelegate

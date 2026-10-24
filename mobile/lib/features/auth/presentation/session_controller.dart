@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/auth_repository_impl.dart';
+import '../domain/account_info.dart';
 import '../domain/auth_repository.dart';
 import '../domain/session.dart';
 import '../session_signals.dart';
@@ -47,6 +48,32 @@ class SessionController extends Notifier<SessionState> {
   Future<void> logout() async {
     await _repository.logout();
     _emit(const SignedOut());
+  }
+
+  void adopt(AccountInfo account) {
+    if (state is! SignedIn) {
+      return;
+    }
+    _emit(SignedIn(account: account));
+  }
+
+  Future<void> completeOnboarding() async {
+    await _repository.markHasProfile();
+    final current = state;
+    if (current is! SignedIn) {
+      return;
+    }
+    final account = current.account;
+    _emit(
+      SignedIn(
+        account: AccountInfo(
+          hasProfile: true,
+          userId: account?.userId,
+          email: account?.email,
+          createdAt: account?.createdAt,
+        ),
+      ),
+    );
   }
 
   void consumeExpiredReason() {

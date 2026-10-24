@@ -70,6 +70,11 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> markHasProfile() {
+    return _tokens.updateHasProfile(true);
+  }
+
+  @override
   Future<AccountInfo> currentAccount() async {
     try {
       final account = accountInfoFrom(await _account.getMe());

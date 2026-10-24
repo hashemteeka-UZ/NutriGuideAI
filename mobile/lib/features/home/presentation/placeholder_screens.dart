@@ -8,34 +8,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../auth/domain/session.dart';
 import '../../auth/presentation/session_controller.dart';
 
-// K.2
-class OnboardingPlaceholderScreen extends StatelessWidget {
-  const OnboardingPlaceholderScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colors = context.appColors;
-    return Scaffold(
-      backgroundColor: colors.bg,
-      body: SafeArea(
-        child: _PlaceholderBody(
-          children: <Widget>[
-            Text(
-              l10n.onboardingPlaceholder,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(color: colors.fg, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 24),
-            _LogoutButton(label: l10n.logout),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 // K.4
 class HomePlaceholderScreen extends ConsumerWidget {
   const HomePlaceholderScreen({super.key});

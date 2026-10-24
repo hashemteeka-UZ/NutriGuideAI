@@ -13,5 +13,7 @@ abstract interface class AuthRepository {
 
   Future<AccountInfo> currentAccount();
 
+  Future<void> markHasProfile();
+
   Future<SessionState> restore();
 }

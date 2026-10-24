@@ -116,7 +116,7 @@ void main() {
     await _submitLogin(tester, 'new@example.com', '12345678');
     await tester.pumpAndSettle();
 
-    expect(find.text('سنجهز خطتك هنا قريبًا'), findsOneWidget);
+    expect(find.text('عرّفنا بنفسك'), findsOneWidget);
   });
 
   testWidgets('login routes to home when the account has a profile', (

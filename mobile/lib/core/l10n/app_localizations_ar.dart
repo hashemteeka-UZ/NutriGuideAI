@@ -194,11 +194,568 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authPasswordInvalid => 'كلمة المرور غير صالحة.';
 
   @override
-  String get onboardingPlaceholder => 'سنجهز خطتك هنا قريبًا';
-
-  @override
   String get homeGreeting => 'أهلًا';
 
   @override
   String get logout => 'خروج';
+
+  @override
+  String get failureTargetValidation => 'الوزن المستهدف أو السرعة غير صالحة.';
+
+  @override
+  String get failureNoWeight => 'الوزن غير موجود. حاول مرة أخرى.';
+
+  @override
+  String get failureInvalidTimezone => 'المنطقة الزمنية غير مقبولة.';
+
+  @override
+  String get failureUnknownCode => 'أحد الاختيارات غير معروف.';
+
+  @override
+  String get failureProfileNotFound => 'الملف غير موجود.';
+
+  @override
+  String get onbContinue => 'متابعة';
+
+  @override
+  String get onbBack => 'رجوع';
+
+  @override
+  String get onbRetry => 'إعادة المحاولة';
+
+  @override
+  String onbStepProgress(int current, int total) {
+    return 'الخطوة $current من $total';
+  }
+
+  @override
+  String get onbChecking => 'نتحقق من حسابك...';
+
+  @override
+  String get onbCalculating => 'نحسب احتياجاتك...';
+
+  @override
+  String get onbReferenceError => 'تعذر تحميل قوائم الإعداد.';
+
+  @override
+  String get onbJustForYou => 'سؤال خاص بك';
+
+  @override
+  String get onbBecauseWeight => 'لأن هدفك تغيير الوزن';
+
+  @override
+  String get onbBecauseHeart => 'لأن صحة القلب تحتاج متابعة الماء مع الطبيب';
+
+  @override
+  String get onbAboutTitle => 'عرّفنا بنفسك';
+
+  @override
+  String get onbAboutSubtitle => 'الجنس والعمر يغيران احتياجك اليومي من الطاقة';
+
+  @override
+  String get onbSexMale => 'ذكر';
+
+  @override
+  String get onbSexFemale => 'أنثى';
+
+  @override
+  String onbAge(String age) {
+    return 'العمر: $age سنة';
+  }
+
+  @override
+  String get onbMeasureTitle => 'الطول والوزن';
+
+  @override
+  String get onbMeasureSubtitle => 'نحسب بهما احتياجك ونتابع تقدمك';
+
+  @override
+  String get onbHeight => 'الطول';
+
+  @override
+  String get onbWeight => 'الوزن';
+
+  @override
+  String get onbCm => 'سم';
+
+  @override
+  String get onbKg => 'كغ';
+
+  @override
+  String get onbBmi => 'مؤشر كتلة الجسم';
+
+  @override
+  String get onbBmiUnder => 'أقل من الطبيعي';
+
+  @override
+  String get onbBmiNormal => 'طبيعي';
+
+  @override
+  String get onbBmiOver => 'فوق الطبيعي';
+
+  @override
+  String get onbBmiHigh => 'مرتفع';
+
+  @override
+  String get onbBmiExplainTitle => 'ما هو مؤشر كتلة الجسم؟';
+
+  @override
+  String get onbBmiExplainBody =>
+      'رقم تقريبي من الوزن والطول (الوزن ÷ مربع الطول بالمتر). نستخدمه كمؤشر عام فقط، ولا يقيس نسبة الدهون أو العضلات.';
+
+  @override
+  String onbGoalTitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'ما هدفكِ؟',
+      'other': 'ما هدفك؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get onbGoalSubtitle => 'نبني سعراتك اليومية حول هدفك';
+
+  @override
+  String get onbGoalLose => 'إنقاص الوزن';
+
+  @override
+  String get onbGoalLoseBody => 'عجز معتدل وآمن في السعرات';
+
+  @override
+  String get onbGoalMaintain => 'المحافظة على وزني';
+
+  @override
+  String get onbGoalMaintainBody => 'أكل متوازن يحافظ على طاقتك';
+
+  @override
+  String get onbGoalGain => 'زيادة الوزن';
+
+  @override
+  String get onbGoalGainBody => 'فائض مدروس في السعرات';
+
+  @override
+  String get onbLoseUnavailable => 'لا نقترح هدفًا أقل من الوزن الطبيعي لطولك';
+
+  @override
+  String onbPaceLoseTitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'إلى أين تريدين أن تصلي؟',
+      'other': 'إلى أين تريد أن تصل؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbPaceGainTitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'كم تريدين أن تزيدي؟',
+      'other': 'كم تريد أن تزيد؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbPaceSubtitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'اختاري وزنكِ المستهدف وسرعة الوصول',
+      'other': 'اختر وزنك المستهدف وسرعة الوصول',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get onbTargetWeight => 'الوزن المستهدف';
+
+  @override
+  String get onbPaceHeading => 'السرعة';
+
+  @override
+  String get onbRateGentle => 'هادئة · الأسهل للاستمرار';
+
+  @override
+  String get onbRateGentleBody => 'ربع كغ أسبوعيًا';
+
+  @override
+  String get onbRateBalanced => 'متوازنة · ننصح بها';
+
+  @override
+  String get onbRateBalancedBody => 'نصف كغ أسبوعيًا';
+
+  @override
+  String get onbRateFaster => 'أسرع';
+
+  @override
+  String get onbRateFasterBody => 'ثلاثة أرباع كغ أسبوعيًا';
+
+  @override
+  String get onbRateMax => 'الأقصى';
+
+  @override
+  String get onbRateMaxBody => 'كغ أسبوعيًا';
+
+  @override
+  String get onbRateUnavailable =>
+      'غير متاحة لوزنك الحالي (أكثر من 1% أسبوعيًا)';
+
+  @override
+  String get onbGainCap => 'الحد الآمن للزيادة نصف كغ أسبوعيًا';
+
+  @override
+  String onbArrival(String sex, String weight, String weeks, String when) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'تصلين إلى $weight كغ بعد نحو $weeks أسبوعًا، تقريبًا في $when',
+      'other': 'تصل إلى $weight كغ بعد نحو $weeks أسبوعًا، تقريبًا في $when',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbActivityTitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'كم تتحركين في يومكِ؟',
+      'other': 'كم تتحرك في يومك؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbActivitySubtitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'اختاري ما يصف أسبوعكِ المعتاد',
+      'other': 'اختر ما يصف أسبوعك المعتاد',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get onbActSedentary => 'قليل الحركة';
+
+  @override
+  String get onbActSedentaryBody => 'عمل مكتبي، مشي قليل';
+
+  @override
+  String get onbActLight => 'نشاط خفيف';
+
+  @override
+  String get onbActLightBody => 'مشي أو رياضة خفيفة 1 إلى 3 أيام';
+
+  @override
+  String get onbActModerate => 'نشاط معتدل';
+
+  @override
+  String get onbActModerateBody => 'رياضة متوسطة 3 إلى 5 أيام';
+
+  @override
+  String get onbActHigh => 'نشيط جدًا';
+
+  @override
+  String get onbActHighBody => 'رياضة قوية 6 إلى 7 أيام';
+
+  @override
+  String get onbActAthlete => 'رياضي';
+
+  @override
+  String get onbActAthleteBody => 'تدريب يومي مكثف أو عمل بدني شاق';
+
+  @override
+  String onbActivityTip(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'نشاطكِ يحدد كم تحرقين يوميًا. إن ترددتِ بين خيارين، اختاري الأقل لتكون الخطة أدق.',
+      'other': 'نشاطك يحدد كم تحرق يوميًا. إن ترددت بين خيارين، اختر الأقل لتكون الخطة أدق.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbCareTitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'هل نراعي شيئًا في أكلكِ؟',
+      'other': 'هل نراعي شيئًا في أكلك؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbCareSubtitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'اختاري ما ينطبق عليكِ، ونختار لكِ وجبات لا تتعارض معه',
+      'other': 'اختر ما ينطبق عليك، ونختار لك وجبات لا تتعارض معه',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get onbCareNone => 'لا شيء';
+
+  @override
+  String get onbCareNoneBody => 'أريد أكلًا صحيًا ومتوازنًا فقط';
+
+  @override
+  String get onbCareDiabetesBody => 'سكريات أقل وكربوهيدرات موزعة على وجباتك';
+
+  @override
+  String get onbCarePressureBody => 'ملح أقل في وجباتك اليومية';
+
+  @override
+  String get onbCareHeartBody => 'دهون صحية وملح أقل';
+
+  @override
+  String get onbCareExplainTitle => 'كيف نراعي ذلك؟';
+
+  @override
+  String get onbCareExplainBody =>
+      'NutriGuide لا يعالج أي حالة، ولا يغني عن طبيبك. هو فقط يتجنب في خطتك ما قد لا يناسبك، مثل الملح الزائد أو السكريات، حسب توصيات منظمة الصحة العالمية وجمعيات الصحة.';
+
+  @override
+  String onbAllergyTitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'هل تتجنبين أي مكون؟',
+      'other': 'هل تتجنب أي مكون؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbAllergySubtitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'اضغطي مرة للتجنب، ومرتين إذا كانت حساسية شديدة',
+      'other': 'اضغط مرة للتجنب، ومرتين إذا كانت حساسية شديدة',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get onbAvoid => 'تجنب';
+
+  @override
+  String get onbSevere => 'شديدة';
+
+  @override
+  String get onbAllergyTip =>
+      '«تجنب» يعني أننا لا نضعه في خطتك. «شديدة» تعني أيضًا أننا نحذرك بوضوح إذا ظهر في أي وجبة تتصفحها.';
+
+  @override
+  String get onbSafetyTitle => 'سؤال أخير للاطمئنان';
+
+  @override
+  String onbSafetySubtitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'حتى نتأكد أن الخطة الشخصية مناسبة لكِ',
+      'other': 'حتى نتأكد أن الخطة الشخصية مناسبة لك',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String onbInsulinQuestion(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'هل تستخدمين الإنسولين؟',
+      'other': 'هل تستخدم الإنسولين؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get onbYes => 'نعم';
+
+  @override
+  String get onbNo => 'لا';
+
+  @override
+  String get onbWhyAsk => 'لماذا نسأل؟';
+
+  @override
+  String get onbWhyAskBody =>
+      'استخدام الإنسولين يحتاج تخطيط الكربوهيدرات مرتبطًا بالجرعات، وهذا لا يغطيه التطبيق، فيُستخدم الوضع العام.';
+
+  @override
+  String onbRhythmTitle(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'FEMALE': 'كيف يبدو يومكِ؟',
+      'other': 'كيف يبدو يومك؟',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get onbRhythmSubtitle =>
+      'نرتب مواعيد وجباتك ومائك حول وقت استيقاظك ونومك';
+
+  @override
+  String get onbWake => 'أستيقظ';
+
+  @override
+  String get onbSleep => 'أنام';
+
+  @override
+  String get onbSuggestedDay => 'يومك المقترح';
+
+  @override
+  String get onbBreakfast => 'الفطور';
+
+  @override
+  String get onbLunch => 'الغداء';
+
+  @override
+  String get onbSnack => 'وجبة خفيفة';
+
+  @override
+  String get onbDinner => 'العشاء';
+
+  @override
+  String onbWindow(String start, String end) {
+    return '$start – $end';
+  }
+
+  @override
+  String get onbFluidTitle => 'متابعة الماء مع طبيبك';
+
+  @override
+  String get onbFluidSubtitle =>
+      'بعض حالات القلب يحدد لها الطبيب كمية سوائل يومية';
+
+  @override
+  String get onbFluidNone => 'لم يحدد لي طبيبي كمية';
+
+  @override
+  String get onbFluidNoneBody =>
+      'لا بأس. سنسجل ما تشربه ونعرضه لك دون أن نضع هدفًا أو نذكرك بالشرب.';
+
+  @override
+  String get onbFluidDoctor => 'حدد لي طبيبي كمية يومية';
+
+  @override
+  String get onbFluidRange => 'بين 500 و5000 مل';
+
+  @override
+  String get onbMl => 'مل';
+
+  @override
+  String get onbResultTitle => 'هذه احتياجاتك اليومية، محسوبة لك أنت';
+
+  @override
+  String get onbDailyCalories => 'سعراتك اليومية';
+
+  @override
+  String get onbLineLose => 'لإنقاص وزنك';
+
+  @override
+  String get onbLineMaintain => 'للمحافظة على وزنك';
+
+  @override
+  String get onbLineGain => 'لزيادة وزنك';
+
+  @override
+  String get onbProtein => 'بروتين';
+
+  @override
+  String get onbCarbs => 'كربوهيدرات';
+
+  @override
+  String get onbFat => 'دهون';
+
+  @override
+  String get onbFiber => 'ألياف';
+
+  @override
+  String get onbWater => 'الماء';
+
+  @override
+  String get onbGrams => 'غ';
+
+  @override
+  String onbMacroShare(String share) {
+    return '$share من السعرات';
+  }
+
+  @override
+  String get onbWaterClinician => 'بالتنسيق مع طبيبك';
+
+  @override
+  String get onbWaterNone => 'بدون هدف';
+
+  @override
+  String get onbHowTitle => 'كيف حسبناها؟';
+
+  @override
+  String get onbHowRestTitle => 'الطاقة وقت الراحة (معادلة Mifflin-St Jeor)';
+
+  @override
+  String get onbHowRestBody =>
+      'هذا ما يحتاجه جسمك للطاقة وأنت مرتاح تمامًا، بحسب معادلة ميفلين-سانت جيور.';
+
+  @override
+  String get onbHowActivityTitle => '× معامل نشاطك';
+
+  @override
+  String onbHowActivityBody(String factor) {
+    return 'نضرب طاقة الراحة في معامل نشاطك ($factor) لنحصل على ما تحرقه في يومك المعتاد.';
+  }
+
+  @override
+  String get onbHowDeficitTitle => '− عجز إنقاص الوزن';
+
+  @override
+  String get onbHowDeficitBody =>
+      'هذا الفرق الذي نخصمه من احتياجك حتى ينخفض الوزن بالسرعة التي اخترتها.';
+
+  @override
+  String get onbHowSurplusTitle => '+ فائض الزيادة';
+
+  @override
+  String get onbHowSurplusBody =>
+      'هذه الزيادة فوق احتياجك حتى يرتفع الوزن بالسرعة التي اخترتها.';
+
+  @override
+  String get onbHowFloorTitle => 'رفعنا السعرات إلى الحد الأدنى الآمن';
+
+  @override
+  String get onbHowFloorBody =>
+      'الخطة لا تنزل تحت حد أدنى آمن، لذلك رفعنا السعرات إليه.';
+
+  @override
+  String get onbHowDailyTitle => 'هدفك اليومي';
+
+  @override
+  String onbHowBasedOn(String weight) {
+    return 'محسوبة على وزن $weight كغ';
+  }
+
+  @override
+  String get onbBuildPlan => 'ابنِ خطتي الأولى';
+
+  @override
+  String get onbGeneralTitle => 'حسابك جاهز في الوضع العام';
+
+  @override
+  String get onbReasonUnder18 => 'الخطة الشخصية مخصصة للبالغين';
+
+  @override
+  String get onbReasonInsulin =>
+      'استخدام الإنسولين يحتاج تخطيطًا مع طبيبك لا يغطيه التطبيق';
+
+  @override
+  String get onbReasonGeneric => 'وضعك يحتاج تقديرًا لا تغطيه الخطة الشخصية.';
+
+  @override
+  String get onbCanDo => 'ماذا يمكنك أن تفعل؟';
+
+  @override
+  String get onbCanMeals => 'تصفح وجبات صحية مع قيمها الغذائية';
+
+  @override
+  String get onbCanLog => 'سجل أكلك ومائك يوميًا';
+
+  @override
+  String get onbCanProgress => 'تابع وزنك وتقدمك برسوم واضحة';
+
+  @override
+  String get onbCanShop => 'اصنع قائمة مشترياتك';
+
+  @override
+  String get onbEnterApp => 'ادخل التطبيق';
+
+  @override
+  String get onbTimezoneNote =>
+      'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت UTC.';
 }
