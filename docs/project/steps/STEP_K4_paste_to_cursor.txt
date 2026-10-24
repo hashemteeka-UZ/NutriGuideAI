@@ -1,0 +1,114 @@
+You are implementing **Step K.4 (app shell, weekly plan generation showcase, Today home, plan tab, plan meal details, swap, shopping list; Decisions #252 to #261)** for NutriGuideAI. K.0 to K.3 are done: skeleton, generated client, auth, adaptive onboarding and targets, encrypted drift database, offline catalog with ETag, search, meal details, favourites. This pass turns the app into its real shape: bottom navigation, a real plan for the week built by the server optimizer, a home screen for today, swap and shopping list. Logging food and water comes in K.5, progress in K.6.
+
+You are running in Cursor on **Windows**, in the clone `C:\dev\NutriGuideAI`. Use the Cursor terminal (PowerShell). First run `git pull` and confirm `git status` is clean (K.3 must be committed). Read first: `docs/project/steps/STEP_K_plan.md` (decisions #252-#261 are the source of truth), `docs/api/API_GUIDE.md` (sections "5. Offline and the planner", "Weekly plan", "6. Errors", "7. Screens"), `docs/api/openapi.json` (`POST /api/v1/plans/days`, `GET /api/v1/plans`, `GET /api/v1/days/{date}`, `GET /api/v1/plan-items/{plan_item_id}/alternatives`, `POST /api/v1/plan-items/{plan_item_id}/swap`, `GET /api/v1/shopping-list`; schemas `PlanDayRequest`, `DayPlanOut`, `PlanItemOut`, `PlanStats`, `PlanTargetOut`, `NutrientTotals`, `UnmetMinimumOut`, `DayView`, `DayAdherenceOut`, `MealWindow`, `WaterDay`, `Alternative`, `SwapRequest`, `ShoppingList`, `ShoppingItem`), and `docs/PROJECT_CONTEXT_v4_21.md` section 28.6 (reason codes). Visual reference in `docs/project/ui/prototype_v3`: `7_home.js` (`home`, `mealCard`, `mealState`), `9_tabs.js` (`plan`, `shop`), `10_main.js` (`genSkeleton`, `runGen`, `solveDay`), `8_screens.js` (`mealSheet`, `swapSheet`), `5_ui.js` (`navbar`, `ring`, `bar`), `1_head.html` (tokens, `.gen`, `.tl`, `.meal`, `.shop` styles).
+
+**The prototype still contains cancelled or not-yet-built items. Do NOT build:** `trainCard`, `proteinCard`, anything with `muscle()`, training days, "before/after training", protein-per-meal rules, the user's name in the greeting (there is no name), the streak pill (K.6), the notification bell (K.7), the "I ate it" button and the quick-add FAB (K.5), water +250 (K.5), the portion multiplier selector (×0.5 to ×2, not in the API), "% of daily limit" lines, shopping categories (the API has none), and fake numbers from the prototype generation screen (186 meals, GENOUT tiles).
+
+## Hard rules
+1. Change files ONLY under `mobile/`. Never touch `backend/`, `docs/`, CI files.
+2. Never log plan contents, meal names, targets, or response bodies. The debug interceptor stays method/path/status/duration only.
+3. The app never computes nutrition. Every kcal, gram and macro shown comes from server fields (plan item, plan totals, plan target, adherence totals, catalog per-serving values). Allowed display derivations: ring shares (protein×4, carb×4, fat×9 over their sum), percentages of two server numbers, grams to kg.
+4. Generated models stay in `data/`. Local drift tables are defined independently with explicit mappers. Architecture tests cover the new features.
+5. New packages only via `flutter pub add`. Allowed: `share_plus` (share the shopping list as text). Nothing else without asking. Charts are drawn with `CustomPainter`.
+6. Slow network: `flutter run -d emulator-5554 --dart-define=API_BASE_URL=http://localhost:8000` after `adb reverse tcp:8000 tcp:8000`; `flutter build apk --debug --target-platform android-x64`.
+7. Do not commit. The user commits after review.
+
+## 0. Preconditions and K.3 carry-over
+- Backend running in WSL, `Invoke-RestMethod http://localhost:8000/api/v1/health` returns `status: ok`. `flutter analyze` clean, `flutter test` green (283).
+- Carry-over: the database opener currently probes with a temporary `AppDatabase` and then opens a second one (drift prints a warning). Open once: set the key in `setup`, verify with `SELECT count(*) FROM sqlite_master` inside the same connection (e.g. a `beforeOpen`/setup check that throws a typed error), and on that error close, delete and recreate. Keep the K.3 encryption and recovery tests green.
+
+## 1. App shell (#252)
+- `StatefulShellRoute.indexedStack` with five tabs in this order (RTL mirrors automatically): «اليوم» `/today`, «الخطة» `/plan`, «الماء» `/water`, «تقدمي» `/progress`, «حسابي» `/me`. Icons and labels as `navbar()`; `aria-current` equivalent via `Semantics(selected:)`.
+- `/water` and `/progress`: a calm placeholder «قريبًا» with one line on what will be there. `/me`: language switch, «وجباتي المفضلة» (K.3 favourites), «تصفح الوجبات» (K.3 `/meals`), sign out. Profile editing comes in K.7.
+- After sign-in with a profile, or after the onboarding result button, go to `/today`. The K.3 home placeholder is removed; `/meals`, `/meals/:id`, `/meals/favourites` stay as pushed routes above the shell.
+- Android back on a tab other than Today goes to Today; on Today it leaves the app.
+
+## 2. Plan cache (#255)
+New drift tables (schemaVersion 3, migration 2 -> 3 with the generated migration test):
+- `plans`: `plan_date` PK (YYYY-MM-DD), `plan_id`, `algorithm_version`, `created_at`, target (`kcal`, `protein_g`, `carb_g`, `fat_g`, `fiber_g`), totals (all `NutrientTotals` fields nullable), `kcal_within_10pct`, stats (`solver_status`, `kcal_relaxed`, `solve_seconds`, `candidate_meals`, all nullable), `fetched_at`.
+- `plan_items`: `plan_item_id` PK, `plan_date` FK cascade, `position`, `slot`, `meal_id`, `meal_name` (the server name at fetch time, used only if the catalog has no row), `servings_multiplier`, `grams`, `kcal`, `protein_g`, `carb_g`, `fat_g`, `reason_codes` (JSON text), `was_swapped`, `logged`.
+- `plan_unmet_minimums`: (`plan_date`, `nutrient`) PK, `minimum`, `total`.
+- `meal_windows`: (`window_date`, `slot`) PK, `start`, `end` (HH:MM), from `GET /days/{date}`.
+- `day_summaries`: `summary_date` PK, the adherence fields needed by Today (`target_kcal`, totals kcal/protein/carb/fat, `plan_items_total`, `plan_items_consumed`, `status`), water `total_ml`, `goal_ml`, `requires_clinician`, `fetched_at`.
+- All five are personal: add them to the logout / account-switch wipe from K.3.
+- `PlanRepository.refresh()`: `GET /plans?from=<local yesterday>&to=<local today + 13>` and replace that whole date range in ONE transaction (dates with no plan in the response are deleted). Triggers: app start with a session, app resume (`AppLifecycleState.resumed`, at most once per 5 minutes), after generation, after a swap, pull-to-refresh on Today and Plan. One request in flight, shared.
+- `TodayRepository.refreshDay(date)`: `GET /days/{date}` -> upsert `meal_windows`, `day_summaries` and the plan of that day. Called for today on the same triggers.
+- Screens read only from drift streams (`watch`), so they update when a refresh lands and work offline.
+- Dates are the device local date (`DateTime.now()`), formatted YYYY-MM-DD.
+
+## 3. Week generation and showcase screen (#253, #254)
+- Entry points: (a) the onboarding result button «ابنِ خطتي الأولى» (eligible users only) now opens the showcase and then `/today`; (b) Today with no plan for today shows a card «لم تُبنَ خطة اليوم بعد» with «ابنِ خطة الأسبوع»; (c) the Plan tab refresh icon «إعادة البناء» with a confirm dialog «سنبني أيام الأسبوع من جديد. الأيام التي سجلت فيها وجبة تبقى كما هي.».
+- `WeekGenerator` (domain + data, unit-tested with a fake API): dates = local today .. today + 6. Skip a date whose cached plan has any item with `logged == true`. For each date in order: `POST /plans/days {date}`. On 201 store that day immediately (so the UI can show it). On 503 `PLANNER_BUSY`: wait `Retry-After` seconds (default 5 if missing, cap 30), retry the same date, at most 3 tries, then stop. On 503 `PLANNER_TIMEOUT`: stop, message «تعذر بناء الخطة الآن، حاول مرة أخرى بعد قليل». On 429 `RATE_LIMITED`: stop, message with the seconds from `Retry-After`. On `NOT_ELIGIBLE`: stop, general mode. On `NO_TARGET`, `PROFILE_NOT_FOUND`: stop, generic message and route to onboarding re-check. On `NO_FEASIBLE_PLAN` or `CONDITION_CONFLICT` for one date: record that date as failed, continue with the next date. Network failure: stop, keep built days, message with retry. Never loop on errors. Exposes a stream of progress events (date started, date done with `DayPlanOut`, date failed with code, finished).
+- After the loop: `PlanRepository.refresh()`.
+- Showcase screen (dark `.gen` style, like `genSkeleton`): header «نبني خطتك الآن» with «تخطي» (skip keeps generating in the background and opens `/today`; the generator lives in a provider, not in the widget). Four steps that light up in order:
+  1. «نحسب احتياجك»: the daily kcal from the cached targets (K.2 `GET /me/targets`) counting up, with chips from server fields only: «BMR …», «× …» (tdee/bmr, 3 decimals), «TDEE …», and «− …» or «+ …» (|kcal − tdee|) unless MAINTAIN.
+  2. «نستبعد ما لا يناسبك»: the number of meals in the local catalog (catalog_meta.meal_count) counting down to `stats.candidate_meals` of the first returned day, with filter chips derived from the user's data only: «تجنب <allergen name>» for each `user_allergens` code, «ملح أقل» if HYPERTENSION or HEART_DISEASE, «سكريات أقل» if DIABETES_T2, «بدون ما لا تحبه» if any DISLIKE exists. Read conditions from `GET /me/profile` (already fetched in K.3 sync; keep the codes in memory, do not add a table).
+  3. «المحسّن يبحث عن أفضل تركيبة»: day 1 in detail: four slot reels that settle on the real meals of day 1 (names from the catalog), and check rows «السعرات ضمن ±10%» (`kcal_within_10pct`), «البروتين», «الألياف» (checked when `unmet_minimums` does not list protein/fiber), «بدون تكرار مع أمس» (always checked: a server rule). A small line «CP-SAT · <solver_status> · <solve_seconds> ث».
+  4. «نبني أيام الأسبوع»: seven day chips that turn green on success, amber on a failed date, with the day's planned kcal under each.
+  Then a summary «خطتك جاهزة» with «ابدأ يومك» -> `/today`. If some dates failed: «بنينا X من 7 أيام» and «حاول مرة أخرى للأيام الباقية».
+- All animation off with `MediaQuery.disableAnimations` (steps still update, no reels). Live region semantics for step changes.
+
+## 4. Today (#256, #257)
+Layout from `home()` minus the excluded items:
+- Header: date line (localized, e.g. «السبت 24 أكتوبر») and a greeting by time of day («صباح الخير» before 12:00, «مساء الخير» after), no name.
+- Week strip: the 7 days from today; today highlighted; a day with a cached plan has a solid border, without a plan dashed. Tapping a day opens the Plan tab on that day.
+- Calorie card: «المستهلك / المتبقي» toggle; eaten = `day_summaries` totals kcal (0 when null), target = the plan's `target.kcal`; ring percent from these two numbers. Three macro cards (protein, carbs, fat) eaten vs plan target. Until K.5 the eaten values are 0, which is correct.
+- «وقت <slot> الآن · حتى HH:MM» hero card for the item whose window contains the current time, with a progress bar of the window; tap opens details.
+- Water card read-only: `total_ml` / `goal_ml`, or «بالتنسيق مع طبيبك» when `requires_clinician` and no goal. Tap goes to the Water tab placeholder.
+- «وجبات اليوم» timeline (`.tl`): one row per item in slot order BREAKFAST, LUNCH, SNACK, DINNER (sort by the server `position` if it differs, keep the server order): window start time, state dot, slot name, state badge («تمت» if `logged`, «الآن», «فات موعدها» after the window end, nothing for upcoming), favourite heart if LIKE, meal name, kcal and grams of the item, and up to two reason chips. «الخطة كاملة» link to the Plan tab. If `meal_windows` is empty (awake span under 10 hours) show items without times.
+- General mode (profile screening not eligible, known from K.2 `GET /me/targets` / `NOT_ELIGIBLE`): no plan card; show the «الوضع العام» card and «وجبات صحية لتجربتها»: a horizontal list of 5 catalog meals (lowest kcal per serving first among meals without the user's allergens; deterministic), tap opens catalog details.
+- Offline: a thin bar «دون اتصال · تعرض آخر نسخة محفوظة» when the last refresh failed with a network error.
+- Reason codes (#257) in `features/plan/presentation/reason_labels.dart`, Arabic and English: `FITS_KCAL_TARGET` «مناسبة لسعراتك», `HIGH_PROTEIN` «غنية بالبروتين», `LOW_SODIUM` «قليلة الصوديوم», `LOW_SUGAR` «قليلة السكر», `LOW_SATURATED_FAT` «قليلة الدهون المشبعة», `HIGH_FIBER` «غنية بالألياف», `MATCHES_LIKED_INGREDIENT` «فيها مكون تحبه», `NEW_FOR_VARIETY` «تنويع جديد», `SUITS_CONDITION_<CODE>` «مناسبة لـ<condition name from /reference>» (only for the supported codes), anything else hidden. Chips with a small icon like `reasonChip`.
+
+## 5. Plan tab (#261)
+From `plan()`: title «خطتك للأسبوع» with the date range and «بُنيت بالمحسّن»; day selector (7 days from today); a bar chart of `totals.kcal` per cached day with a band from 0.9× to 1.1× of `target.kcal` (CustomPainter, RTL-aware order, selected day highlighted, days without a plan show no bar); two cards «قائمة المشتريات» -> `/plan/shopping` and «مفضلاتي» with the LIKE count -> favourites; the selected day's header «<day> · <kcal> سعرة» with a chip «ضمن ±10% من هدفك» when `kcal_within_10pct`, and a soft chip «أقل من الحد الأدنى: <nutrient>» per unmet minimum; the day's meals as rows (slot, window start, name, kcal) opening details. Empty day: «لا توجد خطة لهذا اليوم» with «ابنِ خطة الأسبوع». General mode: the prototype tip «في الوضع العام لا نبني خطة شخصية...».
+
+## 6. Plan meal details and swap (#258, #259)
+- Route `/plan/item/:planItemId` reuses the K.3 detail layout with a plan header: slot and window, «كميتك: <multiplier> حصة · ≈ <grams> غ», the item's kcal and macros in the ring (from the plan item), reason chips with the heading «لماذا اخترناها لك؟», and the section «القيم الغذائية لحصة واحدة» (catalog per-serving values, labelled as one serving). Allergen warning, ingredients (grams per serving, labelled «لكل حصة»), steps, favourite and dislike as in K.3.
+- Bottom button «استبدال» (disabled with a note when `logged`). It opens a sheet «بدائل تناسب خطتك» / «كلها تحافظ على سعرات يومك وحدودك»: `GET /plan-items/{id}/alternatives` (online), up to 10 cards with name, kcal, and the delta «+45» / «−30» in an LTR span. Empty list: «لا توجد بدائل مناسبة الآن». Offline: «الاستبدال يحتاج اتصالًا».
+- Choosing one: `POST /plan-items/{id}/swap {meal_id}`; on 200 update the cached item from the response (`PlanItemOut`), then `PlanRepository.refresh()` for totals, close the sheet and show «تم الاستبدال». `SWAP_REJECTED`: «لا يمكن هذا الاستبدال لأنه يتجاوز حدود يومك» (reasons not shown raw). `PLAN_ITEM_ALREADY_LOGGED`: «سجلت هذه الوجبة، لا يمكن استبدالها». `PLAN_ITEM_NOT_FOUND`: refresh plans and close. `MEAL_NOT_FOUND`: catalog sync and close.
+- Add Arabic/English failure messages for: `NOT_ELIGIBLE`, `NO_TARGET`, `CONDITION_CONFLICT`, `NO_FEASIBLE_PLAN`, `PLANNER_BUSY`, `PLANNER_TIMEOUT`, `SWAP_REJECTED`, `PLAN_ITEM_NOT_FOUND`, `PLAN_ITEM_ALREADY_LOGGED`.
+
+## 7. Shopping list (#260)
+- Route `/plan/shopping`: `GET /shopping-list?from=<today>&to=<today+6>`. Cache in drift: `shopping_lists` (`range_key` PK "from_to", `fetched_at`) and `shopping_items` (`range_key`, `ingredient_id`, `name`, `grams`, `meals`, `checked`), personal (wipe on logout). A refresh keeps `checked` for ingredients that are still present.
+- Hero card «X من Y مشتريات» with a progress bar; rows with a checkbox (`role: checkbox` semantics), name, and quantity: under 1000 g rounded to 10 g «≈ 350 غ», else kg with one decimal «1.2 كغ»; «في N وجبات» small. Sorted by name (Arabic collation via the normalizer from K.3).
+- Share icon: `share_plus` plain text «قائمة مشترياتي (<from> – <to>)» then one line per unchecked item «- name: qty».
+- Note under the title «محسوبة من وجبات أسبوعك، دون المكونات الاختيارية».
+- Offline: show the cached list with the offline bar; nothing cached: «نحتاج اتصالًا لحساب القائمة».
+
+## 8. Quality, accessibility, motion
+- RTL and LTR, text scale 1.3 without overflow on every new screen, touch targets >= 48 dp, semantics for cards and chart (a text summary of the chart for screen readers), motion off with `disableAnimations`.
+- Numbers formatted with `intl` for the locale; times HH:MM in the locale's digits as K.2 does.
+
+## 9. Tests (all must pass; no skips)
+- `WeekGenerator` with a fake API: 7 successes in order; PLANNER_BUSY with Retry-After then success (fake clock, no real waits); 3 busy tries then stop; PLANNER_TIMEOUT stops and keeps built days; RATE_LIMITED stops; NO_FEASIBLE_PLAN on day 3 continues; a logged day is skipped; NOT_ELIGIBLE stops.
+- `PlanRepository.refresh`: replaces the range in one transaction (a day missing from the response is deleted), keeps days outside the range, one request for concurrent calls; mapper round trip with null totals and null stats.
+- Swap: success updates the item and refreshes; SWAP_REJECTED leaves the cache unchanged; ALREADY_LOGGED message.
+- Shopping: refresh keeps `checked`, kg/g formatting, share text excludes checked items.
+- Reason labels: known codes, SUITS_CONDITION_HYPERTENSION uses the reference name, unknown hidden.
+- Meal state: before, inside and after the window; logged wins; no windows.
+- Widget tests (Arabic, fakes, no network): shell tabs and back behaviour; Today with a plan (calorie card, now card, timeline, chips); Today without a plan (build card); general mode Today; showcase runs through the four steps with fake events and shows «بنينا 6 من 7 أيام» when one date failed; Plan tab day switch and chart semantics text; plan item details with the plan header and swap sheet; shopping list check and share text; English LTR at text scale 1.3 for Today and Plan.
+- Migration test 2 -> 3. Logout wipes the new personal tables and keeps the catalog. Architecture tests cover `features/plan`, `features/today`, `features/shopping`.
+
+## 10. Manual run on the emulator (backend in WSL)
+Report each as pass/fail, with numbers where asked:
+1. New account (female, 30, 165 cm, 80 kg, LOSE 0.5, LIGHT, HYPERTENSION, MILK avoid) -> result -> «ابنِ خطتي الأولى» -> showcase runs with real numbers -> Today. Report per day: solver_status, solve_seconds, candidate_meals, planned kcal vs target, and the total wall time for 7 days.
+2. Today shows the now card at the right time (check against the windows), the timeline, and reason chips in Arabic.
+3. Kill and reopen with the backend stopped -> Today and Plan still show the cached week, with the offline bar.
+4. Plan tab: switch days, chart band visible; open a meal; swap it with an alternative -> Today and Plan show the new meal and the new day total. Report the old and new kcal.
+5. Swap with the backend stopped -> «الاستبدال يحتاج اتصالًا».
+6. Rebuild the week -> confirm dialog -> showcase -> new plans.
+7. Shopping list: check two items, leave and return -> still checked; share opens the Android share sheet with the text.
+8. Account in general mode (male, MAINTAIN, DIABETES_T2, insulin yes) -> Today shows the general card and healthy meals, Plan shows the tip, no generation call is made.
+9. English locale: Today, Plan, showcase and shopping without overflow.
+10. Screenshots under `mobile/docs/screenshots/`: `k4_showcase_needs.png`, `k4_showcase_filter.png`, `k4_showcase_optimizer.png`, `k4_showcase_week.png`, `k4_today.png`, `k4_plan.png`, `k4_item_details.png`, `k4_swap.png`, `k4_shopping.png`, `k4_general_today.png`.
+
+## Checks before you report
+From `mobile/`: regenerate API leaves no diff; `dart format` clean on non-generated code; `flutter analyze` clean; `flutter test` all green; `flutter build apk --debug --target-platform android-x64` succeeds.
+
+## Report back
+1. Files created/changed (tree, excluding generated and `build/`), packages added with versions.
+2. New tables with keys; how generation handles each error code; what triggers refreshes.
+3. Test counts (before/after) and new test names.
+4. Manual run results 1-9 with the numbers asked in runs 1 and 4, and screenshot paths.
+5. Any contradiction between API_GUIDE.md, openapi.json, the prototype and this file; any assumption. One line each, with the section number.
