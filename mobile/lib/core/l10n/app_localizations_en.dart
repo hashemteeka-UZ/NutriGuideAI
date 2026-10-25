@@ -44,7 +44,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failurePlannerTimeout =>
-      'The plan could not be built right now. Try again.';
+      'The plan could not be built right now. Try again in a little while.';
+
+  @override
+  String get failureNotEligible =>
+      'A personal plan is not available for this account.';
+
+  @override
+  String get failureNoTarget => 'There is no calorie target yet.';
+
+  @override
+  String get failureConditionConflict =>
+      'The health conditions conflict with a personal plan.';
+
+  @override
+  String get failureNoFeasiblePlan => 'No plan fits this day\'s limits.';
+
+  @override
+  String get failureSwapRejected =>
+      'This swap is not possible because it would pass your day\'s limits.';
+
+  @override
+  String get failurePlanItemNotFound => 'This plan meal was not found.';
+
+  @override
+  String get failurePlanItemAlreadyLogged =>
+      'You logged this meal, so it cannot be swapped.';
 
   @override
   String get failureUnauthorized => 'The session has ended. Sign in again.';
@@ -945,4 +970,316 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allergenSoy => 'Soy';
+
+  @override
+  String get tabToday => 'Today';
+
+  @override
+  String get tabPlan => 'Plan';
+
+  @override
+  String get tabWater => 'Water';
+
+  @override
+  String get tabProgress => 'Progress';
+
+  @override
+  String get tabMe => 'Me';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get waterSoon => 'Water logging arrives in the next step.';
+
+  @override
+  String get progressSoon =>
+      'Adherence, the weekly report and badges come later.';
+
+  @override
+  String get greetMorning => 'Good morning';
+
+  @override
+  String get greetEvening => 'Good evening';
+
+  @override
+  String get kcalModeEaten => 'Eaten';
+
+  @override
+  String get kcalModeLeft => 'Left';
+
+  @override
+  String get kcalEatenCaption => 'kcal eaten today';
+
+  @override
+  String get kcalLeftCaption => 'kcal left today';
+
+  @override
+  String kcalOfTarget(String kcal) {
+    return 'of a $kcal kcal target';
+  }
+
+  @override
+  String get todayNoPlan => 'Today\'s plan has not been built yet';
+
+  @override
+  String get todayBuildWeek => 'Build the week\'s plan';
+
+  @override
+  String nowCard(String slot, String time) {
+    return '$slot time · until $time';
+  }
+
+  @override
+  String get waterWithDoctor => 'With your doctor';
+
+  @override
+  String get todayMeals => 'Today\'s meals';
+
+  @override
+  String get fullPlan => 'Full plan';
+
+  @override
+  String get stateDone => 'Done';
+
+  @override
+  String get stateNow => 'Now';
+
+  @override
+  String get stateMissed => 'Missed window';
+
+  @override
+  String get generalTitle => 'General mode';
+
+  @override
+  String get generalBody =>
+      'You log food and water and see progress. There is no personal calorie plan.';
+
+  @override
+  String get healthyTitle => 'Healthy meals to try';
+
+  @override
+  String get offlineBar => 'Offline · showing the last saved copy';
+
+  @override
+  String get planTitle => 'Your week';
+
+  @override
+  String planRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get planOptimizer => 'Built by the optimizer';
+
+  @override
+  String get planRebuild => 'Rebuild';
+
+  @override
+  String get planRebuildBody =>
+      'We will build the days of the week again. Days where you logged a meal stay as they are.';
+
+  @override
+  String get planRebuildConfirm => 'Rebuild';
+
+  @override
+  String get planCancel => 'Cancel';
+
+  @override
+  String get planChartTitle => 'Planned calories this week';
+
+  @override
+  String planTargetLabel(String kcal) {
+    return 'Target $kcal';
+  }
+
+  @override
+  String get withinBand => 'Within ±10% of your target';
+
+  @override
+  String belowMinimum(String nutrient) {
+    return 'Below the minimum: $nutrient';
+  }
+
+  @override
+  String get planEmpty => 'There is no plan for this day';
+
+  @override
+  String get generalPlanTip =>
+      'In general mode we don\'t build a personal plan, but you can browse meals and save the ones you like to favourites.';
+
+  @override
+  String planDayKcal(String day, String kcal) {
+    return '$day · $kcal kcal';
+  }
+
+  @override
+  String itemPortion(String multiplier, String grams) {
+    return 'Your amount: $multiplier serving · ≈ $grams g';
+  }
+
+  @override
+  String get whyChosen => 'Why did we choose it for you?';
+
+  @override
+  String get perServingFacts => 'Nutrition for one serving';
+
+  @override
+  String get perServingNote => 'per serving';
+
+  @override
+  String get swapAction => 'Swap';
+
+  @override
+  String get swapLoggedNote => 'This meal is logged, so it cannot be swapped.';
+
+  @override
+  String get swapTitle => 'Alternatives that fit your plan';
+
+  @override
+  String get swapSubtitle => 'Each one keeps your day\'s calories and limits';
+
+  @override
+  String get swapEmpty => 'No suitable alternatives right now';
+
+  @override
+  String get swapOffline => 'Swapping needs a connection';
+
+  @override
+  String get swapDone => 'Swapped';
+
+  @override
+  String get genTitle => 'Building your plan';
+
+  @override
+  String get genSkip => 'Skip';
+
+  @override
+  String get genNeeds => 'Calculating your needs';
+
+  @override
+  String get genFilter => 'Removing what does not suit you';
+
+  @override
+  String get genSearch => 'The optimizer searches for the best mix';
+
+  @override
+  String get genWeek => 'Building the week';
+
+  @override
+  String get genKcalPerDay => 'kcal a day';
+
+  @override
+  String get genMealsInKitchen => 'meals in the kitchen';
+
+  @override
+  String genAvoid(String name) {
+    return 'Avoid $name';
+  }
+
+  @override
+  String get genLessSalt => 'Less salt';
+
+  @override
+  String get genLessSugar => 'Less sugar';
+
+  @override
+  String get genNoDislike => 'No disliked meals';
+
+  @override
+  String get genWithin => 'Calories within ±10%';
+
+  @override
+  String get genProtein => 'Protein';
+
+  @override
+  String get genFiber => 'Fiber';
+
+  @override
+  String get genNoRepeat => 'No repeat from yesterday';
+
+  @override
+  String genSolver(String status, String seconds) {
+    return 'CP-SAT · $status · $seconds s';
+  }
+
+  @override
+  String get genReady => 'Your plan is ready';
+
+  @override
+  String get genStart => 'Start your day';
+
+  @override
+  String genPartial(int built) {
+    return 'We built $built of 7 days';
+  }
+
+  @override
+  String get genRetryLeft => 'Try again for the remaining days';
+
+  @override
+  String get genNetwork =>
+      'The connection failed. Days already built are saved. Try again.';
+
+  @override
+  String get genGeneric => 'The build could not be finished.';
+
+  @override
+  String get genIneligible =>
+      'Your account is in general mode, so we will not build a personal plan.';
+
+  @override
+  String get shopTitle => 'Shopping list';
+
+  @override
+  String get shopNote =>
+      'Calculated from your week\'s meals, without optional ingredients';
+
+  @override
+  String shopProgress(int done, int total) {
+    return '$done of $total items';
+  }
+
+  @override
+  String get shopFromPlan => 'From this week\'s plan';
+
+  @override
+  String get favouritesCard => 'Favourites';
+
+  @override
+  String favouritesCount(int count) {
+    return '$count meals';
+  }
+
+  @override
+  String shopInMeals(int count) {
+    return 'In $count meals';
+  }
+
+  @override
+  String get shopNeedsNet => 'We need a connection to calculate the list';
+
+  @override
+  String shopShareHeader(String from, String to) {
+    return 'My shopping list ($from – $to)';
+  }
+
+  @override
+  String shopGrams(String grams) {
+    return '≈ $grams g';
+  }
+
+  @override
+  String shopKg(String kg) {
+    return '$kg kg';
+  }
+
+  @override
+  String get shopShare => 'Share';
+
+  @override
+  String get chartNoPlan => 'No plan';
+
+  @override
+  String get accountLanguage => 'العربية';
 }

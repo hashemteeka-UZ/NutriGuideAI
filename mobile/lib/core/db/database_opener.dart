@@ -8,9 +8,20 @@ import 'database_key_store.dart';
 
 final _keyPattern = RegExp(r'^[0-9a-f]{64}$');
 
+/// Thrown when the stored key cannot read the database file.
+final class DatabaseKeyError implements Exception {
+  const DatabaseKeyError();
+
+  @override
+  String toString() => 'DatabaseKeyError';
+}
+
 /// Opens [file] with the stored key. A missing key beside an existing file,
 /// or a key that cannot read the file, deletes it and creates a new encrypted
 /// database. The catalog and profile can be downloaded again.
+///
+/// The key is set and checked on the same connection. A failed check closes
+/// that connection, deletes the file, and opens a new one.
 Future<QueryExecutor> openEncryptedExecutor({
   required File file,
   required DatabaseKeyStore keys,
@@ -21,27 +32,31 @@ Future<QueryExecutor> openEncryptedExecutor({
     await deleteDatabaseFiles(file);
   }
   final active = key ?? await keys.create();
-  try {
-    await _probe(file, active);
-    return encryptedExecutor(file, active);
-  } on Object {
-    await deleteDatabaseFiles(file);
-    final fresh = await keys.replace();
-    await _probe(file, fresh);
-    return encryptedExecutor(file, fresh);
-  }
+  return _RecoveringExecutor(file: file, keys: keys, hexKey: active);
 }
 
 Future<AppDatabase> openEncryptedAppDatabase({
   required File file,
   required DatabaseKeyStore keys,
 }) async {
-  return AppDatabase(await openEncryptedExecutor(file: file, keys: keys));
+  final database = AppDatabase(
+    await openEncryptedExecutor(file: file, keys: keys),
+  );
+  await database.customSelect('SELECT count(*) AS n FROM sqlite_master').get();
+  return database;
 }
 
 /// Opens [file] with [hexKey] and reads `sqlite_master`. Does not recover.
-Future<void> probeDatabaseKey({required File file, required String hexKey}) {
-  return _probe(file, hexKey);
+Future<void> probeDatabaseKey({
+  required File file,
+  required String hexKey,
+}) async {
+  final executor = encryptedExecutor(file, hexKey);
+  try {
+    await executor.ensureOpen(const _KeyProbe());
+  } finally {
+    await executor.close();
+  }
 }
 
 QueryExecutor encryptedExecutor(File file, String hexKey) {
@@ -50,21 +65,111 @@ QueryExecutor encryptedExecutor(File file, String hexKey) {
     setup: (database) {
       // The key is the first statement. Nothing may run before it.
       database.execute("PRAGMA hexkey = '$hexKey'");
+      try {
+        database.select('SELECT count(*) AS n FROM sqlite_master');
+      } on SqliteException {
+        throw const DatabaseKeyError();
+      }
     },
   );
 }
 
-Future<void> _probe(File file, String hexKey) async {
-  final database = AppDatabase(encryptedExecutor(file, hexKey));
-  try {
-    await database
-        .customSelect('SELECT count(*) AS n FROM sqlite_master')
-        .get();
-  } catch (_) {
-    await database.close();
-    rethrow;
+/// The real database user opens this executor once. Setup checks the key on
+/// that connection. A bad key closes it, deletes the file, and opens again
+/// with a new key for the same user, so migrations run only on the new file.
+final class _RecoveringExecutor extends QueryExecutor {
+  _RecoveringExecutor({
+    required File file,
+    required this._keys,
+    required String hexKey,
+  }) : _file = file,
+       _inner = encryptedExecutor(file, hexKey);
+
+  final File _file;
+  final DatabaseKeyStore _keys;
+  QueryExecutor _inner;
+  var _replaced = false;
+
+  @override
+  SqlDialect get dialect => SqlDialect.sqlite;
+
+  @override
+  Future<bool> ensureOpen(QueryExecutorUser user) async {
+    try {
+      return await _inner.ensureOpen(user);
+    } catch (error) {
+      if (_replaced || !_isKeyError(error)) {
+        rethrow;
+      }
+      _replaced = true;
+      await _inner.close();
+      await deleteDatabaseFiles(_file);
+      final fresh = await _keys.replace();
+      _inner = encryptedExecutor(_file, fresh);
+      return _inner.ensureOpen(user);
+    }
   }
-  await database.close();
+
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    String statement,
+    List<Object?> args,
+  ) {
+    return _inner.runSelect(statement, args);
+  }
+
+  @override
+  Future<int> runInsert(String statement, List<Object?> args) {
+    return _inner.runInsert(statement, args);
+  }
+
+  @override
+  Future<int> runUpdate(String statement, List<Object?> args) {
+    return _inner.runUpdate(statement, args);
+  }
+
+  @override
+  Future<int> runDelete(String statement, List<Object?> args) {
+    return _inner.runDelete(statement, args);
+  }
+
+  @override
+  Future<void> runCustom(String statement, [List<Object?>? args]) {
+    return _inner.runCustom(statement, args);
+  }
+
+  @override
+  Future<void> runBatched(BatchedStatements statements) {
+    return _inner.runBatched(statements);
+  }
+
+  @override
+  TransactionExecutor beginTransaction() => _inner.beginTransaction();
+
+  @override
+  QueryExecutor beginExclusive() => _inner.beginExclusive();
+
+  @override
+  Future<void> close() => _inner.close();
+}
+
+bool _isKeyError(Object error) {
+  return error is DatabaseKeyError ||
+      error.toString().contains('DatabaseKeyError');
+}
+
+/// Reads an already-migrated file. Does not create tables.
+final class _KeyProbe implements QueryExecutorUser {
+  const _KeyProbe();
+
+  @override
+  int get schemaVersion => 3;
+
+  @override
+  Future<void> beforeOpen(
+    QueryExecutor executor,
+    OpeningDetails details,
+  ) async {}
 }
 
 Future<void> deleteDatabaseFiles(File file) async {

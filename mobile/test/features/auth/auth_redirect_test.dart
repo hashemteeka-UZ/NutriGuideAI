@@ -11,6 +11,14 @@ void main() {
     '/login',
     '/onboarding',
     '/home',
+    '/today',
+    '/plan',
+    '/water',
+    '/progress',
+    '/me',
+    '/generate',
+    '/plan/shopping',
+    '/plan/item/4',
     '/meals',
     '/meals/favourites',
     '/meals/12',
@@ -68,12 +76,25 @@ String? _signedIn(String location, bool hasProfile) {
   if (!hasProfile) {
     return location == '/onboarding' ? null : '/onboarding';
   }
-  if (location == '/home' ||
+  if (location == '/home') {
+    return '/today';
+  }
+  const exact = <String>{
+    '/today',
+    '/plan',
+    '/water',
+    '/progress',
+    '/me',
+    '/generate',
+    '/plan/shopping',
+  };
+  if (exact.contains(location) ||
+      location.startsWith('/plan/item/') ||
       location == '/meals' ||
       location.startsWith('/meals/')) {
     return null;
   }
-  return '/home';
+  return '/today';
 }
 
 String? _signedOut(String location, SignOutReason? reason) {

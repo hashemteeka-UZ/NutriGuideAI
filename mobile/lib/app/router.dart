@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/l10n/app_localizations.dart';
 import '../features/auth/domain/session.dart';
 import '../features/auth/presentation/auth_form_screen.dart';
 import '../features/auth/presentation/session_controller.dart';
@@ -11,14 +12,26 @@ import '../features/auth/presentation/welcome_screen.dart';
 import '../features/catalog/presentation/favourites_screen.dart';
 import '../features/catalog/presentation/meal_detail_screen.dart';
 import '../features/catalog/presentation/meals_screen.dart';
-import '../features/home/presentation/placeholder_screens.dart';
+import '../features/plan/data/plan_providers.dart';
+import '../features/plan/presentation/plan_item_screen.dart';
+import '../features/plan/presentation/plan_screen.dart';
+import '../features/plan/presentation/showcase_screen.dart';
 import '../features/profile/presentation/onboarding_screen.dart';
 import '../features/server_check/presentation/server_check_screen.dart';
+import '../features/shopping/presentation/shopping_screen.dart';
+import '../features/today/presentation/account_screen.dart';
+import '../features/today/presentation/coming_soon_screen.dart';
+import '../features/today/presentation/today_screen.dart';
+import 'shell.dart';
+
+final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 String? authRedirect({
   required SessionState session,
   required String location,
   required bool allowServerCheck,
+  bool openShowcase = false,
+  bool recheck = false,
 }) {
   if (allowServerCheck && location == '/dev/server-check') {
     return null;
@@ -40,13 +53,36 @@ String? authRedirect({
       if (!session.hasProfile) {
         return location == '/onboarding' ? null : '/onboarding';
       }
-      if (location == '/home' ||
-          location == '/meals' ||
-          location.startsWith('/meals/')) {
+      if (recheck && location == '/onboarding') {
         return null;
       }
-      return '/home';
+      if (openShowcase && location != '/generate') {
+        return '/generate';
+      }
+      if (_signedInLocation(location)) {
+        return null;
+      }
+      return '/today';
   }
+}
+
+bool _signedInLocation(String location) {
+  const exact = <String>{
+    '/today',
+    '/plan',
+    '/water',
+    '/progress',
+    '/me',
+    '/generate',
+    '/plan/shopping',
+  };
+  if (exact.contains(location)) {
+    return true;
+  }
+  if (location.startsWith('/plan/item/')) {
+    return true;
+  }
+  return location == '/meals' || location.startsWith('/meals/');
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -55,7 +91,14 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.listen(sessionControllerProvider, (_, _) {
     refresh.value++;
   });
+  ref.listen(launchShowcaseProvider, (_, _) {
+    refresh.value++;
+  });
+  ref.listen(recheckOnboardingProvider, (_, _) {
+    refresh.value++;
+  });
   final router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/splash',
     refreshListenable: refresh,
     redirect: (BuildContext context, GoRouterState state) {
@@ -63,6 +106,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         session: ref.read(sessionControllerProvider),
         location: state.uri.path,
         allowServerCheck: kDebugMode,
+        openShowcase: ref.read(launchShowcaseProvider),
+        recheck: ref.read(recheckOnboardingProvider),
       );
     },
     routes: <RouteBase>[
@@ -96,10 +141,99 @@ final routerProvider = Provider<GoRouter>((ref) {
           return const OnboardingScreen();
         },
       ),
+      StatefulShellRoute.indexedStack(
+        builder:
+            (
+              BuildContext context,
+              GoRouterState state,
+              StatefulNavigationShell navigationShell,
+            ) {
+              return AppShell(navigationShell: navigationShell);
+            },
+        branches: <StatefulShellBranch>[
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/today',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const TodayScreen();
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/plan',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const PlanScreen();
+                },
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'shopping',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const ShoppingScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'item/:planItemId',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) {
+                      return PlanItemScreen(
+                        planItemId: int.tryParse(
+                          state.pathParameters['planItemId'] ?? '',
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/water',
+                builder: (BuildContext context, GoRouterState state) {
+                  final l10n = AppLocalizations.of(context);
+                  return ComingSoonScreen(
+                    detail: l10n.waterSoon,
+                    screenKey: 'water-screen',
+                  );
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/progress',
+                builder: (BuildContext context, GoRouterState state) {
+                  final l10n = AppLocalizations.of(context);
+                  return ComingSoonScreen(
+                    detail: l10n.progressSoon,
+                    screenKey: 'progress-screen',
+                  );
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/me',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const AccountScreen();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
       GoRoute(
-        path: '/home',
+        path: '/generate',
         builder: (BuildContext context, GoRouterState state) {
-          return const HomePlaceholderScreen();
+          return const ShowcaseScreen();
         },
       ),
       GoRoute(

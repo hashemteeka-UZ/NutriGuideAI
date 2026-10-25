@@ -581,8 +581,903 @@ i1.GeneratedColumn<String> _column_30(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
+
+final class Schema3 extends i0.VersionedSchema {
+  Schema3({required super.database}) : super(version: 3);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    catalogMeta,
+    meals,
+    mealTags,
+    mealAllergens,
+    mealIngredients,
+    mealNutrients,
+    mealSteps,
+    cuisines,
+    mealPrefs,
+    userAllergens,
+    plans,
+    planItems,
+    planUnmetMinimums,
+    mealWindows,
+    daySummaries,
+    shoppingLists,
+    shoppingItems,
+    mealsLangSearchKey,
+  ];
+  late final Shape0 catalogMeta = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'catalog_meta',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(lang)'],
+      columns: [_column_0, _column_1, _column_2, _column_3, _column_4],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 meals = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'meals',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(lang, meal_id)'],
+      columns: [
+        _column_0,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 mealTags = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'meal_tags',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(lang, meal_id, tag)',
+        'FOREIGN KEY(lang, meal_id)REFERENCES meals(lang, meal_id)ON DELETE CASCADE',
+      ],
+      columns: [_column_0, _column_5, _column_18],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 mealAllergens = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'meal_allergens',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(lang, meal_id, code)',
+        'FOREIGN KEY(lang, meal_id)REFERENCES meals(lang, meal_id)ON DELETE CASCADE',
+      ],
+      columns: [_column_0, _column_5, _column_19],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 mealIngredients = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'meal_ingredients',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(lang, meal_id, position)',
+        'FOREIGN KEY(lang, meal_id)REFERENCES meals(lang, meal_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_5,
+        _column_20,
+        _column_21,
+        _column_6,
+        _column_22,
+        _column_23,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 mealNutrients = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'meal_nutrients',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(lang, meal_id, code)',
+        'FOREIGN KEY(lang, meal_id)REFERENCES meals(lang, meal_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_5,
+        _column_19,
+        _column_24,
+        _column_25,
+        _column_26,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 mealSteps = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'meal_steps',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(lang, meal_id, position)',
+        'FOREIGN KEY(lang, meal_id)REFERENCES meals(lang, meal_id)ON DELETE CASCADE',
+      ],
+      columns: [_column_0, _column_5, _column_20, _column_27],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 cuisines = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'cuisines',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(lang, code)'],
+      columns: [_column_0, _column_19, _column_6],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 mealPrefs = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'meal_prefs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(meal_id)'],
+      columns: [_column_5, _column_28, _column_29],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape9 userAllergens = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'user_allergens',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(code)'],
+      columns: [_column_19, _column_30],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 plans = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'plans',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(plan_date)'],
+      columns: [
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+        _column_44,
+        _column_45,
+        _column_46,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_4,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 planItems = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'plan_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(plan_item_id)'],
+      columns: [
+        _column_50,
+        _column_51,
+        _column_20,
+        _column_52,
+        _column_5,
+        _column_53,
+        _column_54,
+        _column_55,
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_56,
+        _column_57,
+        _column_58,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 planUnmetMinimums = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'plan_unmet_minimums',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(plan_date, nutrient)'],
+      columns: [_column_51, _column_59, _column_60, _column_61],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape13 mealWindows = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'meal_windows',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(window_date, slot)'],
+      columns: [_column_62, _column_52, _column_63, _column_64],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 daySummaries = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'day_summaries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(summary_date)'],
+      columns: [
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+        _column_73,
+        _column_74,
+        _column_75,
+        _column_76,
+        _column_4,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape15 shoppingLists = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'shopping_lists',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(range_key)'],
+      columns: [_column_77, _column_4],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape16 shoppingItems = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'shopping_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(range_key, ingredient_id)'],
+      columns: [
+        _column_78,
+        _column_21,
+        _column_6,
+        _column_55,
+        _column_79,
+        _column_80,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index mealsLangSearchKey = i1.Index(
+    'meals_lang_search_key',
+    'CREATE INDEX meals_lang_search_key ON meals (lang, search_key)',
+  );
+}
+
+class Shape10 extends i0.VersionedTable {
+  Shape10({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get planDate =>
+      columnsByName['plan_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get planId =>
+      columnsByName['plan_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get algorithmVersion =>
+      columnsByName['algorithm_version']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get kcal =>
+      columnsByName['kcal']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get proteinG =>
+      columnsByName['protein_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get carbG =>
+      columnsByName['carb_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get fatG =>
+      columnsByName['fat_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get fiberG =>
+      columnsByName['fiber_g']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get totalsKcal =>
+      columnsByName['totals_kcal']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get totalsProteinG =>
+      columnsByName['totals_protein_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get totalsCarbG =>
+      columnsByName['totals_carb_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get totalsFatG =>
+      columnsByName['totals_fat_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get totalsFiberG =>
+      columnsByName['totals_fiber_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get totalsSaturatedFatG =>
+      columnsByName['totals_saturated_fat_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get totalsSodiumMg =>
+      columnsByName['totals_sodium_mg']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get totalsSugarsG =>
+      columnsByName['totals_sugars_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get kcalWithin10pct =>
+      columnsByName['kcal_within10pct']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get solverStatus =>
+      columnsByName['solver_status']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get kcalRelaxed =>
+      columnsByName['kcal_relaxed']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get solveSeconds =>
+      columnsByName['solve_seconds']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get candidateMeals =>
+      columnsByName['candidate_meals']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get fetchedAt =>
+      columnsByName['fetched_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_31(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'plan_date',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_32(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'plan_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_33(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'algorithm_version',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_34(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'created_at',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_35(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'kcal',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_36(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'fiber_g',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_37(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_kcal',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_38(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_protein_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_39(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_carb_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_40(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_fat_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_41(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_fiber_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_42(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_saturated_fat_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_43(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_sodium_mg',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_44(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'totals_sugars_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_45(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'kcal_within10pct',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (kcal_within10pct IN (0, 1))',
+    );
+i1.GeneratedColumn<String> _column_46(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'solver_status',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_47(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'kcal_relaxed',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL CHECK (kcal_relaxed IN (0, 1))',
+    );
+i1.GeneratedColumn<double> _column_48(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'solve_seconds',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_49(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'candidate_meals',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+
+class Shape11 extends i0.VersionedTable {
+  Shape11({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get planItemId =>
+      columnsByName['plan_item_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get planDate =>
+      columnsByName['plan_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get position =>
+      columnsByName['position']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get slot =>
+      columnsByName['slot']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get mealId =>
+      columnsByName['meal_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get mealName =>
+      columnsByName['meal_name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<double> get servingsMultiplier =>
+      columnsByName['servings_multiplier']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get grams =>
+      columnsByName['grams']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get kcal =>
+      columnsByName['kcal']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get proteinG =>
+      columnsByName['protein_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get carbG =>
+      columnsByName['carb_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get fatG =>
+      columnsByName['fat_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<String> get reasonCodes =>
+      columnsByName['reason_codes']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get wasSwapped =>
+      columnsByName['was_swapped']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get logged =>
+      columnsByName['logged']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_50(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'plan_item_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_51(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'plan_date',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints:
+          'NOT NULL REFERENCES plans(plan_date)ON DELETE CASCADE',
+    );
+i1.GeneratedColumn<String> _column_52(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'slot',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_53(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'meal_name',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_54(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'servings_multiplier',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_55(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'grams',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_56(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'reason_codes',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_57(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'was_swapped',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (was_swapped IN (0, 1))',
+    );
+i1.GeneratedColumn<int> _column_58(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'logged',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (logged IN (0, 1))',
+    );
+
+class Shape12 extends i0.VersionedTable {
+  Shape12({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get planDate =>
+      columnsByName['plan_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get nutrient =>
+      columnsByName['nutrient']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<double> get minimum =>
+      columnsByName['minimum']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get total =>
+      columnsByName['total']! as i1.GeneratedColumn<double>;
+}
+
+i1.GeneratedColumn<String> _column_59(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'nutrient',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_60(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'minimum',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_61(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'total',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+
+class Shape13 extends i0.VersionedTable {
+  Shape13({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get windowDate =>
+      columnsByName['window_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get slot =>
+      columnsByName['slot']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get start =>
+      columnsByName['start']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get end =>
+      columnsByName['end']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_62(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'window_date',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_63(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'start',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_64(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'end',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape14 extends i0.VersionedTable {
+  Shape14({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get summaryDate =>
+      columnsByName['summary_date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<double> get targetKcal =>
+      columnsByName['target_kcal']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get kcal =>
+      columnsByName['kcal']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get proteinG =>
+      columnsByName['protein_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get carbG =>
+      columnsByName['carb_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get fatG =>
+      columnsByName['fat_g']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get planItemsTotal =>
+      columnsByName['plan_items_total']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get planItemsConsumed =>
+      columnsByName['plan_items_consumed']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get status =>
+      columnsByName['status']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get totalMl =>
+      columnsByName['total_ml']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get goalMl =>
+      columnsByName['goal_ml']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get requiresClinician =>
+      columnsByName['requires_clinician']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get fetchedAt =>
+      columnsByName['fetched_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_65(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'summary_date',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<double> _column_66(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'target_kcal',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_67(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'kcal',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_68(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'protein_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_69(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'carb_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<double> _column_70(String aliasedName) =>
+    i1.GeneratedColumn<double>(
+      'fat_g',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.double,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_71(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'plan_items_total',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_72(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'plan_items_consumed',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_73(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'status',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_74(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'total_ml',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_75(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'goal_ml',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_76(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'requires_clinician',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (requires_clinician IN (0, 1))',
+    );
+
+class Shape15 extends i0.VersionedTable {
+  Shape15({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get rangeKey =>
+      columnsByName['range_key']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get fetchedAt =>
+      columnsByName['fetched_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_77(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'range_key',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape16 extends i0.VersionedTable {
+  Shape16({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get rangeKey =>
+      columnsByName['range_key']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get ingredientId =>
+      columnsByName['ingredient_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<double> get grams =>
+      columnsByName['grams']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get meals =>
+      columnsByName['meals']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get checked =>
+      columnsByName['checked']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_78(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'range_key',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints:
+          'NOT NULL REFERENCES shopping_lists(range_key)ON DELETE CASCADE',
+    );
+i1.GeneratedColumn<int> _column_79(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'meals',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_80(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'checked',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (checked IN (0, 1))',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -591,6 +1486,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from1To2(migrator, schema);
         return 2;
+      case 2:
+        final schema = Schema3(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from2To3(migrator, schema);
+        return 3;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -599,6 +1499,7 @@ i0.MigrationStepWithVersion migrationSteps({
 
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) => i0.VersionedSchema.stepByStepHelper(
-  step: migrationSteps(from1To2: from1To2),
+  step: migrationSteps(from1To2: from1To2, from2To3: from2To3),
 );

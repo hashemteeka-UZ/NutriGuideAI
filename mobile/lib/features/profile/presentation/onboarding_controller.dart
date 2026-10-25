@@ -7,6 +7,9 @@ import '../../../core/network/app_failure.dart';
 import '../../auth/data/auth_repository_impl.dart';
 import '../../auth/domain/session.dart';
 import '../../auth/presentation/session_controller.dart';
+import '../../plan/data/plan_providers.dart';
+import '../../plan/data/user_context.dart';
+import '../../plan/domain/cached_user.dart';
 import '../../reference/data/reference_repository.dart';
 import '../../reference/domain/reference_data.dart';
 import '../data/device_timezone.dart';
@@ -394,8 +397,32 @@ class OnboardingController extends Notifier<OnboardingState> {
     }
   }
 
-  Future<void> finish() {
-    return ref.read(sessionControllerProvider.notifier).completeOnboarding();
+  Future<void> finish() async {
+    final result = state.result;
+    final target = result?.target;
+    if (result != null && result.showPersonalPlan && target != null) {
+      ref
+          .read(userContextProvider.notifier)
+          .replace(
+            CachedUser(
+              eligible: true,
+              goalType: result.goalType,
+              conditions: List<String>.of(state.draft.conditionCodes),
+              allergenCodes: state.draft.allergens.keys.toList(),
+              hasDislike: false,
+              target: EnergyTarget(
+                kcal: target.kcal,
+                bmrKcal: target.bmrKcal.toDouble(),
+                tdeeKcal: target.tdeeKcal.toDouble(),
+              ),
+            ),
+          );
+      ref.read(launchShowcaseProvider.notifier).open();
+    } else {
+      ref.read(launchShowcaseProvider.notifier).close();
+    }
+    ref.read(recheckOnboardingProvider.notifier).close();
+    await ref.read(sessionControllerProvider.notifier).completeOnboarding();
   }
 
   Future<bool> _redirectIfProfileExists() async {

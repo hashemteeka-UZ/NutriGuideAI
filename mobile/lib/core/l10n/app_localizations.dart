@@ -167,8 +167,50 @@ abstract class AppLocalizations {
   /// No description provided for @failurePlannerTimeout.
   ///
   /// In ar, this message translates to:
-  /// **'تعذر بناء الخطة الآن. حاول مرة أخرى.'**
+  /// **'تعذر بناء الخطة الآن، حاول مرة أخرى بعد قليل.'**
   String get failurePlannerTimeout;
+
+  /// No description provided for @failureNotEligible.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة الشخصية غير متاحة لهذا الحساب.'**
+  String get failureNotEligible;
+
+  /// No description provided for @failureNoTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد هدف سعرات بعد.'**
+  String get failureNoTarget;
+
+  /// No description provided for @failureConditionConflict.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحالات الصحية تتعارض مع بناء خطة شخصية.'**
+  String get failureConditionConflict;
+
+  /// No description provided for @failureNoFeasiblePlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد خطة تناسب حدود هذا اليوم.'**
+  String get failureNoFeasiblePlan;
+
+  /// No description provided for @failureSwapRejected.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يمكن هذا الاستبدال لأنه يتجاوز حدود يومك.'**
+  String get failureSwapRejected;
+
+  /// No description provided for @failurePlanItemNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تعد هذه الوجبة في الخطة.'**
+  String get failurePlanItemNotFound;
+
+  /// No description provided for @failurePlanItemAlreadyLogged.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجلت هذه الوجبة، لا يمكن استبدالها.'**
+  String get failurePlanItemAlreadyLogged;
 
   /// No description provided for @failureUnauthorized.
   ///
@@ -1675,6 +1717,552 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الصويا'**
   String get allergenSoy;
+
+  /// No description provided for @tabToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم'**
+  String get tabToday;
+
+  /// No description provided for @tabPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة'**
+  String get tabPlan;
+
+  /// No description provided for @tabWater.
+  ///
+  /// In ar, this message translates to:
+  /// **'الماء'**
+  String get tabWater;
+
+  /// No description provided for @tabProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدمي'**
+  String get tabProgress;
+
+  /// No description provided for @tabMe.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابي'**
+  String get tabMe;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريبًا'**
+  String get comingSoon;
+
+  /// No description provided for @waterSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الماء يأتي في الخطوة التالية.'**
+  String get waterSoon;
+
+  /// No description provided for @progressSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'الالتزام والتقرير الأسبوعي والإنجازات تأتي لاحقًا.'**
+  String get progressSoon;
+
+  /// No description provided for @greetMorning.
+  ///
+  /// In ar, this message translates to:
+  /// **'صباح الخير'**
+  String get greetMorning;
+
+  /// No description provided for @greetEvening.
+  ///
+  /// In ar, this message translates to:
+  /// **'مساء الخير'**
+  String get greetEvening;
+
+  /// No description provided for @kcalModeEaten.
+  ///
+  /// In ar, this message translates to:
+  /// **'المستهلك'**
+  String get kcalModeEaten;
+
+  /// No description provided for @kcalModeLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتبقي'**
+  String get kcalModeLeft;
+
+  /// No description provided for @kcalEatenCaption.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعرة أكلتها اليوم'**
+  String get kcalEatenCaption;
+
+  /// No description provided for @kcalLeftCaption.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعرة متبقية لك'**
+  String get kcalLeftCaption;
+
+  /// No description provided for @kcalOfTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'من هدف {kcal} سعرة'**
+  String kcalOfTarget(String kcal);
+
+  /// No description provided for @todayNoPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تُبنَ خطة اليوم بعد'**
+  String get todayNoPlan;
+
+  /// No description provided for @todayBuildWeek.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابنِ خطة الأسبوع'**
+  String get todayBuildWeek;
+
+  /// No description provided for @nowCard.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقت {slot} الآن · حتى {time}'**
+  String nowCard(String slot, String time);
+
+  /// No description provided for @waterWithDoctor.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالتنسيق مع طبيبك'**
+  String get waterWithDoctor;
+
+  /// No description provided for @todayMeals.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبات اليوم'**
+  String get todayMeals;
+
+  /// No description provided for @fullPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة كاملة'**
+  String get fullPlan;
+
+  /// No description provided for @stateDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت'**
+  String get stateDone;
+
+  /// No description provided for @stateNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'الآن'**
+  String get stateNow;
+
+  /// No description provided for @stateMissed.
+  ///
+  /// In ar, this message translates to:
+  /// **'فات موعدها'**
+  String get stateMissed;
+
+  /// No description provided for @generalTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوضع العام'**
+  String get generalTitle;
+
+  /// No description provided for @generalBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجل أكلك وماءك وترى تقدمك. لا توجد خطة سعرات شخصية.'**
+  String get generalBody;
+
+  /// No description provided for @healthyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبات صحية لتجربتها'**
+  String get healthyTitle;
+
+  /// No description provided for @offlineBar.
+  ///
+  /// In ar, this message translates to:
+  /// **'دون اتصال · تعرض آخر نسخة محفوظة'**
+  String get offlineBar;
+
+  /// No description provided for @planTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطتك للأسبوع'**
+  String get planTitle;
+
+  /// No description provided for @planRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'{from} – {to}'**
+  String planRange(String from, String to);
+
+  /// No description provided for @planOptimizer.
+  ///
+  /// In ar, this message translates to:
+  /// **'بُنيت بالمحسّن'**
+  String get planOptimizer;
+
+  /// No description provided for @planRebuild.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة البناء'**
+  String get planRebuild;
+
+  /// No description provided for @planRebuildBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنبني أيام الأسبوع من جديد. الأيام التي سجلت فيها وجبة تبقى كما هي.'**
+  String get planRebuildBody;
+
+  /// No description provided for @planRebuildConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة البناء'**
+  String get planRebuildConfirm;
+
+  /// No description provided for @planCancel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get planCancel;
+
+  /// No description provided for @planChartTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعرات الأسبوع المخطط'**
+  String get planChartTitle;
+
+  /// No description provided for @planTargetLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف {kcal}'**
+  String planTargetLabel(String kcal);
+
+  /// No description provided for @withinBand.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمن ‎±10%‎ من هدفك'**
+  String get withinBand;
+
+  /// No description provided for @belowMinimum.
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل من الحد الأدنى: {nutrient}'**
+  String belowMinimum(String nutrient);
+
+  /// No description provided for @planEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد خطة لهذا اليوم'**
+  String get planEmpty;
+
+  /// No description provided for @generalPlanTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الوضع العام لا نبني خطة شخصية، لكن يمكنك تصفح الوجبات وحفظ ما يعجبك في المفضلة.'**
+  String get generalPlanTip;
+
+  /// No description provided for @planDayKcal.
+  ///
+  /// In ar, this message translates to:
+  /// **'{day} · {kcal} سعرة'**
+  String planDayKcal(String day, String kcal);
+
+  /// No description provided for @itemPortion.
+  ///
+  /// In ar, this message translates to:
+  /// **'كميتك: {multiplier} حصة · ≈ {grams} غ'**
+  String itemPortion(String multiplier, String grams);
+
+  /// No description provided for @whyChosen.
+  ///
+  /// In ar, this message translates to:
+  /// **'لماذا اخترناها لك؟'**
+  String get whyChosen;
+
+  /// No description provided for @perServingFacts.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيم الغذائية لحصة واحدة'**
+  String get perServingFacts;
+
+  /// No description provided for @perServingNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'لكل حصة'**
+  String get perServingNote;
+
+  /// No description provided for @swapAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'استبدال'**
+  String get swapAction;
+
+  /// No description provided for @swapLoggedNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجلت هذه الوجبة، لا يمكن استبدالها.'**
+  String get swapLoggedNote;
+
+  /// No description provided for @swapTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدائل تناسب خطتك'**
+  String get swapTitle;
+
+  /// No description provided for @swapSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلها تحافظ على سعرات يومك وحدودك'**
+  String get swapSubtitle;
+
+  /// No description provided for @swapEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد بدائل مناسبة الآن'**
+  String get swapEmpty;
+
+  /// No description provided for @swapOffline.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاستبدال يحتاج اتصالًا'**
+  String get swapOffline;
+
+  /// No description provided for @swapDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم الاستبدال'**
+  String get swapDone;
+
+  /// No description provided for @genTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'نبني خطتك الآن'**
+  String get genTitle;
+
+  /// No description provided for @genSkip.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخطي'**
+  String get genSkip;
+
+  /// No description provided for @genNeeds.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحسب احتياجك'**
+  String get genNeeds;
+
+  /// No description provided for @genFilter.
+  ///
+  /// In ar, this message translates to:
+  /// **'نستبعد ما لا يناسبك'**
+  String get genFilter;
+
+  /// No description provided for @genSearch.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحسّن يبحث عن أفضل تركيبة'**
+  String get genSearch;
+
+  /// No description provided for @genWeek.
+  ///
+  /// In ar, this message translates to:
+  /// **'نبني أيام الأسبوع'**
+  String get genWeek;
+
+  /// No description provided for @genKcalPerDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعرة يوميًا'**
+  String get genKcalPerDay;
+
+  /// No description provided for @genMealsInKitchen.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبة في المطبخ'**
+  String get genMealsInKitchen;
+
+  /// No description provided for @genAvoid.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجنب {name}'**
+  String genAvoid(String name);
+
+  /// No description provided for @genLessSalt.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملح أقل'**
+  String get genLessSalt;
+
+  /// No description provided for @genLessSugar.
+  ///
+  /// In ar, this message translates to:
+  /// **'سكريات أقل'**
+  String get genLessSugar;
+
+  /// No description provided for @genNoDislike.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدون ما لا تحبه'**
+  String get genNoDislike;
+
+  /// No description provided for @genWithin.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعرات ضمن ‎±10%‎'**
+  String get genWithin;
+
+  /// No description provided for @genProtein.
+  ///
+  /// In ar, this message translates to:
+  /// **'البروتين'**
+  String get genProtein;
+
+  /// No description provided for @genFiber.
+  ///
+  /// In ar, this message translates to:
+  /// **'الألياف'**
+  String get genFiber;
+
+  /// No description provided for @genNoRepeat.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدون تكرار مع أمس'**
+  String get genNoRepeat;
+
+  /// No description provided for @genSolver.
+  ///
+  /// In ar, this message translates to:
+  /// **'CP-SAT · {status} · {seconds} ث'**
+  String genSolver(String status, String seconds);
+
+  /// No description provided for @genReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطتك جاهزة'**
+  String get genReady;
+
+  /// No description provided for @genStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ يومك'**
+  String get genStart;
+
+  /// No description provided for @genPartial.
+  ///
+  /// In ar, this message translates to:
+  /// **'بنينا {built} من 7 أيام'**
+  String genPartial(int built);
+
+  /// No description provided for @genRetryLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'حاول مرة أخرى للأيام الباقية'**
+  String get genRetryLeft;
+
+  /// No description provided for @genNetwork.
+  ///
+  /// In ar, this message translates to:
+  /// **'انقطع الاتصال. الأيام التي بُنيت محفوظة. حاول مرة أخرى.'**
+  String get genNetwork;
+
+  /// No description provided for @genGeneric.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر إكمال البناء.'**
+  String get genGeneric;
+
+  /// No description provided for @genIneligible.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابك في الوضع العام، ولن نبني خطة شخصية.'**
+  String get genIneligible;
+
+  /// No description provided for @shopTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائمة المشتريات'**
+  String get shopTitle;
+
+  /// No description provided for @shopNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'محسوبة من وجبات أسبوعك، دون المكونات الاختيارية'**
+  String get shopNote;
+
+  /// No description provided for @shopProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'{done} من {total} مشتريات'**
+  String shopProgress(int done, int total);
+
+  /// No description provided for @shopFromPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'من خطة الأسبوع'**
+  String get shopFromPlan;
+
+  /// No description provided for @favouritesCard.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفضلاتي'**
+  String get favouritesCard;
+
+  /// No description provided for @favouritesCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} وجبات'**
+  String favouritesCount(int count);
+
+  /// No description provided for @shopInMeals.
+  ///
+  /// In ar, this message translates to:
+  /// **'في {count} وجبات'**
+  String shopInMeals(int count);
+
+  /// No description provided for @shopNeedsNet.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحتاج اتصالًا لحساب القائمة'**
+  String get shopNeedsNet;
+
+  /// No description provided for @shopShareHeader.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائمة مشترياتي ({from} – {to})'**
+  String shopShareHeader(String from, String to);
+
+  /// No description provided for @shopGrams.
+  ///
+  /// In ar, this message translates to:
+  /// **'≈ {grams} غ'**
+  String shopGrams(String grams);
+
+  /// No description provided for @shopKg.
+  ///
+  /// In ar, this message translates to:
+  /// **'{kg} كغ'**
+  String shopKg(String kg);
+
+  /// No description provided for @shopShare.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشاركة'**
+  String get shopShare;
+
+  /// No description provided for @chartNoPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد خطة'**
+  String get chartNoPlan;
+
+  /// No description provided for @accountLanguage.
+  ///
+  /// In ar, this message translates to:
+  /// **'English'**
+  String get accountLanguage;
 }
 
 class _AppLocalizationsDelegate

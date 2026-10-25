@@ -88,6 +88,13 @@ class PersonalDataStore {
 
   Future<void> _deleteRows() async {
     await _database.transaction(() async {
+      await _database.delete(_database.shoppingItems).go();
+      await _database.delete(_database.shoppingLists).go();
+      await _database.delete(_database.planUnmetMinimums).go();
+      await _database.delete(_database.planItems).go();
+      await _database.delete(_database.plans).go();
+      await _database.delete(_database.mealWindows).go();
+      await _database.delete(_database.daySummaries).go();
       await _database.delete(_database.localMealPrefs).go();
       await _database.delete(_database.userAllergens).go();
     });

@@ -43,7 +43,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get failurePlannerBusy => 'المخطّط مشغول الآن. حاول بعد قليل.';
 
   @override
-  String get failurePlannerTimeout => 'تعذر بناء الخطة الآن. حاول مرة أخرى.';
+  String get failurePlannerTimeout =>
+      'تعذر بناء الخطة الآن، حاول مرة أخرى بعد قليل.';
+
+  @override
+  String get failureNotEligible => 'الخطة الشخصية غير متاحة لهذا الحساب.';
+
+  @override
+  String get failureNoTarget => 'لا يوجد هدف سعرات بعد.';
+
+  @override
+  String get failureConditionConflict =>
+      'الحالات الصحية تتعارض مع بناء خطة شخصية.';
+
+  @override
+  String get failureNoFeasiblePlan => 'لا توجد خطة تناسب حدود هذا اليوم.';
+
+  @override
+  String get failureSwapRejected =>
+      'لا يمكن هذا الاستبدال لأنه يتجاوز حدود يومك.';
+
+  @override
+  String get failurePlanItemNotFound => 'لم تعد هذه الوجبة في الخطة.';
+
+  @override
+  String get failurePlanItemAlreadyLogged =>
+      'سجلت هذه الوجبة، لا يمكن استبدالها.';
 
   @override
   String get failureUnauthorized => 'انتهت الجلسة. سجّل الدخول من جديد.';
@@ -940,4 +965,314 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get allergenSoy => 'الصويا';
+
+  @override
+  String get tabToday => 'اليوم';
+
+  @override
+  String get tabPlan => 'الخطة';
+
+  @override
+  String get tabWater => 'الماء';
+
+  @override
+  String get tabProgress => 'تقدمي';
+
+  @override
+  String get tabMe => 'حسابي';
+
+  @override
+  String get comingSoon => 'قريبًا';
+
+  @override
+  String get waterSoon => 'تسجيل الماء يأتي في الخطوة التالية.';
+
+  @override
+  String get progressSoon =>
+      'الالتزام والتقرير الأسبوعي والإنجازات تأتي لاحقًا.';
+
+  @override
+  String get greetMorning => 'صباح الخير';
+
+  @override
+  String get greetEvening => 'مساء الخير';
+
+  @override
+  String get kcalModeEaten => 'المستهلك';
+
+  @override
+  String get kcalModeLeft => 'المتبقي';
+
+  @override
+  String get kcalEatenCaption => 'سعرة أكلتها اليوم';
+
+  @override
+  String get kcalLeftCaption => 'سعرة متبقية لك';
+
+  @override
+  String kcalOfTarget(String kcal) {
+    return 'من هدف $kcal سعرة';
+  }
+
+  @override
+  String get todayNoPlan => 'لم تُبنَ خطة اليوم بعد';
+
+  @override
+  String get todayBuildWeek => 'ابنِ خطة الأسبوع';
+
+  @override
+  String nowCard(String slot, String time) {
+    return 'وقت $slot الآن · حتى $time';
+  }
+
+  @override
+  String get waterWithDoctor => 'بالتنسيق مع طبيبك';
+
+  @override
+  String get todayMeals => 'وجبات اليوم';
+
+  @override
+  String get fullPlan => 'الخطة كاملة';
+
+  @override
+  String get stateDone => 'تمت';
+
+  @override
+  String get stateNow => 'الآن';
+
+  @override
+  String get stateMissed => 'فات موعدها';
+
+  @override
+  String get generalTitle => 'الوضع العام';
+
+  @override
+  String get generalBody =>
+      'تسجل أكلك وماءك وترى تقدمك. لا توجد خطة سعرات شخصية.';
+
+  @override
+  String get healthyTitle => 'وجبات صحية لتجربتها';
+
+  @override
+  String get offlineBar => 'دون اتصال · تعرض آخر نسخة محفوظة';
+
+  @override
+  String get planTitle => 'خطتك للأسبوع';
+
+  @override
+  String planRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get planOptimizer => 'بُنيت بالمحسّن';
+
+  @override
+  String get planRebuild => 'إعادة البناء';
+
+  @override
+  String get planRebuildBody =>
+      'سنبني أيام الأسبوع من جديد. الأيام التي سجلت فيها وجبة تبقى كما هي.';
+
+  @override
+  String get planRebuildConfirm => 'إعادة البناء';
+
+  @override
+  String get planCancel => 'إلغاء';
+
+  @override
+  String get planChartTitle => 'سعرات الأسبوع المخطط';
+
+  @override
+  String planTargetLabel(String kcal) {
+    return 'الهدف $kcal';
+  }
+
+  @override
+  String get withinBand => 'ضمن ‎±10%‎ من هدفك';
+
+  @override
+  String belowMinimum(String nutrient) {
+    return 'أقل من الحد الأدنى: $nutrient';
+  }
+
+  @override
+  String get planEmpty => 'لا توجد خطة لهذا اليوم';
+
+  @override
+  String get generalPlanTip =>
+      'في الوضع العام لا نبني خطة شخصية، لكن يمكنك تصفح الوجبات وحفظ ما يعجبك في المفضلة.';
+
+  @override
+  String planDayKcal(String day, String kcal) {
+    return '$day · $kcal سعرة';
+  }
+
+  @override
+  String itemPortion(String multiplier, String grams) {
+    return 'كميتك: $multiplier حصة · ≈ $grams غ';
+  }
+
+  @override
+  String get whyChosen => 'لماذا اخترناها لك؟';
+
+  @override
+  String get perServingFacts => 'القيم الغذائية لحصة واحدة';
+
+  @override
+  String get perServingNote => 'لكل حصة';
+
+  @override
+  String get swapAction => 'استبدال';
+
+  @override
+  String get swapLoggedNote => 'سجلت هذه الوجبة، لا يمكن استبدالها.';
+
+  @override
+  String get swapTitle => 'بدائل تناسب خطتك';
+
+  @override
+  String get swapSubtitle => 'كلها تحافظ على سعرات يومك وحدودك';
+
+  @override
+  String get swapEmpty => 'لا توجد بدائل مناسبة الآن';
+
+  @override
+  String get swapOffline => 'الاستبدال يحتاج اتصالًا';
+
+  @override
+  String get swapDone => 'تم الاستبدال';
+
+  @override
+  String get genTitle => 'نبني خطتك الآن';
+
+  @override
+  String get genSkip => 'تخطي';
+
+  @override
+  String get genNeeds => 'نحسب احتياجك';
+
+  @override
+  String get genFilter => 'نستبعد ما لا يناسبك';
+
+  @override
+  String get genSearch => 'المحسّن يبحث عن أفضل تركيبة';
+
+  @override
+  String get genWeek => 'نبني أيام الأسبوع';
+
+  @override
+  String get genKcalPerDay => 'سعرة يوميًا';
+
+  @override
+  String get genMealsInKitchen => 'وجبة في المطبخ';
+
+  @override
+  String genAvoid(String name) {
+    return 'تجنب $name';
+  }
+
+  @override
+  String get genLessSalt => 'ملح أقل';
+
+  @override
+  String get genLessSugar => 'سكريات أقل';
+
+  @override
+  String get genNoDislike => 'بدون ما لا تحبه';
+
+  @override
+  String get genWithin => 'السعرات ضمن ‎±10%‎';
+
+  @override
+  String get genProtein => 'البروتين';
+
+  @override
+  String get genFiber => 'الألياف';
+
+  @override
+  String get genNoRepeat => 'بدون تكرار مع أمس';
+
+  @override
+  String genSolver(String status, String seconds) {
+    return 'CP-SAT · $status · $seconds ث';
+  }
+
+  @override
+  String get genReady => 'خطتك جاهزة';
+
+  @override
+  String get genStart => 'ابدأ يومك';
+
+  @override
+  String genPartial(int built) {
+    return 'بنينا $built من 7 أيام';
+  }
+
+  @override
+  String get genRetryLeft => 'حاول مرة أخرى للأيام الباقية';
+
+  @override
+  String get genNetwork =>
+      'انقطع الاتصال. الأيام التي بُنيت محفوظة. حاول مرة أخرى.';
+
+  @override
+  String get genGeneric => 'تعذر إكمال البناء.';
+
+  @override
+  String get genIneligible => 'حسابك في الوضع العام، ولن نبني خطة شخصية.';
+
+  @override
+  String get shopTitle => 'قائمة المشتريات';
+
+  @override
+  String get shopNote => 'محسوبة من وجبات أسبوعك، دون المكونات الاختيارية';
+
+  @override
+  String shopProgress(int done, int total) {
+    return '$done من $total مشتريات';
+  }
+
+  @override
+  String get shopFromPlan => 'من خطة الأسبوع';
+
+  @override
+  String get favouritesCard => 'مفضلاتي';
+
+  @override
+  String favouritesCount(int count) {
+    return '$count وجبات';
+  }
+
+  @override
+  String shopInMeals(int count) {
+    return 'في $count وجبات';
+  }
+
+  @override
+  String get shopNeedsNet => 'نحتاج اتصالًا لحساب القائمة';
+
+  @override
+  String shopShareHeader(String from, String to) {
+    return 'قائمة مشترياتي ($from – $to)';
+  }
+
+  @override
+  String shopGrams(String grams) {
+    return '≈ $grams غ';
+  }
+
+  @override
+  String shopKg(String kg) {
+    return '$kg كغ';
+  }
+
+  @override
+  String get shopShare => 'مشاركة';
+
+  @override
+  String get chartNoPlan => 'لا توجد خطة';
+
+  @override
+  String get accountLanguage => 'English';
 }

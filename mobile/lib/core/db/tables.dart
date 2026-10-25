@@ -183,3 +183,185 @@ class UserAllergens extends Table {
   @override
   Set<Column<Object>> get primaryKey => {code};
 }
+
+/// Personal. One stored plan per local date.
+class Plans extends Table {
+  TextColumn get planDate => text()();
+
+  IntColumn get planId => integer()();
+
+  TextColumn get algorithmVersion => text()();
+
+  DateTimeColumn get createdAt => dateTime()();
+
+  IntColumn get kcal => integer()();
+
+  RealColumn get proteinG => real()();
+
+  RealColumn get carbG => real()();
+
+  RealColumn get fatG => real()();
+
+  IntColumn get fiberG => integer()();
+
+  RealColumn get totalsKcal => real().nullable()();
+
+  RealColumn get totalsProteinG => real().nullable()();
+
+  RealColumn get totalsCarbG => real().nullable()();
+
+  RealColumn get totalsFatG => real().nullable()();
+
+  RealColumn get totalsFiberG => real().nullable()();
+
+  RealColumn get totalsSaturatedFatG => real().nullable()();
+
+  RealColumn get totalsSodiumMg => real().nullable()();
+
+  RealColumn get totalsSugarsG => real().nullable()();
+
+  BoolColumn get kcalWithin10pct => boolean()();
+
+  TextColumn get solverStatus => text().nullable()();
+
+  BoolColumn get kcalRelaxed => boolean().nullable()();
+
+  RealColumn get solveSeconds => real().nullable()();
+
+  IntColumn get candidateMeals => integer().nullable()();
+
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {planDate};
+}
+
+/// Personal. Items of a stored plan. Deleted with the plan.
+class PlanItems extends Table {
+  IntColumn get planItemId => integer()();
+
+  TextColumn get planDate =>
+      text().references(Plans, #planDate, onDelete: KeyAction.cascade)();
+
+  IntColumn get position => integer()();
+
+  TextColumn get slot => text()();
+
+  IntColumn get mealId => integer()();
+
+  TextColumn get mealName => text()();
+
+  RealColumn get servingsMultiplier => real()();
+
+  RealColumn get grams => real()();
+
+  RealColumn get kcal => real()();
+
+  RealColumn get proteinG => real()();
+
+  RealColumn get carbG => real()();
+
+  RealColumn get fatG => real()();
+
+  TextColumn get reasonCodes => text()();
+
+  BoolColumn get wasSwapped => boolean()();
+
+  BoolColumn get logged => boolean()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {planItemId};
+}
+
+/// Personal. Nutrients under the plan minimum. Deleted with the plan.
+class PlanUnmetMinimums extends Table {
+  TextColumn get planDate =>
+      text().references(Plans, #planDate, onDelete: KeyAction.cascade)();
+
+  TextColumn get nutrient => text()();
+
+  RealColumn get minimum => real()();
+
+  RealColumn get total => real().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {planDate, nutrient};
+}
+
+/// Personal. Meal windows for one local date, from the day view.
+class MealWindows extends Table {
+  TextColumn get windowDate => text()();
+
+  TextColumn get slot => text()();
+
+  TextColumn get start => text()();
+
+  TextColumn get end => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {windowDate, slot};
+}
+
+/// Personal. Adherence and water totals shown on Today.
+class DaySummaries extends Table {
+  TextColumn get summaryDate => text()();
+
+  RealColumn get targetKcal => real().nullable()();
+
+  RealColumn get kcal => real().nullable()();
+
+  RealColumn get proteinG => real().nullable()();
+
+  RealColumn get carbG => real().nullable()();
+
+  RealColumn get fatG => real().nullable()();
+
+  IntColumn get planItemsTotal => integer()();
+
+  IntColumn get planItemsConsumed => integer()();
+
+  TextColumn get status => text().nullable()();
+
+  IntColumn get totalMl => integer()();
+
+  IntColumn get goalMl => integer().nullable()();
+
+  BoolColumn get requiresClinician => boolean()();
+
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {summaryDate};
+}
+
+/// Personal. One cached shopping list per inclusive date range.
+class ShoppingLists extends Table {
+  TextColumn get rangeKey => text()();
+
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {rangeKey};
+}
+
+/// Personal. Checked state stays on the phone for ingredients still in the list.
+class ShoppingItems extends Table {
+  TextColumn get rangeKey => text().references(
+    ShoppingLists,
+    #rangeKey,
+    onDelete: KeyAction.cascade,
+  )();
+
+  IntColumn get ingredientId => integer()();
+
+  TextColumn get name => text()();
+
+  RealColumn get grams => real()();
+
+  IntColumn get meals => integer()();
+
+  BoolColumn get checked => boolean()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {rangeKey, ingredientId};
+}

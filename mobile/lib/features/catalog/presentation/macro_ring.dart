@@ -125,12 +125,7 @@ class MacroRing extends StatelessWidget {
   }
 }
 
-String _whole(double value) {
-  if (value == value.roundToDouble()) {
-    return value.round().toString();
-  }
-  return value.toStringAsFixed(1);
-}
+String _whole(double value) => value.round().toString();
 
 class _RingPainter extends CustomPainter {
   _RingPainter({

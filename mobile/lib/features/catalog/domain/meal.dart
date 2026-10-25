@@ -170,6 +170,20 @@ const knownNutrientCodes = <String>[
   'potassium',
 ];
 
+class SuggestedMeal {
+  const SuggestedMeal({
+    required this.mealId,
+    required this.name,
+    required this.kcal,
+    required this.iconName,
+  });
+
+  final int mealId;
+  final String name;
+  final double kcal;
+  final String iconName;
+}
+
 const breakfastTag = 'breakfast_suitable';
 const lunchTag = 'lunch_suitable';
 const dinnerTag = 'dinner_suitable';

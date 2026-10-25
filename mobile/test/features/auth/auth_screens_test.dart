@@ -11,7 +11,7 @@ import '../../support/fake_auth_repository.dart';
 import '../../support/pump_app.dart';
 
 void main() {
-  testWidgets('register shows Arabic validation messages', (tester) async {
+  testNutriguide('register shows Arabic validation messages', (tester) async {
     await pumpNutriguide(tester, auth: FakeAuthRepository());
 
     await _openRegister(tester);
@@ -36,7 +36,9 @@ void main() {
     expect(find.text('١٢٨ حرفًا كحد أقصى.'), findsOneWidget);
   });
 
-  testWidgets('a server field error is shown under that field', (tester) async {
+  testNutriguide('a server field error is shown under that field', (
+    tester,
+  ) async {
     final auth = FakeAuthRepository();
     auth.onRegister = (String email, String password) async {
       throw const ApiProblem(
@@ -68,7 +70,7 @@ void main() {
     expect(find.text('البريد الإلكتروني غير صالح.'), findsOneWidget);
   });
 
-  testWidgets('rate limit disables the button for the countdown', (
+  testNutriguide('rate limit disables the button for the countdown', (
     tester,
   ) async {
     final auth = FakeAuthRepository();
@@ -104,7 +106,7 @@ void main() {
     );
   });
 
-  testWidgets('login routes to onboarding when the account has no profile', (
+  testNutriguide('login routes to onboarding when the account has no profile', (
     tester,
   ) async {
     final auth = FakeAuthRepository();
@@ -119,7 +121,7 @@ void main() {
     expect(find.text('عرّفنا بنفسك'), findsOneWidget);
   });
 
-  testWidgets('login routes to home when the account has a profile', (
+  testNutriguide('login routes to home when the account has a profile', (
     tester,
   ) async {
     final auth = FakeAuthRepository();
@@ -131,11 +133,13 @@ void main() {
     await _submitLogin(tester, 'home@example.com', '12345678');
     await tester.pumpAndSettle();
 
-    expect(find.text('أهلًا'), findsOneWidget);
-    expect(find.text('home@example.com'), findsOneWidget);
+    expect(find.byKey(const Key('today-screen')), findsOneWidget);
+    expect(find.text('home@example.com'), findsNothing);
   });
 
-  testWidgets('invalid credentials clears the password only', (tester) async {
+  testNutriguide('invalid credentials clears the password only', (
+    tester,
+  ) async {
     final auth = FakeAuthRepository();
     auth.onLogin = (String email, String password) async {
       throw const ApiProblem(
@@ -168,7 +172,9 @@ void main() {
     );
   });
 
-  testWidgets('register shows the already-registered message', (tester) async {
+  testNutriguide('register shows the already-registered message', (
+    tester,
+  ) async {
     final auth = FakeAuthRepository();
     auth.onRegister = (String email, String password) async {
       throw const ApiProblem(
@@ -196,7 +202,7 @@ void main() {
     );
   });
 
-  testWidgets('the submit button is disabled while the request is running', (
+  testNutriguide('the submit button is disabled while the request is running', (
     tester,
   ) async {
     final gate = Completer<AccountInfo>();
@@ -224,7 +230,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('welcome and register fit at text scale 1.3', (tester) async {
+  testNutriguide('welcome and register fit at text scale 1.3', (tester) async {
     await pumpNutriguide(
       tester,
       auth: FakeAuthRepository(),
@@ -241,7 +247,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('the welcome language pill switches direction', (tester) async {
+  testNutriguide('the welcome language pill switches direction', (
+    tester,
+  ) async {
     await pumpNutriguide(tester, auth: FakeAuthRepository());
 
     expect(find.text('خطة تُبنى لك أنت'), findsOneWidget);
@@ -260,7 +268,9 @@ void main() {
     expect(_direction(tester), TextDirection.rtl);
   });
 
-  testWidgets('an expired session opens login with a banner', (tester) async {
+  testNutriguide('an expired session opens login with a banner', (
+    tester,
+  ) async {
     await pumpNutriguide(
       tester,
       auth: FakeAuthRepository(

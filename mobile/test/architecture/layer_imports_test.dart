@@ -9,6 +9,9 @@ void main() {
       final root = Directory('lib/features');
       expect(root.existsSync(), isTrue);
       expect(Directory('lib/features/catalog').existsSync(), isTrue);
+      expect(Directory('lib/features/plan').existsSync(), isTrue);
+      expect(Directory('lib/features/today').existsSync(), isTrue);
+      expect(Directory('lib/features/shopping').existsSync(), isTrue);
       final importPattern = RegExp(
         '^\\s*(?:import|export)\\s+[\'"]([^\'"]+)[\'"]',
         multiLine: true,

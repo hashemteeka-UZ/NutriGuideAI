@@ -16,7 +16,7 @@ import '../../support/onboarding_fakes.dart';
 import '../../support/pump_app.dart';
 
 void main() {
-  testWidgets(
+  testNutriguide(
     'happy path reaches the result and keeps answers out of preferences',
     (tester) async {
       final profile = FakeProfileRepository(
@@ -77,13 +77,13 @@ void main() {
       await tester.tap(find.byKey(const Key('onb-finish')));
       await tester.pumpAndSettle();
 
-      expect(find.text('أهلًا'), findsOneWidget);
+      expect(find.text('نبني خطتك الآن'), findsOneWidget);
       expect(profile.calls, 1);
       expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
     },
   );
 
-  testWidgets('the floor line is hidden when the server did not apply it', (
+  testNutriguide('the floor line is hidden when the server did not apply it', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -106,7 +106,7 @@ void main() {
     expect(find.byKey(const Key('calc-adjustment')), findsOneWidget);
   });
 
-  testWidgets('insulin answers open the general mode', (tester) async {
+  testNutriguide('insulin answers open the general mode', (tester) async {
     final profile = FakeProfileRepository(
       outcome: ProfileSaveOutcome(
         result: sampleResult(
@@ -153,7 +153,7 @@ void main() {
     expect(profile.lastDraft?.insulin, isTrue);
   });
 
-  testWidgets('an under-18 reason shows the adults message', (tester) async {
+  testNutriguide('an under-18 reason shows the adults message', (tester) async {
     await pumpNutriguide(
       tester,
       auth: FakeAuthRepository(
@@ -192,7 +192,7 @@ void main() {
     expect(find.text('ادخل التطبيق'), findsOneWidget);
   });
 
-  testWidgets('back returns to the previous step and keeps the answer', (
+  testNutriguide('back returns to the previous step and keeps the answer', (
     tester,
   ) async {
     await pumpNutriguide(
@@ -219,7 +219,7 @@ void main() {
     expect(semantics.flagsCollection.isButton, isTrue);
   });
 
-  testWidgets('english at text scale 1.3 lays out without overflow', (
+  testNutriguide('english at text scale 1.3 lays out without overflow', (
     tester,
   ) async {
     await pumpNutriguide(
@@ -257,7 +257,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('a profile that already exists opens home', (tester) async {
+  testNutriguide('a profile that already exists opens home', (tester) async {
     final auth = FakeAuthRepository(
       restored: const SignedIn(account: AccountInfo(hasProfile: false)),
     );
@@ -271,7 +271,7 @@ void main() {
     };
     await pumpNutriguide(tester, auth: auth);
 
-    expect(find.text('أهلًا'), findsOneWidget);
+    expect(find.byKey(const Key('today-screen')), findsOneWidget);
     expect(find.text('عرّفنا بنفسك'), findsNothing);
   });
 }
