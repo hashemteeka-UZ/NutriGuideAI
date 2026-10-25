@@ -1532,4 +1532,157 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fabLabel => 'Add';
+
+  @override
+  String get progressSegReport => 'Weekly report';
+
+  @override
+  String get progressSegWeight => 'Weight';
+
+  @override
+  String get progressSegBadges => 'Achievements';
+
+  @override
+  String get progressBadgesSoon => 'Coming soon: badges and achievements.';
+
+  @override
+  String weekRange(Object from, Object to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get weekPrev => 'Previous week';
+
+  @override
+  String get weekNext => 'Next week';
+
+  @override
+  String get headlineExcellent => 'An excellent week!';
+
+  @override
+  String get headlineGood => 'A good week';
+
+  @override
+  String get headlineFresh => 'Every day is a fresh start';
+
+  @override
+  String weekAchievedOf(Object achieved, Object counted, String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'female': 'You hit your goal on $achieved of $counted days',
+      'other': 'You hit your goal on $achieved of $counted days',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get bestDayTitle => 'Best day';
+
+  @override
+  String bestDayBody(Object day, Object percent) {
+    return '$day · $percent% of target';
+  }
+
+  @override
+  String get mostMissedTitle => 'Most often short';
+
+  @override
+  String mostMissedBody(
+    Object days,
+    Object minimum,
+    Object nutrient,
+    Object total,
+  ) {
+    return '$nutrient: $total of $minimum on average, on $days days';
+  }
+
+  @override
+  String get waterAvgTitle => 'Average water';
+
+  @override
+  String waterAvgBody(Object ml) {
+    return '$ml ml a day';
+  }
+
+  @override
+  String get caloriesChartTitle => 'Calories vs target';
+
+  @override
+  String get legendAchieved => 'On target';
+
+  @override
+  String get legendPartial => 'Close';
+
+  @override
+  String get legendNot => 'Far';
+
+  @override
+  String get legendNone => 'No log';
+
+  @override
+  String get macrosTitle => 'Average nutrients';
+
+  @override
+  String macroValue(Object avg, Object target) {
+    return '$avg / $target g';
+  }
+
+  @override
+  String exceededTitle(Object days) {
+    return 'Went over a health limit on $days days';
+  }
+
+  @override
+  String exceededLine(Object limit, Object nutrient, Object total) {
+    return '$nutrient: $total vs a limit of $limit';
+  }
+
+  @override
+  String get emptyWeek => 'Log your meals this week to see your report here';
+
+  @override
+  String get emptyWeekAction => 'Go to Today';
+
+  @override
+  String calendarStreak(Object count) {
+    return '🔥 $count days in a row';
+  }
+
+  @override
+  String get weightStart => 'Start';
+
+  @override
+  String get weightNow => 'Now';
+
+  @override
+  String get weightGoal => 'Goal';
+
+  @override
+  String get weightMaintain => 'Maintain';
+
+  @override
+  String get weightFewPoints =>
+      'Log your weight regularly to see your trend here';
+
+  @override
+  String get weightLogToday => 'Log today\'s weight';
+
+  @override
+  String weightDays(Object days) {
+    return '$days days';
+  }
+
+  @override
+  String weightChartSummary(Object count, Object first, Object last) {
+    return '$count weights, from $first to $last kg';
+  }
+
+  @override
+  String caloriesChartSummary(Object values) {
+    return 'Calories this week: $values';
+  }
+
+  @override
+  String adherenceRing(Object percent) {
+    return '$percent% adherence';
+  }
 }

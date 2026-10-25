@@ -450,6 +450,64 @@ class Weights extends Table {
   Set<Column<Object>> get primaryKey => {measuredOn};
 }
 
+/// Personal. One day of `GET /adherence`, as the server computed it.
+class AdherenceDays extends Table {
+  TextColumn get date => text()();
+
+  /// ACHIEVED, PARTIAL, NOT_ACHIEVED, or null.
+  TextColumn get status => text().nullable()();
+
+  RealColumn get completion => real().nullable()();
+
+  RealColumn get targetKcal => real().nullable()();
+
+  RealColumn get kcal => real().nullable()();
+
+  RealColumn get proteinG => real().nullable()();
+
+  RealColumn get carbG => real().nullable()();
+
+  RealColumn get fatG => real().nullable()();
+
+  RealColumn get fiberG => real().nullable()();
+
+  RealColumn get saturatedFatG => real().nullable()();
+
+  RealColumn get sodiumMg => real().nullable()();
+
+  RealColumn get sugarsG => real().nullable()();
+
+  TextColumn get unmetJson => text()();
+
+  TextColumn get exceededJson => text()();
+
+  IntColumn get planItemsTotal => integer()();
+
+  IntColumn get planItemsConsumed => integer()();
+
+  IntColumn get logCount => integer()();
+
+  TextColumn get reason => text().nullable()();
+
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {date};
+}
+
+/// Personal. Small values such as the last streak.
+class ProgressMeta extends Table {
+  @override
+  String get tableName => 'progress_meta';
+
+  TextColumn get key => text()();
+
+  TextColumn get value => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}
+
 /// Personal. Checked state stays on the phone for ingredients still in the list.
 class ShoppingItems extends Table {
   TextColumn get rangeKey => text().references(

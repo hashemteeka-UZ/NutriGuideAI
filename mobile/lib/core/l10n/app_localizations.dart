@@ -2701,6 +2701,245 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'إضافة'**
   String get fabLabel;
+
+  /// No description provided for @progressSegReport.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقرير الأسبوع'**
+  String get progressSegReport;
+
+  /// No description provided for @progressSegWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن'**
+  String get progressSegWeight;
+
+  /// No description provided for @progressSegBadges.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإنجازات'**
+  String get progressSegBadges;
+
+  /// No description provided for @progressBadgesSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريبًا: الشارات والإنجازات.'**
+  String get progressBadgesSoon;
+
+  /// No description provided for @weekRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'{from} – {to}'**
+  String weekRange(Object from, Object to);
+
+  /// No description provided for @weekPrev.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأسبوع السابق'**
+  String get weekPrev;
+
+  /// No description provided for @weekNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأسبوع التالي'**
+  String get weekNext;
+
+  /// No description provided for @headlineExcellent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسبوع ممتاز!'**
+  String get headlineExcellent;
+
+  /// No description provided for @headlineGood.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسبوع جيد'**
+  String get headlineGood;
+
+  /// No description provided for @headlineFresh.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل يوم فرصة جديدة'**
+  String get headlineFresh;
+
+  /// No description provided for @weekAchievedOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, female{حققتِ هدفكِ في {achieved} من {counted} أيام} other{حققت هدفك في {achieved} من {counted} أيام}}'**
+  String weekAchievedOf(Object achieved, Object counted, String sex);
+
+  /// No description provided for @bestDayTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أفضل يوم'**
+  String get bestDayTitle;
+
+  /// No description provided for @bestDayBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'{day} · {percent}% من الهدف'**
+  String bestDayBody(Object day, Object percent);
+
+  /// No description provided for @mostMissedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكثر ما نقصك'**
+  String get mostMissedTitle;
+
+  /// No description provided for @mostMissedBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'{nutrient}: {total} من {minimum} في المتوسط، في {days} أيام'**
+  String mostMissedBody(
+    Object days,
+    Object minimum,
+    Object nutrient,
+    Object total,
+  );
+
+  /// No description provided for @waterAvgTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوسط الماء'**
+  String get waterAvgTitle;
+
+  /// No description provided for @waterAvgBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'{ml} مل في اليوم'**
+  String waterAvgBody(Object ml);
+
+  /// No description provided for @caloriesChartTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعرات مقابل الهدف'**
+  String get caloriesChartTitle;
+
+  /// No description provided for @legendAchieved.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمن الهدف'**
+  String get legendAchieved;
+
+  /// No description provided for @legendPartial.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريب'**
+  String get legendPartial;
+
+  /// No description provided for @legendNot.
+  ///
+  /// In ar, this message translates to:
+  /// **'بعيد'**
+  String get legendNot;
+
+  /// No description provided for @legendNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا تسجيل'**
+  String get legendNone;
+
+  /// No description provided for @macrosTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوسط العناصر'**
+  String get macrosTitle;
+
+  /// No description provided for @macroValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'{avg} / {target} غ'**
+  String macroValue(Object avg, Object target);
+
+  /// No description provided for @exceededTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاوزت حدًا صحيًا في {days} أيام'**
+  String exceededTitle(Object days);
+
+  /// No description provided for @exceededLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'{nutrient}: {total} مقابل حد {limit}'**
+  String exceededLine(Object limit, Object nutrient, Object total);
+
+  /// No description provided for @emptyWeek.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل وجباتك هذا الأسبوع لترى تقريرك هنا'**
+  String get emptyWeek;
+
+  /// No description provided for @emptyWeekAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'اذهب إلى اليوم'**
+  String get emptyWeekAction;
+
+  /// No description provided for @calendarStreak.
+  ///
+  /// In ar, this message translates to:
+  /// **'🔥 {count} أيام متتالية'**
+  String calendarStreak(Object count);
+
+  /// No description provided for @weightStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'البداية'**
+  String get weightStart;
+
+  /// No description provided for @weightNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'الآن'**
+  String get weightNow;
+
+  /// No description provided for @weightGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف'**
+  String get weightGoal;
+
+  /// No description provided for @weightMaintain.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحفاظ'**
+  String get weightMaintain;
+
+  /// No description provided for @weightFewPoints.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل وزنك بانتظام لترى مسارك هنا'**
+  String get weightFewPoints;
+
+  /// No description provided for @weightLogToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل وزنك اليوم'**
+  String get weightLogToday;
+
+  /// No description provided for @weightDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'{days} يومًا'**
+  String weightDays(Object days);
+
+  /// No description provided for @weightChartSummary.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} قياسات للوزن، من {first} إلى {last} كغ'**
+  String weightChartSummary(Object count, Object first, Object last);
+
+  /// No description provided for @caloriesChartSummary.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعرات الأسبوع: {values}'**
+  String caloriesChartSummary(Object values);
+
+  /// No description provided for @adherenceRing.
+  ///
+  /// In ar, this message translates to:
+  /// **'التزام {percent}%'**
+  String adherenceRing(Object percent);
 }
 
 class _AppLocalizationsDelegate

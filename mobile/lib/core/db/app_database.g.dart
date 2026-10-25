@@ -10167,6 +10167,1282 @@ class WeightsCompanion extends UpdateCompanion<Weight> {
   }
 }
 
+class $AdherenceDaysTable extends AdherenceDays
+    with TableInfo<$AdherenceDaysTable, AdherenceDay> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AdherenceDaysTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _completionMeta = const VerificationMeta(
+    'completion',
+  );
+  @override
+  late final GeneratedColumn<double> completion = GeneratedColumn<double>(
+    'completion',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _targetKcalMeta = const VerificationMeta(
+    'targetKcal',
+  );
+  @override
+  late final GeneratedColumn<double> targetKcal = GeneratedColumn<double>(
+    'target_kcal',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _kcalMeta = const VerificationMeta('kcal');
+  @override
+  late final GeneratedColumn<double> kcal = GeneratedColumn<double>(
+    'kcal',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _proteinGMeta = const VerificationMeta(
+    'proteinG',
+  );
+  @override
+  late final GeneratedColumn<double> proteinG = GeneratedColumn<double>(
+    'protein_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _carbGMeta = const VerificationMeta('carbG');
+  @override
+  late final GeneratedColumn<double> carbG = GeneratedColumn<double>(
+    'carb_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fatGMeta = const VerificationMeta('fatG');
+  @override
+  late final GeneratedColumn<double> fatG = GeneratedColumn<double>(
+    'fat_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fiberGMeta = const VerificationMeta('fiberG');
+  @override
+  late final GeneratedColumn<double> fiberG = GeneratedColumn<double>(
+    'fiber_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _saturatedFatGMeta = const VerificationMeta(
+    'saturatedFatG',
+  );
+  @override
+  late final GeneratedColumn<double> saturatedFatG = GeneratedColumn<double>(
+    'saturated_fat_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sodiumMgMeta = const VerificationMeta(
+    'sodiumMg',
+  );
+  @override
+  late final GeneratedColumn<double> sodiumMg = GeneratedColumn<double>(
+    'sodium_mg',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sugarsGMeta = const VerificationMeta(
+    'sugarsG',
+  );
+  @override
+  late final GeneratedColumn<double> sugarsG = GeneratedColumn<double>(
+    'sugars_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _unmetJsonMeta = const VerificationMeta(
+    'unmetJson',
+  );
+  @override
+  late final GeneratedColumn<String> unmetJson = GeneratedColumn<String>(
+    'unmet_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exceededJsonMeta = const VerificationMeta(
+    'exceededJson',
+  );
+  @override
+  late final GeneratedColumn<String> exceededJson = GeneratedColumn<String>(
+    'exceeded_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _planItemsTotalMeta = const VerificationMeta(
+    'planItemsTotal',
+  );
+  @override
+  late final GeneratedColumn<int> planItemsTotal = GeneratedColumn<int>(
+    'plan_items_total',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _planItemsConsumedMeta = const VerificationMeta(
+    'planItemsConsumed',
+  );
+  @override
+  late final GeneratedColumn<int> planItemsConsumed = GeneratedColumn<int>(
+    'plan_items_consumed',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _logCountMeta = const VerificationMeta(
+    'logCount',
+  );
+  @override
+  late final GeneratedColumn<int> logCount = GeneratedColumn<int>(
+    'log_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    date,
+    status,
+    completion,
+    targetKcal,
+    kcal,
+    proteinG,
+    carbG,
+    fatG,
+    fiberG,
+    saturatedFatG,
+    sodiumMg,
+    sugarsG,
+    unmetJson,
+    exceededJson,
+    planItemsTotal,
+    planItemsConsumed,
+    logCount,
+    reason,
+    fetchedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'adherence_days';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AdherenceDay> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('completion')) {
+      context.handle(
+        _completionMeta,
+        completion.isAcceptableOrUnknown(data['completion']!, _completionMeta),
+      );
+    }
+    if (data.containsKey('target_kcal')) {
+      context.handle(
+        _targetKcalMeta,
+        targetKcal.isAcceptableOrUnknown(data['target_kcal']!, _targetKcalMeta),
+      );
+    }
+    if (data.containsKey('kcal')) {
+      context.handle(
+        _kcalMeta,
+        kcal.isAcceptableOrUnknown(data['kcal']!, _kcalMeta),
+      );
+    }
+    if (data.containsKey('protein_g')) {
+      context.handle(
+        _proteinGMeta,
+        proteinG.isAcceptableOrUnknown(data['protein_g']!, _proteinGMeta),
+      );
+    }
+    if (data.containsKey('carb_g')) {
+      context.handle(
+        _carbGMeta,
+        carbG.isAcceptableOrUnknown(data['carb_g']!, _carbGMeta),
+      );
+    }
+    if (data.containsKey('fat_g')) {
+      context.handle(
+        _fatGMeta,
+        fatG.isAcceptableOrUnknown(data['fat_g']!, _fatGMeta),
+      );
+    }
+    if (data.containsKey('fiber_g')) {
+      context.handle(
+        _fiberGMeta,
+        fiberG.isAcceptableOrUnknown(data['fiber_g']!, _fiberGMeta),
+      );
+    }
+    if (data.containsKey('saturated_fat_g')) {
+      context.handle(
+        _saturatedFatGMeta,
+        saturatedFatG.isAcceptableOrUnknown(
+          data['saturated_fat_g']!,
+          _saturatedFatGMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sodium_mg')) {
+      context.handle(
+        _sodiumMgMeta,
+        sodiumMg.isAcceptableOrUnknown(data['sodium_mg']!, _sodiumMgMeta),
+      );
+    }
+    if (data.containsKey('sugars_g')) {
+      context.handle(
+        _sugarsGMeta,
+        sugarsG.isAcceptableOrUnknown(data['sugars_g']!, _sugarsGMeta),
+      );
+    }
+    if (data.containsKey('unmet_json')) {
+      context.handle(
+        _unmetJsonMeta,
+        unmetJson.isAcceptableOrUnknown(data['unmet_json']!, _unmetJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_unmetJsonMeta);
+    }
+    if (data.containsKey('exceeded_json')) {
+      context.handle(
+        _exceededJsonMeta,
+        exceededJson.isAcceptableOrUnknown(
+          data['exceeded_json']!,
+          _exceededJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_exceededJsonMeta);
+    }
+    if (data.containsKey('plan_items_total')) {
+      context.handle(
+        _planItemsTotalMeta,
+        planItemsTotal.isAcceptableOrUnknown(
+          data['plan_items_total']!,
+          _planItemsTotalMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_planItemsTotalMeta);
+    }
+    if (data.containsKey('plan_items_consumed')) {
+      context.handle(
+        _planItemsConsumedMeta,
+        planItemsConsumed.isAcceptableOrUnknown(
+          data['plan_items_consumed']!,
+          _planItemsConsumedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_planItemsConsumedMeta);
+    }
+    if (data.containsKey('log_count')) {
+      context.handle(
+        _logCountMeta,
+        logCount.isAcceptableOrUnknown(data['log_count']!, _logCountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_logCountMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {date};
+  @override
+  AdherenceDay map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AdherenceDay(
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      ),
+      completion: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}completion'],
+      ),
+      targetKcal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}target_kcal'],
+      ),
+      kcal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}kcal'],
+      ),
+      proteinG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}protein_g'],
+      ),
+      carbG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}carb_g'],
+      ),
+      fatG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fat_g'],
+      ),
+      fiberG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fiber_g'],
+      ),
+      saturatedFatG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}saturated_fat_g'],
+      ),
+      sodiumMg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}sodium_mg'],
+      ),
+      sugarsG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}sugars_g'],
+      ),
+      unmetJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}unmet_json'],
+      )!,
+      exceededJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exceeded_json'],
+      )!,
+      planItemsTotal: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plan_items_total'],
+      )!,
+      planItemsConsumed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plan_items_consumed'],
+      )!,
+      logCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}log_count'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      ),
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AdherenceDaysTable createAlias(String alias) {
+    return $AdherenceDaysTable(attachedDatabase, alias);
+  }
+}
+
+class AdherenceDay extends DataClass implements Insertable<AdherenceDay> {
+  final String date;
+
+  /// ACHIEVED, PARTIAL, NOT_ACHIEVED, or null.
+  final String? status;
+  final double? completion;
+  final double? targetKcal;
+  final double? kcal;
+  final double? proteinG;
+  final double? carbG;
+  final double? fatG;
+  final double? fiberG;
+  final double? saturatedFatG;
+  final double? sodiumMg;
+  final double? sugarsG;
+  final String unmetJson;
+  final String exceededJson;
+  final int planItemsTotal;
+  final int planItemsConsumed;
+  final int logCount;
+  final String? reason;
+  final DateTime fetchedAt;
+  const AdherenceDay({
+    required this.date,
+    this.status,
+    this.completion,
+    this.targetKcal,
+    this.kcal,
+    this.proteinG,
+    this.carbG,
+    this.fatG,
+    this.fiberG,
+    this.saturatedFatG,
+    this.sodiumMg,
+    this.sugarsG,
+    required this.unmetJson,
+    required this.exceededJson,
+    required this.planItemsTotal,
+    required this.planItemsConsumed,
+    required this.logCount,
+    this.reason,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['date'] = Variable<String>(date);
+    if (!nullToAbsent || status != null) {
+      map['status'] = Variable<String>(status);
+    }
+    if (!nullToAbsent || completion != null) {
+      map['completion'] = Variable<double>(completion);
+    }
+    if (!nullToAbsent || targetKcal != null) {
+      map['target_kcal'] = Variable<double>(targetKcal);
+    }
+    if (!nullToAbsent || kcal != null) {
+      map['kcal'] = Variable<double>(kcal);
+    }
+    if (!nullToAbsent || proteinG != null) {
+      map['protein_g'] = Variable<double>(proteinG);
+    }
+    if (!nullToAbsent || carbG != null) {
+      map['carb_g'] = Variable<double>(carbG);
+    }
+    if (!nullToAbsent || fatG != null) {
+      map['fat_g'] = Variable<double>(fatG);
+    }
+    if (!nullToAbsent || fiberG != null) {
+      map['fiber_g'] = Variable<double>(fiberG);
+    }
+    if (!nullToAbsent || saturatedFatG != null) {
+      map['saturated_fat_g'] = Variable<double>(saturatedFatG);
+    }
+    if (!nullToAbsent || sodiumMg != null) {
+      map['sodium_mg'] = Variable<double>(sodiumMg);
+    }
+    if (!nullToAbsent || sugarsG != null) {
+      map['sugars_g'] = Variable<double>(sugarsG);
+    }
+    map['unmet_json'] = Variable<String>(unmetJson);
+    map['exceeded_json'] = Variable<String>(exceededJson);
+    map['plan_items_total'] = Variable<int>(planItemsTotal);
+    map['plan_items_consumed'] = Variable<int>(planItemsConsumed);
+    map['log_count'] = Variable<int>(logCount);
+    if (!nullToAbsent || reason != null) {
+      map['reason'] = Variable<String>(reason);
+    }
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  AdherenceDaysCompanion toCompanion(bool nullToAbsent) {
+    return AdherenceDaysCompanion(
+      date: Value(date),
+      status: status == null && nullToAbsent
+          ? const Value.absent()
+          : Value(status),
+      completion: completion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completion),
+      targetKcal: targetKcal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetKcal),
+      kcal: kcal == null && nullToAbsent ? const Value.absent() : Value(kcal),
+      proteinG: proteinG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(proteinG),
+      carbG: carbG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carbG),
+      fatG: fatG == null && nullToAbsent ? const Value.absent() : Value(fatG),
+      fiberG: fiberG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fiberG),
+      saturatedFatG: saturatedFatG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(saturatedFatG),
+      sodiumMg: sodiumMg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sodiumMg),
+      sugarsG: sugarsG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sugarsG),
+      unmetJson: Value(unmetJson),
+      exceededJson: Value(exceededJson),
+      planItemsTotal: Value(planItemsTotal),
+      planItemsConsumed: Value(planItemsConsumed),
+      logCount: Value(logCount),
+      reason: reason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reason),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory AdherenceDay.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AdherenceDay(
+      date: serializer.fromJson<String>(json['date']),
+      status: serializer.fromJson<String?>(json['status']),
+      completion: serializer.fromJson<double?>(json['completion']),
+      targetKcal: serializer.fromJson<double?>(json['targetKcal']),
+      kcal: serializer.fromJson<double?>(json['kcal']),
+      proteinG: serializer.fromJson<double?>(json['proteinG']),
+      carbG: serializer.fromJson<double?>(json['carbG']),
+      fatG: serializer.fromJson<double?>(json['fatG']),
+      fiberG: serializer.fromJson<double?>(json['fiberG']),
+      saturatedFatG: serializer.fromJson<double?>(json['saturatedFatG']),
+      sodiumMg: serializer.fromJson<double?>(json['sodiumMg']),
+      sugarsG: serializer.fromJson<double?>(json['sugarsG']),
+      unmetJson: serializer.fromJson<String>(json['unmetJson']),
+      exceededJson: serializer.fromJson<String>(json['exceededJson']),
+      planItemsTotal: serializer.fromJson<int>(json['planItemsTotal']),
+      planItemsConsumed: serializer.fromJson<int>(json['planItemsConsumed']),
+      logCount: serializer.fromJson<int>(json['logCount']),
+      reason: serializer.fromJson<String?>(json['reason']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'date': serializer.toJson<String>(date),
+      'status': serializer.toJson<String?>(status),
+      'completion': serializer.toJson<double?>(completion),
+      'targetKcal': serializer.toJson<double?>(targetKcal),
+      'kcal': serializer.toJson<double?>(kcal),
+      'proteinG': serializer.toJson<double?>(proteinG),
+      'carbG': serializer.toJson<double?>(carbG),
+      'fatG': serializer.toJson<double?>(fatG),
+      'fiberG': serializer.toJson<double?>(fiberG),
+      'saturatedFatG': serializer.toJson<double?>(saturatedFatG),
+      'sodiumMg': serializer.toJson<double?>(sodiumMg),
+      'sugarsG': serializer.toJson<double?>(sugarsG),
+      'unmetJson': serializer.toJson<String>(unmetJson),
+      'exceededJson': serializer.toJson<String>(exceededJson),
+      'planItemsTotal': serializer.toJson<int>(planItemsTotal),
+      'planItemsConsumed': serializer.toJson<int>(planItemsConsumed),
+      'logCount': serializer.toJson<int>(logCount),
+      'reason': serializer.toJson<String?>(reason),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  AdherenceDay copyWith({
+    String? date,
+    Value<String?> status = const Value.absent(),
+    Value<double?> completion = const Value.absent(),
+    Value<double?> targetKcal = const Value.absent(),
+    Value<double?> kcal = const Value.absent(),
+    Value<double?> proteinG = const Value.absent(),
+    Value<double?> carbG = const Value.absent(),
+    Value<double?> fatG = const Value.absent(),
+    Value<double?> fiberG = const Value.absent(),
+    Value<double?> saturatedFatG = const Value.absent(),
+    Value<double?> sodiumMg = const Value.absent(),
+    Value<double?> sugarsG = const Value.absent(),
+    String? unmetJson,
+    String? exceededJson,
+    int? planItemsTotal,
+    int? planItemsConsumed,
+    int? logCount,
+    Value<String?> reason = const Value.absent(),
+    DateTime? fetchedAt,
+  }) => AdherenceDay(
+    date: date ?? this.date,
+    status: status.present ? status.value : this.status,
+    completion: completion.present ? completion.value : this.completion,
+    targetKcal: targetKcal.present ? targetKcal.value : this.targetKcal,
+    kcal: kcal.present ? kcal.value : this.kcal,
+    proteinG: proteinG.present ? proteinG.value : this.proteinG,
+    carbG: carbG.present ? carbG.value : this.carbG,
+    fatG: fatG.present ? fatG.value : this.fatG,
+    fiberG: fiberG.present ? fiberG.value : this.fiberG,
+    saturatedFatG: saturatedFatG.present
+        ? saturatedFatG.value
+        : this.saturatedFatG,
+    sodiumMg: sodiumMg.present ? sodiumMg.value : this.sodiumMg,
+    sugarsG: sugarsG.present ? sugarsG.value : this.sugarsG,
+    unmetJson: unmetJson ?? this.unmetJson,
+    exceededJson: exceededJson ?? this.exceededJson,
+    planItemsTotal: planItemsTotal ?? this.planItemsTotal,
+    planItemsConsumed: planItemsConsumed ?? this.planItemsConsumed,
+    logCount: logCount ?? this.logCount,
+    reason: reason.present ? reason.value : this.reason,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  AdherenceDay copyWithCompanion(AdherenceDaysCompanion data) {
+    return AdherenceDay(
+      date: data.date.present ? data.date.value : this.date,
+      status: data.status.present ? data.status.value : this.status,
+      completion: data.completion.present
+          ? data.completion.value
+          : this.completion,
+      targetKcal: data.targetKcal.present
+          ? data.targetKcal.value
+          : this.targetKcal,
+      kcal: data.kcal.present ? data.kcal.value : this.kcal,
+      proteinG: data.proteinG.present ? data.proteinG.value : this.proteinG,
+      carbG: data.carbG.present ? data.carbG.value : this.carbG,
+      fatG: data.fatG.present ? data.fatG.value : this.fatG,
+      fiberG: data.fiberG.present ? data.fiberG.value : this.fiberG,
+      saturatedFatG: data.saturatedFatG.present
+          ? data.saturatedFatG.value
+          : this.saturatedFatG,
+      sodiumMg: data.sodiumMg.present ? data.sodiumMg.value : this.sodiumMg,
+      sugarsG: data.sugarsG.present ? data.sugarsG.value : this.sugarsG,
+      unmetJson: data.unmetJson.present ? data.unmetJson.value : this.unmetJson,
+      exceededJson: data.exceededJson.present
+          ? data.exceededJson.value
+          : this.exceededJson,
+      planItemsTotal: data.planItemsTotal.present
+          ? data.planItemsTotal.value
+          : this.planItemsTotal,
+      planItemsConsumed: data.planItemsConsumed.present
+          ? data.planItemsConsumed.value
+          : this.planItemsConsumed,
+      logCount: data.logCount.present ? data.logCount.value : this.logCount,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AdherenceDay(')
+          ..write('date: $date, ')
+          ..write('status: $status, ')
+          ..write('completion: $completion, ')
+          ..write('targetKcal: $targetKcal, ')
+          ..write('kcal: $kcal, ')
+          ..write('proteinG: $proteinG, ')
+          ..write('carbG: $carbG, ')
+          ..write('fatG: $fatG, ')
+          ..write('fiberG: $fiberG, ')
+          ..write('saturatedFatG: $saturatedFatG, ')
+          ..write('sodiumMg: $sodiumMg, ')
+          ..write('sugarsG: $sugarsG, ')
+          ..write('unmetJson: $unmetJson, ')
+          ..write('exceededJson: $exceededJson, ')
+          ..write('planItemsTotal: $planItemsTotal, ')
+          ..write('planItemsConsumed: $planItemsConsumed, ')
+          ..write('logCount: $logCount, ')
+          ..write('reason: $reason, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    date,
+    status,
+    completion,
+    targetKcal,
+    kcal,
+    proteinG,
+    carbG,
+    fatG,
+    fiberG,
+    saturatedFatG,
+    sodiumMg,
+    sugarsG,
+    unmetJson,
+    exceededJson,
+    planItemsTotal,
+    planItemsConsumed,
+    logCount,
+    reason,
+    fetchedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AdherenceDay &&
+          other.date == this.date &&
+          other.status == this.status &&
+          other.completion == this.completion &&
+          other.targetKcal == this.targetKcal &&
+          other.kcal == this.kcal &&
+          other.proteinG == this.proteinG &&
+          other.carbG == this.carbG &&
+          other.fatG == this.fatG &&
+          other.fiberG == this.fiberG &&
+          other.saturatedFatG == this.saturatedFatG &&
+          other.sodiumMg == this.sodiumMg &&
+          other.sugarsG == this.sugarsG &&
+          other.unmetJson == this.unmetJson &&
+          other.exceededJson == this.exceededJson &&
+          other.planItemsTotal == this.planItemsTotal &&
+          other.planItemsConsumed == this.planItemsConsumed &&
+          other.logCount == this.logCount &&
+          other.reason == this.reason &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class AdherenceDaysCompanion extends UpdateCompanion<AdherenceDay> {
+  final Value<String> date;
+  final Value<String?> status;
+  final Value<double?> completion;
+  final Value<double?> targetKcal;
+  final Value<double?> kcal;
+  final Value<double?> proteinG;
+  final Value<double?> carbG;
+  final Value<double?> fatG;
+  final Value<double?> fiberG;
+  final Value<double?> saturatedFatG;
+  final Value<double?> sodiumMg;
+  final Value<double?> sugarsG;
+  final Value<String> unmetJson;
+  final Value<String> exceededJson;
+  final Value<int> planItemsTotal;
+  final Value<int> planItemsConsumed;
+  final Value<int> logCount;
+  final Value<String?> reason;
+  final Value<DateTime> fetchedAt;
+  final Value<int> rowid;
+  const AdherenceDaysCompanion({
+    this.date = const Value.absent(),
+    this.status = const Value.absent(),
+    this.completion = const Value.absent(),
+    this.targetKcal = const Value.absent(),
+    this.kcal = const Value.absent(),
+    this.proteinG = const Value.absent(),
+    this.carbG = const Value.absent(),
+    this.fatG = const Value.absent(),
+    this.fiberG = const Value.absent(),
+    this.saturatedFatG = const Value.absent(),
+    this.sodiumMg = const Value.absent(),
+    this.sugarsG = const Value.absent(),
+    this.unmetJson = const Value.absent(),
+    this.exceededJson = const Value.absent(),
+    this.planItemsTotal = const Value.absent(),
+    this.planItemsConsumed = const Value.absent(),
+    this.logCount = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AdherenceDaysCompanion.insert({
+    required String date,
+    this.status = const Value.absent(),
+    this.completion = const Value.absent(),
+    this.targetKcal = const Value.absent(),
+    this.kcal = const Value.absent(),
+    this.proteinG = const Value.absent(),
+    this.carbG = const Value.absent(),
+    this.fatG = const Value.absent(),
+    this.fiberG = const Value.absent(),
+    this.saturatedFatG = const Value.absent(),
+    this.sodiumMg = const Value.absent(),
+    this.sugarsG = const Value.absent(),
+    required String unmetJson,
+    required String exceededJson,
+    required int planItemsTotal,
+    required int planItemsConsumed,
+    required int logCount,
+    this.reason = const Value.absent(),
+    required DateTime fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : date = Value(date),
+       unmetJson = Value(unmetJson),
+       exceededJson = Value(exceededJson),
+       planItemsTotal = Value(planItemsTotal),
+       planItemsConsumed = Value(planItemsConsumed),
+       logCount = Value(logCount),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<AdherenceDay> custom({
+    Expression<String>? date,
+    Expression<String>? status,
+    Expression<double>? completion,
+    Expression<double>? targetKcal,
+    Expression<double>? kcal,
+    Expression<double>? proteinG,
+    Expression<double>? carbG,
+    Expression<double>? fatG,
+    Expression<double>? fiberG,
+    Expression<double>? saturatedFatG,
+    Expression<double>? sodiumMg,
+    Expression<double>? sugarsG,
+    Expression<String>? unmetJson,
+    Expression<String>? exceededJson,
+    Expression<int>? planItemsTotal,
+    Expression<int>? planItemsConsumed,
+    Expression<int>? logCount,
+    Expression<String>? reason,
+    Expression<DateTime>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (date != null) 'date': date,
+      if (status != null) 'status': status,
+      if (completion != null) 'completion': completion,
+      if (targetKcal != null) 'target_kcal': targetKcal,
+      if (kcal != null) 'kcal': kcal,
+      if (proteinG != null) 'protein_g': proteinG,
+      if (carbG != null) 'carb_g': carbG,
+      if (fatG != null) 'fat_g': fatG,
+      if (fiberG != null) 'fiber_g': fiberG,
+      if (saturatedFatG != null) 'saturated_fat_g': saturatedFatG,
+      if (sodiumMg != null) 'sodium_mg': sodiumMg,
+      if (sugarsG != null) 'sugars_g': sugarsG,
+      if (unmetJson != null) 'unmet_json': unmetJson,
+      if (exceededJson != null) 'exceeded_json': exceededJson,
+      if (planItemsTotal != null) 'plan_items_total': planItemsTotal,
+      if (planItemsConsumed != null) 'plan_items_consumed': planItemsConsumed,
+      if (logCount != null) 'log_count': logCount,
+      if (reason != null) 'reason': reason,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AdherenceDaysCompanion copyWith({
+    Value<String>? date,
+    Value<String?>? status,
+    Value<double?>? completion,
+    Value<double?>? targetKcal,
+    Value<double?>? kcal,
+    Value<double?>? proteinG,
+    Value<double?>? carbG,
+    Value<double?>? fatG,
+    Value<double?>? fiberG,
+    Value<double?>? saturatedFatG,
+    Value<double?>? sodiumMg,
+    Value<double?>? sugarsG,
+    Value<String>? unmetJson,
+    Value<String>? exceededJson,
+    Value<int>? planItemsTotal,
+    Value<int>? planItemsConsumed,
+    Value<int>? logCount,
+    Value<String?>? reason,
+    Value<DateTime>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return AdherenceDaysCompanion(
+      date: date ?? this.date,
+      status: status ?? this.status,
+      completion: completion ?? this.completion,
+      targetKcal: targetKcal ?? this.targetKcal,
+      kcal: kcal ?? this.kcal,
+      proteinG: proteinG ?? this.proteinG,
+      carbG: carbG ?? this.carbG,
+      fatG: fatG ?? this.fatG,
+      fiberG: fiberG ?? this.fiberG,
+      saturatedFatG: saturatedFatG ?? this.saturatedFatG,
+      sodiumMg: sodiumMg ?? this.sodiumMg,
+      sugarsG: sugarsG ?? this.sugarsG,
+      unmetJson: unmetJson ?? this.unmetJson,
+      exceededJson: exceededJson ?? this.exceededJson,
+      planItemsTotal: planItemsTotal ?? this.planItemsTotal,
+      planItemsConsumed: planItemsConsumed ?? this.planItemsConsumed,
+      logCount: logCount ?? this.logCount,
+      reason: reason ?? this.reason,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (completion.present) {
+      map['completion'] = Variable<double>(completion.value);
+    }
+    if (targetKcal.present) {
+      map['target_kcal'] = Variable<double>(targetKcal.value);
+    }
+    if (kcal.present) {
+      map['kcal'] = Variable<double>(kcal.value);
+    }
+    if (proteinG.present) {
+      map['protein_g'] = Variable<double>(proteinG.value);
+    }
+    if (carbG.present) {
+      map['carb_g'] = Variable<double>(carbG.value);
+    }
+    if (fatG.present) {
+      map['fat_g'] = Variable<double>(fatG.value);
+    }
+    if (fiberG.present) {
+      map['fiber_g'] = Variable<double>(fiberG.value);
+    }
+    if (saturatedFatG.present) {
+      map['saturated_fat_g'] = Variable<double>(saturatedFatG.value);
+    }
+    if (sodiumMg.present) {
+      map['sodium_mg'] = Variable<double>(sodiumMg.value);
+    }
+    if (sugarsG.present) {
+      map['sugars_g'] = Variable<double>(sugarsG.value);
+    }
+    if (unmetJson.present) {
+      map['unmet_json'] = Variable<String>(unmetJson.value);
+    }
+    if (exceededJson.present) {
+      map['exceeded_json'] = Variable<String>(exceededJson.value);
+    }
+    if (planItemsTotal.present) {
+      map['plan_items_total'] = Variable<int>(planItemsTotal.value);
+    }
+    if (planItemsConsumed.present) {
+      map['plan_items_consumed'] = Variable<int>(planItemsConsumed.value);
+    }
+    if (logCount.present) {
+      map['log_count'] = Variable<int>(logCount.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AdherenceDaysCompanion(')
+          ..write('date: $date, ')
+          ..write('status: $status, ')
+          ..write('completion: $completion, ')
+          ..write('targetKcal: $targetKcal, ')
+          ..write('kcal: $kcal, ')
+          ..write('proteinG: $proteinG, ')
+          ..write('carbG: $carbG, ')
+          ..write('fatG: $fatG, ')
+          ..write('fiberG: $fiberG, ')
+          ..write('saturatedFatG: $saturatedFatG, ')
+          ..write('sodiumMg: $sodiumMg, ')
+          ..write('sugarsG: $sugarsG, ')
+          ..write('unmetJson: $unmetJson, ')
+          ..write('exceededJson: $exceededJson, ')
+          ..write('planItemsTotal: $planItemsTotal, ')
+          ..write('planItemsConsumed: $planItemsConsumed, ')
+          ..write('logCount: $logCount, ')
+          ..write('reason: $reason, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProgressMetaTable extends ProgressMeta
+    with TableInfo<$ProgressMetaTable, ProgressMetaData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProgressMetaTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'progress_meta';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProgressMetaData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  ProgressMetaData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProgressMetaData(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+    );
+  }
+
+  @override
+  $ProgressMetaTable createAlias(String alias) {
+    return $ProgressMetaTable(attachedDatabase, alias);
+  }
+}
+
+class ProgressMetaData extends DataClass
+    implements Insertable<ProgressMetaData> {
+  final String key;
+  final String value;
+  const ProgressMetaData({required this.key, required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  ProgressMetaCompanion toCompanion(bool nullToAbsent) {
+    return ProgressMetaCompanion(key: Value(key), value: Value(value));
+  }
+
+  factory ProgressMetaData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProgressMetaData(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  ProgressMetaData copyWith({String? key, String? value}) =>
+      ProgressMetaData(key: key ?? this.key, value: value ?? this.value);
+  ProgressMetaData copyWithCompanion(ProgressMetaCompanion data) {
+    return ProgressMetaData(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProgressMetaData(')
+          ..write('key: $key, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProgressMetaData &&
+          other.key == this.key &&
+          other.value == this.value);
+}
+
+class ProgressMetaCompanion extends UpdateCompanion<ProgressMetaData> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<int> rowid;
+  const ProgressMetaCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProgressMetaCompanion.insert({
+    required String key,
+    required String value,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<ProgressMetaData> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProgressMetaCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<int>? rowid,
+  }) {
+    return ProgressMetaCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProgressMetaCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -10196,6 +11472,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $WaterLogsTable waterLogs = $WaterLogsTable(this);
   late final $WeightsTable weights = $WeightsTable(this);
+  late final $AdherenceDaysTable adherenceDays = $AdherenceDaysTable(this);
+  late final $ProgressMetaTable progressMeta = $ProgressMetaTable(this);
   late final Index mealsLangSearchKey = Index(
     'meals_lang_search_key',
     'CREATE INDEX meals_lang_search_key ON meals (lang, search_key)',
@@ -10226,6 +11504,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     consumptionLogs,
     waterLogs,
     weights,
+    adherenceDays,
+    progressMeta,
     mealsLangSearchKey,
   ];
   @override
@@ -16237,6 +17517,640 @@ typedef $$WeightsTableProcessedTableManager =
       Weight,
       PrefetchHooks Function()
     >;
+typedef $$AdherenceDaysTableCreateCompanionBuilder =
+    AdherenceDaysCompanion Function({
+      required String date,
+      Value<String?> status,
+      Value<double?> completion,
+      Value<double?> targetKcal,
+      Value<double?> kcal,
+      Value<double?> proteinG,
+      Value<double?> carbG,
+      Value<double?> fatG,
+      Value<double?> fiberG,
+      Value<double?> saturatedFatG,
+      Value<double?> sodiumMg,
+      Value<double?> sugarsG,
+      required String unmetJson,
+      required String exceededJson,
+      required int planItemsTotal,
+      required int planItemsConsumed,
+      required int logCount,
+      Value<String?> reason,
+      required DateTime fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$AdherenceDaysTableUpdateCompanionBuilder =
+    AdherenceDaysCompanion Function({
+      Value<String> date,
+      Value<String?> status,
+      Value<double?> completion,
+      Value<double?> targetKcal,
+      Value<double?> kcal,
+      Value<double?> proteinG,
+      Value<double?> carbG,
+      Value<double?> fatG,
+      Value<double?> fiberG,
+      Value<double?> saturatedFatG,
+      Value<double?> sodiumMg,
+      Value<double?> sugarsG,
+      Value<String> unmetJson,
+      Value<String> exceededJson,
+      Value<int> planItemsTotal,
+      Value<int> planItemsConsumed,
+      Value<int> logCount,
+      Value<String?> reason,
+      Value<DateTime> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$AdherenceDaysTableFilterComposer
+    extends Composer<_$AppDatabase, $AdherenceDaysTable> {
+  $$AdherenceDaysTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get completion => $composableBuilder(
+    column: $table.completion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get targetKcal => $composableBuilder(
+    column: $table.targetKcal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get kcal => $composableBuilder(
+    column: $table.kcal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get proteinG => $composableBuilder(
+    column: $table.proteinG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get carbG => $composableBuilder(
+    column: $table.carbG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get fatG => $composableBuilder(
+    column: $table.fatG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get fiberG => $composableBuilder(
+    column: $table.fiberG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get saturatedFatG => $composableBuilder(
+    column: $table.saturatedFatG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get sodiumMg => $composableBuilder(
+    column: $table.sodiumMg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get sugarsG => $composableBuilder(
+    column: $table.sugarsG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get unmetJson => $composableBuilder(
+    column: $table.unmetJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exceededJson => $composableBuilder(
+    column: $table.exceededJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get planItemsTotal => $composableBuilder(
+    column: $table.planItemsTotal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get planItemsConsumed => $composableBuilder(
+    column: $table.planItemsConsumed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get logCount => $composableBuilder(
+    column: $table.logCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AdherenceDaysTableOrderingComposer
+    extends Composer<_$AppDatabase, $AdherenceDaysTable> {
+  $$AdherenceDaysTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get completion => $composableBuilder(
+    column: $table.completion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get targetKcal => $composableBuilder(
+    column: $table.targetKcal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get kcal => $composableBuilder(
+    column: $table.kcal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get proteinG => $composableBuilder(
+    column: $table.proteinG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get carbG => $composableBuilder(
+    column: $table.carbG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get fatG => $composableBuilder(
+    column: $table.fatG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get fiberG => $composableBuilder(
+    column: $table.fiberG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get saturatedFatG => $composableBuilder(
+    column: $table.saturatedFatG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get sodiumMg => $composableBuilder(
+    column: $table.sodiumMg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get sugarsG => $composableBuilder(
+    column: $table.sugarsG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get unmetJson => $composableBuilder(
+    column: $table.unmetJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exceededJson => $composableBuilder(
+    column: $table.exceededJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get planItemsTotal => $composableBuilder(
+    column: $table.planItemsTotal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get planItemsConsumed => $composableBuilder(
+    column: $table.planItemsConsumed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get logCount => $composableBuilder(
+    column: $table.logCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AdherenceDaysTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AdherenceDaysTable> {
+  $$AdherenceDaysTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<double> get completion => $composableBuilder(
+    column: $table.completion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get targetKcal => $composableBuilder(
+    column: $table.targetKcal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get kcal =>
+      $composableBuilder(column: $table.kcal, builder: (column) => column);
+
+  GeneratedColumn<double> get proteinG =>
+      $composableBuilder(column: $table.proteinG, builder: (column) => column);
+
+  GeneratedColumn<double> get carbG =>
+      $composableBuilder(column: $table.carbG, builder: (column) => column);
+
+  GeneratedColumn<double> get fatG =>
+      $composableBuilder(column: $table.fatG, builder: (column) => column);
+
+  GeneratedColumn<double> get fiberG =>
+      $composableBuilder(column: $table.fiberG, builder: (column) => column);
+
+  GeneratedColumn<double> get saturatedFatG => $composableBuilder(
+    column: $table.saturatedFatG,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get sodiumMg =>
+      $composableBuilder(column: $table.sodiumMg, builder: (column) => column);
+
+  GeneratedColumn<double> get sugarsG =>
+      $composableBuilder(column: $table.sugarsG, builder: (column) => column);
+
+  GeneratedColumn<String> get unmetJson =>
+      $composableBuilder(column: $table.unmetJson, builder: (column) => column);
+
+  GeneratedColumn<String> get exceededJson => $composableBuilder(
+    column: $table.exceededJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get planItemsTotal => $composableBuilder(
+    column: $table.planItemsTotal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get planItemsConsumed => $composableBuilder(
+    column: $table.planItemsConsumed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get logCount =>
+      $composableBuilder(column: $table.logCount, builder: (column) => column);
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$AdherenceDaysTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AdherenceDaysTable,
+          AdherenceDay,
+          $$AdherenceDaysTableFilterComposer,
+          $$AdherenceDaysTableOrderingComposer,
+          $$AdherenceDaysTableAnnotationComposer,
+          $$AdherenceDaysTableCreateCompanionBuilder,
+          $$AdherenceDaysTableUpdateCompanionBuilder,
+          (
+            AdherenceDay,
+            BaseReferences<_$AppDatabase, $AdherenceDaysTable, AdherenceDay>,
+          ),
+          AdherenceDay,
+          PrefetchHooks Function()
+        > {
+  $$AdherenceDaysTableTableManager(_$AppDatabase db, $AdherenceDaysTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AdherenceDaysTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AdherenceDaysTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AdherenceDaysTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> date = const Value.absent(),
+                Value<String?> status = const Value.absent(),
+                Value<double?> completion = const Value.absent(),
+                Value<double?> targetKcal = const Value.absent(),
+                Value<double?> kcal = const Value.absent(),
+                Value<double?> proteinG = const Value.absent(),
+                Value<double?> carbG = const Value.absent(),
+                Value<double?> fatG = const Value.absent(),
+                Value<double?> fiberG = const Value.absent(),
+                Value<double?> saturatedFatG = const Value.absent(),
+                Value<double?> sodiumMg = const Value.absent(),
+                Value<double?> sugarsG = const Value.absent(),
+                Value<String> unmetJson = const Value.absent(),
+                Value<String> exceededJson = const Value.absent(),
+                Value<int> planItemsTotal = const Value.absent(),
+                Value<int> planItemsConsumed = const Value.absent(),
+                Value<int> logCount = const Value.absent(),
+                Value<String?> reason = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AdherenceDaysCompanion(
+                date: date,
+                status: status,
+                completion: completion,
+                targetKcal: targetKcal,
+                kcal: kcal,
+                proteinG: proteinG,
+                carbG: carbG,
+                fatG: fatG,
+                fiberG: fiberG,
+                saturatedFatG: saturatedFatG,
+                sodiumMg: sodiumMg,
+                sugarsG: sugarsG,
+                unmetJson: unmetJson,
+                exceededJson: exceededJson,
+                planItemsTotal: planItemsTotal,
+                planItemsConsumed: planItemsConsumed,
+                logCount: logCount,
+                reason: reason,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String date,
+                Value<String?> status = const Value.absent(),
+                Value<double?> completion = const Value.absent(),
+                Value<double?> targetKcal = const Value.absent(),
+                Value<double?> kcal = const Value.absent(),
+                Value<double?> proteinG = const Value.absent(),
+                Value<double?> carbG = const Value.absent(),
+                Value<double?> fatG = const Value.absent(),
+                Value<double?> fiberG = const Value.absent(),
+                Value<double?> saturatedFatG = const Value.absent(),
+                Value<double?> sodiumMg = const Value.absent(),
+                Value<double?> sugarsG = const Value.absent(),
+                required String unmetJson,
+                required String exceededJson,
+                required int planItemsTotal,
+                required int planItemsConsumed,
+                required int logCount,
+                Value<String?> reason = const Value.absent(),
+                required DateTime fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => AdherenceDaysCompanion.insert(
+                date: date,
+                status: status,
+                completion: completion,
+                targetKcal: targetKcal,
+                kcal: kcal,
+                proteinG: proteinG,
+                carbG: carbG,
+                fatG: fatG,
+                fiberG: fiberG,
+                saturatedFatG: saturatedFatG,
+                sodiumMg: sodiumMg,
+                sugarsG: sugarsG,
+                unmetJson: unmetJson,
+                exceededJson: exceededJson,
+                planItemsTotal: planItemsTotal,
+                planItemsConsumed: planItemsConsumed,
+                logCount: logCount,
+                reason: reason,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AdherenceDaysTable, AdherenceDay>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $AdherenceDaysTable,
+                    AdherenceDay
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AdherenceDaysTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AdherenceDaysTable,
+      AdherenceDay,
+      $$AdherenceDaysTableFilterComposer,
+      $$AdherenceDaysTableOrderingComposer,
+      $$AdherenceDaysTableAnnotationComposer,
+      $$AdherenceDaysTableCreateCompanionBuilder,
+      $$AdherenceDaysTableUpdateCompanionBuilder,
+      (
+        AdherenceDay,
+        BaseReferences<_$AppDatabase, $AdherenceDaysTable, AdherenceDay>,
+      ),
+      AdherenceDay,
+      PrefetchHooks Function()
+    >;
+typedef $$ProgressMetaTableCreateCompanionBuilder =
+    ProgressMetaCompanion Function({
+      required String key,
+      required String value,
+      Value<int> rowid,
+    });
+typedef $$ProgressMetaTableUpdateCompanionBuilder =
+    ProgressMetaCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<int> rowid,
+    });
+
+class $$ProgressMetaTableFilterComposer
+    extends Composer<_$AppDatabase, $ProgressMetaTable> {
+  $$ProgressMetaTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ProgressMetaTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProgressMetaTable> {
+  $$ProgressMetaTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProgressMetaTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProgressMetaTable> {
+  $$ProgressMetaTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+}
+
+class $$ProgressMetaTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProgressMetaTable,
+          ProgressMetaData,
+          $$ProgressMetaTableFilterComposer,
+          $$ProgressMetaTableOrderingComposer,
+          $$ProgressMetaTableAnnotationComposer,
+          $$ProgressMetaTableCreateCompanionBuilder,
+          $$ProgressMetaTableUpdateCompanionBuilder,
+          (
+            ProgressMetaData,
+            BaseReferences<_$AppDatabase, $ProgressMetaTable, ProgressMetaData>,
+          ),
+          ProgressMetaData,
+          PrefetchHooks Function()
+        > {
+  $$ProgressMetaTableTableManager(_$AppDatabase db, $ProgressMetaTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProgressMetaTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProgressMetaTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProgressMetaTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> key = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) => ProgressMetaCompanion(key: key, value: value, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                Value<int> rowid = const Value.absent(),
+              }) => ProgressMetaCompanion.insert(
+                key: key,
+                value: value,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ProgressMetaTable, ProgressMetaData>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ProgressMetaTable,
+                    ProgressMetaData
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ProgressMetaTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProgressMetaTable,
+      ProgressMetaData,
+      $$ProgressMetaTableFilterComposer,
+      $$ProgressMetaTableOrderingComposer,
+      $$ProgressMetaTableAnnotationComposer,
+      $$ProgressMetaTableCreateCompanionBuilder,
+      $$ProgressMetaTableUpdateCompanionBuilder,
+      (
+        ProgressMetaData,
+        BaseReferences<_$AppDatabase, $ProgressMetaTable, ProgressMetaData>,
+      ),
+      ProgressMetaData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -16283,4 +18197,8 @@ class $AppDatabaseManager {
       $$WaterLogsTableTableManager(_db, _db.waterLogs);
   $$WeightsTableTableManager get weights =>
       $$WeightsTableTableManager(_db, _db.weights);
+  $$AdherenceDaysTableTableManager get adherenceDays =>
+      $$AdherenceDaysTableTableManager(_db, _db.adherenceDays);
+  $$ProgressMetaTableTableManager get progressMeta =>
+      $$ProgressMetaTableTableManager(_db, _db.progressMeta);
 }

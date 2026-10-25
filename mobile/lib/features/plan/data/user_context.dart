@@ -45,9 +45,13 @@ class UserContextController extends Notifier<CachedUser?> {
                 bmrKcal: target.bmrKcal.toDouble(),
                 tdeeKcal: target.tdeeKcal.toDouble(),
                 targetId: target.targetId,
+                proteinG: target.proteinG.toDouble(),
+                carbG: target.carbG.toDouble(),
+                fatG: target.fatG.toDouble(),
               ),
         sex: profile.profile.sex.json,
         latestWeightKg: profile.profile.latestWeightKg?.toDouble(),
+        targetWeightKg: profile.profile.targetWeightKg?.toDouble(),
         conditions: <String>[
           for (final condition in profile.profile.conditions) condition.code,
         ],

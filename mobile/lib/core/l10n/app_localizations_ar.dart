@@ -1523,4 +1523,156 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fabLabel => 'إضافة';
+
+  @override
+  String get progressSegReport => 'تقرير الأسبوع';
+
+  @override
+  String get progressSegWeight => 'الوزن';
+
+  @override
+  String get progressSegBadges => 'الإنجازات';
+
+  @override
+  String get progressBadgesSoon => 'قريبًا: الشارات والإنجازات.';
+
+  @override
+  String weekRange(Object from, Object to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get weekPrev => 'الأسبوع السابق';
+
+  @override
+  String get weekNext => 'الأسبوع التالي';
+
+  @override
+  String get headlineExcellent => 'أسبوع ممتاز!';
+
+  @override
+  String get headlineGood => 'أسبوع جيد';
+
+  @override
+  String get headlineFresh => 'كل يوم فرصة جديدة';
+
+  @override
+  String weekAchievedOf(Object achieved, Object counted, String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'female': 'حققتِ هدفكِ في $achieved من $counted أيام',
+      'other': 'حققت هدفك في $achieved من $counted أيام',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get bestDayTitle => 'أفضل يوم';
+
+  @override
+  String bestDayBody(Object day, Object percent) {
+    return '$day · $percent% من الهدف';
+  }
+
+  @override
+  String get mostMissedTitle => 'أكثر ما نقصك';
+
+  @override
+  String mostMissedBody(
+    Object days,
+    Object minimum,
+    Object nutrient,
+    Object total,
+  ) {
+    return '$nutrient: $total من $minimum في المتوسط، في $days أيام';
+  }
+
+  @override
+  String get waterAvgTitle => 'متوسط الماء';
+
+  @override
+  String waterAvgBody(Object ml) {
+    return '$ml مل في اليوم';
+  }
+
+  @override
+  String get caloriesChartTitle => 'السعرات مقابل الهدف';
+
+  @override
+  String get legendAchieved => 'ضمن الهدف';
+
+  @override
+  String get legendPartial => 'قريب';
+
+  @override
+  String get legendNot => 'بعيد';
+
+  @override
+  String get legendNone => 'لا تسجيل';
+
+  @override
+  String get macrosTitle => 'متوسط العناصر';
+
+  @override
+  String macroValue(Object avg, Object target) {
+    return '$avg / $target غ';
+  }
+
+  @override
+  String exceededTitle(Object days) {
+    return 'تجاوزت حدًا صحيًا في $days أيام';
+  }
+
+  @override
+  String exceededLine(Object limit, Object nutrient, Object total) {
+    return '$nutrient: $total مقابل حد $limit';
+  }
+
+  @override
+  String get emptyWeek => 'سجّل وجباتك هذا الأسبوع لترى تقريرك هنا';
+
+  @override
+  String get emptyWeekAction => 'اذهب إلى اليوم';
+
+  @override
+  String calendarStreak(Object count) {
+    return '🔥 $count أيام متتالية';
+  }
+
+  @override
+  String get weightStart => 'البداية';
+
+  @override
+  String get weightNow => 'الآن';
+
+  @override
+  String get weightGoal => 'الهدف';
+
+  @override
+  String get weightMaintain => 'الحفاظ';
+
+  @override
+  String get weightFewPoints => 'سجّل وزنك بانتظام لترى مسارك هنا';
+
+  @override
+  String get weightLogToday => 'سجّل وزنك اليوم';
+
+  @override
+  String weightDays(Object days) {
+    return '$days يومًا';
+  }
+
+  @override
+  String weightChartSummary(Object count, Object first, Object last) {
+    return '$count قياسات للوزن، من $first إلى $last كغ';
+  }
+
+  @override
+  String caloriesChartSummary(Object values) {
+    return 'سعرات الأسبوع: $values';
+  }
+
+  @override
+  String adherenceRing(Object percent) {
+    return 'التزام $percent%';
+  }
 }

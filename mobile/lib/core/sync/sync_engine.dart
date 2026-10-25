@@ -391,12 +391,9 @@ final class SyncEngine {
 
   Future<({SyncOutcome outcome, bool logsChanged})> _download(int seen) async {
     final stored = await _cursor.read();
-    final since =
-        stored ??
-        _now()
-            .toUtc()
-            .subtract(const Duration(days: 30))
-            .add(const Duration(minutes: 5));
+    // The server refuses a since more than 30 days before its own clock.
+    // A day of margin keeps a phone whose clock lags from hitting that.
+    final since = stored ?? _now().toUtc().subtract(const Duration(days: 29));
     try {
       final changes = await _changes(since);
       if (seen != _generation()) {
