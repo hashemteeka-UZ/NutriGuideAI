@@ -9,6 +9,8 @@ import '../../../core/locale/locale_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../auth/presentation/session_controller.dart';
 import '../../logging/data/logging_providers.dart';
+import '../../weight/data/weight_providers.dart';
+import '../../weight/presentation/weight_sheet.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -17,6 +19,7 @@ class AccountScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
+    final latest = ref.watch(latestWeightProvider).asData?.value;
     return Scaffold(
       key: const Key('account-screen'),
       backgroundColor: colors.bg,
@@ -30,6 +33,14 @@ class AccountScreen extends ConsumerWidget {
                   ?.copyWith(color: colors.fg, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 16),
+            _Row(
+              key: const Key('account-weight'),
+              label: latest == null
+                  ? l10n.weightNone
+                  : l10n.weightLatest(latest.weightKg.toStringAsFixed(1)),
+              action: l10n.weightTitle,
+              onTap: () => unawaited(showWeightSheet(context)),
+            ),
             _Row(
               key: const Key('account-language'),
               label: l10n.accountLanguage,
@@ -97,10 +108,18 @@ Future<void> confirmLogout(BuildContext context, WidgetRef ref) async {
 }
 
 class _Row extends StatelessWidget {
-  const _Row({required this.label, required this.onTap, super.key});
+  const _Row({
+    required this.label,
+    required this.onTap,
+    this.action,
+    super.key,
+  });
 
   final String label;
   final VoidCallback onTap;
+
+  /// A short call to action shown at the end of the row.
+  final String? action;
 
   @override
   Widget build(BuildContext context) {
@@ -117,12 +136,17 @@ class _Row extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: 48),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  if (action != null)
+                    Text(action!, style: TextStyle(color: colors.brand)),
+                ],
               ),
             ),
           ),

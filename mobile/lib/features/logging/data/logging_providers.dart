@@ -15,6 +15,7 @@ import '../../catalog/data/meal_pref_writer.dart';
 import '../../plan/data/plan_mapper.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/plan_sync.dart';
+import '../../weight/data/weight_providers.dart';
 import '../domain/logging.dart';
 import 'interaction_queue.dart';
 import 'logging_repository.dart';
@@ -71,6 +72,7 @@ final syncEngineProvider = Provider<SyncEngine>((ref) {
             .read(todayRepositoryProvider)
             .refreshDay(ref.read(planClockProvider)());
       },
+      weightConfirmed: () => ref.read(targetRecheckProvider)(),
     ),
   );
   // A sync run knows as well as a plan refresh whether the server answers.

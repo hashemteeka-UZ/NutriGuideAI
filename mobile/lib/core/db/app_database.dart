@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import 'app_database.steps.dart';
 import 'tables.dart';
 
 part 'app_database.g.dart';
@@ -25,49 +26,56 @@ part 'app_database.g.dart';
     ShoppingItems,
     Outbox,
     ConsumptionLogs,
+    WaterLogs,
+    Weights,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
       await m.createAll();
     },
-    onUpgrade: (Migrator m, int from, int to) async {
-      // Version 1 has no tables. Creating every current table here would
-      // make a 1 -> 2 migration look like version 3.
-      if (from < 2) {
-        await m.createTable(catalogMeta);
-        await m.createTable(meals);
-        await m.createIndex(mealsLangSearchKey);
-        await m.createTable(mealTags);
-        await m.createTable(mealAllergens);
-        await m.createTable(mealIngredients);
-        await m.createTable(mealNutrients);
-        await m.createTable(mealSteps);
-        await m.createTable(cuisines);
-        await m.createTable(localMealPrefs);
-        await m.createTable(userAllergens);
-      }
-      if (from < 3 && to >= 3) {
-        await m.createTable(plans);
-        await m.createTable(planItems);
-        await m.createTable(planUnmetMinimums);
-        await m.createTable(mealWindows);
-        await m.createTable(daySummaries);
-        await m.createTable(shoppingLists);
-        await m.createTable(shoppingItems);
-      }
-      if (from < 4 && to >= 4) {
-        await m.createTable(outbox);
-        await m.createTable(consumptionLogs);
-      }
-    },
+    // Each step creates tables as they were in its own version, so a table
+    // made at version 3 does not get a column added at version 5 too early.
+    onUpgrade: stepByStep(
+      from1To2: (Migrator m, Schema2 schema) async {
+        await m.createTable(schema.catalogMeta);
+        await m.createTable(schema.meals);
+        await m.createIndex(schema.mealsLangSearchKey);
+        await m.createTable(schema.mealTags);
+        await m.createTable(schema.mealAllergens);
+        await m.createTable(schema.mealIngredients);
+        await m.createTable(schema.mealNutrients);
+        await m.createTable(schema.mealSteps);
+        await m.createTable(schema.cuisines);
+        await m.createTable(schema.mealPrefs);
+        await m.createTable(schema.userAllergens);
+      },
+      from2To3: (Migrator m, Schema3 schema) async {
+        await m.createTable(schema.plans);
+        await m.createTable(schema.planItems);
+        await m.createTable(schema.planUnmetMinimums);
+        await m.createTable(schema.mealWindows);
+        await m.createTable(schema.daySummaries);
+        await m.createTable(schema.shoppingLists);
+        await m.createTable(schema.shoppingItems);
+      },
+      from3To4: (Migrator m, Schema4 schema) async {
+        await m.createTable(schema.outbox);
+        await m.createTable(schema.consumptionLogs);
+      },
+      from4To5: (Migrator m, Schema5 schema) async {
+        await m.addColumn(schema.daySummaries, schema.daySummaries.waterSource);
+        await m.createTable(schema.waterLogs);
+        await m.createTable(schema.weights);
+      },
+    ),
     beforeOpen: (OpeningDetails details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },

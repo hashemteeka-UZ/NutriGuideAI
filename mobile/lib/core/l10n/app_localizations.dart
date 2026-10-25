@@ -2425,6 +2425,282 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تعذر حفظ هذا التسجيل'**
   String get logRejectedGeneric;
+
+  /// No description provided for @waterAmountMl.
+  ///
+  /// In ar, this message translates to:
+  /// **'{ml} مل'**
+  String waterAmountMl(Object ml);
+
+  /// No description provided for @waterTotalOfGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'{total} / {goal} مل'**
+  String waterTotalOfGoal(Object goal, Object total);
+
+  /// No description provided for @waterTodayGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدف اليوم'**
+  String get waterTodayGoal;
+
+  /// No description provided for @waterDoctorGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف الذي حدده طبيبك'**
+  String get waterDoctorGoal;
+
+  /// No description provided for @waterTotalOnly.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجموع اليوم'**
+  String get waterTotalOnly;
+
+  /// No description provided for @waterQuickSmall.
+  ///
+  /// In ar, this message translates to:
+  /// **'كوب صغير'**
+  String get waterQuickSmall;
+
+  /// No description provided for @waterQuickCup.
+  ///
+  /// In ar, this message translates to:
+  /// **'كوب'**
+  String get waterQuickCup;
+
+  /// No description provided for @waterQuickBottle.
+  ///
+  /// In ar, this message translates to:
+  /// **'زجاجة'**
+  String get waterQuickBottle;
+
+  /// No description provided for @waterCustom.
+  ///
+  /// In ar, this message translates to:
+  /// **'مخصص'**
+  String get waterCustom;
+
+  /// No description provided for @waterCustomTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كمية مخصصة'**
+  String get waterCustomTitle;
+
+  /// No description provided for @waterAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف'**
+  String get waterAdd;
+
+  /// No description provided for @waterLargeTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'كمية كبيرة لمرة واحدة، يمكنك تقسيمها على مرتين.'**
+  String get waterLargeTip;
+
+  /// No description provided for @waterTodayList.
+  ///
+  /// In ar, this message translates to:
+  /// **'شرب اليوم'**
+  String get waterTodayList;
+
+  /// No description provided for @waterEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تسجل ماء اليوم بعد'**
+  String get waterEmpty;
+
+  /// No description provided for @waterSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُجّل الماء'**
+  String get waterSaved;
+
+  /// No description provided for @waterClinicianTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كمية الماء يحددها طبيبك'**
+  String get waterClinicianTitle;
+
+  /// No description provided for @waterClinicianAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل الكمية التي حددها طبيبك'**
+  String get waterClinicianAction;
+
+  /// No description provided for @waterSetGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدد هدفًا'**
+  String get waterSetGoal;
+
+  /// No description provided for @waterGoalSheetTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية اليومية'**
+  String get waterGoalSheetTitle;
+
+  /// No description provided for @waterGoalSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'احفظ'**
+  String get waterGoalSave;
+
+  /// No description provided for @waterGoalSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'حُفظ الهدف'**
+  String get waterGoalSaved;
+
+  /// No description provided for @waterNeedsConnection.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتاج اتصالًا'**
+  String get waterNeedsConnection;
+
+  /// No description provided for @waterRangeError.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية بين 50 و1000 مل'**
+  String get waterRangeError;
+
+  /// No description provided for @weightTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل وزنك'**
+  String get weightTitle;
+
+  /// No description provided for @weightKgValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'{kg} كغ'**
+  String weightKgValue(Object kg);
+
+  /// No description provided for @weightSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'احفظ'**
+  String get weightSave;
+
+  /// No description provided for @weightSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'حُفظ وزنك'**
+  String get weightSaved;
+
+  /// No description provided for @weightQueued.
+  ///
+  /// In ar, this message translates to:
+  /// **'حُفظ وزنك وسيُرفع عند الاتصال'**
+  String get weightQueued;
+
+  /// No description provided for @weightStale.
+  ///
+  /// In ar, this message translates to:
+  /// **'يوجد وزن أحدث محفوظ لهذا اليوم'**
+  String get weightStale;
+
+  /// No description provided for @weightGoalReached.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, female{وصلتِ إلى هدفكِ!} other{وصلت إلى هدفك!}}'**
+  String weightGoalReached(String sex);
+
+  /// No description provided for @weightGoalReachedBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'{sex, select, female{أحسنتِ، استمري على عاداتكِ الجيدة.} other{أحسنت، استمر على عاداتك الجيدة.}}'**
+  String weightGoalReachedBody(String sex);
+
+  /// No description provided for @weightRangeError.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن بين 20 و400 كغ'**
+  String get weightRangeError;
+
+  /// No description provided for @weightLatest.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر وزن: {kg} كغ'**
+  String weightLatest(Object kg);
+
+  /// No description provided for @weightNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تسجل وزنًا بعد'**
+  String get weightNone;
+
+  /// No description provided for @targetNoticeBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تحديث هدفك اليومي بناءً على وزنك الجديد'**
+  String get targetNoticeBody;
+
+  /// No description provided for @targetNoticeRebuild.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعد بناء خطة الأيام القادمة'**
+  String get targetNoticeRebuild;
+
+  /// No description provided for @targetNoticeLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقًا'**
+  String get targetNoticeLater;
+
+  /// No description provided for @otherMealTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكلت وجبة أخرى'**
+  String get otherMealTitle;
+
+  /// No description provided for @otherMealServings.
+  ///
+  /// In ar, this message translates to:
+  /// **'كم حصة أكلت؟'**
+  String get otherMealServings;
+
+  /// No description provided for @otherMealSlot.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي وجبة؟'**
+  String get otherMealSlot;
+
+  /// No description provided for @servingsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} حصة'**
+  String servingsCount(Object count);
+
+  /// No description provided for @extrasTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافات اليوم'**
+  String get extrasTitle;
+
+  /// No description provided for @extraPending.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار المزامنة'**
+  String get extraPending;
+
+  /// No description provided for @quickTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا تريد أن تضيف؟'**
+  String get quickTitle;
+
+  /// No description provided for @quickWater.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل ماء'**
+  String get quickWater;
+
+  /// No description provided for @fabLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة'**
+  String get fabLabel;
 }
 
 class _AppLocalizationsDelegate

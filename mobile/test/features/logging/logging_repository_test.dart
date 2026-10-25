@@ -5,6 +5,8 @@ import 'package:nutriguide/core/api/manual/sync_models.dart';
 import 'package:nutriguide/core/db/app_database.dart' hide PlanItem;
 import 'package:nutriguide/core/sync/outbox_store.dart';
 import 'package:nutriguide/features/logging/data/logging_repository.dart';
+import 'package:nutriguide/features/logging/domain/logging.dart';
+import 'package:nutriguide/features/plan/domain/plan.dart';
 
 import '../../support/plan_samples.dart';
 
@@ -103,6 +105,52 @@ void main() {
     expect(queued.single.opType, 'CONSUMPTION_DELETE');
     expect(queued.single.payload['log_id'], 21);
     expect(queued.single.entityRef, consumptionRef('c-1'));
+  });
+
+  test('a MEAL log stores per-serving server values × servings', () async {
+    await repository.logMeal(
+      mealId: 42,
+      name: 'شكشوكة',
+      servings: 1.5,
+      slot: 'LUNCH',
+      kcalPerServing: 300,
+      proteinPerServing: 20,
+      carbPerServing: 10,
+      fatPerServing: 8,
+    );
+    final row = (await logs()).single;
+    expect(row.kind, 'MEAL');
+    expect(row.planItemId, isNull);
+    expect(row.kcal, 450);
+    expect(row.proteinG, 30);
+    final op = (await outbox.pending(10)).single;
+    final log = op.payload['log']! as Map<String, Object?>;
+    expect(log['kind'], 'MEAL');
+    expect(log['meal_id'], 42);
+    expect(log['servings_consumed'], 1.5);
+    expect(log['slot'], 'LUNCH');
+
+    final totals = provisionalTotals(const <PlanItem>[], <LoggedMeal>[
+      loggedMealFromRow(row),
+    ]);
+    expect(totals.kcal, 450);
+    expect(totals.active, isTrue);
+  });
+
+  test('undo of a pending MEAL log removes it and its operation', () async {
+    await repository.logMeal(
+      mealId: 42,
+      name: 'شكشوكة',
+      servings: 1,
+      slot: 'DINNER',
+      kcalPerServing: 300,
+      proteinPerServing: 20,
+      carbPerServing: 10,
+      fatPerServing: 8,
+    );
+    await repository.undoLog((await logs()).single.clientUuid);
+    expect(await logs(), isEmpty);
+    expect(await outbox.pending(10), isEmpty);
   });
 
   test('operations keep their send order', () async {

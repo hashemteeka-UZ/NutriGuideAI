@@ -180,6 +180,14 @@ class NumberWheel extends StatelessWidget {
     if ((step - 0.5).abs() < 1e-9) {
       return (raw * 2).roundToDouble() / 2;
     }
+    if (fractionDigits > 0) {
+      // A step like 0.1 (the weight sheet) keeps its decimals.
+      var factor = 1.0;
+      for (var digit = 0; digit < fractionDigits; digit++) {
+        factor *= 10;
+      }
+      return (raw * factor).roundToDouble() / factor;
+    }
     return raw.roundToDouble();
   }
 }

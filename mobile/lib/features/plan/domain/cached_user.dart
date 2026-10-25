@@ -3,11 +3,15 @@ class EnergyTarget {
     required this.kcal,
     required this.bmrKcal,
     required this.tdeeKcal,
+    this.targetId,
   });
 
   final int kcal;
   final double bmrKcal;
   final double tdeeKcal;
+
+  /// Changes when the server writes a new target (#275).
+  final int? targetId;
 }
 
 /// Profile facts kept in memory. Conditions are not stored in a table.
@@ -19,6 +23,8 @@ class CachedUser {
     required this.allergenCodes,
     required this.hasDislike,
     this.target,
+    this.sex,
+    this.latestWeightKg,
   });
 
   final bool eligible;
@@ -28,6 +34,12 @@ class CachedUser {
   final List<String> allergenCodes;
   final bool hasDislike;
 
+  /// MALE or FEMALE, for gendered Arabic text.
+  final String? sex;
+
+  /// The default of the weight sheet.
+  final double? latestWeightKg;
+
   CachedUser copyWith({bool? eligible, bool? hasDislike}) {
     return CachedUser(
       eligible: eligible ?? this.eligible,
@@ -36,6 +48,8 @@ class CachedUser {
       allergenCodes: allergenCodes,
       hasDislike: hasDislike ?? this.hasDislike,
       target: target,
+      sex: sex,
+      latestWeightKg: latestWeightKg,
     );
   }
 }

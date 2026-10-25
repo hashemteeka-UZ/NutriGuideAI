@@ -180,9 +180,13 @@ class DaySummary {
     this.fatG,
     this.status,
     this.goalMl,
+    this.waterSource,
   });
 
   final String date;
+
+  /// USER, DEFAULT or NONE.
+  final String? waterSource;
   final double? targetKcal;
   final double? kcal;
   final double? proteinG;

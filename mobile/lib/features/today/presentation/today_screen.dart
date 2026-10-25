@@ -13,6 +13,7 @@ import '../../catalog/domain/meal.dart';
 import '../../logging/data/logging_providers.dart';
 import '../../logging/domain/logging.dart';
 import '../../logging/presentation/eat_button.dart';
+import '../../logging/presentation/extras_section.dart';
 import '../../logging/presentation/missed_meal_card.dart';
 import '../../logging/presentation/sync_status_chip.dart';
 import '../../plan/data/plan_providers.dart';
@@ -25,6 +26,11 @@ import '../../plan/presentation/offline_bar.dart';
 import '../../plan/presentation/plan_format.dart';
 import '../../plan/presentation/reason_chips.dart';
 import '../../plan/presentation/showcase_controller.dart';
+import '../../water/data/water_providers.dart';
+import '../../water/domain/water.dart';
+import '../../weight/data/weight_providers.dart';
+import '../../weight/presentation/weight_sheet.dart';
+import 'quick_sheet.dart';
 
 class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
@@ -51,9 +57,19 @@ class TodayScreen extends ConsumerWidget {
     if (plan != null && !general) {
       _queueImpressions(ref, plan);
     }
+    final water = ref.watch(todayWaterProvider);
+    final notice = ref.watch(targetNoticeProvider);
     return Scaffold(
       key: const Key('today-screen'),
       backgroundColor: colors.bg,
+      floatingActionButton: FloatingActionButton(
+        key: const Key('today-fab'),
+        tooltip: l10n.fabLabel,
+        onPressed: () {
+          unawaited(showQuickSheet(context, hasPlan: plan != null && !general));
+        },
+        child: const Icon(Icons.add),
+      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -93,12 +109,25 @@ class TodayScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
+                    if (notice) ...<Widget>[
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: colors.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: colors.brand),
+                        ),
+                        child: const TargetNoticeBody(),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     _WeekStrip(today: today, plans: plans),
                     const SizedBox(height: 16),
                     if (general) ...<Widget>[
                       _GeneralCard(body: l10n.generalBody),
                       const SizedBox(height: 16),
                       const _HealthyRow(),
+                      const ExtrasSection(),
                     ] else if (plan == null) ...<Widget>[
                       _BuildCard(
                         title: l10n.todayNoPlan,
@@ -123,7 +152,7 @@ class TodayScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
                       MissedMealCard(plan: plan, windows: windows, now: now),
-                      _WaterCard(summary: summary),
+                      _WaterCard(water: water),
                       const SizedBox(height: 16),
                       _Timeline(
                         plan: plan,
@@ -135,6 +164,9 @@ class TodayScreen extends ConsumerWidget {
                           context.push('/plan/item/${item.planItemId}');
                         },
                       ),
+                      const ExtrasSection(),
+                      // Room so the FAB does not cover the last row.
+                      const SizedBox(height: 72),
                     ],
                   ],
                 ),
@@ -727,17 +759,18 @@ class _NowCard extends StatelessWidget {
 }
 
 class _WaterCard extends StatelessWidget {
-  const _WaterCard({required this.summary});
+  const _WaterCard({required this.water});
 
-  final DaySummary? summary;
+  /// The same view as the Water tab, provisional glasses included.
+  final WaterView water;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
-    final clinician = summary?.clinicianWithoutGoal ?? false;
-    final total = summary?.totalMl ?? 0;
-    final goal = summary?.goalMl;
+    final clinician = water.mode == WaterGoalMode.clinician;
+    final total = water.totalMl;
+    final goal = water.goalMl;
     return InkWell(
       key: const Key('water-card'),
       onTap: () => context.go('/water'),

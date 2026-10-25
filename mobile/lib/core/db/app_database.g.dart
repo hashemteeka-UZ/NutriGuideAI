@@ -6591,6 +6591,17 @@ class $DaySummariesTable extends DaySummaries
       'CHECK ("requires_clinician" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _waterSourceMeta = const VerificationMeta(
+    'waterSource',
+  );
+  @override
+  late final GeneratedColumn<String> waterSource = GeneratedColumn<String>(
+    'water_source',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
     'fetchedAt',
   );
@@ -6616,6 +6627,7 @@ class $DaySummariesTable extends DaySummaries
     totalMl,
     goalMl,
     requiresClinician,
+    waterSource,
     fetchedAt,
   ];
   @override
@@ -6724,6 +6736,15 @@ class $DaySummariesTable extends DaySummaries
     } else if (isInserting) {
       context.missing(_requiresClinicianMeta);
     }
+    if (data.containsKey('water_source')) {
+      context.handle(
+        _waterSourceMeta,
+        waterSource.isAcceptableOrUnknown(
+          data['water_source']!,
+          _waterSourceMeta,
+        ),
+      );
+    }
     if (data.containsKey('fetched_at')) {
       context.handle(
         _fetchedAtMeta,
@@ -6789,6 +6810,10 @@ class $DaySummariesTable extends DaySummaries
         DriftSqlType.bool,
         data['${effectivePrefix}requires_clinician'],
       )!,
+      waterSource: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}water_source'],
+      ),
       fetchedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}fetched_at'],
@@ -6815,6 +6840,9 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
   final int totalMl;
   final int? goalMl;
   final bool requiresClinician;
+
+  /// USER, DEFAULT or NONE: where the water goal comes from (version 5).
+  final String? waterSource;
   final DateTime fetchedAt;
   const DaySummary({
     required this.summaryDate,
@@ -6829,6 +6857,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
     required this.totalMl,
     this.goalMl,
     required this.requiresClinician,
+    this.waterSource,
     required this.fetchedAt,
   });
   @override
@@ -6860,6 +6889,9 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
       map['goal_ml'] = Variable<int>(goalMl);
     }
     map['requires_clinician'] = Variable<bool>(requiresClinician);
+    if (!nullToAbsent || waterSource != null) {
+      map['water_source'] = Variable<String>(waterSource);
+    }
     map['fetched_at'] = Variable<DateTime>(fetchedAt);
     return map;
   }
@@ -6888,6 +6920,9 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
           ? const Value.absent()
           : Value(goalMl),
       requiresClinician: Value(requiresClinician),
+      waterSource: waterSource == null && nullToAbsent
+          ? const Value.absent()
+          : Value(waterSource),
       fetchedAt: Value(fetchedAt),
     );
   }
@@ -6910,6 +6945,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
       totalMl: serializer.fromJson<int>(json['totalMl']),
       goalMl: serializer.fromJson<int?>(json['goalMl']),
       requiresClinician: serializer.fromJson<bool>(json['requiresClinician']),
+      waterSource: serializer.fromJson<String?>(json['waterSource']),
       fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
     );
   }
@@ -6929,6 +6965,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
       'totalMl': serializer.toJson<int>(totalMl),
       'goalMl': serializer.toJson<int?>(goalMl),
       'requiresClinician': serializer.toJson<bool>(requiresClinician),
+      'waterSource': serializer.toJson<String?>(waterSource),
       'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
     };
   }
@@ -6946,6 +6983,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
     int? totalMl,
     Value<int?> goalMl = const Value.absent(),
     bool? requiresClinician,
+    Value<String?> waterSource = const Value.absent(),
     DateTime? fetchedAt,
   }) => DaySummary(
     summaryDate: summaryDate ?? this.summaryDate,
@@ -6960,6 +6998,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
     totalMl: totalMl ?? this.totalMl,
     goalMl: goalMl.present ? goalMl.value : this.goalMl,
     requiresClinician: requiresClinician ?? this.requiresClinician,
+    waterSource: waterSource.present ? waterSource.value : this.waterSource,
     fetchedAt: fetchedAt ?? this.fetchedAt,
   );
   DaySummary copyWithCompanion(DaySummariesCompanion data) {
@@ -6986,6 +7025,9 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
       requiresClinician: data.requiresClinician.present
           ? data.requiresClinician.value
           : this.requiresClinician,
+      waterSource: data.waterSource.present
+          ? data.waterSource.value
+          : this.waterSource,
       fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
     );
   }
@@ -7005,6 +7047,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
           ..write('totalMl: $totalMl, ')
           ..write('goalMl: $goalMl, ')
           ..write('requiresClinician: $requiresClinician, ')
+          ..write('waterSource: $waterSource, ')
           ..write('fetchedAt: $fetchedAt')
           ..write(')'))
         .toString();
@@ -7024,6 +7067,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
     totalMl,
     goalMl,
     requiresClinician,
+    waterSource,
     fetchedAt,
   );
   @override
@@ -7042,6 +7086,7 @@ class DaySummary extends DataClass implements Insertable<DaySummary> {
           other.totalMl == this.totalMl &&
           other.goalMl == this.goalMl &&
           other.requiresClinician == this.requiresClinician &&
+          other.waterSource == this.waterSource &&
           other.fetchedAt == this.fetchedAt);
 }
 
@@ -7058,6 +7103,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
   final Value<int> totalMl;
   final Value<int?> goalMl;
   final Value<bool> requiresClinician;
+  final Value<String?> waterSource;
   final Value<DateTime> fetchedAt;
   final Value<int> rowid;
   const DaySummariesCompanion({
@@ -7073,6 +7119,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
     this.totalMl = const Value.absent(),
     this.goalMl = const Value.absent(),
     this.requiresClinician = const Value.absent(),
+    this.waterSource = const Value.absent(),
     this.fetchedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -7089,6 +7136,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
     required int totalMl,
     this.goalMl = const Value.absent(),
     required bool requiresClinician,
+    this.waterSource = const Value.absent(),
     required DateTime fetchedAt,
     this.rowid = const Value.absent(),
   }) : summaryDate = Value(summaryDate),
@@ -7110,6 +7158,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
     Expression<int>? totalMl,
     Expression<int>? goalMl,
     Expression<bool>? requiresClinician,
+    Expression<String>? waterSource,
     Expression<DateTime>? fetchedAt,
     Expression<int>? rowid,
   }) {
@@ -7126,6 +7175,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
       if (totalMl != null) 'total_ml': totalMl,
       if (goalMl != null) 'goal_ml': goalMl,
       if (requiresClinician != null) 'requires_clinician': requiresClinician,
+      if (waterSource != null) 'water_source': waterSource,
       if (fetchedAt != null) 'fetched_at': fetchedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -7144,6 +7194,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
     Value<int>? totalMl,
     Value<int?>? goalMl,
     Value<bool>? requiresClinician,
+    Value<String?>? waterSource,
     Value<DateTime>? fetchedAt,
     Value<int>? rowid,
   }) {
@@ -7160,6 +7211,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
       totalMl: totalMl ?? this.totalMl,
       goalMl: goalMl ?? this.goalMl,
       requiresClinician: requiresClinician ?? this.requiresClinician,
+      waterSource: waterSource ?? this.waterSource,
       fetchedAt: fetchedAt ?? this.fetchedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -7204,6 +7256,9 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
     if (requiresClinician.present) {
       map['requires_clinician'] = Variable<bool>(requiresClinician.value);
     }
+    if (waterSource.present) {
+      map['water_source'] = Variable<String>(waterSource.value);
+    }
     if (fetchedAt.present) {
       map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
     }
@@ -7228,6 +7283,7 @@ class DaySummariesCompanion extends UpdateCompanion<DaySummary> {
           ..write('totalMl: $totalMl, ')
           ..write('goalMl: $goalMl, ')
           ..write('requiresClinician: $requiresClinician, ')
+          ..write('waterSource: $waterSource, ')
           ..write('fetchedAt: $fetchedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -9358,6 +9414,759 @@ class ConsumptionLogsCompanion extends UpdateCompanion<ConsumptionLog> {
   }
 }
 
+class $WaterLogsTable extends WaterLogs
+    with TableInfo<$WaterLogsTable, WaterLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WaterLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientUuidMeta = const VerificationMeta(
+    'clientUuid',
+  );
+  @override
+  late final GeneratedColumn<String> clientUuid = GeneratedColumn<String>(
+    'client_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverLogIdMeta = const VerificationMeta(
+    'serverLogId',
+  );
+  @override
+  late final GeneratedColumn<int> serverLogId = GeneratedColumn<int>(
+    'server_log_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _amountMlMeta = const VerificationMeta(
+    'amountMl',
+  );
+  @override
+  late final GeneratedColumn<int> amountMl = GeneratedColumn<int>(
+    'amount_ml',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _consumedAtMeta = const VerificationMeta(
+    'consumedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> consumedAt = GeneratedColumn<DateTime>(
+    'consumed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _logDateMeta = const VerificationMeta(
+    'logDate',
+  );
+  @override
+  late final GeneratedColumn<String> logDate = GeneratedColumn<String>(
+    'log_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientUuid,
+    serverLogId,
+    amountMl,
+    consumedAt,
+    logDate,
+    state,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'water_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WaterLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_uuid')) {
+      context.handle(
+        _clientUuidMeta,
+        clientUuid.isAcceptableOrUnknown(data['client_uuid']!, _clientUuidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientUuidMeta);
+    }
+    if (data.containsKey('server_log_id')) {
+      context.handle(
+        _serverLogIdMeta,
+        serverLogId.isAcceptableOrUnknown(
+          data['server_log_id']!,
+          _serverLogIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('amount_ml')) {
+      context.handle(
+        _amountMlMeta,
+        amountMl.isAcceptableOrUnknown(data['amount_ml']!, _amountMlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMlMeta);
+    }
+    if (data.containsKey('consumed_at')) {
+      context.handle(
+        _consumedAtMeta,
+        consumedAt.isAcceptableOrUnknown(data['consumed_at']!, _consumedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_consumedAtMeta);
+    }
+    if (data.containsKey('log_date')) {
+      context.handle(
+        _logDateMeta,
+        logDate.isAcceptableOrUnknown(data['log_date']!, _logDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_logDateMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientUuid};
+  @override
+  WaterLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WaterLog(
+      clientUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}client_uuid'],
+      )!,
+      serverLogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_log_id'],
+      ),
+      amountMl: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_ml'],
+      )!,
+      consumedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}consumed_at'],
+      )!,
+      logDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}log_date'],
+      )!,
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+    );
+  }
+
+  @override
+  $WaterLogsTable createAlias(String alias) {
+    return $WaterLogsTable(attachedDatabase, alias);
+  }
+}
+
+class WaterLog extends DataClass implements Insertable<WaterLog> {
+  final String clientUuid;
+  final int? serverLogId;
+  final int amountMl;
+  final DateTime consumedAt;
+  final String logDate;
+
+  /// PENDING, CONFIRMED, REJECTED or DELETING.
+  final String state;
+  const WaterLog({
+    required this.clientUuid,
+    this.serverLogId,
+    required this.amountMl,
+    required this.consumedAt,
+    required this.logDate,
+    required this.state,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_uuid'] = Variable<String>(clientUuid);
+    if (!nullToAbsent || serverLogId != null) {
+      map['server_log_id'] = Variable<int>(serverLogId);
+    }
+    map['amount_ml'] = Variable<int>(amountMl);
+    map['consumed_at'] = Variable<DateTime>(consumedAt);
+    map['log_date'] = Variable<String>(logDate);
+    map['state'] = Variable<String>(state);
+    return map;
+  }
+
+  WaterLogsCompanion toCompanion(bool nullToAbsent) {
+    return WaterLogsCompanion(
+      clientUuid: Value(clientUuid),
+      serverLogId: serverLogId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverLogId),
+      amountMl: Value(amountMl),
+      consumedAt: Value(consumedAt),
+      logDate: Value(logDate),
+      state: Value(state),
+    );
+  }
+
+  factory WaterLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WaterLog(
+      clientUuid: serializer.fromJson<String>(json['clientUuid']),
+      serverLogId: serializer.fromJson<int?>(json['serverLogId']),
+      amountMl: serializer.fromJson<int>(json['amountMl']),
+      consumedAt: serializer.fromJson<DateTime>(json['consumedAt']),
+      logDate: serializer.fromJson<String>(json['logDate']),
+      state: serializer.fromJson<String>(json['state']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientUuid': serializer.toJson<String>(clientUuid),
+      'serverLogId': serializer.toJson<int?>(serverLogId),
+      'amountMl': serializer.toJson<int>(amountMl),
+      'consumedAt': serializer.toJson<DateTime>(consumedAt),
+      'logDate': serializer.toJson<String>(logDate),
+      'state': serializer.toJson<String>(state),
+    };
+  }
+
+  WaterLog copyWith({
+    String? clientUuid,
+    Value<int?> serverLogId = const Value.absent(),
+    int? amountMl,
+    DateTime? consumedAt,
+    String? logDate,
+    String? state,
+  }) => WaterLog(
+    clientUuid: clientUuid ?? this.clientUuid,
+    serverLogId: serverLogId.present ? serverLogId.value : this.serverLogId,
+    amountMl: amountMl ?? this.amountMl,
+    consumedAt: consumedAt ?? this.consumedAt,
+    logDate: logDate ?? this.logDate,
+    state: state ?? this.state,
+  );
+  WaterLog copyWithCompanion(WaterLogsCompanion data) {
+    return WaterLog(
+      clientUuid: data.clientUuid.present
+          ? data.clientUuid.value
+          : this.clientUuid,
+      serverLogId: data.serverLogId.present
+          ? data.serverLogId.value
+          : this.serverLogId,
+      amountMl: data.amountMl.present ? data.amountMl.value : this.amountMl,
+      consumedAt: data.consumedAt.present
+          ? data.consumedAt.value
+          : this.consumedAt,
+      logDate: data.logDate.present ? data.logDate.value : this.logDate,
+      state: data.state.present ? data.state.value : this.state,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WaterLog(')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('serverLogId: $serverLogId, ')
+          ..write('amountMl: $amountMl, ')
+          ..write('consumedAt: $consumedAt, ')
+          ..write('logDate: $logDate, ')
+          ..write('state: $state')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientUuid,
+    serverLogId,
+    amountMl,
+    consumedAt,
+    logDate,
+    state,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WaterLog &&
+          other.clientUuid == this.clientUuid &&
+          other.serverLogId == this.serverLogId &&
+          other.amountMl == this.amountMl &&
+          other.consumedAt == this.consumedAt &&
+          other.logDate == this.logDate &&
+          other.state == this.state);
+}
+
+class WaterLogsCompanion extends UpdateCompanion<WaterLog> {
+  final Value<String> clientUuid;
+  final Value<int?> serverLogId;
+  final Value<int> amountMl;
+  final Value<DateTime> consumedAt;
+  final Value<String> logDate;
+  final Value<String> state;
+  final Value<int> rowid;
+  const WaterLogsCompanion({
+    this.clientUuid = const Value.absent(),
+    this.serverLogId = const Value.absent(),
+    this.amountMl = const Value.absent(),
+    this.consumedAt = const Value.absent(),
+    this.logDate = const Value.absent(),
+    this.state = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WaterLogsCompanion.insert({
+    required String clientUuid,
+    this.serverLogId = const Value.absent(),
+    required int amountMl,
+    required DateTime consumedAt,
+    required String logDate,
+    required String state,
+    this.rowid = const Value.absent(),
+  }) : clientUuid = Value(clientUuid),
+       amountMl = Value(amountMl),
+       consumedAt = Value(consumedAt),
+       logDate = Value(logDate),
+       state = Value(state);
+  static Insertable<WaterLog> custom({
+    Expression<String>? clientUuid,
+    Expression<int>? serverLogId,
+    Expression<int>? amountMl,
+    Expression<DateTime>? consumedAt,
+    Expression<String>? logDate,
+    Expression<String>? state,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientUuid != null) 'client_uuid': clientUuid,
+      if (serverLogId != null) 'server_log_id': serverLogId,
+      if (amountMl != null) 'amount_ml': amountMl,
+      if (consumedAt != null) 'consumed_at': consumedAt,
+      if (logDate != null) 'log_date': logDate,
+      if (state != null) 'state': state,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WaterLogsCompanion copyWith({
+    Value<String>? clientUuid,
+    Value<int?>? serverLogId,
+    Value<int>? amountMl,
+    Value<DateTime>? consumedAt,
+    Value<String>? logDate,
+    Value<String>? state,
+    Value<int>? rowid,
+  }) {
+    return WaterLogsCompanion(
+      clientUuid: clientUuid ?? this.clientUuid,
+      serverLogId: serverLogId ?? this.serverLogId,
+      amountMl: amountMl ?? this.amountMl,
+      consumedAt: consumedAt ?? this.consumedAt,
+      logDate: logDate ?? this.logDate,
+      state: state ?? this.state,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientUuid.present) {
+      map['client_uuid'] = Variable<String>(clientUuid.value);
+    }
+    if (serverLogId.present) {
+      map['server_log_id'] = Variable<int>(serverLogId.value);
+    }
+    if (amountMl.present) {
+      map['amount_ml'] = Variable<int>(amountMl.value);
+    }
+    if (consumedAt.present) {
+      map['consumed_at'] = Variable<DateTime>(consumedAt.value);
+    }
+    if (logDate.present) {
+      map['log_date'] = Variable<String>(logDate.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WaterLogsCompanion(')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('serverLogId: $serverLogId, ')
+          ..write('amountMl: $amountMl, ')
+          ..write('consumedAt: $consumedAt, ')
+          ..write('logDate: $logDate, ')
+          ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeightsTable extends Weights with TableInfo<$WeightsTable, Weight> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeightsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _measuredOnMeta = const VerificationMeta(
+    'measuredOn',
+  );
+  @override
+  late final GeneratedColumn<String> measuredOn = GeneratedColumn<String>(
+    'measured_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _weightKgMeta = const VerificationMeta(
+    'weightKg',
+  );
+  @override
+  late final GeneratedColumn<double> weightKg = GeneratedColumn<double>(
+    'weight_kg',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    measuredOn,
+    weightKg,
+    updatedAt,
+    state,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weights';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Weight> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('measured_on')) {
+      context.handle(
+        _measuredOnMeta,
+        measuredOn.isAcceptableOrUnknown(data['measured_on']!, _measuredOnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_measuredOnMeta);
+    }
+    if (data.containsKey('weight_kg')) {
+      context.handle(
+        _weightKgMeta,
+        weightKg.isAcceptableOrUnknown(data['weight_kg']!, _weightKgMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weightKgMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {measuredOn};
+  @override
+  Weight map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Weight(
+      measuredOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}measured_on'],
+      )!,
+      weightKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}weight_kg'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+    );
+  }
+
+  @override
+  $WeightsTable createAlias(String alias) {
+    return $WeightsTable(attachedDatabase, alias);
+  }
+}
+
+class Weight extends DataClass implements Insertable<Weight> {
+  final String measuredOn;
+  final double weightKg;
+  final DateTime updatedAt;
+
+  /// PENDING or CONFIRMED.
+  final String state;
+  const Weight({
+    required this.measuredOn,
+    required this.weightKg,
+    required this.updatedAt,
+    required this.state,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['measured_on'] = Variable<String>(measuredOn);
+    map['weight_kg'] = Variable<double>(weightKg);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['state'] = Variable<String>(state);
+    return map;
+  }
+
+  WeightsCompanion toCompanion(bool nullToAbsent) {
+    return WeightsCompanion(
+      measuredOn: Value(measuredOn),
+      weightKg: Value(weightKg),
+      updatedAt: Value(updatedAt),
+      state: Value(state),
+    );
+  }
+
+  factory Weight.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Weight(
+      measuredOn: serializer.fromJson<String>(json['measuredOn']),
+      weightKg: serializer.fromJson<double>(json['weightKg']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      state: serializer.fromJson<String>(json['state']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'measuredOn': serializer.toJson<String>(measuredOn),
+      'weightKg': serializer.toJson<double>(weightKg),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'state': serializer.toJson<String>(state),
+    };
+  }
+
+  Weight copyWith({
+    String? measuredOn,
+    double? weightKg,
+    DateTime? updatedAt,
+    String? state,
+  }) => Weight(
+    measuredOn: measuredOn ?? this.measuredOn,
+    weightKg: weightKg ?? this.weightKg,
+    updatedAt: updatedAt ?? this.updatedAt,
+    state: state ?? this.state,
+  );
+  Weight copyWithCompanion(WeightsCompanion data) {
+    return Weight(
+      measuredOn: data.measuredOn.present
+          ? data.measuredOn.value
+          : this.measuredOn,
+      weightKg: data.weightKg.present ? data.weightKg.value : this.weightKg,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      state: data.state.present ? data.state.value : this.state,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Weight(')
+          ..write('measuredOn: $measuredOn, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('state: $state')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(measuredOn, weightKg, updatedAt, state);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Weight &&
+          other.measuredOn == this.measuredOn &&
+          other.weightKg == this.weightKg &&
+          other.updatedAt == this.updatedAt &&
+          other.state == this.state);
+}
+
+class WeightsCompanion extends UpdateCompanion<Weight> {
+  final Value<String> measuredOn;
+  final Value<double> weightKg;
+  final Value<DateTime> updatedAt;
+  final Value<String> state;
+  final Value<int> rowid;
+  const WeightsCompanion({
+    this.measuredOn = const Value.absent(),
+    this.weightKg = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.state = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WeightsCompanion.insert({
+    required String measuredOn,
+    required double weightKg,
+    required DateTime updatedAt,
+    required String state,
+    this.rowid = const Value.absent(),
+  }) : measuredOn = Value(measuredOn),
+       weightKg = Value(weightKg),
+       updatedAt = Value(updatedAt),
+       state = Value(state);
+  static Insertable<Weight> custom({
+    Expression<String>? measuredOn,
+    Expression<double>? weightKg,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? state,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (measuredOn != null) 'measured_on': measuredOn,
+      if (weightKg != null) 'weight_kg': weightKg,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (state != null) 'state': state,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WeightsCompanion copyWith({
+    Value<String>? measuredOn,
+    Value<double>? weightKg,
+    Value<DateTime>? updatedAt,
+    Value<String>? state,
+    Value<int>? rowid,
+  }) {
+    return WeightsCompanion(
+      measuredOn: measuredOn ?? this.measuredOn,
+      weightKg: weightKg ?? this.weightKg,
+      updatedAt: updatedAt ?? this.updatedAt,
+      state: state ?? this.state,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (measuredOn.present) {
+      map['measured_on'] = Variable<String>(measuredOn.value);
+    }
+    if (weightKg.present) {
+      map['weight_kg'] = Variable<double>(weightKg.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeightsCompanion(')
+          ..write('measuredOn: $measuredOn, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -9385,6 +10194,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ConsumptionLogsTable consumptionLogs = $ConsumptionLogsTable(
     this,
   );
+  late final $WaterLogsTable waterLogs = $WaterLogsTable(this);
+  late final $WeightsTable weights = $WeightsTable(this);
   late final Index mealsLangSearchKey = Index(
     'meals_lang_search_key',
     'CREATE INDEX meals_lang_search_key ON meals (lang, search_key)',
@@ -9413,6 +10224,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     shoppingItems,
     outbox,
     consumptionLogs,
+    waterLogs,
+    weights,
     mealsLangSearchKey,
   ];
   @override
@@ -13325,6 +14138,7 @@ typedef $$DaySummariesTableCreateCompanionBuilder =
       required int totalMl,
       Value<int?> goalMl,
       required bool requiresClinician,
+      Value<String?> waterSource,
       required DateTime fetchedAt,
       Value<int> rowid,
     });
@@ -13342,6 +14156,7 @@ typedef $$DaySummariesTableUpdateCompanionBuilder =
       Value<int> totalMl,
       Value<int?> goalMl,
       Value<bool> requiresClinician,
+      Value<String?> waterSource,
       Value<DateTime> fetchedAt,
       Value<int> rowid,
     });
@@ -13412,6 +14227,11 @@ class $$DaySummariesTableFilterComposer
 
   ColumnFilters<bool> get requiresClinician => $composableBuilder(
     column: $table.requiresClinician,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get waterSource => $composableBuilder(
+    column: $table.waterSource,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13490,6 +14310,11 @@ class $$DaySummariesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get waterSource => $composableBuilder(
+    column: $table.waterSource,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
     column: $table.fetchedAt,
     builder: (column) => ColumnOrderings(column),
@@ -13551,6 +14376,11 @@ class $$DaySummariesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get waterSource => $composableBuilder(
+    column: $table.waterSource,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get fetchedAt =>
       $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
 }
@@ -13598,6 +14428,7 @@ class $$DaySummariesTableTableManager
                 Value<int> totalMl = const Value.absent(),
                 Value<int?> goalMl = const Value.absent(),
                 Value<bool> requiresClinician = const Value.absent(),
+                Value<String?> waterSource = const Value.absent(),
                 Value<DateTime> fetchedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DaySummariesCompanion(
@@ -13613,6 +14444,7 @@ class $$DaySummariesTableTableManager
                 totalMl: totalMl,
                 goalMl: goalMl,
                 requiresClinician: requiresClinician,
+                waterSource: waterSource,
                 fetchedAt: fetchedAt,
                 rowid: rowid,
               ),
@@ -13630,6 +14462,7 @@ class $$DaySummariesTableTableManager
                 required int totalMl,
                 Value<int?> goalMl = const Value.absent(),
                 required bool requiresClinician,
+                Value<String?> waterSource = const Value.absent(),
                 required DateTime fetchedAt,
                 Value<int> rowid = const Value.absent(),
               }) => DaySummariesCompanion.insert(
@@ -13645,6 +14478,7 @@ class $$DaySummariesTableTableManager
                 totalMl: totalMl,
                 goalMl: goalMl,
                 requiresClinician: requiresClinician,
+                waterSource: waterSource,
                 fetchedAt: fetchedAt,
                 rowid: rowid,
               ),
@@ -14993,6 +15827,416 @@ typedef $$ConsumptionLogsTableProcessedTableManager =
       ConsumptionLog,
       PrefetchHooks Function()
     >;
+typedef $$WaterLogsTableCreateCompanionBuilder = WaterLogsCompanion Function({
+  required String clientUuid,
+  Value<int?> serverLogId,
+  required int amountMl,
+  required DateTime consumedAt,
+  required String logDate,
+  required String state,
+  Value<int> rowid,
+});
+typedef $$WaterLogsTableUpdateCompanionBuilder = WaterLogsCompanion Function({
+  Value<String> clientUuid,
+  Value<int?> serverLogId,
+  Value<int> amountMl,
+  Value<DateTime> consumedAt,
+  Value<String> logDate,
+  Value<String> state,
+  Value<int> rowid,
+});
+
+class $$WaterLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $WaterLogsTable> {
+  $$WaterLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverLogId => $composableBuilder(
+    column: $table.serverLogId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMl => $composableBuilder(
+    column: $table.amountMl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get consumedAt => $composableBuilder(
+    column: $table.consumedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get logDate => $composableBuilder(
+    column: $table.logDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WaterLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WaterLogsTable> {
+  $$WaterLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverLogId => $composableBuilder(
+    column: $table.serverLogId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMl => $composableBuilder(
+    column: $table.amountMl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get consumedAt => $composableBuilder(
+    column: $table.consumedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get logDate => $composableBuilder(
+    column: $table.logDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WaterLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WaterLogsTable> {
+  $$WaterLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get serverLogId => $composableBuilder(
+    column: $table.serverLogId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get amountMl =>
+      $composableBuilder(column: $table.amountMl, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get consumedAt => $composableBuilder(
+    column: $table.consumedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get logDate =>
+      $composableBuilder(column: $table.logDate, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$WaterLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WaterLogsTable,
+          WaterLog,
+          $$WaterLogsTableFilterComposer,
+          $$WaterLogsTableOrderingComposer,
+          $$WaterLogsTableAnnotationComposer,
+          $$WaterLogsTableCreateCompanionBuilder,
+          $$WaterLogsTableUpdateCompanionBuilder,
+          (WaterLog, BaseReferences<_$AppDatabase, $WaterLogsTable, WaterLog>),
+          WaterLog,
+          PrefetchHooks Function()
+        > {
+  $$WaterLogsTableTableManager(_$AppDatabase db, $WaterLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WaterLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WaterLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WaterLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientUuid = const Value.absent(),
+                Value<int?> serverLogId = const Value.absent(),
+                Value<int> amountMl = const Value.absent(),
+                Value<DateTime> consumedAt = const Value.absent(),
+                Value<String> logDate = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WaterLogsCompanion(
+                clientUuid: clientUuid,
+                serverLogId: serverLogId,
+                amountMl: amountMl,
+                consumedAt: consumedAt,
+                logDate: logDate,
+                state: state,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientUuid,
+                Value<int?> serverLogId = const Value.absent(),
+                required int amountMl,
+                required DateTime consumedAt,
+                required String logDate,
+                required String state,
+                Value<int> rowid = const Value.absent(),
+              }) => WaterLogsCompanion.insert(
+                clientUuid: clientUuid,
+                serverLogId: serverLogId,
+                amountMl: amountMl,
+                consumedAt: consumedAt,
+                logDate: logDate,
+                state: state,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WaterLogsTable, WaterLog>(table),
+                  BaseReferences<_$AppDatabase, $WaterLogsTable, WaterLog>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WaterLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WaterLogsTable,
+      WaterLog,
+      $$WaterLogsTableFilterComposer,
+      $$WaterLogsTableOrderingComposer,
+      $$WaterLogsTableAnnotationComposer,
+      $$WaterLogsTableCreateCompanionBuilder,
+      $$WaterLogsTableUpdateCompanionBuilder,
+      (WaterLog, BaseReferences<_$AppDatabase, $WaterLogsTable, WaterLog>),
+      WaterLog,
+      PrefetchHooks Function()
+    >;
+typedef $$WeightsTableCreateCompanionBuilder = WeightsCompanion Function({
+  required String measuredOn,
+  required double weightKg,
+  required DateTime updatedAt,
+  required String state,
+  Value<int> rowid,
+});
+typedef $$WeightsTableUpdateCompanionBuilder = WeightsCompanion Function({
+  Value<String> measuredOn,
+  Value<double> weightKg,
+  Value<DateTime> updatedAt,
+  Value<String> state,
+  Value<int> rowid,
+});
+
+class $$WeightsTableFilterComposer
+    extends Composer<_$AppDatabase, $WeightsTable> {
+  $$WeightsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get measuredOn => $composableBuilder(
+    column: $table.measuredOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WeightsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeightsTable> {
+  $$WeightsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get measuredOn => $composableBuilder(
+    column: $table.measuredOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WeightsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeightsTable> {
+  $$WeightsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get measuredOn => $composableBuilder(
+    column: $table.measuredOn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get weightKg =>
+      $composableBuilder(column: $table.weightKg, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$WeightsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WeightsTable,
+          Weight,
+          $$WeightsTableFilterComposer,
+          $$WeightsTableOrderingComposer,
+          $$WeightsTableAnnotationComposer,
+          $$WeightsTableCreateCompanionBuilder,
+          $$WeightsTableUpdateCompanionBuilder,
+          (Weight, BaseReferences<_$AppDatabase, $WeightsTable, Weight>),
+          Weight,
+          PrefetchHooks Function()
+        > {
+  $$WeightsTableTableManager(_$AppDatabase db, $WeightsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeightsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeightsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WeightsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> measuredOn = const Value.absent(),
+                Value<double> weightKg = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WeightsCompanion(
+                measuredOn: measuredOn,
+                weightKg: weightKg,
+                updatedAt: updatedAt,
+                state: state,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String measuredOn,
+                required double weightKg,
+                required DateTime updatedAt,
+                required String state,
+                Value<int> rowid = const Value.absent(),
+              }) => WeightsCompanion.insert(
+                measuredOn: measuredOn,
+                weightKg: weightKg,
+                updatedAt: updatedAt,
+                state: state,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WeightsTable, Weight>(table),
+                  BaseReferences<_$AppDatabase, $WeightsTable, Weight>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WeightsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WeightsTable,
+      Weight,
+      $$WeightsTableFilterComposer,
+      $$WeightsTableOrderingComposer,
+      $$WeightsTableAnnotationComposer,
+      $$WeightsTableCreateCompanionBuilder,
+      $$WeightsTableUpdateCompanionBuilder,
+      (Weight, BaseReferences<_$AppDatabase, $WeightsTable, Weight>),
+      Weight,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -15035,4 +16279,8 @@ class $AppDatabaseManager {
       $$OutboxTableTableManager(_db, _db.outbox);
   $$ConsumptionLogsTableTableManager get consumptionLogs =>
       $$ConsumptionLogsTableTableManager(_db, _db.consumptionLogs);
+  $$WaterLogsTableTableManager get waterLogs =>
+      $$WaterLogsTableTableManager(_db, _db.waterLogs);
+  $$WeightsTableTableManager get weights =>
+      $$WeightsTableTableManager(_db, _db.weights);
 }

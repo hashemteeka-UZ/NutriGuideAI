@@ -328,6 +328,9 @@ class DaySummaries extends Table {
 
   BoolColumn get requiresClinician => boolean()();
 
+  /// USER, DEFAULT or NONE: where the water goal comes from (version 5).
+  TextColumn get waterSource => text().nullable()();
+
   DateTimeColumn get fetchedAt => dateTime()();
 
   @override
@@ -411,6 +414,40 @@ class ConsumptionLogs extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {clientUuid};
+}
+
+/// Personal. Glasses of water, keyed by the id the phone generated.
+class WaterLogs extends Table {
+  TextColumn get clientUuid => text()();
+
+  IntColumn get serverLogId => integer().nullable().unique()();
+
+  IntColumn get amountMl => integer()();
+
+  DateTimeColumn get consumedAt => dateTime()();
+
+  TextColumn get logDate => text()();
+
+  /// PENDING, CONFIRMED, REJECTED or DELETING.
+  TextColumn get state => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {clientUuid};
+}
+
+/// Personal. One weight per local date.
+class Weights extends Table {
+  TextColumn get measuredOn => text()();
+
+  RealColumn get weightKg => real()();
+
+  DateTimeColumn get updatedAt => dateTime()();
+
+  /// PENDING or CONFIRMED.
+  TextColumn get state => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {measuredOn};
 }
 
 /// Personal. Checked state stays on the phone for ingredients still in the list.

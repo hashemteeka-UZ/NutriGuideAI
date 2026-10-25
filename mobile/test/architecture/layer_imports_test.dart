@@ -13,6 +13,8 @@ void main() {
       expect(Directory('lib/features/today').existsSync(), isTrue);
       expect(Directory('lib/features/shopping').existsSync(), isTrue);
       expect(Directory('lib/features/logging').existsSync(), isTrue);
+      expect(Directory('lib/features/water').existsSync(), isTrue);
+      expect(Directory('lib/features/weight').existsSync(), isTrue);
       final importPattern = RegExp(
         '^\\s*(?:import|export)\\s+[\'"]([^\'"]+)[\'"]',
         multiLine: true,

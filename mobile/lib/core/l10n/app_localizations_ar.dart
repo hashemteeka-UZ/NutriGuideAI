@@ -1363,4 +1363,164 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get logRejectedGeneric => 'تعذر حفظ هذا التسجيل';
+
+  @override
+  String waterAmountMl(Object ml) {
+    return '$ml مل';
+  }
+
+  @override
+  String waterTotalOfGoal(Object goal, Object total) {
+    return '$total / $goal مل';
+  }
+
+  @override
+  String get waterTodayGoal => 'هدف اليوم';
+
+  @override
+  String get waterDoctorGoal => 'الهدف الذي حدده طبيبك';
+
+  @override
+  String get waterTotalOnly => 'مجموع اليوم';
+
+  @override
+  String get waterQuickSmall => 'كوب صغير';
+
+  @override
+  String get waterQuickCup => 'كوب';
+
+  @override
+  String get waterQuickBottle => 'زجاجة';
+
+  @override
+  String get waterCustom => 'مخصص';
+
+  @override
+  String get waterCustomTitle => 'كمية مخصصة';
+
+  @override
+  String get waterAdd => 'أضف';
+
+  @override
+  String get waterLargeTip => 'كمية كبيرة لمرة واحدة، يمكنك تقسيمها على مرتين.';
+
+  @override
+  String get waterTodayList => 'شرب اليوم';
+
+  @override
+  String get waterEmpty => 'لم تسجل ماء اليوم بعد';
+
+  @override
+  String get waterSaved => 'سُجّل الماء';
+
+  @override
+  String get waterClinicianTitle => 'كمية الماء يحددها طبيبك';
+
+  @override
+  String get waterClinicianAction => 'أدخل الكمية التي حددها طبيبك';
+
+  @override
+  String get waterSetGoal => 'حدد هدفًا';
+
+  @override
+  String get waterGoalSheetTitle => 'الكمية اليومية';
+
+  @override
+  String get waterGoalSave => 'احفظ';
+
+  @override
+  String get waterGoalSaved => 'حُفظ الهدف';
+
+  @override
+  String get waterNeedsConnection => 'يحتاج اتصالًا';
+
+  @override
+  String get waterRangeError => 'الكمية بين 50 و1000 مل';
+
+  @override
+  String get weightTitle => 'سجّل وزنك';
+
+  @override
+  String weightKgValue(Object kg) {
+    return '$kg كغ';
+  }
+
+  @override
+  String get weightSave => 'احفظ';
+
+  @override
+  String get weightSaved => 'حُفظ وزنك';
+
+  @override
+  String get weightQueued => 'حُفظ وزنك وسيُرفع عند الاتصال';
+
+  @override
+  String get weightStale => 'يوجد وزن أحدث محفوظ لهذا اليوم';
+
+  @override
+  String weightGoalReached(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'female': 'وصلتِ إلى هدفكِ!',
+      'other': 'وصلت إلى هدفك!',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String weightGoalReachedBody(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'female': 'أحسنتِ، استمري على عاداتكِ الجيدة.',
+      'other': 'أحسنت، استمر على عاداتك الجيدة.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get weightRangeError => 'الوزن بين 20 و400 كغ';
+
+  @override
+  String weightLatest(Object kg) {
+    return 'آخر وزن: $kg كغ';
+  }
+
+  @override
+  String get weightNone => 'لم تسجل وزنًا بعد';
+
+  @override
+  String get targetNoticeBody => 'تم تحديث هدفك اليومي بناءً على وزنك الجديد';
+
+  @override
+  String get targetNoticeRebuild => 'أعد بناء خطة الأيام القادمة';
+
+  @override
+  String get targetNoticeLater => 'لاحقًا';
+
+  @override
+  String get otherMealTitle => 'أكلت وجبة أخرى';
+
+  @override
+  String get otherMealServings => 'كم حصة أكلت؟';
+
+  @override
+  String get otherMealSlot => 'أي وجبة؟';
+
+  @override
+  String servingsCount(Object count) {
+    return '$count حصة';
+  }
+
+  @override
+  String get extrasTitle => 'إضافات اليوم';
+
+  @override
+  String get extraPending => 'بانتظار المزامنة';
+
+  @override
+  String get quickTitle => 'ماذا تريد أن تضيف؟';
+
+  @override
+  String get quickWater => 'سجّل ماء';
+
+  @override
+  String get fabLabel => 'إضافة';
 }

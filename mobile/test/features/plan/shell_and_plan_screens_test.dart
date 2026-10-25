@@ -188,7 +188,7 @@ void main() {
     expect(find.byKey(const Key('plan-screen')), findsOneWidget);
     await tester.tap(find.byKey(const Key('tab-water')));
     await tester.pumpAndSettle();
-    expect(find.text('قريبًا'), findsOneWidget);
+    expect(find.byKey(const Key('water-screen')), findsOneWidget);
     await tester.tap(find.byKey(const Key('tab-me')));
     await tester.pumpAndSettle();
     expect(find.text('وجباتي المفضلة'), findsOneWidget);
@@ -481,7 +481,7 @@ class _Scripted extends WeekGenerator {
   final Stream<WeekEvent> events;
 
   @override
-  Stream<WeekEvent> run() => events;
+  Stream<WeekEvent> run({bool fromTomorrow = false}) => events;
 }
 
 class _SwapApi extends SilentPlanApi {

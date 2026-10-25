@@ -99,6 +99,8 @@ class PersonalDataStore {
     await _database.transaction(() async {
       await _database.delete(_database.outbox).go();
       await _database.delete(_database.consumptionLogs).go();
+      await _database.delete(_database.waterLogs).go();
+      await _database.delete(_database.weights).go();
       await _database.delete(_database.shoppingItems).go();
       await _database.delete(_database.shoppingLists).go();
       await _database.delete(_database.planUnmetMinimums).go();

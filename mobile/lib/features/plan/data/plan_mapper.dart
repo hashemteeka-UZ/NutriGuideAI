@@ -180,6 +180,7 @@ DaySummary _summary(String date, DayAdherenceOut adherence, WaterDay water) {
     totalMl: water.totalMl,
     goalMl: water.goal.goalMl,
     requiresClinician: water.goal.requiresClinician,
+    waterSource: water.goal.source.json,
   );
 }
 
@@ -335,6 +336,7 @@ DaySummary summaryFromRow(db.DaySummary row) {
     totalMl: row.totalMl,
     goalMl: row.goalMl,
     requiresClinician: row.requiresClinician,
+    waterSource: row.waterSource,
   );
 }
 
@@ -355,6 +357,7 @@ db.DaySummariesCompanion summaryCompanion(
     totalMl: summary.totalMl,
     goalMl: Value(summary.goalMl),
     requiresClinician: summary.requiresClinician,
+    waterSource: Value(summary.waterSource),
     fetchedAt: fetchedAt.toUtc(),
   );
 }

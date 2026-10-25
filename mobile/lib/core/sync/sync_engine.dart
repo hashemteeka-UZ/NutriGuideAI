@@ -58,9 +58,13 @@ final class SyncHooks {
     required this.profileChanged,
     required this.fullRefresh,
     required this.todayChanged,
+    this.weightConfirmed,
   });
 
   final Future<void> Function(List<DayPlanOut> plans) storePlans;
+
+  /// The server stored a queued weight: the target may have changed (#271).
+  final Future<void> Function()? weightConfirmed;
   final Future<void> Function(List<MealPref> prefs) replacePrefs;
   final Future<void> Function() profileChanged;
 
@@ -148,9 +152,21 @@ final class SyncEngine {
         // The cached totals stay until the next run.
       }
     }
+    final weightConfirmed = _hooks.weightConfirmed;
+    if (_weightStored && weightConfirmed != null) {
+      _weightStored = false;
+      try {
+        await weightConfirmed();
+      } on Object {
+        // The next run or the next screen refresh reads the target.
+      }
+    }
     lastOutcome.value = download.outcome;
     return download.outcome;
   }
+
+  /// A WEIGHT_PUT was stored during this run.
+  var _weightStored = false;
 
   Future<({SyncOutcome outcome, bool logsChanged})> _upload(int seen) async {
     var logsChanged = false;
@@ -247,14 +263,14 @@ final class SyncEngine {
           continue;
         }
         settled += 1;
-        if (op.opType == 'CONSUMPTION_CREATE' ||
-            op.opType == 'CONSUMPTION_DELETE') {
+        if (op.opType != 'INTERACTION_CREATE') {
           logsChanged = true;
         }
         if (result.stored) {
           await _stored(op, result);
           await _outbox.remove(<String>[op.opId]);
-        } else if (op.opType == 'CONSUMPTION_DELETE' &&
+        } else if ((op.opType == 'CONSUMPTION_DELETE' ||
+                op.opType == 'WATER_DELETE') &&
             result.code == 'LOG_NOT_FOUND') {
           // The server no longer has the log: the delete is done.
           await _deleteLogRow(op);
@@ -292,14 +308,49 @@ final class SyncEngine {
             state: const Value(logConfirmed),
           ),
         );
-      case 'CONSUMPTION_DELETE':
+      case 'CONSUMPTION_DELETE' || 'WATER_DELETE':
         await _deleteLogRow(op);
+      case 'WATER_CREATE':
+        if (clientUuid == null) {
+          return;
+        }
+        final entityId = result.entityId;
+        if (entityId != null) {
+          await (_database.delete(_database.waterLogs)..where(
+                (t) =>
+                    t.serverLogId.equals(entityId) &
+                    t.clientUuid.equals(clientUuid).not(),
+              ))
+              .go();
+        }
+        await (_database.update(
+          _database.waterLogs,
+        )..where((t) => t.clientUuid.equals(clientUuid))).write(
+          WaterLogsCompanion(
+            serverLogId: Value(entityId),
+            state: const Value(logConfirmed),
+          ),
+        );
+      case 'WEIGHT_PUT':
+        final measuredOn = op.payload['measured_on'];
+        if (measuredOn is String) {
+          await (_database.update(_database.weights)
+                ..where((t) => t.measuredOn.equals(measuredOn)))
+              .write(const WeightsCompanion(state: Value(logConfirmed)));
+        }
+        _weightStored = true;
     }
   }
 
   Future<void> _deleteLogRow(QueuedOp op) async {
     final clientUuid = op.clientUuid;
     if (clientUuid == null) {
+      return;
+    }
+    if (op.opType.startsWith('WATER_')) {
+      await (_database.delete(
+        _database.waterLogs,
+      )..where((t) => t.clientUuid.equals(clientUuid))).go();
       return;
     }
     await (_database.delete(
@@ -319,12 +370,18 @@ final class SyncEngine {
       return;
     }
     final state = switch (op.opType) {
-      'CONSUMPTION_CREATE' => logRejected,
+      'CONSUMPTION_CREATE' || 'WATER_CREATE' => logRejected,
       // The delete failed: the log is still on the server.
-      'CONSUMPTION_DELETE' => logConfirmed,
+      'CONSUMPTION_DELETE' || 'WATER_DELETE' => logConfirmed,
       _ => null,
     };
     if (state == null) {
+      return;
+    }
+    if (op.opType.startsWith('WATER_')) {
+      await (_database.update(_database.waterLogs)
+            ..where((t) => t.clientUuid.equals(clientUuid)))
+          .write(WaterLogsCompanion(state: Value(state)));
       return;
     }
     await (_database.update(_database.consumptionLogs)
@@ -347,7 +404,9 @@ final class SyncEngine {
       }
       final logsChanged =
           changes.consumptionLogs.isNotEmpty ||
-          changes.deletedConsumptionLogIds.isNotEmpty;
+          changes.deletedConsumptionLogIds.isNotEmpty ||
+          changes.waterLogs.isNotEmpty ||
+          changes.deletedWaterLogIds.isNotEmpty;
       await _database.transaction(() async {
         for (final log in changes.consumptionLogs) {
           await _upsertLog(log);
@@ -357,6 +416,23 @@ final class SyncEngine {
           await (_database.delete(
             _database.consumptionLogs,
           )..where((t) => t.serverLogId.isIn(deleted))).go();
+        }
+        for (final log in changes.waterLogs) {
+          await upsertServerWater(
+            _database,
+            logId: log.logId,
+            amountMl: log.amountMl,
+            consumedAt: log.consumedAt,
+          );
+        }
+        final deletedWater = changes.deletedWaterLogIds;
+        if (deletedWater.isNotEmpty) {
+          await (_database.delete(
+            _database.waterLogs,
+          )..where((t) => t.serverLogId.isIn(deletedWater))).go();
+        }
+        for (final weight in changes.weights) {
+          await _upsertWeight(_isoDate(weight.measuredOn), weight.weightKg);
         }
       });
       await _hooks.replacePrefs(changes.mealPrefs);
@@ -397,6 +473,27 @@ final class SyncEngine {
       }
       return _api.changes(_now().toUtc().subtract(const Duration(minutes: 2)));
     }
+  }
+
+  /// The feed carries no updated_at for weights. A PENDING local weight was
+  /// entered after the server value, so it stays until it is sent.
+  Future<void> _upsertWeight(String measuredOn, num weightKg) async {
+    final existing = await (_database.select(
+      _database.weights,
+    )..where((t) => t.measuredOn.equals(measuredOn))).getSingleOrNull();
+    if (existing != null && existing.state == logPending) {
+      return;
+    }
+    await _database
+        .into(_database.weights)
+        .insertOnConflictUpdate(
+          WeightsCompanion.insert(
+            measuredOn: measuredOn,
+            weightKg: weightKg.toDouble(),
+            updatedAt: existing?.updatedAt ?? _now().toUtc(),
+            state: logConfirmed,
+          ),
+        );
   }
 
   Future<void> _upsertLog(ConsumptionLogOut log) async {
@@ -442,6 +539,47 @@ final class SyncEngine {
           ),
         );
   }
+}
+
+/// Stores a water log the server holds. The feed and `GET /water` carry no
+/// client id: a log from another device gets a key from its server id, and
+/// a log the user is deleting stays hidden.
+Future<void> upsertServerWater(
+  AppDatabase database, {
+  required int logId,
+  required int amountMl,
+  required DateTime consumedAt,
+}) async {
+  final existing = await (database.select(
+    database.waterLogs,
+  )..where((t) => t.serverLogId.equals(logId))).getSingleOrNull();
+  final values = WaterLogsCompanion(
+    serverLogId: Value(logId),
+    amountMl: Value(amountMl),
+    consumedAt: Value(consumedAt.toUtc()),
+    // The feed has no date; the phone's local date of the instant.
+    logDate: Value(_isoDate(consumedAt.toLocal())),
+  );
+  if (existing != null) {
+    await (database.update(
+      database.waterLogs,
+    )..where((t) => t.clientUuid.equals(existing.clientUuid))).write(
+      values.copyWith(
+        state: Value(
+          existing.state == logDeleting ? logDeleting : logConfirmed,
+        ),
+      ),
+    );
+    return;
+  }
+  await database
+      .into(database.waterLogs)
+      .insert(
+        values.copyWith(
+          clientUuid: Value('server-$logId'),
+          state: const Value(logConfirmed),
+        ),
+      );
 }
 
 const logPending = 'PENDING';

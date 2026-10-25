@@ -1371,4 +1371,165 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logRejectedGeneric => 'This log could not be saved';
+
+  @override
+  String waterAmountMl(Object ml) {
+    return '$ml ml';
+  }
+
+  @override
+  String waterTotalOfGoal(Object goal, Object total) {
+    return '$total / $goal ml';
+  }
+
+  @override
+  String get waterTodayGoal => 'Today\'s goal';
+
+  @override
+  String get waterDoctorGoal => 'The goal your doctor set';
+
+  @override
+  String get waterTotalOnly => 'Today\'s total';
+
+  @override
+  String get waterQuickSmall => 'Small cup';
+
+  @override
+  String get waterQuickCup => 'Cup';
+
+  @override
+  String get waterQuickBottle => 'Bottle';
+
+  @override
+  String get waterCustom => 'Custom';
+
+  @override
+  String get waterCustomTitle => 'Custom amount';
+
+  @override
+  String get waterAdd => 'Add';
+
+  @override
+  String get waterLargeTip => 'That\'s a lot at once; you can split it in two.';
+
+  @override
+  String get waterTodayList => 'Today\'s drinks';
+
+  @override
+  String get waterEmpty => 'No water logged today yet';
+
+  @override
+  String get waterSaved => 'Water logged';
+
+  @override
+  String get waterClinicianTitle => 'Your doctor sets your water amount';
+
+  @override
+  String get waterClinicianAction => 'Enter the amount your doctor set';
+
+  @override
+  String get waterSetGoal => 'Set a goal';
+
+  @override
+  String get waterGoalSheetTitle => 'Daily amount';
+
+  @override
+  String get waterGoalSave => 'Save';
+
+  @override
+  String get waterGoalSaved => 'Goal saved';
+
+  @override
+  String get waterNeedsConnection => 'Needs a connection';
+
+  @override
+  String get waterRangeError => 'The amount must be between 50 and 1000 ml';
+
+  @override
+  String get weightTitle => 'Log your weight';
+
+  @override
+  String weightKgValue(Object kg) {
+    return '$kg kg';
+  }
+
+  @override
+  String get weightSave => 'Save';
+
+  @override
+  String get weightSaved => 'Weight saved';
+
+  @override
+  String get weightQueued => 'Weight saved; it will upload when you are online';
+
+  @override
+  String get weightStale => 'A newer weight is already saved for today';
+
+  @override
+  String weightGoalReached(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'female': 'You reached your goal!',
+      'other': 'You reached your goal!',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String weightGoalReachedBody(String sex) {
+    String _temp0 = intl.Intl.selectLogic(sex, {
+      'female': 'Well done, keep up your good habits.',
+      'other': 'Well done, keep up your good habits.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get weightRangeError => 'Weight must be between 20 and 400 kg';
+
+  @override
+  String weightLatest(Object kg) {
+    return 'Latest weight: $kg kg';
+  }
+
+  @override
+  String get weightNone => 'No weight logged yet';
+
+  @override
+  String get targetNoticeBody =>
+      'Your daily target was updated from your new weight';
+
+  @override
+  String get targetNoticeRebuild => 'Rebuild the coming days';
+
+  @override
+  String get targetNoticeLater => 'Later';
+
+  @override
+  String get otherMealTitle => 'I ate another meal';
+
+  @override
+  String get otherMealServings => 'How many servings did you eat?';
+
+  @override
+  String get otherMealSlot => 'Which meal?';
+
+  @override
+  String servingsCount(Object count) {
+    return '$count servings';
+  }
+
+  @override
+  String get extrasTitle => 'Today\'s extras';
+
+  @override
+  String get extraPending => 'Waiting to sync';
+
+  @override
+  String get quickTitle => 'What would you like to add?';
+
+  @override
+  String get quickWater => 'Log water';
+
+  @override
+  String get fabLabel => 'Add';
 }

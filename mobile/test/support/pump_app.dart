@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutriguide/app/app.dart';
 import 'package:nutriguide/core/api/generated/models/sync_changes.dart';
+import 'package:nutriguide/core/api/generated/models/water_day.dart';
+import 'package:nutriguide/core/api/generated/models/weight_out.dart';
 import 'package:nutriguide/core/api/manual/sync_models.dart';
 import 'package:nutriguide/core/db/app_database.dart' hide PlanItem;
 import 'package:nutriguide/core/db/database_provider.dart';
@@ -28,6 +30,12 @@ import 'package:nutriguide/features/profile/presentation/onboarding_controller.d
 import 'package:nutriguide/features/reference/data/reference_repository.dart';
 import 'package:nutriguide/features/reference/domain/reference_data.dart';
 import 'package:nutriguide/features/shopping/domain/shopping.dart';
+import 'package:nutriguide/features/water/data/water_api.dart';
+import 'package:nutriguide/features/water/data/water_providers.dart';
+import 'package:nutriguide/features/water/domain/water.dart';
+import 'package:nutriguide/features/weight/data/weight_providers.dart';
+import 'package:nutriguide/features/weight/data/weight_repository.dart';
+import 'package:nutriguide/features/weight/domain/weight.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'memory_secure.dart';
@@ -78,6 +86,8 @@ Future<void> pumpNutriguide(
   AppDatabase? database,
   PlanApi? planApi,
   SyncApi? syncApi,
+  WaterApi? waterApi,
+  WeightApi? weightApi,
   List<Override> extra = const <Override>[],
 }) async {
   SharedPreferences.setMockInitialValues(
@@ -123,6 +133,9 @@ Future<void> pumpNutriguide(
         planApiProvider.overrideWithValue(planApi ?? SilentPlanApi()),
         syncLifecycleProvider.overrideWithValue(null),
         syncApiProvider.overrideWithValue(syncApi ?? OfflineSyncApi()),
+        waterApiProvider.overrideWithValue(waterApi ?? OfflineWaterApi()),
+        userContextRefreshProvider.overrideWithValue(() async {}),
+        weightApiProvider.overrideWithValue(weightApi ?? OfflineWeightApi()),
         ...extra,
       ],
       child: const App(),
@@ -144,6 +157,35 @@ class OfflineSyncApi implements SyncApi {
   @override
   Future<SyncChanges> changes(DateTime since) async {
     throw const SyncFailure(SyncFailureKind.transient);
+  }
+}
+
+/// Water calls from widget tests behave like a phone with no connection.
+class OfflineWaterApi extends WaterApi {
+  OfflineWaterApi() : super(Dio());
+
+  @override
+  Future<WaterDay> day(DateTime date) async {
+    throw const WaterException('NETWORK', network: true);
+  }
+
+  @override
+  Future<void> setGoal(int goalMl) async {
+    throw const WaterException('NETWORK', network: true);
+  }
+}
+
+/// Weight calls from widget tests behave like a phone with no connection.
+class OfflineWeightApi extends WeightApi {
+  OfflineWeightApi() : super(Dio());
+
+  @override
+  Future<WeightOut> put({
+    required String measuredOn,
+    required double weightKg,
+    required DateTime updatedAt,
+  }) async {
+    throw const WeightException('NETWORK');
   }
 }
 

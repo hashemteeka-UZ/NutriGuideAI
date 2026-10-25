@@ -5,6 +5,7 @@ import '../../../core/db/app_database.dart' as db;
 import '../../../core/sync/outbox_store.dart';
 import '../../../core/sync/sync_engine.dart';
 import '../../plan/domain/plan.dart';
+import '../../plan/domain/plan_dates.dart';
 import '../domain/logging.dart';
 
 /// Logs and undoes plan meals (Decisions #263, #265). Each action stores its
@@ -76,6 +77,95 @@ class LoggingRepository {
     }
   }
 
+  /// Logs a catalog meal the plan did not hold (#272). The row carries the
+  /// snapshot's per-serving server values × [servings] until the server's
+  /// own values replace them.
+  Future<void> logMeal({
+    required int mealId,
+    required String name,
+    required double servings,
+    required String slot,
+    required double kcalPerServing,
+    required double proteinPerServing,
+    required double carbPerServing,
+    required double fatPerServing,
+  }) async {
+    if (servings <= 0 || servings > 10) {
+      throw const LoggingException('servings');
+    }
+    final at = _now();
+    await _database.transaction(() async {
+      final clientUuid = _outbox.newId();
+      await _database
+          .into(_database.consumptionLogs)
+          .insert(
+            db.ConsumptionLogsCompanion.insert(
+              clientUuid: clientUuid,
+              kind: 'MEAL',
+              mealId: Value(mealId),
+              logDate: isoDate(dateOnly(at)),
+              slot: Value(slot),
+              servingsConsumed: Value(servings),
+              consumedAt: at.toUtc(),
+              name: Value(name),
+              kcal: Value(kcalPerServing * servings),
+              proteinG: Value(proteinPerServing * servings),
+              carbG: Value(carbPerServing * servings),
+              fatG: Value(fatPerServing * servings),
+              state: logPending,
+            ),
+          );
+      await _outbox.enqueue(
+        MealLogCreateOp(
+          opId: _outbox.newId(),
+          clientUuid: clientUuid,
+          mealId: mealId,
+          servingsConsumed: servings,
+          consumedAt: at,
+          slot: slot,
+        ),
+        clientUuid: clientUuid,
+        entityRef: consumptionRef(clientUuid),
+      );
+    });
+    _onAction?.call();
+  }
+
+  /// Undoes one log by its id, with the same rule as [undo].
+  Future<void> undoLog(String clientUuid) async {
+    var queued = false;
+    await _database.transaction(() async {
+      final row = await (_database.select(
+        _database.consumptionLogs,
+      )..where((t) => t.clientUuid.equals(clientUuid))).getSingleOrNull();
+      if (row == null || row.state == logDeleting) {
+        return;
+      }
+      queued = await _undoRow(row);
+    });
+    if (queued) {
+      _onAction?.call();
+    }
+  }
+
+  /// Returns true when a delete was queued.
+  Future<bool> _undoRow(db.ConsumptionLog row) async {
+    final serverId = row.serverLogId;
+    if (serverId == null) {
+      await _dropUnsent(row.clientUuid);
+      return false;
+    }
+    await (_database.update(_database.consumptionLogs)
+          ..where((t) => t.clientUuid.equals(row.clientUuid)))
+        .write(const db.ConsumptionLogsCompanion(state: Value(logDeleting)));
+    await _outbox.enqueue(
+      ConsumptionDeleteOp(opId: _outbox.newId(), logId: serverId),
+      clientUuid: row.clientUuid,
+      entityRef: consumptionRef(row.clientUuid),
+    );
+    return true;
+  }
+
   /// Undoes the log of [planItemId]. A log the server has not confirmed is
   /// dropped together with its queued create; a confirmed log queues a
   /// delete (compaction, Decision #263).
@@ -87,22 +177,9 @@ class LoggingRepository {
         if (row.state == logDeleting) {
           continue;
         }
-        final serverId = row.serverLogId;
-        if (serverId == null) {
-          await _dropUnsent(row.clientUuid);
-          continue;
+        if (await _undoRow(row)) {
+          queued = true;
         }
-        await (_database.update(
-          _database.consumptionLogs,
-        )..where((t) => t.clientUuid.equals(row.clientUuid))).write(
-          const db.ConsumptionLogsCompanion(state: Value(logDeleting)),
-        );
-        await _outbox.enqueue(
-          ConsumptionDeleteOp(opId: _outbox.newId(), logId: serverId),
-          clientUuid: row.clientUuid,
-          entityRef: consumptionRef(row.clientUuid),
-        );
-        queued = true;
       }
     });
     if (queued) {
@@ -145,7 +222,37 @@ class LoggingRepository {
     final ops = await _outbox.rejected();
     final logs = <RejectedLog>[];
     for (final op in ops) {
+      final code = op.lastErrorCode ?? 'REJECTED';
       final clientUuid = op.clientUuid;
+      if (op.opType.startsWith('WATER_')) {
+        final row = clientUuid == null
+            ? null
+            : await (_database.select(_database.waterLogs)
+                    ..where((t) => t.clientUuid.equals(clientUuid)))
+                  .getSingleOrNull();
+        logs.add(
+          RejectedLog(
+            opId: op.opId,
+            kind: RejectedKind.water,
+            code: code,
+            clientUuid: clientUuid,
+            amountMl: row?.amountMl,
+          ),
+        );
+        continue;
+      }
+      if (op.opType == 'WEIGHT_PUT') {
+        final weight = op.payload['weight_kg'];
+        logs.add(
+          RejectedLog(
+            opId: op.opId,
+            kind: RejectedKind.weight,
+            code: code,
+            weightKg: weight is num ? weight.toDouble() : null,
+          ),
+        );
+        continue;
+      }
       if (clientUuid == null) {
         continue;
       }
@@ -154,14 +261,44 @@ class LoggingRepository {
       )..where((t) => t.clientUuid.equals(clientUuid))).getSingleOrNull();
       logs.add(
         RejectedLog(
+          opId: op.opId,
+          kind: RejectedKind.meal,
+          code: code,
           clientUuid: clientUuid,
-          code: op.lastErrorCode ?? 'REJECTED',
           mealName: row?.name,
           slot: row?.slot,
         ),
       );
     }
     return logs;
+  }
+
+  /// «حذف» on a refused record: the operation and the row it concerns.
+  Future<void> discardRejected(RejectedLog log) async {
+    await _database.transaction(() async {
+      await _outbox.remove(<String>[log.opId]);
+      final clientUuid = log.clientUuid;
+      switch (log.kind) {
+        case RejectedKind.meal:
+          if (clientUuid != null) {
+            await _dropUnsent(clientUuid);
+          }
+        case RejectedKind.water:
+          if (clientUuid != null) {
+            // A refused delete leaves the confirmed glass in place.
+            await (_database.delete(_database.waterLogs)..where(
+                  (t) =>
+                      t.clientUuid.equals(clientUuid) &
+                      t.state.equals(logRejected),
+                ))
+                .go();
+          }
+        case RejectedKind.weight:
+          await (_database.delete(
+            _database.weights,
+          )..where((t) => t.state.equals(logPending))).go();
+      }
+    });
   }
 }
 

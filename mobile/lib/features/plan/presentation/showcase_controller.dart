@@ -94,6 +94,7 @@ class ShowcaseController extends Notifier<ShowcaseState> {
 
   Future<void> start({
     bool force = false,
+    bool fromTomorrow = false,
     Duration hold = Duration.zero,
   }) async {
     if (_started && (state.running || !force)) {
@@ -116,7 +117,7 @@ class ShowcaseController extends Notifier<ShowcaseState> {
       }
       final generator = ref.read(weekGeneratorProvider);
       var pausedForOptimizer = false;
-      await for (final event in generator.run()) {
+      await for (final event in generator.run(fromTomorrow: fromTomorrow)) {
         if (!ref.mounted) {
           return;
         }

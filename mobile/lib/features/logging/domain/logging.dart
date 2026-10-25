@@ -156,6 +156,12 @@ ProvisionalTotals provisionalTotals(
       continue;
     }
     if (item == null) {
+      // A MEAL log: its row holds the snapshot's per-serving server values
+      // × servings (#272).
+      kcal += log.kcal ?? 0;
+      protein += log.proteinG ?? 0;
+      carb += log.carbG ?? 0;
+      fat += log.fatG ?? 0;
       continue;
     }
     final share = _share(item, log);
@@ -211,19 +217,29 @@ class SyncStatusView {
   static const idle = SyncStatusView(uploading: false, pending: 0, rejected: 0);
 }
 
-/// A log the server refused, as listed under the red status.
+enum RejectedKind { meal, water, weight }
+
+/// A record the server refused, as listed under the red status.
 class RejectedLog {
   const RejectedLog({
-    required this.clientUuid,
+    required this.opId,
+    required this.kind,
     required this.code,
+    this.clientUuid,
     this.mealName,
     this.slot,
+    this.amountMl,
+    this.weightKg,
   });
 
-  final String clientUuid;
+  final String opId;
+  final RejectedKind kind;
   final String code;
+  final String? clientUuid;
   final String? mealName;
   final String? slot;
+  final int? amountMl;
+  final double? weightKg;
 }
 
 /// Thrown when an action cannot be queued.

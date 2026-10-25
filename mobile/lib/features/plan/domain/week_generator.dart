@@ -56,8 +56,9 @@ class WeekGenerator {
   final Future<void> Function(Duration duration) wait;
   final DateTime Function() _now;
 
-  Stream<WeekEvent> run() async* {
-    final dates = weekDates(_now());
+  /// [fromTomorrow] leaves today as it is (a rebuild after a new target).
+  Stream<WeekEvent> run({bool fromTomorrow = false}) async* {
+    final dates = weekDates(_now()).skip(fromTomorrow ? 1 : 0);
     final failed = <DateTime>[];
     var built = 0;
     for (final date in dates) {

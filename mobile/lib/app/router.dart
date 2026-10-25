@@ -12,6 +12,7 @@ import '../features/auth/presentation/welcome_screen.dart';
 import '../features/catalog/presentation/favourites_screen.dart';
 import '../features/catalog/presentation/meal_detail_screen.dart';
 import '../features/catalog/presentation/meals_screen.dart';
+import '../features/logging/presentation/other_meal_screen.dart';
 import '../features/logging/presentation/view_event.dart';
 import '../features/plan/data/plan_providers.dart';
 import '../features/plan/presentation/plan_item_screen.dart';
@@ -23,6 +24,7 @@ import '../features/shopping/presentation/shopping_screen.dart';
 import '../features/today/presentation/account_screen.dart';
 import '../features/today/presentation/coming_soon_screen.dart';
 import '../features/today/presentation/today_screen.dart';
+import '../features/water/presentation/water_screen.dart';
 import 'shell.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -80,7 +82,7 @@ bool _signedInLocation(String location) {
   if (exact.contains(location)) {
     return true;
   }
-  if (location.startsWith('/plan/item/')) {
+  if (location == '/log/meal' || location.startsWith('/plan/item/')) {
     return true;
   }
   return location == '/meals' || location.startsWith('/meals/');
@@ -196,11 +198,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/water',
                 builder: (BuildContext context, GoRouterState state) {
-                  final l10n = AppLocalizations.of(context);
-                  return ComingSoonScreen(
-                    detail: l10n.waterSoon,
-                    screenKey: 'water-screen',
-                  );
+                  return const WaterScreen();
                 },
               ),
             ],
@@ -230,6 +228,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/log/meal',
+        builder: (BuildContext context, GoRouterState state) {
+          return const OtherMealScreen();
+        },
       ),
       GoRoute(
         path: '/generate',
