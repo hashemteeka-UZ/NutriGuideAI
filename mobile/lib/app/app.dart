@@ -7,6 +7,7 @@ import '../core/locale/locale_controller.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/data/auth_interceptor.dart';
 import '../features/catalog/presentation/catalog_lifecycle.dart';
+import '../features/logging/presentation/sync_lifecycle.dart';
 import '../features/plan/presentation/plan_lifecycle.dart';
 import 'router.dart';
 
@@ -20,6 +21,7 @@ class App extends ConsumerWidget {
     ref.watch(authInterceptorProvider);
     ref.watch(catalogLifecycleProvider);
     ref.watch(planLifecycleProvider);
+    ref.watch(syncLifecycleProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,

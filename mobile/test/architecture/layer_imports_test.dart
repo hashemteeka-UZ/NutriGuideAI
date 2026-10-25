@@ -12,6 +12,7 @@ void main() {
       expect(Directory('lib/features/plan').existsSync(), isTrue);
       expect(Directory('lib/features/today').existsSync(), isTrue);
       expect(Directory('lib/features/shopping').existsSync(), isTrue);
+      expect(Directory('lib/features/logging').existsSync(), isTrue);
       final importPattern = RegExp(
         '^\\s*(?:import|export)\\s+[\'"]([^\'"]+)[\'"]',
         multiLine: true,
@@ -46,6 +47,37 @@ void main() {
       expect(violations, isEmpty);
     },
   );
+
+  test('core/sync and the manual wire models depend on no feature or UI', () {
+    final roots = <Directory>[
+      Directory('lib/core/sync'),
+      Directory('lib/core/api/manual'),
+    ];
+    final importPattern = RegExp(
+      '^\\s*(?:import|export)\\s+[\'"]([^\'"]+)[\'"]',
+      multiLine: true,
+    );
+    final violations = <String>[];
+    for (final root in roots) {
+      expect(root.existsSync(), isTrue);
+      for (final entity in root.listSync(recursive: true)) {
+        if (entity is! File || !entity.path.endsWith('.dart')) {
+          continue;
+        }
+        final source = entity.readAsStringSync();
+        for (final match in importPattern.allMatches(source)) {
+          final target = match.group(1)!;
+          if (target.contains('features/') ||
+              target.contains('package:flutter/material') ||
+              target.contains('package:flutter/widgets') ||
+              target.contains('flutter_riverpod')) {
+            violations.add('${entity.path} -> $target');
+          }
+        }
+      }
+    }
+    expect(violations, isEmpty);
+  });
 
   test('aggregate generated clients stay inside the generated folder', () {
     final roots = <Directory>[Directory('lib'), Directory('test')];

@@ -86,15 +86,22 @@ class PlanRepository {
     });
   }
 
+  /// True when the server marked an item of [date] logged, or the phone holds
+  /// a log for that date the server may not have yet.
   Future<bool> dayHasLoggedItem(DateTime date) async {
-    final rows =
-        await (_database.select(_database.planItems)..where(
-              (t) =>
-                  t.planDate.equals(isoDate(dateOnly(date))) &
-                  t.logged.equals(true),
+    final iso = isoDate(dateOnly(date));
+    final rows = await (_database.select(
+      _database.planItems,
+    )..where((t) => t.planDate.equals(iso) & t.logged.equals(true))).get();
+    if (rows.isNotEmpty) {
+      return true;
+    }
+    final logs =
+        await (_database.select(_database.consumptionLogs)..where(
+              (t) => t.logDate.equals(iso) & t.state.equals('DELETING').not(),
             ))
             .get();
-    return rows.isNotEmpty;
+    return logs.isNotEmpty;
   }
 
   Future<void> applySwap(PlanItem item) async {

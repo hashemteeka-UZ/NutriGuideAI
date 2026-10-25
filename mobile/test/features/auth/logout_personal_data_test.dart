@@ -141,6 +141,33 @@ void main() {
               checked: true,
             ),
           );
+      await database
+          .into(database.consumptionLogs)
+          .insert(
+            ConsumptionLogsCompanion.insert(
+              clientUuid: 'c-1',
+              kind: 'PLAN_ITEM',
+              logDate: '2026-10-24',
+              consumedAt: now,
+              state: 'PENDING',
+            ),
+          );
+      await database
+          .into(database.outbox)
+          .insert(
+            OutboxCompanion.insert(
+              opId: 'o-1',
+              seq: 1,
+              opType: 'CONSUMPTION_CREATE',
+              payloadJson: '{}',
+              createdAt: now,
+              state: 'PENDING',
+            ),
+          );
+      await (await SharedPreferences.getInstance()).setString(
+        syncSincePreferenceKey,
+        '2026-10-24T08:00:00.000Z',
+      );
 
       final repository = AuthRepositoryImpl(
         auth: AuthClient(Dio()),
@@ -160,8 +187,11 @@ void main() {
       expect(await database.select(database.daySummaries).get(), isEmpty);
       expect(await database.select(database.shoppingLists).get(), isEmpty);
       expect(await database.select(database.shoppingItems).get(), isEmpty);
+      expect(await database.select(database.consumptionLogs).get(), isEmpty);
+      expect(await database.select(database.outbox).get(), isEmpty);
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString(accountOwnerPreferenceKey), isNull);
+      expect(prefs.getString(syncSincePreferenceKey), isNull);
     },
   );
 }

@@ -23,13 +23,15 @@ part 'app_database.g.dart';
     DaySummaries,
     ShoppingLists,
     ShoppingItems,
+    Outbox,
+    ConsumptionLogs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,6 +62,10 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(daySummaries);
         await m.createTable(shoppingLists);
         await m.createTable(shoppingItems);
+      }
+      if (from < 4 && to >= 4) {
+        await m.createTable(outbox);
+        await m.createTable(consumptionLogs);
       }
     },
     beforeOpen: (OpeningDetails details) async {

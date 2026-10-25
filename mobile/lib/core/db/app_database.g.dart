@@ -7873,6 +7873,1491 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
   }
 }
 
+class $OutboxTable extends Outbox with TableInfo<$OutboxTable, OutboxData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OutboxTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _opIdMeta = const VerificationMeta('opId');
+  @override
+  late final GeneratedColumn<String> opId = GeneratedColumn<String>(
+    'op_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _seqMeta = const VerificationMeta('seq');
+  @override
+  late final GeneratedColumn<int> seq = GeneratedColumn<int>(
+    'seq',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _opTypeMeta = const VerificationMeta('opType');
+  @override
+  late final GeneratedColumn<String> opType = GeneratedColumn<String>(
+    'op_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clientUuidMeta = const VerificationMeta(
+    'clientUuid',
+  );
+  @override
+  late final GeneratedColumn<String> clientUuid = GeneratedColumn<String>(
+    'client_uuid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _entityRefMeta = const VerificationMeta(
+    'entityRef',
+  );
+  @override
+  late final GeneratedColumn<String> entityRef = GeneratedColumn<String>(
+    'entity_ref',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastErrorCodeMeta = const VerificationMeta(
+    'lastErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
+    'last_error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    opId,
+    seq,
+    opType,
+    payloadJson,
+    clientUuid,
+    entityRef,
+    createdAt,
+    attempts,
+    lastErrorCode,
+    state,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'outbox';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OutboxData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('op_id')) {
+      context.handle(
+        _opIdMeta,
+        opId.isAcceptableOrUnknown(data['op_id']!, _opIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_opIdMeta);
+    }
+    if (data.containsKey('seq')) {
+      context.handle(
+        _seqMeta,
+        seq.isAcceptableOrUnknown(data['seq']!, _seqMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_seqMeta);
+    }
+    if (data.containsKey('op_type')) {
+      context.handle(
+        _opTypeMeta,
+        opType.isAcceptableOrUnknown(data['op_type']!, _opTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_opTypeMeta);
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    if (data.containsKey('client_uuid')) {
+      context.handle(
+        _clientUuidMeta,
+        clientUuid.isAcceptableOrUnknown(data['client_uuid']!, _clientUuidMeta),
+      );
+    }
+    if (data.containsKey('entity_ref')) {
+      context.handle(
+        _entityRefMeta,
+        entityRef.isAcceptableOrUnknown(data['entity_ref']!, _entityRefMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('last_error_code')) {
+      context.handle(
+        _lastErrorCodeMeta,
+        lastErrorCode.isAcceptableOrUnknown(
+          data['last_error_code']!,
+          _lastErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {opId};
+  @override
+  OutboxData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OutboxData(
+      opId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}op_id'],
+      )!,
+      seq: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}seq'],
+      )!,
+      opType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}op_type'],
+      )!,
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+      clientUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}client_uuid'],
+      ),
+      entityRef: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_ref'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      lastErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error_code'],
+      ),
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+    );
+  }
+
+  @override
+  $OutboxTable createAlias(String alias) {
+    return $OutboxTable(attachedDatabase, alias);
+  }
+}
+
+class OutboxData extends DataClass implements Insertable<OutboxData> {
+  final String opId;
+  final int seq;
+  final String opType;
+  final String payloadJson;
+  final String? clientUuid;
+  final String? entityRef;
+  final DateTime createdAt;
+  final int attempts;
+  final String? lastErrorCode;
+
+  /// PENDING or REJECTED.
+  final String state;
+  const OutboxData({
+    required this.opId,
+    required this.seq,
+    required this.opType,
+    required this.payloadJson,
+    this.clientUuid,
+    this.entityRef,
+    required this.createdAt,
+    required this.attempts,
+    this.lastErrorCode,
+    required this.state,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['op_id'] = Variable<String>(opId);
+    map['seq'] = Variable<int>(seq);
+    map['op_type'] = Variable<String>(opType);
+    map['payload_json'] = Variable<String>(payloadJson);
+    if (!nullToAbsent || clientUuid != null) {
+      map['client_uuid'] = Variable<String>(clientUuid);
+    }
+    if (!nullToAbsent || entityRef != null) {
+      map['entity_ref'] = Variable<String>(entityRef);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['attempts'] = Variable<int>(attempts);
+    if (!nullToAbsent || lastErrorCode != null) {
+      map['last_error_code'] = Variable<String>(lastErrorCode);
+    }
+    map['state'] = Variable<String>(state);
+    return map;
+  }
+
+  OutboxCompanion toCompanion(bool nullToAbsent) {
+    return OutboxCompanion(
+      opId: Value(opId),
+      seq: Value(seq),
+      opType: Value(opType),
+      payloadJson: Value(payloadJson),
+      clientUuid: clientUuid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(clientUuid),
+      entityRef: entityRef == null && nullToAbsent
+          ? const Value.absent()
+          : Value(entityRef),
+      createdAt: Value(createdAt),
+      attempts: Value(attempts),
+      lastErrorCode: lastErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorCode),
+      state: Value(state),
+    );
+  }
+
+  factory OutboxData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OutboxData(
+      opId: serializer.fromJson<String>(json['opId']),
+      seq: serializer.fromJson<int>(json['seq']),
+      opType: serializer.fromJson<String>(json['opType']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+      clientUuid: serializer.fromJson<String?>(json['clientUuid']),
+      entityRef: serializer.fromJson<String?>(json['entityRef']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
+      state: serializer.fromJson<String>(json['state']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'opId': serializer.toJson<String>(opId),
+      'seq': serializer.toJson<int>(seq),
+      'opType': serializer.toJson<String>(opType),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+      'clientUuid': serializer.toJson<String?>(clientUuid),
+      'entityRef': serializer.toJson<String?>(entityRef),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'attempts': serializer.toJson<int>(attempts),
+      'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
+      'state': serializer.toJson<String>(state),
+    };
+  }
+
+  OutboxData copyWith({
+    String? opId,
+    int? seq,
+    String? opType,
+    String? payloadJson,
+    Value<String?> clientUuid = const Value.absent(),
+    Value<String?> entityRef = const Value.absent(),
+    DateTime? createdAt,
+    int? attempts,
+    Value<String?> lastErrorCode = const Value.absent(),
+    String? state,
+  }) => OutboxData(
+    opId: opId ?? this.opId,
+    seq: seq ?? this.seq,
+    opType: opType ?? this.opType,
+    payloadJson: payloadJson ?? this.payloadJson,
+    clientUuid: clientUuid.present ? clientUuid.value : this.clientUuid,
+    entityRef: entityRef.present ? entityRef.value : this.entityRef,
+    createdAt: createdAt ?? this.createdAt,
+    attempts: attempts ?? this.attempts,
+    lastErrorCode: lastErrorCode.present
+        ? lastErrorCode.value
+        : this.lastErrorCode,
+    state: state ?? this.state,
+  );
+  OutboxData copyWithCompanion(OutboxCompanion data) {
+    return OutboxData(
+      opId: data.opId.present ? data.opId.value : this.opId,
+      seq: data.seq.present ? data.seq.value : this.seq,
+      opType: data.opType.present ? data.opType.value : this.opType,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+      clientUuid: data.clientUuid.present
+          ? data.clientUuid.value
+          : this.clientUuid,
+      entityRef: data.entityRef.present ? data.entityRef.value : this.entityRef,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      lastErrorCode: data.lastErrorCode.present
+          ? data.lastErrorCode.value
+          : this.lastErrorCode,
+      state: data.state.present ? data.state.value : this.state,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxData(')
+          ..write('opId: $opId, ')
+          ..write('seq: $seq, ')
+          ..write('opType: $opType, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('entityRef: $entityRef, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('state: $state')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    opId,
+    seq,
+    opType,
+    payloadJson,
+    clientUuid,
+    entityRef,
+    createdAt,
+    attempts,
+    lastErrorCode,
+    state,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OutboxData &&
+          other.opId == this.opId &&
+          other.seq == this.seq &&
+          other.opType == this.opType &&
+          other.payloadJson == this.payloadJson &&
+          other.clientUuid == this.clientUuid &&
+          other.entityRef == this.entityRef &&
+          other.createdAt == this.createdAt &&
+          other.attempts == this.attempts &&
+          other.lastErrorCode == this.lastErrorCode &&
+          other.state == this.state);
+}
+
+class OutboxCompanion extends UpdateCompanion<OutboxData> {
+  final Value<String> opId;
+  final Value<int> seq;
+  final Value<String> opType;
+  final Value<String> payloadJson;
+  final Value<String?> clientUuid;
+  final Value<String?> entityRef;
+  final Value<DateTime> createdAt;
+  final Value<int> attempts;
+  final Value<String?> lastErrorCode;
+  final Value<String> state;
+  final Value<int> rowid;
+  const OutboxCompanion({
+    this.opId = const Value.absent(),
+    this.seq = const Value.absent(),
+    this.opType = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+    this.clientUuid = const Value.absent(),
+    this.entityRef = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.state = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OutboxCompanion.insert({
+    required String opId,
+    required int seq,
+    required String opType,
+    required String payloadJson,
+    this.clientUuid = const Value.absent(),
+    this.entityRef = const Value.absent(),
+    required DateTime createdAt,
+    this.attempts = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    required String state,
+    this.rowid = const Value.absent(),
+  }) : opId = Value(opId),
+       seq = Value(seq),
+       opType = Value(opType),
+       payloadJson = Value(payloadJson),
+       createdAt = Value(createdAt),
+       state = Value(state);
+  static Insertable<OutboxData> custom({
+    Expression<String>? opId,
+    Expression<int>? seq,
+    Expression<String>? opType,
+    Expression<String>? payloadJson,
+    Expression<String>? clientUuid,
+    Expression<String>? entityRef,
+    Expression<DateTime>? createdAt,
+    Expression<int>? attempts,
+    Expression<String>? lastErrorCode,
+    Expression<String>? state,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (opId != null) 'op_id': opId,
+      if (seq != null) 'seq': seq,
+      if (opType != null) 'op_type': opType,
+      if (payloadJson != null) 'payload_json': payloadJson,
+      if (clientUuid != null) 'client_uuid': clientUuid,
+      if (entityRef != null) 'entity_ref': entityRef,
+      if (createdAt != null) 'created_at': createdAt,
+      if (attempts != null) 'attempts': attempts,
+      if (lastErrorCode != null) 'last_error_code': lastErrorCode,
+      if (state != null) 'state': state,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OutboxCompanion copyWith({
+    Value<String>? opId,
+    Value<int>? seq,
+    Value<String>? opType,
+    Value<String>? payloadJson,
+    Value<String?>? clientUuid,
+    Value<String?>? entityRef,
+    Value<DateTime>? createdAt,
+    Value<int>? attempts,
+    Value<String?>? lastErrorCode,
+    Value<String>? state,
+    Value<int>? rowid,
+  }) {
+    return OutboxCompanion(
+      opId: opId ?? this.opId,
+      seq: seq ?? this.seq,
+      opType: opType ?? this.opType,
+      payloadJson: payloadJson ?? this.payloadJson,
+      clientUuid: clientUuid ?? this.clientUuid,
+      entityRef: entityRef ?? this.entityRef,
+      createdAt: createdAt ?? this.createdAt,
+      attempts: attempts ?? this.attempts,
+      lastErrorCode: lastErrorCode ?? this.lastErrorCode,
+      state: state ?? this.state,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (opId.present) {
+      map['op_id'] = Variable<String>(opId.value);
+    }
+    if (seq.present) {
+      map['seq'] = Variable<int>(seq.value);
+    }
+    if (opType.present) {
+      map['op_type'] = Variable<String>(opType.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    if (clientUuid.present) {
+      map['client_uuid'] = Variable<String>(clientUuid.value);
+    }
+    if (entityRef.present) {
+      map['entity_ref'] = Variable<String>(entityRef.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (lastErrorCode.present) {
+      map['last_error_code'] = Variable<String>(lastErrorCode.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxCompanion(')
+          ..write('opId: $opId, ')
+          ..write('seq: $seq, ')
+          ..write('opType: $opType, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('entityRef: $entityRef, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ConsumptionLogsTable extends ConsumptionLogs
+    with TableInfo<$ConsumptionLogsTable, ConsumptionLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ConsumptionLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientUuidMeta = const VerificationMeta(
+    'clientUuid',
+  );
+  @override
+  late final GeneratedColumn<String> clientUuid = GeneratedColumn<String>(
+    'client_uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverLogIdMeta = const VerificationMeta(
+    'serverLogId',
+  );
+  @override
+  late final GeneratedColumn<int> serverLogId = GeneratedColumn<int>(
+    'server_log_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _planItemIdMeta = const VerificationMeta(
+    'planItemId',
+  );
+  @override
+  late final GeneratedColumn<int> planItemId = GeneratedColumn<int>(
+    'plan_item_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mealIdMeta = const VerificationMeta('mealId');
+  @override
+  late final GeneratedColumn<int> mealId = GeneratedColumn<int>(
+    'meal_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _logDateMeta = const VerificationMeta(
+    'logDate',
+  );
+  @override
+  late final GeneratedColumn<String> logDate = GeneratedColumn<String>(
+    'log_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _slotMeta = const VerificationMeta('slot');
+  @override
+  late final GeneratedColumn<String> slot = GeneratedColumn<String>(
+    'slot',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _servingsConsumedMeta = const VerificationMeta(
+    'servingsConsumed',
+  );
+  @override
+  late final GeneratedColumn<double> servingsConsumed = GeneratedColumn<double>(
+    'servings_consumed',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _consumedAtMeta = const VerificationMeta(
+    'consumedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> consumedAt = GeneratedColumn<DateTime>(
+    'consumed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _kcalMeta = const VerificationMeta('kcal');
+  @override
+  late final GeneratedColumn<double> kcal = GeneratedColumn<double>(
+    'kcal',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _proteinGMeta = const VerificationMeta(
+    'proteinG',
+  );
+  @override
+  late final GeneratedColumn<double> proteinG = GeneratedColumn<double>(
+    'protein_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _carbGMeta = const VerificationMeta('carbG');
+  @override
+  late final GeneratedColumn<double> carbG = GeneratedColumn<double>(
+    'carb_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fatGMeta = const VerificationMeta('fatG');
+  @override
+  late final GeneratedColumn<double> fatG = GeneratedColumn<double>(
+    'fat_g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientUuid,
+    serverLogId,
+    kind,
+    planItemId,
+    mealId,
+    logDate,
+    slot,
+    servingsConsumed,
+    consumedAt,
+    name,
+    kcal,
+    proteinG,
+    carbG,
+    fatG,
+    state,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'consumption_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ConsumptionLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_uuid')) {
+      context.handle(
+        _clientUuidMeta,
+        clientUuid.isAcceptableOrUnknown(data['client_uuid']!, _clientUuidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientUuidMeta);
+    }
+    if (data.containsKey('server_log_id')) {
+      context.handle(
+        _serverLogIdMeta,
+        serverLogId.isAcceptableOrUnknown(
+          data['server_log_id']!,
+          _serverLogIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('plan_item_id')) {
+      context.handle(
+        _planItemIdMeta,
+        planItemId.isAcceptableOrUnknown(
+          data['plan_item_id']!,
+          _planItemIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('meal_id')) {
+      context.handle(
+        _mealIdMeta,
+        mealId.isAcceptableOrUnknown(data['meal_id']!, _mealIdMeta),
+      );
+    }
+    if (data.containsKey('log_date')) {
+      context.handle(
+        _logDateMeta,
+        logDate.isAcceptableOrUnknown(data['log_date']!, _logDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_logDateMeta);
+    }
+    if (data.containsKey('slot')) {
+      context.handle(
+        _slotMeta,
+        slot.isAcceptableOrUnknown(data['slot']!, _slotMeta),
+      );
+    }
+    if (data.containsKey('servings_consumed')) {
+      context.handle(
+        _servingsConsumedMeta,
+        servingsConsumed.isAcceptableOrUnknown(
+          data['servings_consumed']!,
+          _servingsConsumedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('consumed_at')) {
+      context.handle(
+        _consumedAtMeta,
+        consumedAt.isAcceptableOrUnknown(data['consumed_at']!, _consumedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_consumedAtMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('kcal')) {
+      context.handle(
+        _kcalMeta,
+        kcal.isAcceptableOrUnknown(data['kcal']!, _kcalMeta),
+      );
+    }
+    if (data.containsKey('protein_g')) {
+      context.handle(
+        _proteinGMeta,
+        proteinG.isAcceptableOrUnknown(data['protein_g']!, _proteinGMeta),
+      );
+    }
+    if (data.containsKey('carb_g')) {
+      context.handle(
+        _carbGMeta,
+        carbG.isAcceptableOrUnknown(data['carb_g']!, _carbGMeta),
+      );
+    }
+    if (data.containsKey('fat_g')) {
+      context.handle(
+        _fatGMeta,
+        fatG.isAcceptableOrUnknown(data['fat_g']!, _fatGMeta),
+      );
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientUuid};
+  @override
+  ConsumptionLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ConsumptionLog(
+      clientUuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}client_uuid'],
+      )!,
+      serverLogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_log_id'],
+      ),
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      planItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plan_item_id'],
+      ),
+      mealId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}meal_id'],
+      ),
+      logDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}log_date'],
+      )!,
+      slot: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}slot'],
+      ),
+      servingsConsumed: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}servings_consumed'],
+      ),
+      consumedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}consumed_at'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      ),
+      kcal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}kcal'],
+      ),
+      proteinG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}protein_g'],
+      ),
+      carbG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}carb_g'],
+      ),
+      fatG: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fat_g'],
+      ),
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+    );
+  }
+
+  @override
+  $ConsumptionLogsTable createAlias(String alias) {
+    return $ConsumptionLogsTable(attachedDatabase, alias);
+  }
+}
+
+class ConsumptionLog extends DataClass implements Insertable<ConsumptionLog> {
+  final String clientUuid;
+  final int? serverLogId;
+  final String kind;
+  final int? planItemId;
+  final int? mealId;
+  final String logDate;
+  final String? slot;
+  final double? servingsConsumed;
+  final DateTime consumedAt;
+  final String? name;
+  final double? kcal;
+  final double? proteinG;
+  final double? carbG;
+  final double? fatG;
+
+  /// PENDING, CONFIRMED, REJECTED or DELETING.
+  final String state;
+  const ConsumptionLog({
+    required this.clientUuid,
+    this.serverLogId,
+    required this.kind,
+    this.planItemId,
+    this.mealId,
+    required this.logDate,
+    this.slot,
+    this.servingsConsumed,
+    required this.consumedAt,
+    this.name,
+    this.kcal,
+    this.proteinG,
+    this.carbG,
+    this.fatG,
+    required this.state,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_uuid'] = Variable<String>(clientUuid);
+    if (!nullToAbsent || serverLogId != null) {
+      map['server_log_id'] = Variable<int>(serverLogId);
+    }
+    map['kind'] = Variable<String>(kind);
+    if (!nullToAbsent || planItemId != null) {
+      map['plan_item_id'] = Variable<int>(planItemId);
+    }
+    if (!nullToAbsent || mealId != null) {
+      map['meal_id'] = Variable<int>(mealId);
+    }
+    map['log_date'] = Variable<String>(logDate);
+    if (!nullToAbsent || slot != null) {
+      map['slot'] = Variable<String>(slot);
+    }
+    if (!nullToAbsent || servingsConsumed != null) {
+      map['servings_consumed'] = Variable<double>(servingsConsumed);
+    }
+    map['consumed_at'] = Variable<DateTime>(consumedAt);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || kcal != null) {
+      map['kcal'] = Variable<double>(kcal);
+    }
+    if (!nullToAbsent || proteinG != null) {
+      map['protein_g'] = Variable<double>(proteinG);
+    }
+    if (!nullToAbsent || carbG != null) {
+      map['carb_g'] = Variable<double>(carbG);
+    }
+    if (!nullToAbsent || fatG != null) {
+      map['fat_g'] = Variable<double>(fatG);
+    }
+    map['state'] = Variable<String>(state);
+    return map;
+  }
+
+  ConsumptionLogsCompanion toCompanion(bool nullToAbsent) {
+    return ConsumptionLogsCompanion(
+      clientUuid: Value(clientUuid),
+      serverLogId: serverLogId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverLogId),
+      kind: Value(kind),
+      planItemId: planItemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(planItemId),
+      mealId: mealId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mealId),
+      logDate: Value(logDate),
+      slot: slot == null && nullToAbsent ? const Value.absent() : Value(slot),
+      servingsConsumed: servingsConsumed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(servingsConsumed),
+      consumedAt: Value(consumedAt),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      kcal: kcal == null && nullToAbsent ? const Value.absent() : Value(kcal),
+      proteinG: proteinG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(proteinG),
+      carbG: carbG == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carbG),
+      fatG: fatG == null && nullToAbsent ? const Value.absent() : Value(fatG),
+      state: Value(state),
+    );
+  }
+
+  factory ConsumptionLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ConsumptionLog(
+      clientUuid: serializer.fromJson<String>(json['clientUuid']),
+      serverLogId: serializer.fromJson<int?>(json['serverLogId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      planItemId: serializer.fromJson<int?>(json['planItemId']),
+      mealId: serializer.fromJson<int?>(json['mealId']),
+      logDate: serializer.fromJson<String>(json['logDate']),
+      slot: serializer.fromJson<String?>(json['slot']),
+      servingsConsumed: serializer.fromJson<double?>(json['servingsConsumed']),
+      consumedAt: serializer.fromJson<DateTime>(json['consumedAt']),
+      name: serializer.fromJson<String?>(json['name']),
+      kcal: serializer.fromJson<double?>(json['kcal']),
+      proteinG: serializer.fromJson<double?>(json['proteinG']),
+      carbG: serializer.fromJson<double?>(json['carbG']),
+      fatG: serializer.fromJson<double?>(json['fatG']),
+      state: serializer.fromJson<String>(json['state']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientUuid': serializer.toJson<String>(clientUuid),
+      'serverLogId': serializer.toJson<int?>(serverLogId),
+      'kind': serializer.toJson<String>(kind),
+      'planItemId': serializer.toJson<int?>(planItemId),
+      'mealId': serializer.toJson<int?>(mealId),
+      'logDate': serializer.toJson<String>(logDate),
+      'slot': serializer.toJson<String?>(slot),
+      'servingsConsumed': serializer.toJson<double?>(servingsConsumed),
+      'consumedAt': serializer.toJson<DateTime>(consumedAt),
+      'name': serializer.toJson<String?>(name),
+      'kcal': serializer.toJson<double?>(kcal),
+      'proteinG': serializer.toJson<double?>(proteinG),
+      'carbG': serializer.toJson<double?>(carbG),
+      'fatG': serializer.toJson<double?>(fatG),
+      'state': serializer.toJson<String>(state),
+    };
+  }
+
+  ConsumptionLog copyWith({
+    String? clientUuid,
+    Value<int?> serverLogId = const Value.absent(),
+    String? kind,
+    Value<int?> planItemId = const Value.absent(),
+    Value<int?> mealId = const Value.absent(),
+    String? logDate,
+    Value<String?> slot = const Value.absent(),
+    Value<double?> servingsConsumed = const Value.absent(),
+    DateTime? consumedAt,
+    Value<String?> name = const Value.absent(),
+    Value<double?> kcal = const Value.absent(),
+    Value<double?> proteinG = const Value.absent(),
+    Value<double?> carbG = const Value.absent(),
+    Value<double?> fatG = const Value.absent(),
+    String? state,
+  }) => ConsumptionLog(
+    clientUuid: clientUuid ?? this.clientUuid,
+    serverLogId: serverLogId.present ? serverLogId.value : this.serverLogId,
+    kind: kind ?? this.kind,
+    planItemId: planItemId.present ? planItemId.value : this.planItemId,
+    mealId: mealId.present ? mealId.value : this.mealId,
+    logDate: logDate ?? this.logDate,
+    slot: slot.present ? slot.value : this.slot,
+    servingsConsumed: servingsConsumed.present
+        ? servingsConsumed.value
+        : this.servingsConsumed,
+    consumedAt: consumedAt ?? this.consumedAt,
+    name: name.present ? name.value : this.name,
+    kcal: kcal.present ? kcal.value : this.kcal,
+    proteinG: proteinG.present ? proteinG.value : this.proteinG,
+    carbG: carbG.present ? carbG.value : this.carbG,
+    fatG: fatG.present ? fatG.value : this.fatG,
+    state: state ?? this.state,
+  );
+  ConsumptionLog copyWithCompanion(ConsumptionLogsCompanion data) {
+    return ConsumptionLog(
+      clientUuid: data.clientUuid.present
+          ? data.clientUuid.value
+          : this.clientUuid,
+      serverLogId: data.serverLogId.present
+          ? data.serverLogId.value
+          : this.serverLogId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      planItemId: data.planItemId.present
+          ? data.planItemId.value
+          : this.planItemId,
+      mealId: data.mealId.present ? data.mealId.value : this.mealId,
+      logDate: data.logDate.present ? data.logDate.value : this.logDate,
+      slot: data.slot.present ? data.slot.value : this.slot,
+      servingsConsumed: data.servingsConsumed.present
+          ? data.servingsConsumed.value
+          : this.servingsConsumed,
+      consumedAt: data.consumedAt.present
+          ? data.consumedAt.value
+          : this.consumedAt,
+      name: data.name.present ? data.name.value : this.name,
+      kcal: data.kcal.present ? data.kcal.value : this.kcal,
+      proteinG: data.proteinG.present ? data.proteinG.value : this.proteinG,
+      carbG: data.carbG.present ? data.carbG.value : this.carbG,
+      fatG: data.fatG.present ? data.fatG.value : this.fatG,
+      state: data.state.present ? data.state.value : this.state,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ConsumptionLog(')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('serverLogId: $serverLogId, ')
+          ..write('kind: $kind, ')
+          ..write('planItemId: $planItemId, ')
+          ..write('mealId: $mealId, ')
+          ..write('logDate: $logDate, ')
+          ..write('slot: $slot, ')
+          ..write('servingsConsumed: $servingsConsumed, ')
+          ..write('consumedAt: $consumedAt, ')
+          ..write('name: $name, ')
+          ..write('kcal: $kcal, ')
+          ..write('proteinG: $proteinG, ')
+          ..write('carbG: $carbG, ')
+          ..write('fatG: $fatG, ')
+          ..write('state: $state')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientUuid,
+    serverLogId,
+    kind,
+    planItemId,
+    mealId,
+    logDate,
+    slot,
+    servingsConsumed,
+    consumedAt,
+    name,
+    kcal,
+    proteinG,
+    carbG,
+    fatG,
+    state,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ConsumptionLog &&
+          other.clientUuid == this.clientUuid &&
+          other.serverLogId == this.serverLogId &&
+          other.kind == this.kind &&
+          other.planItemId == this.planItemId &&
+          other.mealId == this.mealId &&
+          other.logDate == this.logDate &&
+          other.slot == this.slot &&
+          other.servingsConsumed == this.servingsConsumed &&
+          other.consumedAt == this.consumedAt &&
+          other.name == this.name &&
+          other.kcal == this.kcal &&
+          other.proteinG == this.proteinG &&
+          other.carbG == this.carbG &&
+          other.fatG == this.fatG &&
+          other.state == this.state);
+}
+
+class ConsumptionLogsCompanion extends UpdateCompanion<ConsumptionLog> {
+  final Value<String> clientUuid;
+  final Value<int?> serverLogId;
+  final Value<String> kind;
+  final Value<int?> planItemId;
+  final Value<int?> mealId;
+  final Value<String> logDate;
+  final Value<String?> slot;
+  final Value<double?> servingsConsumed;
+  final Value<DateTime> consumedAt;
+  final Value<String?> name;
+  final Value<double?> kcal;
+  final Value<double?> proteinG;
+  final Value<double?> carbG;
+  final Value<double?> fatG;
+  final Value<String> state;
+  final Value<int> rowid;
+  const ConsumptionLogsCompanion({
+    this.clientUuid = const Value.absent(),
+    this.serverLogId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.planItemId = const Value.absent(),
+    this.mealId = const Value.absent(),
+    this.logDate = const Value.absent(),
+    this.slot = const Value.absent(),
+    this.servingsConsumed = const Value.absent(),
+    this.consumedAt = const Value.absent(),
+    this.name = const Value.absent(),
+    this.kcal = const Value.absent(),
+    this.proteinG = const Value.absent(),
+    this.carbG = const Value.absent(),
+    this.fatG = const Value.absent(),
+    this.state = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ConsumptionLogsCompanion.insert({
+    required String clientUuid,
+    this.serverLogId = const Value.absent(),
+    required String kind,
+    this.planItemId = const Value.absent(),
+    this.mealId = const Value.absent(),
+    required String logDate,
+    this.slot = const Value.absent(),
+    this.servingsConsumed = const Value.absent(),
+    required DateTime consumedAt,
+    this.name = const Value.absent(),
+    this.kcal = const Value.absent(),
+    this.proteinG = const Value.absent(),
+    this.carbG = const Value.absent(),
+    this.fatG = const Value.absent(),
+    required String state,
+    this.rowid = const Value.absent(),
+  }) : clientUuid = Value(clientUuid),
+       kind = Value(kind),
+       logDate = Value(logDate),
+       consumedAt = Value(consumedAt),
+       state = Value(state);
+  static Insertable<ConsumptionLog> custom({
+    Expression<String>? clientUuid,
+    Expression<int>? serverLogId,
+    Expression<String>? kind,
+    Expression<int>? planItemId,
+    Expression<int>? mealId,
+    Expression<String>? logDate,
+    Expression<String>? slot,
+    Expression<double>? servingsConsumed,
+    Expression<DateTime>? consumedAt,
+    Expression<String>? name,
+    Expression<double>? kcal,
+    Expression<double>? proteinG,
+    Expression<double>? carbG,
+    Expression<double>? fatG,
+    Expression<String>? state,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientUuid != null) 'client_uuid': clientUuid,
+      if (serverLogId != null) 'server_log_id': serverLogId,
+      if (kind != null) 'kind': kind,
+      if (planItemId != null) 'plan_item_id': planItemId,
+      if (mealId != null) 'meal_id': mealId,
+      if (logDate != null) 'log_date': logDate,
+      if (slot != null) 'slot': slot,
+      if (servingsConsumed != null) 'servings_consumed': servingsConsumed,
+      if (consumedAt != null) 'consumed_at': consumedAt,
+      if (name != null) 'name': name,
+      if (kcal != null) 'kcal': kcal,
+      if (proteinG != null) 'protein_g': proteinG,
+      if (carbG != null) 'carb_g': carbG,
+      if (fatG != null) 'fat_g': fatG,
+      if (state != null) 'state': state,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ConsumptionLogsCompanion copyWith({
+    Value<String>? clientUuid,
+    Value<int?>? serverLogId,
+    Value<String>? kind,
+    Value<int?>? planItemId,
+    Value<int?>? mealId,
+    Value<String>? logDate,
+    Value<String?>? slot,
+    Value<double?>? servingsConsumed,
+    Value<DateTime>? consumedAt,
+    Value<String?>? name,
+    Value<double?>? kcal,
+    Value<double?>? proteinG,
+    Value<double?>? carbG,
+    Value<double?>? fatG,
+    Value<String>? state,
+    Value<int>? rowid,
+  }) {
+    return ConsumptionLogsCompanion(
+      clientUuid: clientUuid ?? this.clientUuid,
+      serverLogId: serverLogId ?? this.serverLogId,
+      kind: kind ?? this.kind,
+      planItemId: planItemId ?? this.planItemId,
+      mealId: mealId ?? this.mealId,
+      logDate: logDate ?? this.logDate,
+      slot: slot ?? this.slot,
+      servingsConsumed: servingsConsumed ?? this.servingsConsumed,
+      consumedAt: consumedAt ?? this.consumedAt,
+      name: name ?? this.name,
+      kcal: kcal ?? this.kcal,
+      proteinG: proteinG ?? this.proteinG,
+      carbG: carbG ?? this.carbG,
+      fatG: fatG ?? this.fatG,
+      state: state ?? this.state,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientUuid.present) {
+      map['client_uuid'] = Variable<String>(clientUuid.value);
+    }
+    if (serverLogId.present) {
+      map['server_log_id'] = Variable<int>(serverLogId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (planItemId.present) {
+      map['plan_item_id'] = Variable<int>(planItemId.value);
+    }
+    if (mealId.present) {
+      map['meal_id'] = Variable<int>(mealId.value);
+    }
+    if (logDate.present) {
+      map['log_date'] = Variable<String>(logDate.value);
+    }
+    if (slot.present) {
+      map['slot'] = Variable<String>(slot.value);
+    }
+    if (servingsConsumed.present) {
+      map['servings_consumed'] = Variable<double>(servingsConsumed.value);
+    }
+    if (consumedAt.present) {
+      map['consumed_at'] = Variable<DateTime>(consumedAt.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (kcal.present) {
+      map['kcal'] = Variable<double>(kcal.value);
+    }
+    if (proteinG.present) {
+      map['protein_g'] = Variable<double>(proteinG.value);
+    }
+    if (carbG.present) {
+      map['carb_g'] = Variable<double>(carbG.value);
+    }
+    if (fatG.present) {
+      map['fat_g'] = Variable<double>(fatG.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ConsumptionLogsCompanion(')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('serverLogId: $serverLogId, ')
+          ..write('kind: $kind, ')
+          ..write('planItemId: $planItemId, ')
+          ..write('mealId: $mealId, ')
+          ..write('logDate: $logDate, ')
+          ..write('slot: $slot, ')
+          ..write('servingsConsumed: $servingsConsumed, ')
+          ..write('consumedAt: $consumedAt, ')
+          ..write('name: $name, ')
+          ..write('kcal: $kcal, ')
+          ..write('proteinG: $proteinG, ')
+          ..write('carbG: $carbG, ')
+          ..write('fatG: $fatG, ')
+          ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7896,6 +9381,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DaySummariesTable daySummaries = $DaySummariesTable(this);
   late final $ShoppingListsTable shoppingLists = $ShoppingListsTable(this);
   late final $ShoppingItemsTable shoppingItems = $ShoppingItemsTable(this);
+  late final $OutboxTable outbox = $OutboxTable(this);
+  late final $ConsumptionLogsTable consumptionLogs = $ConsumptionLogsTable(
+    this,
+  );
   late final Index mealsLangSearchKey = Index(
     'meals_lang_search_key',
     'CREATE INDEX meals_lang_search_key ON meals (lang, search_key)',
@@ -7922,6 +9411,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     daySummaries,
     shoppingLists,
     shoppingItems,
+    outbox,
+    consumptionLogs,
     mealsLangSearchKey,
   ];
   @override
@@ -12785,6 +14276,723 @@ typedef $$ShoppingItemsTableProcessedTableManager =
       ShoppingItem,
       PrefetchHooks Function({bool rangeKey})
     >;
+typedef $$OutboxTableCreateCompanionBuilder = OutboxCompanion Function({
+  required String opId,
+  required int seq,
+  required String opType,
+  required String payloadJson,
+  Value<String?> clientUuid,
+  Value<String?> entityRef,
+  required DateTime createdAt,
+  Value<int> attempts,
+  Value<String?> lastErrorCode,
+  required String state,
+  Value<int> rowid,
+});
+typedef $$OutboxTableUpdateCompanionBuilder = OutboxCompanion Function({
+  Value<String> opId,
+  Value<int> seq,
+  Value<String> opType,
+  Value<String> payloadJson,
+  Value<String?> clientUuid,
+  Value<String?> entityRef,
+  Value<DateTime> createdAt,
+  Value<int> attempts,
+  Value<String?> lastErrorCode,
+  Value<String> state,
+  Value<int> rowid,
+});
+
+class $$OutboxTableFilterComposer
+    extends Composer<_$AppDatabase, $OutboxTable> {
+  $$OutboxTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get opId => $composableBuilder(
+    column: $table.opId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get seq => $composableBuilder(
+    column: $table.seq,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get opType => $composableBuilder(
+    column: $table.opType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityRef => $composableBuilder(
+    column: $table.entityRef,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$OutboxTableOrderingComposer
+    extends Composer<_$AppDatabase, $OutboxTable> {
+  $$OutboxTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get opId => $composableBuilder(
+    column: $table.opId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get seq => $composableBuilder(
+    column: $table.seq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get opType => $composableBuilder(
+    column: $table.opType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityRef => $composableBuilder(
+    column: $table.entityRef,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$OutboxTableAnnotationComposer
+    extends Composer<_$AppDatabase, $OutboxTable> {
+  $$OutboxTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get opId =>
+      $composableBuilder(column: $table.opId, builder: (column) => column);
+
+  GeneratedColumn<int> get seq =>
+      $composableBuilder(column: $table.seq, builder: (column) => column);
+
+  GeneratedColumn<String> get opType =>
+      $composableBuilder(column: $table.opType, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityRef =>
+      $composableBuilder(column: $table.entityRef, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$OutboxTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $OutboxTable,
+          OutboxData,
+          $$OutboxTableFilterComposer,
+          $$OutboxTableOrderingComposer,
+          $$OutboxTableAnnotationComposer,
+          $$OutboxTableCreateCompanionBuilder,
+          $$OutboxTableUpdateCompanionBuilder,
+          (OutboxData, BaseReferences<_$AppDatabase, $OutboxTable, OutboxData>),
+          OutboxData,
+          PrefetchHooks Function()
+        > {
+  $$OutboxTableTableManager(_$AppDatabase db, $OutboxTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OutboxTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OutboxTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OutboxTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> opId = const Value.absent(),
+                Value<int> seq = const Value.absent(),
+                Value<String> opType = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+                Value<String?> clientUuid = const Value.absent(),
+                Value<String?> entityRef = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => OutboxCompanion(
+                opId: opId,
+                seq: seq,
+                opType: opType,
+                payloadJson: payloadJson,
+                clientUuid: clientUuid,
+                entityRef: entityRef,
+                createdAt: createdAt,
+                attempts: attempts,
+                lastErrorCode: lastErrorCode,
+                state: state,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String opId,
+                required int seq,
+                required String opType,
+                required String payloadJson,
+                Value<String?> clientUuid = const Value.absent(),
+                Value<String?> entityRef = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> attempts = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                required String state,
+                Value<int> rowid = const Value.absent(),
+              }) => OutboxCompanion.insert(
+                opId: opId,
+                seq: seq,
+                opType: opType,
+                payloadJson: payloadJson,
+                clientUuid: clientUuid,
+                entityRef: entityRef,
+                createdAt: createdAt,
+                attempts: attempts,
+                lastErrorCode: lastErrorCode,
+                state: state,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$OutboxTable, OutboxData>(table),
+                  BaseReferences<_$AppDatabase, $OutboxTable, OutboxData>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$OutboxTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $OutboxTable,
+      OutboxData,
+      $$OutboxTableFilterComposer,
+      $$OutboxTableOrderingComposer,
+      $$OutboxTableAnnotationComposer,
+      $$OutboxTableCreateCompanionBuilder,
+      $$OutboxTableUpdateCompanionBuilder,
+      (OutboxData, BaseReferences<_$AppDatabase, $OutboxTable, OutboxData>),
+      OutboxData,
+      PrefetchHooks Function()
+    >;
+typedef $$ConsumptionLogsTableCreateCompanionBuilder =
+    ConsumptionLogsCompanion Function({
+      required String clientUuid,
+      Value<int?> serverLogId,
+      required String kind,
+      Value<int?> planItemId,
+      Value<int?> mealId,
+      required String logDate,
+      Value<String?> slot,
+      Value<double?> servingsConsumed,
+      required DateTime consumedAt,
+      Value<String?> name,
+      Value<double?> kcal,
+      Value<double?> proteinG,
+      Value<double?> carbG,
+      Value<double?> fatG,
+      required String state,
+      Value<int> rowid,
+    });
+typedef $$ConsumptionLogsTableUpdateCompanionBuilder =
+    ConsumptionLogsCompanion Function({
+      Value<String> clientUuid,
+      Value<int?> serverLogId,
+      Value<String> kind,
+      Value<int?> planItemId,
+      Value<int?> mealId,
+      Value<String> logDate,
+      Value<String?> slot,
+      Value<double?> servingsConsumed,
+      Value<DateTime> consumedAt,
+      Value<String?> name,
+      Value<double?> kcal,
+      Value<double?> proteinG,
+      Value<double?> carbG,
+      Value<double?> fatG,
+      Value<String> state,
+      Value<int> rowid,
+    });
+
+class $$ConsumptionLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $ConsumptionLogsTable> {
+  $$ConsumptionLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverLogId => $composableBuilder(
+    column: $table.serverLogId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get planItemId => $composableBuilder(
+    column: $table.planItemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get mealId => $composableBuilder(
+    column: $table.mealId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get logDate => $composableBuilder(
+    column: $table.logDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get slot => $composableBuilder(
+    column: $table.slot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get servingsConsumed => $composableBuilder(
+    column: $table.servingsConsumed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get consumedAt => $composableBuilder(
+    column: $table.consumedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get kcal => $composableBuilder(
+    column: $table.kcal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get proteinG => $composableBuilder(
+    column: $table.proteinG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get carbG => $composableBuilder(
+    column: $table.carbG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get fatG => $composableBuilder(
+    column: $table.fatG,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ConsumptionLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ConsumptionLogsTable> {
+  $$ConsumptionLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverLogId => $composableBuilder(
+    column: $table.serverLogId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get planItemId => $composableBuilder(
+    column: $table.planItemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get mealId => $composableBuilder(
+    column: $table.mealId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get logDate => $composableBuilder(
+    column: $table.logDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get slot => $composableBuilder(
+    column: $table.slot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get servingsConsumed => $composableBuilder(
+    column: $table.servingsConsumed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get consumedAt => $composableBuilder(
+    column: $table.consumedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get kcal => $composableBuilder(
+    column: $table.kcal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get proteinG => $composableBuilder(
+    column: $table.proteinG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get carbG => $composableBuilder(
+    column: $table.carbG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get fatG => $composableBuilder(
+    column: $table.fatG,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ConsumptionLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ConsumptionLogsTable> {
+  $$ConsumptionLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get serverLogId => $composableBuilder(
+    column: $table.serverLogId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get planItemId => $composableBuilder(
+    column: $table.planItemId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get mealId =>
+      $composableBuilder(column: $table.mealId, builder: (column) => column);
+
+  GeneratedColumn<String> get logDate =>
+      $composableBuilder(column: $table.logDate, builder: (column) => column);
+
+  GeneratedColumn<String> get slot =>
+      $composableBuilder(column: $table.slot, builder: (column) => column);
+
+  GeneratedColumn<double> get servingsConsumed => $composableBuilder(
+    column: $table.servingsConsumed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get consumedAt => $composableBuilder(
+    column: $table.consumedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<double> get kcal =>
+      $composableBuilder(column: $table.kcal, builder: (column) => column);
+
+  GeneratedColumn<double> get proteinG =>
+      $composableBuilder(column: $table.proteinG, builder: (column) => column);
+
+  GeneratedColumn<double> get carbG =>
+      $composableBuilder(column: $table.carbG, builder: (column) => column);
+
+  GeneratedColumn<double> get fatG =>
+      $composableBuilder(column: $table.fatG, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$ConsumptionLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ConsumptionLogsTable,
+          ConsumptionLog,
+          $$ConsumptionLogsTableFilterComposer,
+          $$ConsumptionLogsTableOrderingComposer,
+          $$ConsumptionLogsTableAnnotationComposer,
+          $$ConsumptionLogsTableCreateCompanionBuilder,
+          $$ConsumptionLogsTableUpdateCompanionBuilder,
+          (
+            ConsumptionLog,
+            BaseReferences<
+              _$AppDatabase,
+              $ConsumptionLogsTable,
+              ConsumptionLog
+            >,
+          ),
+          ConsumptionLog,
+          PrefetchHooks Function()
+        > {
+  $$ConsumptionLogsTableTableManager(
+    _$AppDatabase db,
+    $ConsumptionLogsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ConsumptionLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ConsumptionLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ConsumptionLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientUuid = const Value.absent(),
+                Value<int?> serverLogId = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<int?> planItemId = const Value.absent(),
+                Value<int?> mealId = const Value.absent(),
+                Value<String> logDate = const Value.absent(),
+                Value<String?> slot = const Value.absent(),
+                Value<double?> servingsConsumed = const Value.absent(),
+                Value<DateTime> consumedAt = const Value.absent(),
+                Value<String?> name = const Value.absent(),
+                Value<double?> kcal = const Value.absent(),
+                Value<double?> proteinG = const Value.absent(),
+                Value<double?> carbG = const Value.absent(),
+                Value<double?> fatG = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ConsumptionLogsCompanion(
+                clientUuid: clientUuid,
+                serverLogId: serverLogId,
+                kind: kind,
+                planItemId: planItemId,
+                mealId: mealId,
+                logDate: logDate,
+                slot: slot,
+                servingsConsumed: servingsConsumed,
+                consumedAt: consumedAt,
+                name: name,
+                kcal: kcal,
+                proteinG: proteinG,
+                carbG: carbG,
+                fatG: fatG,
+                state: state,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientUuid,
+                Value<int?> serverLogId = const Value.absent(),
+                required String kind,
+                Value<int?> planItemId = const Value.absent(),
+                Value<int?> mealId = const Value.absent(),
+                required String logDate,
+                Value<String?> slot = const Value.absent(),
+                Value<double?> servingsConsumed = const Value.absent(),
+                required DateTime consumedAt,
+                Value<String?> name = const Value.absent(),
+                Value<double?> kcal = const Value.absent(),
+                Value<double?> proteinG = const Value.absent(),
+                Value<double?> carbG = const Value.absent(),
+                Value<double?> fatG = const Value.absent(),
+                required String state,
+                Value<int> rowid = const Value.absent(),
+              }) => ConsumptionLogsCompanion.insert(
+                clientUuid: clientUuid,
+                serverLogId: serverLogId,
+                kind: kind,
+                planItemId: planItemId,
+                mealId: mealId,
+                logDate: logDate,
+                slot: slot,
+                servingsConsumed: servingsConsumed,
+                consumedAt: consumedAt,
+                name: name,
+                kcal: kcal,
+                proteinG: proteinG,
+                carbG: carbG,
+                fatG: fatG,
+                state: state,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ConsumptionLogsTable, ConsumptionLog>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ConsumptionLogsTable,
+                    ConsumptionLog
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ConsumptionLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ConsumptionLogsTable,
+      ConsumptionLog,
+      $$ConsumptionLogsTableFilterComposer,
+      $$ConsumptionLogsTableOrderingComposer,
+      $$ConsumptionLogsTableAnnotationComposer,
+      $$ConsumptionLogsTableCreateCompanionBuilder,
+      $$ConsumptionLogsTableUpdateCompanionBuilder,
+      (
+        ConsumptionLog,
+        BaseReferences<_$AppDatabase, $ConsumptionLogsTable, ConsumptionLog>,
+      ),
+      ConsumptionLog,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12823,4 +15031,8 @@ class $AppDatabaseManager {
       $$ShoppingListsTableTableManager(_db, _db.shoppingLists);
   $$ShoppingItemsTableTableManager get shoppingItems =>
       $$ShoppingItemsTableTableManager(_db, _db.shoppingItems);
+  $$OutboxTableTableManager get outbox =>
+      $$OutboxTableTableManager(_db, _db.outbox);
+  $$ConsumptionLogsTableTableManager get consumptionLogs =>
+      $$ConsumptionLogsTableTableManager(_db, _db.consumptionLogs);
 }

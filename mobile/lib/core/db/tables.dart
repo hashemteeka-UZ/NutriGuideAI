@@ -344,6 +344,75 @@ class ShoppingLists extends Table {
   Set<Column<Object>> get primaryKey => {rangeKey};
 }
 
+/// Personal. Operations waiting to be sent with `POST /sync/batch`, in [seq]
+/// order. A row keeps its [opId] and payload for every retry.
+class Outbox extends Table {
+  @override
+  String get tableName => 'outbox';
+
+  TextColumn get opId => text()();
+
+  IntColumn get seq => integer().unique()();
+
+  TextColumn get opType => text()();
+
+  TextColumn get payloadJson => text()();
+
+  TextColumn get clientUuid => text().nullable()();
+
+  TextColumn get entityRef => text().nullable()();
+
+  DateTimeColumn get createdAt => dateTime()();
+
+  IntColumn get attempts => integer().withDefault(const Constant(0))();
+
+  TextColumn get lastErrorCode => text().nullable()();
+
+  /// PENDING or REJECTED.
+  TextColumn get state => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {opId};
+}
+
+/// Personal. What the user ate, keyed by the id the phone generated. Server
+/// nutrients stay null until the server has the log.
+class ConsumptionLogs extends Table {
+  TextColumn get clientUuid => text()();
+
+  IntColumn get serverLogId => integer().nullable().unique()();
+
+  TextColumn get kind => text()();
+
+  IntColumn get planItemId => integer().nullable()();
+
+  IntColumn get mealId => integer().nullable()();
+
+  TextColumn get logDate => text()();
+
+  TextColumn get slot => text().nullable()();
+
+  RealColumn get servingsConsumed => real().nullable()();
+
+  DateTimeColumn get consumedAt => dateTime()();
+
+  TextColumn get name => text().nullable()();
+
+  RealColumn get kcal => real().nullable()();
+
+  RealColumn get proteinG => real().nullable()();
+
+  RealColumn get carbG => real().nullable()();
+
+  RealColumn get fatG => real().nullable()();
+
+  /// PENDING, CONFIRMED, REJECTED or DELETING.
+  TextColumn get state => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {clientUuid};
+}
+
 /// Personal. Checked state stays on the phone for ingredients still in the list.
 class ShoppingItems extends Table {
   TextColumn get rangeKey => text().references(

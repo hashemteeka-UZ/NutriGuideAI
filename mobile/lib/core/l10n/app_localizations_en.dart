@@ -1282,4 +1282,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountLanguage => 'العربية';
+
+  @override
+  String get eatAction => 'I ate it';
+
+  @override
+  String get eatLogged => 'Logged';
+
+  @override
+  String get eatUndo => 'Undo';
+
+  @override
+  String get eatOtherAmount => 'Different amount';
+
+  @override
+  String get eatAmountTitle => 'How much of the planned portion did you eat?';
+
+  @override
+  String get eatAmountHalf => 'Half';
+
+  @override
+  String get eatAmountFull => 'All of it';
+
+  @override
+  String get eatAmountOneHalf => 'One and a half';
+
+  @override
+  String get eatSaved => 'Meal logged';
+
+  @override
+  String get eatUndone => 'Log removed';
+
+  @override
+  String get eatFailed => 'Could not log the meal';
+
+  @override
+  String missedTitle(Object slot) {
+    return 'You missed $slot';
+  }
+
+  @override
+  String get missedBody =>
+      'Did you eat it? Log it now so your day stays accurate';
+
+  @override
+  String get missedAction => 'Log it';
+
+  @override
+  String get provisionalNote => 'Provisional until sync';
+
+  @override
+  String get syncUploading => '⟳ Uploading';
+
+  @override
+  String syncWaiting(Object count) {
+    return '⇡ $count waiting for a connection';
+  }
+
+  @override
+  String get syncRejected => 'A log could not be saved';
+
+  @override
+  String get syncRejectedTitle => 'Logs not saved';
+
+  @override
+  String get syncDelete => 'Delete';
+
+  @override
+  String get syncClose => 'Close';
+
+  @override
+  String get logoutPendingBody =>
+      'You have logs that are not uploaded yet. Signing out deletes them from this phone.';
+
+  @override
+  String get logoutPendingConfirm => 'Sign out and delete';
+
+  @override
+  String get failureClientUuidConflict =>
+      'This log is already stored with different content.';
+
+  @override
+  String get failureLogNotFound => 'This log no longer exists.';
+
+  @override
+  String get failureClockSkew =>
+      'Your phone\'s clock is ahead of the correct time. Fix it and try again.';
+
+  @override
+  String get logRejectedGeneric => 'This log could not be saved';
 }

@@ -1275,4 +1275,92 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountLanguage => 'English';
+
+  @override
+  String get eatAction => 'أكلتها';
+
+  @override
+  String get eatLogged => 'سجلتها';
+
+  @override
+  String get eatUndo => 'تراجع';
+
+  @override
+  String get eatOtherAmount => 'كمية مختلفة';
+
+  @override
+  String get eatAmountTitle => 'كم أكلت من الكمية المخططة؟';
+
+  @override
+  String get eatAmountHalf => 'النصف';
+
+  @override
+  String get eatAmountFull => 'الكمية كاملة';
+
+  @override
+  String get eatAmountOneHalf => 'مرة ونصف';
+
+  @override
+  String get eatSaved => 'سُجّلت الوجبة';
+
+  @override
+  String get eatUndone => 'أُلغي التسجيل';
+
+  @override
+  String get eatFailed => 'تعذر تسجيل الوجبة';
+
+  @override
+  String missedTitle(Object slot) {
+    return 'فاتك موعد $slot';
+  }
+
+  @override
+  String get missedBody => 'هل أكلتها؟ سجلها الآن حتى يبقى يومك دقيقًا';
+
+  @override
+  String get missedAction => 'سجّلها';
+
+  @override
+  String get provisionalNote => 'مؤقت حتى المزامنة';
+
+  @override
+  String get syncUploading => '⟳ جارٍ الرفع';
+
+  @override
+  String syncWaiting(Object count) {
+    return '⇡ $count بانتظار الاتصال';
+  }
+
+  @override
+  String get syncRejected => 'تعذر حفظ تسجيل';
+
+  @override
+  String get syncRejectedTitle => 'تسجيلات لم تُحفظ';
+
+  @override
+  String get syncDelete => 'حذف';
+
+  @override
+  String get syncClose => 'إغلاق';
+
+  @override
+  String get logoutPendingBody =>
+      'لديك تسجيلات لم تُرفع بعد. الخروج سيحذفها من الهاتف.';
+
+  @override
+  String get logoutPendingConfirm => 'خروج وحذف';
+
+  @override
+  String get failureClientUuidConflict =>
+      'هذا التسجيل محفوظ مسبقًا بمحتوى مختلف.';
+
+  @override
+  String get failureLogNotFound => 'لم يعد هذا التسجيل موجودًا.';
+
+  @override
+  String get failureClockSkew =>
+      'وقت هاتفك متقدم على الوقت الصحيح. صحّحه ثم حاول مرة أخرى.';
+
+  @override
+  String get logRejectedGeneric => 'تعذر حفظ هذا التسجيل';
 }

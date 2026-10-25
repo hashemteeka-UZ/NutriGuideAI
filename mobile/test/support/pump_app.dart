@@ -5,13 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutriguide/app/app.dart';
+import 'package:nutriguide/core/api/generated/models/sync_changes.dart';
+import 'package:nutriguide/core/api/manual/sync_models.dart';
 import 'package:nutriguide/core/db/app_database.dart' hide PlanItem;
 import 'package:nutriguide/core/db/database_provider.dart';
 import 'package:nutriguide/core/locale/locale_controller.dart';
+import 'package:nutriguide/core/sync/sync_api.dart';
 import 'package:nutriguide/features/auth/data/auth_repository_impl.dart';
 import 'package:nutriguide/features/auth/data/token_store.dart';
 import 'package:nutriguide/features/auth/domain/auth_repository.dart';
 import 'package:nutriguide/features/catalog/data/catalog_sync.dart';
+import 'package:nutriguide/features/logging/data/logging_providers.dart';
+import 'package:nutriguide/features/logging/presentation/sync_lifecycle.dart';
 import 'package:nutriguide/features/plan/data/plan_api.dart';
 import 'package:nutriguide/features/plan/data/plan_providers.dart';
 import 'package:nutriguide/features/plan/data/plan_sync.dart';
@@ -72,6 +77,7 @@ Future<void> pumpNutriguide(
   String? storedLocale,
   AppDatabase? database,
   PlanApi? planApi,
+  SyncApi? syncApi,
   List<Override> extra = const <Override>[],
 }) async {
   SharedPreferences.setMockInitialValues(
@@ -115,12 +121,30 @@ Future<void> pumpNutriguide(
         appDatabaseProvider.overrideWithValue(db),
         planSyncProvider.overrideWithValue(const NoopPlanSync()),
         planApiProvider.overrideWithValue(planApi ?? SilentPlanApi()),
+        syncLifecycleProvider.overrideWithValue(null),
+        syncApiProvider.overrideWithValue(syncApi ?? OfflineSyncApi()),
         ...extra,
       ],
       child: const App(),
     ),
   );
   await tester.pumpAndSettle();
+}
+
+/// Sync calls from widget tests behave like a phone with no connection.
+class OfflineSyncApi implements SyncApi {
+  int uploads = 0;
+
+  @override
+  Future<SyncBatchResult> upload(List<Map<String, Object?>> operations) async {
+    uploads += 1;
+    throw const SyncFailure(SyncFailureKind.transient);
+  }
+
+  @override
+  Future<SyncChanges> changes(DateTime since) async {
+    throw const SyncFailure(SyncFailureKind.transient);
+  }
 }
 
 /// Plan calls from widget tests fail closed instead of touching the network.

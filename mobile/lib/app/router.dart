@@ -12,6 +12,7 @@ import '../features/auth/presentation/welcome_screen.dart';
 import '../features/catalog/presentation/favourites_screen.dart';
 import '../features/catalog/presentation/meal_detail_screen.dart';
 import '../features/catalog/presentation/meals_screen.dart';
+import '../features/logging/presentation/view_event.dart';
 import '../features/plan/data/plan_providers.dart';
 import '../features/plan/presentation/plan_item_screen.dart';
 import '../features/plan/presentation/plan_screen.dart';
@@ -251,8 +252,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: ':mealId',
             builder: (BuildContext context, GoRouterState state) {
-              return MealDetailScreen(
-                mealId: int.tryParse(state.pathParameters['mealId'] ?? ''),
+              final mealId = int.tryParse(state.pathParameters['mealId'] ?? '');
+              return ViewEvent(
+                mealId: mealId,
+                child: MealDetailScreen(mealId: mealId),
               );
             },
           ),

@@ -10,6 +10,11 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/ui/emoji.dart';
 import '../../catalog/data/healthy_meals.dart';
 import '../../catalog/domain/meal.dart';
+import '../../logging/data/logging_providers.dart';
+import '../../logging/domain/logging.dart';
+import '../../logging/presentation/eat_button.dart';
+import '../../logging/presentation/missed_meal_card.dart';
+import '../../logging/presentation/sync_status_chip.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/plan_sync.dart';
 import '../../plan/data/user_context.dart';
@@ -42,6 +47,10 @@ class TodayScreen extends ConsumerWidget {
     final names =
         ref.watch(conditionNamesProvider).asData?.value ??
         const <String, String>{};
+    final logs = ref.watch(todayLogsProvider);
+    if (plan != null && !general) {
+      _queueImpressions(ref, plan);
+    }
     return Scaffold(
       key: const Key('today-screen'),
       backgroundColor: colors.bg,
@@ -51,7 +60,10 @@ class TodayScreen extends ConsumerWidget {
             const OfflineBar(),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: () => ref.read(planSyncProvider).refresh(),
+                onRefresh: () async {
+                  await ref.read(syncTriggerProvider).now();
+                  await ref.read(planSyncProvider).refresh();
+                },
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -62,14 +74,23 @@ class TodayScreen extends ConsumerWidget {
                           ?.copyWith(color: colors.fg2),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      now.hour < 12 ? l10n.greetMorning : l10n.greetEvening,
-                      key: const Key('today-greeting'),
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            color: colors.fg,
-                            fontWeight: FontWeight.w700,
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            now.hour < 12
+                                ? l10n.greetMorning
+                                : l10n.greetEvening,
+                            key: const Key('today-greeting'),
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: colors.fg,
+                                  fontWeight: FontWeight.w700,
+                                ),
                           ),
+                        ),
+                        const Flexible(child: SyncStatusChip()),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     _WeekStrip(today: today, plans: plans),
@@ -85,22 +106,29 @@ class TodayScreen extends ConsumerWidget {
                         onPressed: () => openGeneration(context, ref),
                       ),
                     ] else ...<Widget>[
-                      _CalorieCard(plan: plan, summary: summary),
+                      _CalorieCard(
+                        plan: plan,
+                        summary: summary,
+                        provisional: provisionalTotals(plan.items, logs),
+                      ),
                       const SizedBox(height: 12),
                       _NowCard(
                         plan: plan,
                         windows: windows,
+                        logs: logs,
                         now: now,
                         onOpen: (PlanItem item) {
                           context.push('/plan/item/${item.planItemId}');
                         },
                       ),
                       const SizedBox(height: 12),
+                      MissedMealCard(plan: plan, windows: windows, now: now),
                       _WaterCard(summary: summary),
                       const SizedBox(height: 16),
                       _Timeline(
                         plan: plan,
                         windows: windows,
+                        logs: logs,
                         now: now,
                         names: names,
                         onOpen: (PlanItem item) {
@@ -117,6 +145,24 @@ class TodayScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// One IMPRESSION per plan item per day when Today first shows it (#267).
+void _queueImpressions(WidgetRef ref, DayPlan plan) {
+  final queue = ref.read(interactionQueueProvider);
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    for (final item in plan.items) {
+      unawaited(
+        queue
+            .impression(
+              planItemId: item.planItemId,
+              mealId: item.mealId,
+              date: plan.planDate,
+            )
+            .catchError((Object _) {}),
+      );
+    }
+  });
 }
 
 class DateFormatHeading {
@@ -407,10 +453,17 @@ class _HealthyRow extends ConsumerWidget {
 }
 
 class _CalorieCard extends StatefulWidget {
-  const _CalorieCard({required this.plan, required this.summary});
+  const _CalorieCard({
+    required this.plan,
+    required this.summary,
+    required this.provisional,
+  });
 
   final DayPlan plan;
   final DaySummary? summary;
+
+  /// Server values of logs the server does not have yet (#266).
+  final ProvisionalTotals provisional;
 
   @override
   State<_CalorieCard> createState() => _CalorieCardState();
@@ -424,7 +477,12 @@ class _CalorieCardState extends State<_CalorieCard> {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
     final target = widget.plan.target.kcal.toDouble();
-    final eaten = widget.summary?.kcal ?? 0;
+    final provisional = widget.provisional;
+    double sum(double? server, double extra) {
+      return math.max(0, (server ?? 0) + extra);
+    }
+
+    final eaten = sum(widget.summary?.kcal, provisional.kcal);
     final remaining = math.max(0, target - eaten);
     final shown = _left ? remaining : eaten;
     final percent = target <= 0 ? 0.0 : (shown / target).clamp(0, 1).toDouble();
@@ -475,26 +533,33 @@ class _CalorieCardState extends State<_CalorieCard> {
           ),
           Text(_left ? l10n.kcalLeftCaption : l10n.kcalEatenCaption),
           Text(l10n.kcalOfTarget(formatWhole(context, target))),
+          if (provisional.active)
+            Text(
+              l10n.provisionalNote,
+              key: const Key('calorie-provisional'),
+              style: Theme.of(context).textTheme.labelMedium
+                  ?.copyWith(color: colors.fg2),
+            ),
           const SizedBox(height: 12),
           Row(
             children: <Widget>[
               _Macro(
                 label: l10n.nutrientProtein,
-                eaten: widget.summary?.proteinG ?? 0,
+                eaten: sum(widget.summary?.proteinG, provisional.proteinG),
                 target: widget.plan.target.proteinG,
                 left: _left,
                 color: colors.protein,
               ),
               _Macro(
                 label: l10n.nutrientCarbs,
-                eaten: widget.summary?.carbG ?? 0,
+                eaten: sum(widget.summary?.carbG, provisional.carbG),
                 target: widget.plan.target.carbG,
                 left: _left,
                 color: colors.carb,
               ),
               _Macro(
                 label: l10n.nutrientFat,
-                eaten: widget.summary?.fatG ?? 0,
+                eaten: sum(widget.summary?.fatG, provisional.fatG),
                 target: widget.plan.target.fatG,
                 left: _left,
                 color: colors.fat,
@@ -579,12 +644,14 @@ class _NowCard extends StatelessWidget {
   const _NowCard({
     required this.plan,
     required this.windows,
+    required this.logs,
     required this.now,
     required this.onOpen,
   });
 
   final DayPlan plan;
   final List<MealWindowSpan> windows;
+  final List<LoggedMeal> logs;
   final DateTime now;
   final void Function(PlanItem item) onOpen;
 
@@ -599,7 +666,7 @@ class _NowCard extends StatelessWidget {
         continue;
       }
       if (mealWhen(
-            logged: item.logged,
+            logged: isEaten(item, logs),
             start: span.start,
             end: span.end,
             nowMinutes: minutes,
@@ -709,6 +776,7 @@ class _Timeline extends ConsumerWidget {
   const _Timeline({
     required this.plan,
     required this.windows,
+    required this.logs,
     required this.now,
     required this.names,
     required this.onOpen,
@@ -716,6 +784,7 @@ class _Timeline extends ConsumerWidget {
 
   final DayPlan plan;
   final List<MealWindowSpan> windows;
+  final List<LoggedMeal> logs;
   final DateTime now;
   final Map<String, String> names;
   final void Function(PlanItem item) onOpen;
@@ -726,6 +795,8 @@ class _Timeline extends ConsumerWidget {
     final colors = context.appColors;
     final minutes = now.hour * 60 + now.minute;
     final items = displayItems(plan.items);
+    // A plan item can be logged only on its own date.
+    final loggable = plan.planDate == isoDate(dateOnly(now));
     return Column(
       key: const Key('today-timeline'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -753,6 +824,8 @@ class _Timeline extends ConsumerWidget {
         for (final item in items)
           _TimelineRow(
             item: item,
+            eaten: isEaten(item, logs),
+            loggable: loggable,
             window: _span(windows, item.slot),
             nowMinutes: minutes,
             names: names,
@@ -776,6 +849,8 @@ MealWindowSpan? _span(List<MealWindowSpan> windows, String slot) {
 class _TimelineRow extends StatelessWidget {
   const _TimelineRow({
     required this.item,
+    required this.eaten,
+    required this.loggable,
     required this.window,
     required this.nowMinutes,
     required this.names,
@@ -784,6 +859,8 @@ class _TimelineRow extends StatelessWidget {
   });
 
   final PlanItem item;
+  final bool eaten;
+  final bool loggable;
   final MealWindowSpan? window;
   final int nowMinutes;
   final Map<String, String> names;
@@ -794,7 +871,7 @@ class _TimelineRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final when = mealWhen(
-      logged: item.logged,
+      logged: eaten,
       start: window?.start,
       end: window?.end,
       nowMinutes: nowMinutes,
@@ -860,6 +937,7 @@ class _TimelineRow extends StatelessWidget {
                 ],
               ),
             ),
+            if (loggable) EatButton(item: item),
           ],
         ),
       ),

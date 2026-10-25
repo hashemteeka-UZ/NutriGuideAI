@@ -11,25 +11,61 @@ import '../../catalog/presentation/format_amount.dart';
 import '../../catalog/presentation/macro_ring.dart';
 import '../../catalog/presentation/meal_detail_screen.dart';
 import '../../catalog/presentation/nutrient_labels.dart';
+import '../../logging/data/logging_providers.dart';
+import '../../logging/domain/logging.dart';
+import '../../logging/presentation/eat_button.dart';
 import '../data/plan_providers.dart';
 import '../data/plan_sync.dart';
 import '../domain/plan.dart';
+import '../domain/plan_dates.dart';
 import 'plan_format.dart';
 import 'reason_chips.dart';
 
-class PlanItemScreen extends ConsumerWidget {
+class PlanItemScreen extends ConsumerStatefulWidget {
   const PlanItemScreen({required this.planItemId, super.key});
 
   final int? planItemId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PlanItemScreen> createState() => _PlanItemScreenState();
+}
+
+class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
+  var _viewed = false;
+
+  /// One VIEW per opening, once the item is known (#267).
+  void _queueView(PlanItem item) {
+    if (_viewed) {
+      return;
+    }
+    _viewed = true;
+    unawaited(
+      ref
+          .read(interactionQueueProvider)
+          .view(mealId: item.mealId, planItemId: item.planItemId)
+          .catchError((Object _) {}),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
-    final id = planItemId;
+    final id = widget.planItemId;
     final item = id == null
         ? null
         : ref.watch(planItemProvider(id)).asData?.value;
+    if (item != null) {
+      _queueView(item);
+    }
+    final logs = item == null
+        ? const <LoggedMeal>[]
+        : ref.watch(dayLogsProvider(item.planDate)).asData?.value ??
+              const <LoggedMeal>[];
+    final eaten = item != null && isEaten(item, logs);
+    final loggable =
+        item != null &&
+        item.planDate == isoDate(dateOnly(ref.watch(planClockProvider)()));
     final meal = item == null
         ? null
         : ref.watch(mealDetailProvider(item.mealId)).asData?.value;
@@ -76,7 +112,28 @@ class PlanItemScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    if (item.logged)
+                    if (loggable)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            EatButton(item: item),
+                            if (!eaten) ...<Widget>[
+                              const SizedBox(width: 8),
+                              Text(l10n.eatAction),
+                              const SizedBox(width: 8),
+                              TextButton(
+                                key: const Key('eat-other-amount'),
+                                onPressed: () =>
+                                    unawaited(_logAmount(context, ref, item)),
+                                child: Text(l10n.eatOtherAmount),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    if (eaten)
                       Text(
                         l10n.swapLoggedNote,
                         textAlign: TextAlign.center,
@@ -88,7 +145,7 @@ class PlanItemScreen extends ConsumerWidget {
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(48, 48),
                       ),
-                      onPressed: item.logged
+                      onPressed: eaten
                           ? null
                           : () {
                               unawaited(
@@ -242,6 +299,25 @@ class PlanItemScreen extends ConsumerWidget {
               ),
             ),
     );
+  }
+}
+
+Future<void> _logAmount(
+  BuildContext context,
+  WidgetRef ref,
+  PlanItem item,
+) async {
+  final factor = await showEatAmountSheet(context);
+  if (factor == null || !context.mounted) {
+    return;
+  }
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    await ref.read(loggingRepositoryProvider).logPlanItem(item, factor: factor);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.eatSaved)));
+  } on Object {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.eatFailed)));
   }
 }
 

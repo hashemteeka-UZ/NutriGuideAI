@@ -8,6 +8,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/locale/locale_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../auth/presentation/session_controller.dart';
+import '../../logging/data/logging_providers.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -49,17 +50,50 @@ class AccountScreen extends ConsumerWidget {
             _Row(
               key: const Key('account-logout'),
               label: l10n.logout,
-              onTap: () {
-                unawaited(
-                  ref.read(sessionControllerProvider.notifier).logout(),
-                );
-              },
+              onTap: () => unawaited(confirmLogout(context, ref)),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+/// Sends the outbox once more, then signs out. Logs that are still on the
+/// phone are deleted only after the user agrees (Decision #263).
+Future<void> confirmLogout(BuildContext context, WidgetRef ref) async {
+  final empty = await ref.read(uploadBeforeLogoutProvider)();
+  if (!context.mounted) {
+    return;
+  }
+  if (!empty) {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          key: const Key('logout-pending-dialog'),
+          content: Text(l10n.logoutPendingBody),
+          actions: <Widget>[
+            TextButton(
+              key: const Key('logout-pending-cancel'),
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l10n.planCancel),
+            ),
+            TextButton(
+              key: const Key('logout-pending-confirm'),
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(l10n.logoutPendingConfirm),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true) {
+      return;
+    }
+  }
+  await ref.read(sessionControllerProvider.notifier).logout();
 }
 
 class _Row extends StatelessWidget {

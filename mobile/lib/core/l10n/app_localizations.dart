@@ -2263,6 +2263,168 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'English'**
   String get accountLanguage;
+
+  /// No description provided for @eatAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكلتها'**
+  String get eatAction;
+
+  /// No description provided for @eatLogged.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجلتها'**
+  String get eatLogged;
+
+  /// No description provided for @eatUndo.
+  ///
+  /// In ar, this message translates to:
+  /// **'تراجع'**
+  String get eatUndo;
+
+  /// No description provided for @eatOtherAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'كمية مختلفة'**
+  String get eatOtherAmount;
+
+  /// No description provided for @eatAmountTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كم أكلت من الكمية المخططة؟'**
+  String get eatAmountTitle;
+
+  /// No description provided for @eatAmountHalf.
+  ///
+  /// In ar, this message translates to:
+  /// **'النصف'**
+  String get eatAmountHalf;
+
+  /// No description provided for @eatAmountFull.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية كاملة'**
+  String get eatAmountFull;
+
+  /// No description provided for @eatAmountOneHalf.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرة ونصف'**
+  String get eatAmountOneHalf;
+
+  /// No description provided for @eatSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُجّلت الوجبة'**
+  String get eatSaved;
+
+  /// No description provided for @eatUndone.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغي التسجيل'**
+  String get eatUndone;
+
+  /// No description provided for @eatFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر تسجيل الوجبة'**
+  String get eatFailed;
+
+  /// No description provided for @missedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتك موعد {slot}'**
+  String missedTitle(Object slot);
+
+  /// No description provided for @missedBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أكلتها؟ سجلها الآن حتى يبقى يومك دقيقًا'**
+  String get missedBody;
+
+  /// No description provided for @missedAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّلها'**
+  String get missedAction;
+
+  /// No description provided for @provisionalNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'مؤقت حتى المزامنة'**
+  String get provisionalNote;
+
+  /// No description provided for @syncUploading.
+  ///
+  /// In ar, this message translates to:
+  /// **'⟳ جارٍ الرفع'**
+  String get syncUploading;
+
+  /// No description provided for @syncWaiting.
+  ///
+  /// In ar, this message translates to:
+  /// **'⇡ {count} بانتظار الاتصال'**
+  String syncWaiting(Object count);
+
+  /// No description provided for @syncRejected.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر حفظ تسجيل'**
+  String get syncRejected;
+
+  /// No description provided for @syncRejectedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيلات لم تُحفظ'**
+  String get syncRejectedTitle;
+
+  /// No description provided for @syncDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get syncDelete;
+
+  /// No description provided for @syncClose.
+  ///
+  /// In ar, this message translates to:
+  /// **'إغلاق'**
+  String get syncClose;
+
+  /// No description provided for @logoutPendingBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'لديك تسجيلات لم تُرفع بعد. الخروج سيحذفها من الهاتف.'**
+  String get logoutPendingBody;
+
+  /// No description provided for @logoutPendingConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'خروج وحذف'**
+  String get logoutPendingConfirm;
+
+  /// No description provided for @failureClientUuidConflict.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا التسجيل محفوظ مسبقًا بمحتوى مختلف.'**
+  String get failureClientUuidConflict;
+
+  /// No description provided for @failureLogNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يعد هذا التسجيل موجودًا.'**
+  String get failureLogNotFound;
+
+  /// No description provided for @failureClockSkew.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقت هاتفك متقدم على الوقت الصحيح. صحّحه ثم حاول مرة أخرى.'**
+  String get failureClockSkew;
+
+  /// No description provided for @logRejectedGeneric.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر حفظ هذا التسجيل'**
+  String get logRejectedGeneric;
 }
 
 class _AppLocalizationsDelegate

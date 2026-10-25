@@ -96,9 +96,13 @@ class SessionController extends Notifier<SessionState> {
     }
   }
 
+  /// Routing already used the cached session; this only refreshes it, so a
+  /// slow or unreachable server must not hold anything up.
   Future<void> _loadAccount() async {
     try {
-      final account = await _repository.currentAccount();
+      final account = await _repository.currentAccount().timeout(
+        const Duration(seconds: 3),
+      );
       if (!ref.mounted || state is! SignedIn) {
         return;
       }
