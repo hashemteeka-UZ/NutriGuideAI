@@ -1,0 +1,39 @@
+Step L.2 (learned planning: bounded learned bonus in CP-SAT, weekly variety, learned swap ordering, LEARNED_PREFERENCE reason; Decisions #290 to #296) for NutriGuideAI. Backend only, in the WSL clone. L.1 (app/ml) is committed. This pass connects the model to planning and swapping, keeping every Layer 1 safety rule and every hard nutrition constraint unchanged.
+
+Work in WSL `~/NutriGuideAI` (sync from the Windows clone as before; push via Windows, no force). Read: docs/project/steps/STEP_L_ml_plan.md (decisions #290-#296 and the L.1 results), backend/app/services/optimizer.py (objective, LIKED_BONUS, PLANNER_VERSION), planner.py (`_previous_meal_ids`, version selection), plan_requests.py and plan_swap.py (every `algorithm_version == CPSAT_VERSION` check), plan_view.py, the reason-code code (§28.6), app/ml/*, docs/api/API_GUIDE.md, docs/api/openapi.json, mobile/lib/features/plan/presentation/reason_labels.dart (read only).
+
+## Hard rules
+- Layer 1 filtering and every hard constraint (kcal band, minimums, condition limits, slot band) stay exactly as they are. The learned bonus and the variety penalty enter the OBJECTIVE only.
+- `optimize_day` stays pure: the caller passes `learned_bonus: Mapping[int, int]` and `variety_penalty: Mapping[int, int]` (meal_id -> objective units); empty mappings reproduce cpsat_v1 exactly (test it).
+- No Alembic migration. API change is additive only (a new reason code value and docs); bump `info.version` to 1.1.0, regenerate openapi.json the usual way, update API_GUIDE.
+- No mobile/ change in this pass (the app already hides unknown reason codes; the label comes in the next mobile pass).
+- No personal data or model vectors in logs. Do not commit until told.
+
+## 1. Version and switch (#290, #295)
+- `LEARNED_PLANNER_VERSION = "cpsat_v2_learned"` next to PLANNER_VERSION. Setting `ML_PLANNING_ENABLED` (default true; env override) chooses it.
+- Every place that checks `algorithm_version == CPSAT_VERSION` (plan_requests, plan_swap, plan_view, anything else found by grep) accepts both versions; add a helper `is_cpsat_version(v)` and use it.
+- If building the learned inputs raises, log `ml_planning_fallback` with the exception class only and build with empty mappings under cpsat_v1. target_snapshot records `ml`: {feature_version, alpha, n_user_events, bonus_max, variety_days} or `ml_fallback: true`.
+
+## 2. Learned bonus (#291)
+- For the user's candidate meals (after Layer 1), call the L.1 `LearnedScorer` (replay cache) and map each UCB to an integer bonus in [0, 60] objective units (60 tenths = 6 kcal-equivalent, i.e. about 2 kcal of calorie deviation at W_KCAL = 3; verify this arithmetic against the module docstring and report it); set `MAX_LEARNED_BONUS = 60` in app/ml/config.py and document the mapping (clip UCB to [-1, 1], linear to [0, 60]).
+- Objective: `tenths − liked_bonus − Σ learned_bonus_i·x_i + Σ variety_penalty_i·x_i` with correct variable bounds. Keep LIKED_BONUS as is (it is ingredient based, separate from the model).
+- Tests: with bonuses the solution still satisfies `_verify`; a meal with a large bonus is chosen over an equal-cost one; the bonus cannot push the kcal deviation outside the band (constraint); empty mappings = identical objective and choices to cpsat_v1 on the existing optimizer fixtures.
+
+## 3. Weekly variety (#292)
+- Keep the existing exclusion of yesterday's meals. Add a soft penalty for meals planned on days D−2 … D−6: penalty = round(40 × (7 − age) / 5) objective units (age 2 -> 40, age 6 -> 8), summed if a meal appears more than once. Constants in optimizer config with a comment.
+- Test: a fixture where cpsat_v1 alternates two menus now uses more distinct meals across 7 days while all days stay feasible.
+
+## 4. Swap ordering (#293)
+- Alternatives that pass the existing swap checks are ordered by the learned MEAN (no exploration term) descending, then by the current kcal-closeness rule; keep the limit of 10. With no user events the order equals today's order (test).
+
+## 5. LEARNED_PREFERENCE (#294)
+- Add `LEARNED_PREFERENCE` to the reason codes when the meal's learned mean ≥ 0.35 and the user has ≥ 5 real (non-pseudo) reward events; place it first in the list so it is among the two shown. Docs: list it in API_GUIDE reason codes with its meaning; openapi example updated; version 1.1.0; a CHANGELOG line if the repo has one.
+
+## 6. Impact measurement (#296) — `scripts/ml_compare_week.py`
+- For a given user id (default the dev test user) and start date, build 7 days in memory twice (cpsat_v1 with empty mappings vs cpsat_v2_learned), without writing plans to the DB. Output `scripts/out/ml_compare/summary.md`: distinct meals over the week, max repeats of one meal, mean and max |kcal deviation| vs target, solver status per day, mean solve time. Also run it once with simulated events kept in memory only (never written) to show the bonus effect, labelled "simulation".
+
+## 7. Tests and checks
+- Everything above, plus: version helper accepts both; fallback path; snapshot `ml` block; full backend suite green; ruff, mypy strict, alembic check (no diff); openapi regenerated and the contract test updated for 1.1.0.
+
+## Report
+Files, test counts before/after with new names, the compare table (real user, and simulation), solve-time change, any place where the version check was found, contradictions and assumptions (one line each with section).
