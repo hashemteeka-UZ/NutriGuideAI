@@ -1,0 +1,46 @@
+Step L.1 (learning layer core: meal features, hybrid LinUCB, event replay, simulation evaluation; Decisions #283 to #289) for NutriGuideAI. Backend only. The user approved backend changes for the ML layer on 2026-10-25. This pass builds and evaluates the model; it does NOT change the optimizer, the API contract, or the database yet (that is L.2).
+
+Work in WSL: `cd ~/NutriGuideAI`, `git pull` (the Windows clone pushed main), `git status` clean. Read: docs/project/steps/STEP_L_ml_plan.md (whole file, decisions #283-#289), docs/PROJECT_CONTEXT_v4_21.md (learning events and Layer 1 safety sections), backend/app/db/models/user.py (`UserInteraction`, `InteractionEventType`, `MealPref`), backend/app/db/models/catalog.py (meals, tags, cuisines), backend/app/services/meal_derived.py and meal_nutrition.py (per-serving values), backend/app/services/logging_requests.py (ACCEPT context `servings_ratio`), plan_requests.py (SWAP_OUT context `replaced_by`), meal_prefs.py, meal_filter.py.
+
+## Hard rules
+- Only `backend/app/ml/`, `backend/scripts/`, `backend/tests/ml/`, `backend/pyproject.toml` + `uv.lock` (only to declare `numpy` as a direct dependency at the version already installed through ortools), and the docs listed below. No Alembic migration, no API or schema change, no change to optimizer.py/planner.py/plan_swap.py (L.2 does that).
+- No synthetic data in the database, ever. The simulation runs in memory and writes only files under `backend/scripts/out/ml_sim/` (gitignored except the summary markdown).
+- Deterministic: every random draw from a seeded `numpy.random.Generator`.
+- Never log user ids with event contents or model vectors.
+- Do not commit until told.
+
+## 1. Meal features (#284) — `app/ml/features.py`
+- `FEATURE_VERSION = "mf_v1"`. `build_meal_features(session) -> MealFeatureMatrix` (meal_ids array, matrix float64 shape (n, d), feature names list).
+- Features per active meal, from existing server data only: energy share of protein, carbs, fat (from per-serving kcal and grams already computed by the server modules; if a share needs Atwater factors use the same constants the server already uses, do not invent new ones); fiber_g, sodium_mg, sugars_g per serving, each min-max scaled over the catalog to [0, 1]; cuisine one-hot (from the cuisines table); dish_form one-hot; tag multi-hot (all tags present in the catalog); slot suitability multi-hot (breakfast, lunch, dinner, snack); a constant 1.0 bias. Record `d`.
+- Unit-norm rows except the bias (document the choice). Cache the matrix in process keyed by the catalog dataset version.
+
+## 2. Hybrid LinUCB (#285) — `app/ml/linucb.py`
+- Pure NumPy implementation of Li et al. 2010, Algorithm 2 (hybrid), with the shared features z = the meal vector and the per-user features x = the same meal vector (one "arm" model per user, shared β across users). State: A0, b0 (shared, k×k / k), and per user A_u, B_u, b_u. Methods: `score(user, X) -> (mean, ucb)`, `update(user, x, reward)`, ridge λ = 1 (configurable), `alpha` configurable.
+- Numerically stable: solve linear systems with `numpy.linalg.solve` (or Cholesky), never explicit inverses in the hot path except where the paper's formula needs them; add tests that compare to a direct closed-form ridge solution.
+- `LearnedScorer` facade: `rank(user_id, meal_ids) -> list[(meal_id, mean, ucb)]` and `bounded_bonus(ucb) -> int` in [0, MAX_LEARNED_BONUS] (mapping documented; used by L.2).
+
+## 3. Rewards and replay (#286, #287, #288) — `app/ml/rewards.py`, `app/ml/replay.py`
+- `reward_for(event) -> float | None` exactly per #286: ACCEPT 0.5 + 0.5 × clamp(servings_ratio, 0, 1); RATE (value − 3) / 2; SWAP_OUT −0.6 for `meal_id` and +0.3 for `context.replaced_by`; SKIP −0.3; SAVE +0.5; COOK +0.5; PREF_LIKE +1; PREF_DISLIKE −1; PREF_CLEAR, IMPRESSION, VIEW -> None. Clip to [−1, 1].
+- An ACCEPT counts only if that plan item still has a non-deleted consumption log at replay time (an undone log does not teach).
+- `replay(session, user_ids=None) -> ModelState`: read `user_interactions` ordered by (created_at, id), map to rewards, update the hybrid model in that order. Cold start (#288): before a user's first event, add pseudo-observations with weight 0.3: +1 for each meal the user marked LIKE in `meal_prefs` and +0.5 for meals of each cuisine the user picked in onboarding (capped at 20 pseudo-observations, the newest first).
+- In-process cache keyed by (max interaction id, FEATURE_VERSION); a new event invalidates it. Measure replay time for 10k synthetic in-memory events in a test (target < 1 s) and report it.
+
+## 4. Simulation evaluation (#289) — `scripts/ml_simulate.py`
+- Loads the real catalog features read-only (or a fixture snapshot), creates N = 50 simulated users per seed with hidden preference vectors θ* (drawn from the feature space, with a cuisine bias), T = 200 rounds; each round the policy picks one meal out of a random safe candidate set of 20 (mimics the filtered candidates), the user accepts with probability σ(x·θ*) and the reward is 1/0.
+- Policies: random, popularity (global accept counts), content-only (cosine to the user's first 3 liked meals), LinUCB disjoint, LinUCB hybrid; alpha grid {0.1, 0.25, 0.5, 1.0} for the LinUCB policies; seeds {1, 2, 3, 4, 5}.
+- Output: `scripts/out/ml_sim/summary.md` (table: mean cumulative regret at T=50/100/200 with std over seeds, acceptance rate in the last 50 rounds, chosen alpha), and `regret.csv` (policy, alpha, seed, t, cum_regret). Pick the alpha with the lowest mean regret at T=200 for the hybrid and write it to `app/ml/config.py` as the default.
+- Runtime target: < 2 minutes on the user's PC; report the real time.
+
+## 5. Tests — `tests/ml/`
+- Features: shape, names, determinism, version, no NaN, scaling bounds, bias column.
+- LinUCB: update/solve equals closed-form ridge on a small fixed problem; UCB width shrinks as an arm is observed; hybrid shared part learns across two users; alpha 0 = greedy.
+- Rewards: every event type per #286, clipping, SWAP_OUT two-sided, undone ACCEPT ignored (DB test with the existing fixtures).
+- Replay: deterministic order; cache invalidation on a new event; cold start pseudo-observations and cap.
+- Simulation sanity on a tiny config (fixed seed): hybrid LinUCB regret < random regret at T=100.
+- Full backend suite still green; `ruff`, `mypy` (strict as configured), `alembic check` shows no diff.
+
+## 6. Docs (same commit as the code, after the go-ahead)
+- Append to docs/project/steps/STEP_L_ml_plan.md a short "L.1 results" section: d, replay time, the summary table and the chosen alpha.
+
+## Report
+Files, d and feature names count, test counts before/after with new names, replay timing, the simulation summary table (copy it), chosen alpha, total runtime, contradictions and assumptions (one line each with section).
