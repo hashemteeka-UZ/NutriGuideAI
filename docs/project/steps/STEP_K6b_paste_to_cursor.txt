@@ -1,0 +1,43 @@
+Step K.6b (achievements / badges in the Progress tab, computed on the device; Decisions #305 to #308) for NutriGuideAI. Mobile only, Windows clone C:\dev\NutriGuideAI\mobile. `git pull` first. Small pass (~1 h). Rules: safest option for small issues + note it; targeted tests while working, full suite once; if analyze clean, all tests green and acceptance holds, COMMIT and PUSH without waiting; report hash + numbers. Start right after M.1 is pushed.
+
+Read first: lib/features/progress/* (the badges segment placeholder `progress-badges-soon`, watchStreak and how K.6a defines an achieved day and the streak), lib/core/db/tables.dart (AdherenceDays, ConsumptionLogs, WaterLogs, Weights), app_database.dart (schemaVersion 6, migration steps and their tests), the water goal (water.dart goalMl), the local wipe on logout, the l10n ARB files.
+
+## Hard rules
+- No backend/API change. The server has no badge endpoint; badges are computed from local tables only (#305).
+- Drift schema v6 -> v7 with ONE new table and a migration step + migration test (same pattern as earlier steps). Nothing else in the schema changes.
+- The new table is wiped together with the other user tables on logout/account switch.
+- Arabic + English in ARB, RTL correct, wellness tone (encouraging, never shaming), no new package.
+
+## 1. Table (#306)
+- `EarnedBadges`: code TEXT primary key, earned_on TEXT (YYYY-MM-DD, device local date when first detected), seen BOOL default false.
+- Once earned, a badge is never removed (even if the old days later leave the local cache).
+
+## 2. Badge rules (#307) — pure Dart in lib/features/progress/domain/badges.dart
+Use exactly the same "achieved day" definition (status == 'ACHIEVED') and consecutive-date logic as the K.6a streak. Each rule returns earned (bool) and progress (current, target) for locked display:
+- FIRST_LOG: >= 1 non-deleted consumption log. (1)
+- FIRST_ACHIEVED_DAY: >= 1 achieved day. (1)
+- STREAK_3, STREAK_7, STREAK_14, STREAK_30: longest run of consecutive achieved dates >= 3 / 7 / 14 / 30. Progress = longest run so far.
+- BALANCED_WEEK: some window of 7 consecutive dates contains >= 5 achieved days. Progress = best window count / 5.
+- WATER_GOAL_3: >= 3 distinct dates where the water total >= goalMl (only when a goal is set; with no goal show the hint to set one). Progress = days / 3.
+- WEIGHT_TRACKER: >= 4 weight entries whose first and last dates are >= 21 days apart. Progress = entries / 4.
+- EXPLORER_10: >= 10 distinct meal ids among non-deleted consumption logs. Progress = distinct / 10.
+- Unit tests for every rule with edge cases: gaps break a streak, PARTIAL does not count, deleted logs ignored, null water goal, exactly-at-threshold.
+
+## 3. Evaluation (#308)
+- `BadgeService.evaluate()` runs when the Progress tab opens and after a successful sync; inserts newly earned codes (insert-or-ignore) with today's date. Idempotent (test: two runs = same rows).
+
+## 4. UI
+- Replace the placeholder in the badges segment with a grid (2 columns on phones): each badge has a Material icon in a soft colored circle, an Arabic title, a one-line description, and either the earned date ("حصلت عليها في …") or a progress bar with "2 من 3" for locked ones (greyed, still readable).
+- Names (ar / en): FIRST_LOG «البداية» / "First step"; FIRST_ACHIEVED_DAY «يوم متوازن» / "Balanced day"; STREAK_3 «ثلاثة أيام متتالية» / "3-day streak"; STREAK_7 «أسبوع كامل» / "Full week"; STREAK_14 «أسبوعان بثبات» / "Two steady weeks"; STREAK_30 «شهر من الالتزام» / "A month of commitment"; BALANCED_WEEK «أسبوع متوازن» / "Balanced week"; WATER_GOAL_3 «صديق الماء» / "Water friend"; WEIGHT_TRACKER «متابع وزنه» / "Weight tracker"; EXPLORER_10 «مستكشف النكهات» / "Flavor explorer". Short descriptions in the same tone (you write them, both languages).
+- Unseen newly earned badges: when the badges segment opens, show them once with a short scale/fade animation (implicit animations only) and a line «أحسنت! حصلت على …», then mark seen.
+- Widget tests: grid shows 10 badges, earned vs locked states, progress text, unseen animation path marks seen, RTL golden-free checks (text direction).
+
+## 5. Emulator (minimal)
+- One Arabic screenshot of the badges grid under mobile/docs/screenshots/k6b/. Max 10 minutes; skip if the emulator fails and say so.
+
+## Acceptance
+- flutter analyze clean; full mobile suite green; migration test v6 -> v7 passes; generated API files unchanged.
+- Commit "feat(mobile): K.6b achievements computed on device, schema v7 (#305-#308)" + usual attribution lines. Push, no force.
+
+## Report
+Hash, tests before/after with new file names, screenshot path, assumptions (one line each with section).
