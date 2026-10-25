@@ -28,13 +28,15 @@ part 'app_database.g.dart';
     ConsumptionLogs,
     WaterLogs,
     Weights,
+    AdherenceDays,
+    ProgressMeta,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -74,6 +76,10 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(schema.daySummaries, schema.daySummaries.waterSource);
         await m.createTable(schema.waterLogs);
         await m.createTable(schema.weights);
+      },
+      from5To6: (Migrator m, Schema6 schema) async {
+        await m.createTable(schema.adherenceDays);
+        await m.createTable(schema.progressMeta);
       },
     ),
     beforeOpen: (OpeningDetails details) async {
