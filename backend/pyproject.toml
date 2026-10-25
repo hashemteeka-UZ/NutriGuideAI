@@ -16,6 +16,7 @@ dependencies = [
     "pydantic-settings>=2.15.0",
     "pyjwt>=2.15.1",
     "pyyaml>=6.0.3",
+    "scikit-learn>=1.7,<2",
     "slowapi>=0.1.10",
     "sqlalchemy>=2.0,<2.1",
     "uvicorn[standard]>=0.54.0",
@@ -68,6 +69,9 @@ known-third-party = ["alembic"]
 # Arabic test strings contain letters RUF001 reports as look-alikes of Latin letters.
 "tests/seed/*.py" = ["RUF001"]
 "tests/pipeline/*.py" = ["RUF001"]
+# scikit-learn convention: X is the feature matrix and Y the label matrix.
+"app/ml/tag_classifier.py" = ["N803", "N806"]
+"scripts/ml_tag_eval.py" = ["N803", "N806"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -88,6 +92,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "ortools.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "sklearn.*"
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]
