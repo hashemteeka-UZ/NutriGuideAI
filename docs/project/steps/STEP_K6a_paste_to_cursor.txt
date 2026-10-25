@@ -1,0 +1,47 @@
+Step K.6a (Progress tab: weekly report, month calendar, weight; Decisions #276 to #282) for NutriGuideAI. K.0-K.5b are committed. This pass replaces the Progress placeholder with real server data. Badges come in K.6b.
+
+Work in C:\dev\NutriGuideAI, PowerShell. `git pull`, `git status` clean. Read: docs/project/steps/STEP_K_plan.md (#276-#282), docs/api/API_GUIDE.md ("Progress"), docs/api/openapi.json (`GET /api/v1/adherence`, `GET /api/v1/weights`, `GET /api/v1/me/targets`, `GET /api/v1/me/profile`; schemas `AdherenceRangeOut`, `DayAdherenceOut`, `NutrientTotals`, `UnmetMinimumOut`, `ExceededLimitOut`, `WeightPoint`, `Target`, `Profile.target_weight_kg`). Prototype: `9_tabs.js` (`progress`, report and weight segments only).
+
+## Hard rules
+Same as K.5b: only `mobile/`; never log health data, weights or totals; the app never computes nutrition: it only counts days, averages server values, and picks max/min among server values. No macro energy percentages (they need Atwater factors), no weight projection line. Generated models stay in `data/`; no new packages (charts with CustomPainter as in K.4); do not commit until told.
+
+## 1. Data and cache (#277, #281)
+- Drift schema 6 (migration 5 -> 6, generated test, step by step as in K.5b): table `adherence_days` (personal): `date` PK, `status` (nullable), `completion`, `target_kcal`, totals (kcal, protein_g, carb_g, fat_g, fiber_g, saturated_fat_g, sodium_mg, sugars_g), `unmet_json`, `exceeded_json`, `plan_items_total`, `plan_items_consumed`, `log_count`, `reason`, `fetched_at`; plus a key-value row for the last `streak`.
+- `ProgressRepository`: `GET /adherence?from=&to=` in chunks of at most 92 days; upsert rows; streak from the response whose `to` is today. Refresh: on opening the tab, after each successful sync that uploaded consumption ops, and pull-to-refresh. Offline: show the cache with the K.4 offline bar.
+- Weights: `GET /weights?from=today-89&to=today` into the K.5b `weights` table (keep local PENDING rows).
+
+## 2. Weekly report (#278, #282)
+- Segment control «تقرير الأسبوع» / «الوزن» / «الإنجازات» (the third shows «قريبًا» until K.6b). Header range «18 – 24 أكتوبر» (Latin digits, as in K.4), arrows for previous weeks back to 12 weeks, next disabled on the current week. A week = the 7 days ending today (or ending on the chosen week's last day).
+- Hero ring: adherence = days with status ACHIEVED ÷ days with a non-null status in the week. Text by result: ≥ 0.8 «أسبوع ممتاز!», ≥ 0.5 «أسبوع جيد», otherwise «كل يوم فرصة جديدة»; sub-line «حققت هدفك في N من M أيام» (ICU gender select). Days with `log_count` 0 are «لا تسجيل» and excluded from M.
+- Three cards: «أفضل يوم» = the ACHIEVED day whose `totals.kcal` is closest to `target_kcal` (show weekday and completion as a percent of target from server numbers); «أكثر ما نقصك» = the nutrient that appears most often in `unmet_minimums`, with the average server `total` vs `minimum` on those days; «متوسط الماء» = average daily confirmed water from the local `water_logs` over days that have any water log (ml a day). Hide a card when it has no data.
+- Calories chart: 7 bars of `totals.kcal` against a dashed `target_kcal` line; bar color by server status (ACHIEVED green, PARTIAL amber, NOT_ACHIEVED red-muted, null gray); weekday labels follow RTL order; legend «ضمن الهدف» / «قريب» / «بعيد» / «لا تسجيل».
+- Macros card «متوسط العناصر»: average protein, carbs, fat in grams over logged days vs the current target grams (`GET /me/targets`), three bars. No percentages of energy.
+- Exceeded limits: if any day has `exceeded_limits`, a small card «تجاوزت حدًا صحيًا في N أيام» listing the nutrient names (sodium, sugars, saturated fat) with the server `limit` and `total`; wellness tone, no medical claim.
+- Empty week (no logs): illustration and «سجّل وجباتك هذا الأسبوع لترى تقريرك هنا» with a button to Today. General mode (no plan): show the calories chart with gray bars and no target line if `target_kcal` is null, and hide the ring.
+
+## 3. Month calendar (#279)
+Card with the current month name, grid of days colored by status (same colors), today outlined, future days blank, and «🔥 N أيام متتالية» from the server streak. Tap a past day opens Today on that date if a plan or logs exist (reuse the K.4 day strip route), otherwise nothing.
+
+## 4. Weight (#280)
+- Three tiles: «البداية» (the first weight in the range), «الآن» (latest), «الهدف» (`target_weight_kg`; for maintenance show «الحفاظ» and the latest weight). A chip with the signed change (`−1.5 كغ` with LRM as in K.4).
+- Chart: line + soft area for the weights in the range (30 or 90 days toggle), dashed goal line when a target weight exists, last point marked, y axis with 4-5 rounded ticks, x axis with 3 date labels. Animated draw (off with reduce motion). No projection.
+- Fewer than 2 weights: show the tiles and «سجّل وزنك بانتظام لترى مسارك هنا».
+- Button «سجّل وزنك اليوم» opens the K.5b weight sheet; after saving, the chart updates.
+
+## 5. Tests
+- Migration 5 -> 6; adherence chunking (a 120-day request becomes 2 calls of ≤ 92 days); upsert; streak stored.
+- Report math on fixed fixtures: adherence ratio excludes no-log days; best day selection; most missed nutrient and its averages; water average skips days without water; macro averages; exceeded card.
+- Week navigation bounds; empty week state; general mode with null target.
+- Weight: tiles, signed change, fewer than 2 points state, maintenance goal label.
+- Widgets: Arabic RTL and English LTR at text scale 1.3 for both segments; reduce motion disables the line animation.
+- Architecture test covers features/progress.
+
+## 6. Emulator runs (keep it short)
+1. The K.4/K.5 test user: open Progress -> report the ring value, the bar count and colors, best day and most missed (with their numbers), compared with `GET /adherence` for the same range.
+2. Previous week arrow -> the empty-week state (or real data if any).
+3. Weight segment: tiles and chart with the K.5b weights (78.5 latest); switch 30/90 days.
+4. Offline: open Progress -> cached report with the offline bar.
+5. Screenshots: `k6a_report.png`, `k6a_calendar.png`, `k6a_weight.png`.
+
+## Checks and report
+`dart format`, `flutter analyze`, full `flutter test`, `flutter build apk --debug --target-platform android-x64`. Report: files, tables, test counts before/after with new names, runs 1-4 with numbers, contradictions and assumptions (one line each with section).
