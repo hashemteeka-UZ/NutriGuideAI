@@ -1707,4 +1707,82 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get didNotEatMarked => 'سُجلت: لم تؤكل';
+
+  @override
+  String get badgeFirstLog => 'البداية';
+
+  @override
+  String get badgeFirstLogDesc => 'سجّلت أول وجبة لك';
+
+  @override
+  String get badgeFirstAchievedDay => 'يوم متوازن';
+
+  @override
+  String get badgeFirstAchievedDayDesc => 'يوم بلغت فيه هدفك';
+
+  @override
+  String get badgeStreak3 => 'ثلاثة أيام متتالية';
+
+  @override
+  String get badgeStreak3Desc => 'ثلاثة أيام متتالية على هدفك';
+
+  @override
+  String get badgeStreak7 => 'أسبوع كامل';
+
+  @override
+  String get badgeStreak7Desc => 'سبعة أيام متتالية على هدفك';
+
+  @override
+  String get badgeStreak14 => 'أسبوعان بثبات';
+
+  @override
+  String get badgeStreak14Desc => 'أربعة عشر يومًا متتالية على هدفك';
+
+  @override
+  String get badgeStreak30 => 'شهر من الالتزام';
+
+  @override
+  String get badgeStreak30Desc => 'ثلاثون يومًا متتالية على هدفك';
+
+  @override
+  String get badgeBalancedWeek => 'أسبوع متوازن';
+
+  @override
+  String get badgeBalancedWeekDesc => 'خمسة أيام متوازنة خلال سبعة أيام';
+
+  @override
+  String get badgeWaterGoal3 => 'صديق الماء';
+
+  @override
+  String get badgeWaterGoal3Desc => 'بلغت هدف الماء في ثلاثة أيام';
+
+  @override
+  String get badgeWeightTracker => 'متابع وزنه';
+
+  @override
+  String get badgeWeightTrackerDesc => 'أربعة أوزان على مدى ثلاثة أسابيع';
+
+  @override
+  String get badgeExplorer10 => 'مستكشف النكهات';
+
+  @override
+  String get badgeExplorer10Desc => 'جرّبت عشر وجبات مختلفة';
+
+  @override
+  String badgeEarnedOn(Object date) {
+    return 'حصلت عليها في $date';
+  }
+
+  @override
+  String badgeProgress(Object current, Object target) {
+    return '$current من $target';
+  }
+
+  @override
+  String get badgeWaterHint => 'حدّد هدف الماء لتبدأ';
+
+  @override
+  String badgeCelebrate(Object name) {
+    return 'أحسنت! حصلت على $name';
+  }
 }

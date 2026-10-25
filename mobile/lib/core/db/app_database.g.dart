@@ -11443,6 +11443,271 @@ class ProgressMetaCompanion extends UpdateCompanion<ProgressMetaData> {
   }
 }
 
+class $EarnedBadgesTable extends EarnedBadges
+    with TableInfo<$EarnedBadgesTable, EarnedBadge> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EarnedBadgesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _earnedOnMeta = const VerificationMeta(
+    'earnedOn',
+  );
+  @override
+  late final GeneratedColumn<String> earnedOn = GeneratedColumn<String>(
+    'earned_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _seenMeta = const VerificationMeta('seen');
+  @override
+  late final GeneratedColumn<bool> seen = GeneratedColumn<bool>(
+    'seen',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("seen" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [code, earnedOn, seen];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'earned_badges';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<EarnedBadge> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('earned_on')) {
+      context.handle(
+        _earnedOnMeta,
+        earnedOn.isAcceptableOrUnknown(data['earned_on']!, _earnedOnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_earnedOnMeta);
+    }
+    if (data.containsKey('seen')) {
+      context.handle(
+        _seenMeta,
+        seen.isAcceptableOrUnknown(data['seen']!, _seenMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {code};
+  @override
+  EarnedBadge map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EarnedBadge(
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      earnedOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}earned_on'],
+      )!,
+      seen: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}seen'],
+      )!,
+    );
+  }
+
+  @override
+  $EarnedBadgesTable createAlias(String alias) {
+    return $EarnedBadgesTable(attachedDatabase, alias);
+  }
+}
+
+class EarnedBadge extends DataClass implements Insertable<EarnedBadge> {
+  final String code;
+
+  /// Device local date (YYYY-MM-DD) the badge was first detected.
+  final String earnedOn;
+  final bool seen;
+  const EarnedBadge({
+    required this.code,
+    required this.earnedOn,
+    required this.seen,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['earned_on'] = Variable<String>(earnedOn);
+    map['seen'] = Variable<bool>(seen);
+    return map;
+  }
+
+  EarnedBadgesCompanion toCompanion(bool nullToAbsent) {
+    return EarnedBadgesCompanion(
+      code: Value(code),
+      earnedOn: Value(earnedOn),
+      seen: Value(seen),
+    );
+  }
+
+  factory EarnedBadge.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EarnedBadge(
+      code: serializer.fromJson<String>(json['code']),
+      earnedOn: serializer.fromJson<String>(json['earnedOn']),
+      seen: serializer.fromJson<bool>(json['seen']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'earnedOn': serializer.toJson<String>(earnedOn),
+      'seen': serializer.toJson<bool>(seen),
+    };
+  }
+
+  EarnedBadge copyWith({String? code, String? earnedOn, bool? seen}) =>
+      EarnedBadge(
+        code: code ?? this.code,
+        earnedOn: earnedOn ?? this.earnedOn,
+        seen: seen ?? this.seen,
+      );
+  EarnedBadge copyWithCompanion(EarnedBadgesCompanion data) {
+    return EarnedBadge(
+      code: data.code.present ? data.code.value : this.code,
+      earnedOn: data.earnedOn.present ? data.earnedOn.value : this.earnedOn,
+      seen: data.seen.present ? data.seen.value : this.seen,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EarnedBadge(')
+          ..write('code: $code, ')
+          ..write('earnedOn: $earnedOn, ')
+          ..write('seen: $seen')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(code, earnedOn, seen);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EarnedBadge &&
+          other.code == this.code &&
+          other.earnedOn == this.earnedOn &&
+          other.seen == this.seen);
+}
+
+class EarnedBadgesCompanion extends UpdateCompanion<EarnedBadge> {
+  final Value<String> code;
+  final Value<String> earnedOn;
+  final Value<bool> seen;
+  final Value<int> rowid;
+  const EarnedBadgesCompanion({
+    this.code = const Value.absent(),
+    this.earnedOn = const Value.absent(),
+    this.seen = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EarnedBadgesCompanion.insert({
+    required String code,
+    required String earnedOn,
+    this.seen = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : code = Value(code),
+       earnedOn = Value(earnedOn);
+  static Insertable<EarnedBadge> custom({
+    Expression<String>? code,
+    Expression<String>? earnedOn,
+    Expression<bool>? seen,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (earnedOn != null) 'earned_on': earnedOn,
+      if (seen != null) 'seen': seen,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EarnedBadgesCompanion copyWith({
+    Value<String>? code,
+    Value<String>? earnedOn,
+    Value<bool>? seen,
+    Value<int>? rowid,
+  }) {
+    return EarnedBadgesCompanion(
+      code: code ?? this.code,
+      earnedOn: earnedOn ?? this.earnedOn,
+      seen: seen ?? this.seen,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (earnedOn.present) {
+      map['earned_on'] = Variable<String>(earnedOn.value);
+    }
+    if (seen.present) {
+      map['seen'] = Variable<bool>(seen.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EarnedBadgesCompanion(')
+          ..write('code: $code, ')
+          ..write('earnedOn: $earnedOn, ')
+          ..write('seen: $seen, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11474,6 +11739,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WeightsTable weights = $WeightsTable(this);
   late final $AdherenceDaysTable adherenceDays = $AdherenceDaysTable(this);
   late final $ProgressMetaTable progressMeta = $ProgressMetaTable(this);
+  late final $EarnedBadgesTable earnedBadges = $EarnedBadgesTable(this);
   late final Index mealsLangSearchKey = Index(
     'meals_lang_search_key',
     'CREATE INDEX meals_lang_search_key ON meals (lang, search_key)',
@@ -11506,6 +11772,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     weights,
     adherenceDays,
     progressMeta,
+    earnedBadges,
     mealsLangSearchKey,
   ];
   @override
@@ -18151,6 +18418,177 @@ typedef $$ProgressMetaTableProcessedTableManager =
       ProgressMetaData,
       PrefetchHooks Function()
     >;
+typedef $$EarnedBadgesTableCreateCompanionBuilder =
+    EarnedBadgesCompanion Function({
+      required String code,
+      required String earnedOn,
+      Value<bool> seen,
+      Value<int> rowid,
+    });
+typedef $$EarnedBadgesTableUpdateCompanionBuilder =
+    EarnedBadgesCompanion Function({
+      Value<String> code,
+      Value<String> earnedOn,
+      Value<bool> seen,
+      Value<int> rowid,
+    });
+
+class $$EarnedBadgesTableFilterComposer
+    extends Composer<_$AppDatabase, $EarnedBadgesTable> {
+  $$EarnedBadgesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get earnedOn => $composableBuilder(
+    column: $table.earnedOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get seen => $composableBuilder(
+    column: $table.seen,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$EarnedBadgesTableOrderingComposer
+    extends Composer<_$AppDatabase, $EarnedBadgesTable> {
+  $$EarnedBadgesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get earnedOn => $composableBuilder(
+    column: $table.earnedOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get seen => $composableBuilder(
+    column: $table.seen,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$EarnedBadgesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $EarnedBadgesTable> {
+  $$EarnedBadgesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get earnedOn =>
+      $composableBuilder(column: $table.earnedOn, builder: (column) => column);
+
+  GeneratedColumn<bool> get seen =>
+      $composableBuilder(column: $table.seen, builder: (column) => column);
+}
+
+class $$EarnedBadgesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EarnedBadgesTable,
+          EarnedBadge,
+          $$EarnedBadgesTableFilterComposer,
+          $$EarnedBadgesTableOrderingComposer,
+          $$EarnedBadgesTableAnnotationComposer,
+          $$EarnedBadgesTableCreateCompanionBuilder,
+          $$EarnedBadgesTableUpdateCompanionBuilder,
+          (
+            EarnedBadge,
+            BaseReferences<_$AppDatabase, $EarnedBadgesTable, EarnedBadge>,
+          ),
+          EarnedBadge,
+          PrefetchHooks Function()
+        > {
+  $$EarnedBadgesTableTableManager(_$AppDatabase db, $EarnedBadgesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$EarnedBadgesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$EarnedBadgesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$EarnedBadgesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> code = const Value.absent(),
+                Value<String> earnedOn = const Value.absent(),
+                Value<bool> seen = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EarnedBadgesCompanion(
+                code: code,
+                earnedOn: earnedOn,
+                seen: seen,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String code,
+                required String earnedOn,
+                Value<bool> seen = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EarnedBadgesCompanion.insert(
+                code: code,
+                earnedOn: earnedOn,
+                seen: seen,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$EarnedBadgesTable, EarnedBadge>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $EarnedBadgesTable,
+                    EarnedBadge
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$EarnedBadgesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EarnedBadgesTable,
+      EarnedBadge,
+      $$EarnedBadgesTableFilterComposer,
+      $$EarnedBadgesTableOrderingComposer,
+      $$EarnedBadgesTableAnnotationComposer,
+      $$EarnedBadgesTableCreateCompanionBuilder,
+      $$EarnedBadgesTableUpdateCompanionBuilder,
+      (
+        EarnedBadge,
+        BaseReferences<_$AppDatabase, $EarnedBadgesTable, EarnedBadge>,
+      ),
+      EarnedBadge,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -18201,4 +18639,6 @@ class $AppDatabaseManager {
       $$AdherenceDaysTableTableManager(_db, _db.adherenceDays);
   $$ProgressMetaTableTableManager get progressMeta =>
       $$ProgressMetaTableTableManager(_db, _db.progressMeta);
+  $$EarnedBadgesTableTableManager get earnedBadges =>
+      $$EarnedBadgesTableTableManager(_db, _db.earnedBadges);
 }

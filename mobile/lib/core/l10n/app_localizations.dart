@@ -3000,6 +3000,150 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'سُجلت: لم تؤكل'**
   String get didNotEatMarked;
+
+  /// No description provided for @badgeFirstLog.
+  ///
+  /// In ar, this message translates to:
+  /// **'البداية'**
+  String get badgeFirstLog;
+
+  /// No description provided for @badgeFirstLogDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّلت أول وجبة لك'**
+  String get badgeFirstLogDesc;
+
+  /// No description provided for @badgeFirstAchievedDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'يوم متوازن'**
+  String get badgeFirstAchievedDay;
+
+  /// No description provided for @badgeFirstAchievedDayDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'يوم بلغت فيه هدفك'**
+  String get badgeFirstAchievedDayDesc;
+
+  /// No description provided for @badgeStreak3.
+  ///
+  /// In ar, this message translates to:
+  /// **'ثلاثة أيام متتالية'**
+  String get badgeStreak3;
+
+  /// No description provided for @badgeStreak3Desc.
+  ///
+  /// In ar, this message translates to:
+  /// **'ثلاثة أيام متتالية على هدفك'**
+  String get badgeStreak3Desc;
+
+  /// No description provided for @badgeStreak7.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسبوع كامل'**
+  String get badgeStreak7;
+
+  /// No description provided for @badgeStreak7Desc.
+  ///
+  /// In ar, this message translates to:
+  /// **'سبعة أيام متتالية على هدفك'**
+  String get badgeStreak7Desc;
+
+  /// No description provided for @badgeStreak14.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسبوعان بثبات'**
+  String get badgeStreak14;
+
+  /// No description provided for @badgeStreak14Desc.
+  ///
+  /// In ar, this message translates to:
+  /// **'أربعة عشر يومًا متتالية على هدفك'**
+  String get badgeStreak14Desc;
+
+  /// No description provided for @badgeStreak30.
+  ///
+  /// In ar, this message translates to:
+  /// **'شهر من الالتزام'**
+  String get badgeStreak30;
+
+  /// No description provided for @badgeStreak30Desc.
+  ///
+  /// In ar, this message translates to:
+  /// **'ثلاثون يومًا متتالية على هدفك'**
+  String get badgeStreak30Desc;
+
+  /// No description provided for @badgeBalancedWeek.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسبوع متوازن'**
+  String get badgeBalancedWeek;
+
+  /// No description provided for @badgeBalancedWeekDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'خمسة أيام متوازنة خلال سبعة أيام'**
+  String get badgeBalancedWeekDesc;
+
+  /// No description provided for @badgeWaterGoal3.
+  ///
+  /// In ar, this message translates to:
+  /// **'صديق الماء'**
+  String get badgeWaterGoal3;
+
+  /// No description provided for @badgeWaterGoal3Desc.
+  ///
+  /// In ar, this message translates to:
+  /// **'بلغت هدف الماء في ثلاثة أيام'**
+  String get badgeWaterGoal3Desc;
+
+  /// No description provided for @badgeWeightTracker.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابع وزنه'**
+  String get badgeWeightTracker;
+
+  /// No description provided for @badgeWeightTrackerDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'أربعة أوزان على مدى ثلاثة أسابيع'**
+  String get badgeWeightTrackerDesc;
+
+  /// No description provided for @badgeExplorer10.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستكشف النكهات'**
+  String get badgeExplorer10;
+
+  /// No description provided for @badgeExplorer10Desc.
+  ///
+  /// In ar, this message translates to:
+  /// **'جرّبت عشر وجبات مختلفة'**
+  String get badgeExplorer10Desc;
+
+  /// No description provided for @badgeEarnedOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'حصلت عليها في {date}'**
+  String badgeEarnedOn(Object date);
+
+  /// No description provided for @badgeProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'{current} من {target}'**
+  String badgeProgress(Object current, Object target);
+
+  /// No description provided for @badgeWaterHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدّد هدف الماء لتبدأ'**
+  String get badgeWaterHint;
+
+  /// No description provided for @badgeCelebrate.
+  ///
+  /// In ar, this message translates to:
+  /// **'أحسنت! حصلت على {name}'**
+  String badgeCelebrate(Object name);
 }
 
 class _AppLocalizationsDelegate

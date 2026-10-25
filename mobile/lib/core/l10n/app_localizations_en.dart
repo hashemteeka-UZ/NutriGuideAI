@@ -1718,4 +1718,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get didNotEatMarked => 'Marked: not eaten';
+
+  @override
+  String get badgeFirstLog => 'First step';
+
+  @override
+  String get badgeFirstLogDesc => 'You logged your first meal';
+
+  @override
+  String get badgeFirstAchievedDay => 'Balanced day';
+
+  @override
+  String get badgeFirstAchievedDayDesc => 'A day that met your target';
+
+  @override
+  String get badgeStreak3 => '3-day streak';
+
+  @override
+  String get badgeStreak3Desc => 'Three days in a row on target';
+
+  @override
+  String get badgeStreak7 => 'Full week';
+
+  @override
+  String get badgeStreak7Desc => 'Seven days in a row on target';
+
+  @override
+  String get badgeStreak14 => 'Two steady weeks';
+
+  @override
+  String get badgeStreak14Desc => 'Fourteen days in a row on target';
+
+  @override
+  String get badgeStreak30 => 'A month of commitment';
+
+  @override
+  String get badgeStreak30Desc => 'Thirty days in a row on target';
+
+  @override
+  String get badgeBalancedWeek => 'Balanced week';
+
+  @override
+  String get badgeBalancedWeekDesc => 'Five balanced days within a week';
+
+  @override
+  String get badgeWaterGoal3 => 'Water friend';
+
+  @override
+  String get badgeWaterGoal3Desc => 'Reached your water goal on three days';
+
+  @override
+  String get badgeWeightTracker => 'Weight tracker';
+
+  @override
+  String get badgeWeightTrackerDesc => 'Four weigh-ins over three weeks';
+
+  @override
+  String get badgeExplorer10 => 'Flavor explorer';
+
+  @override
+  String get badgeExplorer10Desc => 'Tried ten different meals';
+
+  @override
+  String badgeEarnedOn(Object date) {
+    return 'Earned on $date';
+  }
+
+  @override
+  String badgeProgress(Object current, Object target) {
+    return '$current of $target';
+  }
+
+  @override
+  String get badgeWaterHint => 'Set a water goal to start';
+
+  @override
+  String badgeCelebrate(Object name) {
+    return 'Well done! You earned $name';
+  }
 }

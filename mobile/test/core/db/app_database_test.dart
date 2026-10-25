@@ -5,10 +5,10 @@ import 'package:nutriguide/core/db/app_database.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('opens an in-memory database at schema version 6', () async {
+  test('opens an in-memory database at schema version 7', () async {
     final database = AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);
-    expect(database.schemaVersion, 6);
+    expect(database.schemaVersion, 7);
     final tables = await database
         .customSelect(
           "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
@@ -21,6 +21,7 @@ void main() {
       'consumption_logs',
       'cuisines',
       'day_summaries',
+      'earned_badges',
       'meal_allergens',
       'meal_ingredients',
       'meal_nutrients',

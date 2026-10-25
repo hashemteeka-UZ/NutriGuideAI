@@ -15,6 +15,7 @@ import '../../catalog/data/meal_pref_writer.dart';
 import '../../plan/data/plan_mapper.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/plan_sync.dart';
+import '../../progress/data/badge_service.dart';
 import '../../progress/data/progress_providers.dart';
 import '../../weight/data/weight_providers.dart';
 import '../domain/logging.dart';
@@ -77,6 +78,13 @@ final syncEngineProvider = Provider<SyncEngine>((ref) {
           await ref.read(progressRepositoryProvider).refresh();
         } on Object {
           // The cached report stays until the next refresh.
+        }
+        // New days or logs can earn badges (#308).
+        try {
+          await ref.read(badgeServiceProvider).evaluate();
+          ref.invalidate(badgeBoardProvider);
+        } on Object {
+          // Evaluated again when the Progress tab opens.
         }
       },
       weightConfirmed: () => ref.read(targetRecheckProvider)(),

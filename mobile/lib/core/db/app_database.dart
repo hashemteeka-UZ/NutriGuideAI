@@ -30,13 +30,14 @@ part 'app_database.g.dart';
     Weights,
     AdherenceDays,
     ProgressMeta,
+    EarnedBadges,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -80,6 +81,9 @@ class AppDatabase extends _$AppDatabase {
       from5To6: (Migrator m, Schema6 schema) async {
         await m.createTable(schema.adherenceDays);
         await m.createTable(schema.progressMeta);
+      },
+      from6To7: (Migrator m, Schema7 schema) async {
+        await m.createTable(schema.earnedBadges);
       },
     ),
     beforeOpen: (OpeningDetails details) async {

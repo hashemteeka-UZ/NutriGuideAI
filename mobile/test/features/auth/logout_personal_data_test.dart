@@ -164,6 +164,14 @@ void main() {
               state: 'PENDING',
             ),
           );
+      await database
+          .into(database.earnedBadges)
+          .insert(
+            EarnedBadgesCompanion.insert(
+              code: 'FIRST_LOG',
+              earnedOn: '2026-10-24',
+            ),
+          );
       await (await SharedPreferences.getInstance()).setString(
         syncSincePreferenceKey,
         '2026-10-24T08:00:00.000Z',
@@ -189,6 +197,7 @@ void main() {
       expect(await database.select(database.shoppingItems).get(), isEmpty);
       expect(await database.select(database.consumptionLogs).get(), isEmpty);
       expect(await database.select(database.outbox).get(), isEmpty);
+      expect(await database.select(database.earnedBadges).get(), isEmpty);
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString(accountOwnerPreferenceKey), isNull);
       expect(prefs.getString(syncSincePreferenceKey), isNull);

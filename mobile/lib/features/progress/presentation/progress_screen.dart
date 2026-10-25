@@ -16,9 +16,11 @@ import '../../plan/presentation/offline_bar.dart';
 import '../../plan/presentation/plan_format.dart';
 import '../../today/presentation/today_screen.dart';
 import '../../weight/presentation/weight_sheet.dart';
+import '../data/badge_service.dart';
 import '../data/progress_providers.dart';
 import '../data/progress_repository.dart';
 import '../domain/progress.dart';
+import 'badges_section.dart';
 
 /// The «تقدمي» tab (Decisions #276 to #282).
 class ProgressScreen extends ConsumerStatefulWidget {
@@ -39,6 +41,18 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
     unawaited(_refresh());
   }
 
+  /// Badges come from the local tables, so they update offline too (#308).
+  Future<void> _evaluateBadges() async {
+    try {
+      await ref.read(badgeServiceProvider).evaluate();
+    } on Object {
+      return;
+    }
+    if (mounted) {
+      ref.invalidate(badgeBoardProvider);
+    }
+  }
+
   Future<void> _refresh() async {
     // Target grams, goal weight and sex live in memory only; after an
     // offline start they are loaded here too.
@@ -52,6 +66,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
       if (mounted) {
         ref.read(planOfflineProvider.notifier).setOffline(false);
       }
+      await _evaluateBadges();
     } on ProgressException catch (error) {
       if (mounted && error.network) {
         ref.read(planOfflineProvider.notifier).setOffline(true);
@@ -114,14 +129,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                     switch (_segment) {
                       _Segment.report => const _ReportSection(),
                       _Segment.weight => const _WeightSection(),
-                      _Segment.badges => Padding(
-                        key: const Key('progress-badges-soon'),
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          l10n.progressBadgesSoon,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                      _Segment.badges => const BadgesSection(),
                     },
                   ],
                 ),

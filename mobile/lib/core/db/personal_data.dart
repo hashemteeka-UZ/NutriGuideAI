@@ -103,6 +103,7 @@ class PersonalDataStore {
       await _database.delete(_database.weights).go();
       await _database.delete(_database.adherenceDays).go();
       await _database.delete(_database.progressMeta).go();
+      await _database.delete(_database.earnedBadges).go();
       await _database.delete(_database.shoppingItems).go();
       await _database.delete(_database.shoppingLists).go();
       await _database.delete(_database.planUnmetMinimums).go();

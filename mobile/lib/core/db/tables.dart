@@ -495,6 +495,23 @@ class AdherenceDays extends Table {
   Set<Column<Object>> get primaryKey => {date};
 }
 
+/// Personal. Badges computed on the phone (#305, #306). A row is never
+/// removed while the account stays, even when its days leave the cache.
+class EarnedBadges extends Table {
+  @override
+  String get tableName => 'earned_badges';
+
+  TextColumn get code => text()();
+
+  /// Device local date (YYYY-MM-DD) the badge was first detected.
+  TextColumn get earnedOn => text()();
+
+  BoolColumn get seen => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {code};
+}
+
 /// Personal. Small values such as the last streak.
 class ProgressMeta extends Table {
   @override

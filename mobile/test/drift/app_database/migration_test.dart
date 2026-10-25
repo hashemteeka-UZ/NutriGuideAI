@@ -9,6 +9,8 @@ import 'generated/schema.dart';
 
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
+import 'generated/schema_v6.dart' as v6;
+import 'generated/schema_v7.dart' as v7;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -45,6 +47,27 @@ void main() {
   // information, see https://drift.simonbinder.eu/migrations/tests/#verifying-data-integrity
   // TODO: This generated template shows how these tests could be written. Adopt
   // it to your own needs when testing migrations with data integrity.
+  test('v6 to v7 adds earned_badges and keeps progress_meta', () async {
+    await verifier.testWithDataIntegrity(
+      oldVersion: 6,
+      newVersion: 7,
+      createOld: v6.DatabaseAtV6.new,
+      createNew: v7.DatabaseAtV7.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insert(
+          oldDb.progressMeta,
+          v6.ProgressMetaCompanion.insert(key: 'streak', value: '4'),
+        );
+      },
+      validateItems: (newDb) async {
+        final rows = await newDb.select(newDb.progressMeta).get();
+        expect(rows.single.value, '4');
+        expect(await newDb.select(newDb.earnedBadges).get(), isEmpty);
+      },
+    );
+  });
+
   test('migration from v1 to v2 does not corrupt data', () async {
     // Add data to insert into the old database, and the expected rows after the
     // migration.
