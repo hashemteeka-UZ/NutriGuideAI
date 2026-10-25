@@ -1,0 +1,37 @@
+Step M.1 (mobile learning feedback: meal rating, "did not eat it" SKIP, LEARNED_PREFERENCE label; Decisions #301 to #304) for NutriGuideAI. Mobile only, Windows clone C:\dev\NutriGuideAI\mobile. `git pull` first (main is at f22bb9c or later). Small pass (~1 h). Working rules: safest option for small issues + note it; targeted tests while working, full mobile suite once; if flutter analyze is clean, all tests pass and the acceptance list holds, COMMIT and PUSH without waiting; then report hash + numbers.
+
+Read first: lib/features/logging/data/interaction_queue.dart (impression/view pattern, outbox only, #267), lib/core/api/manual/sync_models.dart (InteractionCreateOp: RATE needs value 1..5), lib/features/plan/presentation/plan_item_screen.dart, reason_labels.dart, lib/features/today/presentation/today_screen.dart (where a plan item is logged as eaten), the l10n ARB files, docs/api/API_GUIDE.md (interactions, reason codes, 1.1.0).
+
+## Hard rules
+- No backend change, no API change, no drift schema change (stay on schema v6).
+- All events go through InteractionQueue -> outbox (offline first), never a direct HTTP call.
+- Arabic and English strings in ARB files; RTL layout correct; wellness tone (not clinical).
+- No personal data in logs.
+
+## 1. Queue methods (#301) — interaction_queue.dart
+- `rate({required int mealId, required int value, int? planItemId, required String screen})`: asserts 1 <= value <= 5 (throw ArgumentError otherwise); random client uuid (a new rating is a new event; the server replays all).
+- `skip({required int planItemId, required int mealId, required String date})`: deterministic uuid v5 from 'https://nutriguide.app/skip/<planItemId>:<date>' + entityRef 'skip:<planItemId>:<date>' (same pattern as impression), so a second tap or a restart cannot create a second SKIP.
+- Unit tests: JSON of each op (event_type, value, plan_item_id, screen), value 0 and 6 rejected, SKIP dedupe in memory and via outbox entityRef.
+
+## 2. Rating UI (#302)
+- After the user logs a plan item as eaten (the existing log action on Today and on the plan item screen), show a small bottom sheet: title ar "كيف كانت الوجبة؟" / en "How was this meal?", five tappable stars (48 dp targets, semantics labels "1 من 5" etc.), and a text button ar "لاحقًا" / en "Later" that just closes it. Tapping a star queues RATE with that value and closes the sheet with a short snackbar ar "شكرًا، سنقترح ما يناسب ذوقك أكثر" / en "Thanks, we'll suggest more of what you like".
+- Plan item screen: for an item already logged as eaten, show a "قيّم الوجبة" / "Rate this meal" row with the same five stars; the chosen value is kept in an in-memory Riverpod map keyed by planItemId so the stars stay filled while the app runs (no schema change; after restart the stars are empty again and a new rating is simply a new event; note this in the report).
+- Widget tests: sheet appears after logging, star 4 queues RATE value 4, "Later" queues nothing, plan item row shows filled stars after rating.
+
+## 3. "Did not eat it" (#303)
+- Plan item screen: for an item whose date <= today (device local date) and that is NOT logged, a secondary button ar "لم آكلها" / en "I didn't eat it". Tap -> confirm dialog (ar "سنقلل اقتراح هذه الوجبة قليلًا. متابعة؟" / en "We'll suggest this meal a little less. Continue?") -> queue SKIP -> button becomes a disabled chip ar "سُجلت: لم تؤكل" / en "Marked: not eaten". Do not offer it for future dates or logged items.
+- Widget tests: visible only in the right states; confirm queues one SKIP; cancel queues nothing; second tap impossible.
+
+## 4. LEARNED_PREFERENCE label (#304) — reason_labels.dart
+- Add 'LEARNED_PREFERENCE': (ar: 'يناسب ذوقك', en: 'Matches your taste'). Use the existing chip style; if reason_chips supports an icon, use a heart/sparkle style icon consistent with the others (no new package).
+- Test: label resolves in both languages; unknown codes still hidden; ordering keeps the first two known codes as before.
+
+## 5. Check on the emulator (minimal)
+- One screenshot of the rating sheet (Arabic) and one of the plan item screen with the "I didn't eat it" button, saved under mobile/docs/screenshots/m1/ (committed, small PNGs). If the emulator fails, skip screenshots and say so; do not spend more than 10 minutes on it.
+
+## Acceptance
+- flutter analyze clean; full mobile test suite green (was 519); generated files unchanged (`git diff --exit-code -- lib/core/api/generated`); no schema version change.
+- Commit: "feat(mobile): M.1 meal rating, did-not-eat SKIP, LEARNED_PREFERENCE label (#301-#304)" + usual attribution lines. Push, no force.
+
+## Report
+Hash, test count before/after with new test file names, screenshots paths, any assumption (one line each with section).
