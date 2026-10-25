@@ -472,5 +472,15 @@
   "weightDays": "{days} days",
   "weightChartSummary": "{count} weights, from {first} to {last} kg",
   "caloriesChartSummary": "Calories this week: {values}",
-  "adherenceRing": "{percent}% adherence"
+  "adherenceRing": "{percent}% adherence",
+  "rateTitle": "How was this meal?",
+  "rateLater": "Later",
+  "rateThanks": "Thanks, we'll suggest more of what you like",
+  "rateStar": "{value} of 5",
+  "rateThisMeal": "Rate this meal",
+  "didNotEat": "I didn't eat it",
+  "didNotEatConfirm": "We'll suggest this meal a little less. Continue?",
+  "didNotEatContinue": "Continue",
+  "didNotEatCancel": "Cancel",
+  "didNotEatMarked": "Marked: not eaten"
 }

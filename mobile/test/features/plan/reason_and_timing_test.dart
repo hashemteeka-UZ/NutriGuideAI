@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nutriguide/core/theme/app_theme.dart';
 import 'package:nutriguide/features/plan/domain/meal_timing.dart';
+import 'package:nutriguide/features/plan/presentation/reason_chips.dart';
 import 'package:nutriguide/features/plan/presentation/reason_labels.dart';
 
 void main() {
@@ -22,6 +25,45 @@ void main() {
     );
     expect(reasonLabel('NEW_FOR_VARIETY', languageCode: 'en'), 'A new variety');
     expect(reasonLabel('NOT_A_CODE', languageCode: 'ar'), isNull);
+  });
+
+  test('LEARNED_PREFERENCE in both languages (#304)', () {
+    expect(reasonLabel('LEARNED_PREFERENCE', languageCode: 'ar'), 'يناسب ذوقك');
+    expect(
+      reasonLabel('LEARNED_PREFERENCE', languageCode: 'en'),
+      'Matches your taste',
+    );
+  });
+
+  testWidgets('chips keep the first two known codes in order', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: const Scaffold(
+          body: ReasonChips(
+            codes: <String>[
+              'LEARNED_PREFERENCE',
+              'NOT_A_CODE',
+              'HIGH_PROTEIN',
+              'LOW_SODIUM',
+            ],
+            languageCode: 'en',
+            conditionNames: <String, String>{},
+          ),
+        ),
+      ),
+    );
+    final shown = tester
+        .widgetList<Container>(
+          find.byWidgetPredicate(
+            (Widget w) => w is Container && w.key is ValueKey<String>,
+          ),
+        )
+        .map((Container c) => (c.key! as ValueKey<String>).value)
+        .toList();
+    expect(shown, <String>['reason-LEARNED_PREFERENCE', 'reason-HIGH_PROTEIN']);
+    expect(find.text('Matches your taste'), findsOneWidget);
+    expect(find.byKey(const Key('reason-NOT_A_CODE')), findsNothing);
   });
 
   test('SUITS_CONDITION_HYPERTENSION uses the reference name', () {

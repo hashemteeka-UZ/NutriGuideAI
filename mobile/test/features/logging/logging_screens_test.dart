@@ -125,6 +125,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('eat-done-1')), findsOneWidget);
       expect(find.text('سجلتها'), findsNothing);
+      // M.1: the rating sheet follows every log; «لاحقًا» closes it.
+      expect(find.byKey(const Key('rating-sheet')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('rating-later')));
+      await tester.pumpAndSettle();
 
       // The debounced sync runs and finds no connection.
       await tester.pump(const Duration(seconds: 3));

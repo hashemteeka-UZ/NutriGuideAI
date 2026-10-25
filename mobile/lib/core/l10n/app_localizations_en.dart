@@ -1685,4 +1685,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String adherenceRing(Object percent) {
     return '$percent% adherence';
   }
+
+  @override
+  String get rateTitle => 'How was this meal?';
+
+  @override
+  String get rateLater => 'Later';
+
+  @override
+  String get rateThanks => 'Thanks, we\'ll suggest more of what you like';
+
+  @override
+  String rateStar(Object value) {
+    return '$value of 5';
+  }
+
+  @override
+  String get rateThisMeal => 'Rate this meal';
+
+  @override
+  String get didNotEat => 'I didn\'t eat it';
+
+  @override
+  String get didNotEatConfirm =>
+      'We\'ll suggest this meal a little less. Continue?';
+
+  @override
+  String get didNotEatContinue => 'Continue';
+
+  @override
+  String get didNotEatCancel => 'Cancel';
+
+  @override
+  String get didNotEatMarked => 'Marked: not eaten';
 }

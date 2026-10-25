@@ -16,6 +16,7 @@ const _labels = <String, ({String ar, String en})>{
     en: 'Contains something you like',
   ),
   'NEW_FOR_VARIETY': (ar: 'تنويع جديد', en: 'A new variety'),
+  'LEARNED_PREFERENCE': (ar: 'يناسب ذوقك', en: 'Matches your taste'),
 };
 
 /// A known reason in [languageCode], or null when the code should stay hidden.

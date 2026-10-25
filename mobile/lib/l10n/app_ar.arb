@@ -575,5 +575,15 @@
   "weightDays": "{days} يومًا",
   "weightChartSummary": "{count} قياسات للوزن، من {first} إلى {last} كغ",
   "caloriesChartSummary": "سعرات الأسبوع: {values}",
-  "adherenceRing": "التزام {percent}%"
+  "adherenceRing": "التزام {percent}%",
+  "rateTitle": "كيف كانت الوجبة؟",
+  "rateLater": "لاحقًا",
+  "rateThanks": "شكرًا، سنقترح ما يناسب ذوقك أكثر",
+  "rateStar": "{value} من 5",
+  "rateThisMeal": "قيّم الوجبة",
+  "didNotEat": "لم آكلها",
+  "didNotEatConfirm": "سنقلل اقتراح هذه الوجبة قليلًا. متابعة؟",
+  "didNotEatContinue": "متابعة",
+  "didNotEatCancel": "إلغاء",
+  "didNotEatMarked": "سُجلت: لم تؤكل"
 }

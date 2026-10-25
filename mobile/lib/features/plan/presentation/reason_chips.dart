@@ -81,6 +81,7 @@ IconData _icon(String code) {
     'HIGH_FIBER' => Icons.grass_outlined,
     'MATCHES_LIKED_INGREDIENT' => Icons.favorite_border,
     'NEW_FOR_VARIETY' => Icons.auto_awesome_outlined,
+    'LEARNED_PREFERENCE' => Icons.thumb_up_alt_outlined,
     _ => Icons.health_and_safety_outlined,
   };
 }

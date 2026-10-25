@@ -13,6 +13,7 @@ class InteractionQueue {
   final OutboxStore _outbox;
   final Uuid _uuid;
   final Set<String> _impressions = <String>{};
+  final Set<String> _skips = <String>{};
 
   /// One IMPRESSION per plan item per day. The id is derived from the item,
   /// its meal and the date, so a repeat after a restart comes back from the
@@ -58,6 +59,60 @@ class InteractionQueue {
         planItemId: planItemId,
         screen: 'meal_detail',
       ),
+    );
+  }
+
+  /// A RATE from 1 to 5 (#301). Every rating is a new event with its own id.
+  Future<void> rate({
+    required int mealId,
+    required int value,
+    int? planItemId,
+    required String screen,
+  }) {
+    if (value < 1 || value > 5) {
+      throw ArgumentError.value(value, 'value', 'must be 1 to 5');
+    }
+    return _queue(
+      InteractionCreateOp(
+        opId: _outbox.newId(),
+        clientUuid: _outbox.newId(),
+        mealId: mealId,
+        eventType: 'RATE',
+        planItemId: planItemId,
+        screen: screen,
+        value: value,
+      ),
+    );
+  }
+
+  /// One SKIP («لم آكلها») per plan item and date (#301). The id is derived
+  /// as for IMPRESSION, so a second tap or a restart cannot add a second one.
+  Future<void> skip({
+    required int planItemId,
+    required int mealId,
+    required String date,
+  }) async {
+    final key = '$planItemId:$date';
+    if (!_skips.add(key)) {
+      return;
+    }
+    final queued = await _outbox.forEntity('skip:$key');
+    if (queued.isNotEmpty) {
+      return;
+    }
+    await _queue(
+      InteractionCreateOp(
+        opId: _outbox.newId(),
+        clientUuid: _uuid.v5(
+          Namespace.url.value,
+          'https://nutriguide.app/skip/$key',
+        ),
+        mealId: mealId,
+        eventType: 'SKIP',
+        planItemId: planItemId,
+        screen: 'plan_item',
+      ),
+      entityRef: 'skip:$key',
     );
   }
 

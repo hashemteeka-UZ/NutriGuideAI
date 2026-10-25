@@ -10,18 +10,27 @@ import '../../../core/theme/motion.dart';
 import '../../plan/domain/plan.dart';
 import '../data/logging_providers.dart';
 import '../domain/logging.dart';
+import 'meal_feedback.dart';
 import 'rejected_messages.dart';
 
 /// The round «أكلتها» button (`.eat`). Tap logs the planned portion now;
 /// long-press offers another amount. Once logged it shows a check and
 /// «تراجع».
 class EatButton extends ConsumerWidget {
-  const EatButton({required this.item, this.consumedAt, super.key});
+  const EatButton({
+    required this.item,
+    this.consumedAt,
+    this.ratingScreen = 'today',
+    super.key,
+  });
 
   final PlanItem item;
 
   /// When the meal was eaten; now when null.
   final DateTime? consumedAt;
+
+  /// `screen` of the RATE asked for after logging (#302).
+  final String ratingScreen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -112,6 +121,10 @@ class EatButton extends ConsumerWidget {
       messenger?.showSnackBar(SnackBar(content: Text(l10n.eatSaved)));
     } on Object {
       messenger?.showSnackBar(SnackBar(content: Text(l10n.eatFailed)));
+      return;
+    }
+    if (context.mounted) {
+      await showRatingSheet(context, ref, item, screen: ratingScreen);
     }
   }
 

@@ -2940,6 +2940,66 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'التزام {percent}%'**
   String adherenceRing(Object percent);
+
+  /// No description provided for @rateTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف كانت الوجبة؟'**
+  String get rateTitle;
+
+  /// No description provided for @rateLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقًا'**
+  String get rateLater;
+
+  /// No description provided for @rateThanks.
+  ///
+  /// In ar, this message translates to:
+  /// **'شكرًا، سنقترح ما يناسب ذوقك أكثر'**
+  String get rateThanks;
+
+  /// No description provided for @rateStar.
+  ///
+  /// In ar, this message translates to:
+  /// **'{value} من 5'**
+  String rateStar(Object value);
+
+  /// No description provided for @rateThisMeal.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيّم الوجبة'**
+  String get rateThisMeal;
+
+  /// No description provided for @didNotEat.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم آكلها'**
+  String get didNotEat;
+
+  /// No description provided for @didNotEatConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنقلل اقتراح هذه الوجبة قليلًا. متابعة؟'**
+  String get didNotEatConfirm;
+
+  /// No description provided for @didNotEatContinue.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة'**
+  String get didNotEatContinue;
+
+  /// No description provided for @didNotEatCancel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get didNotEatCancel;
+
+  /// No description provided for @didNotEatMarked.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُجلت: لم تؤكل'**
+  String get didNotEatMarked;
 }
 
 class _AppLocalizationsDelegate

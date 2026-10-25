@@ -14,6 +14,7 @@ import '../../catalog/presentation/nutrient_labels.dart';
 import '../../logging/data/logging_providers.dart';
 import '../../logging/domain/logging.dart';
 import '../../logging/presentation/eat_button.dart';
+import '../../logging/presentation/meal_feedback.dart';
 import '../data/plan_providers.dart';
 import '../data/plan_sync.dart';
 import '../domain/plan.dart';
@@ -63,9 +64,11 @@ class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
         : ref.watch(dayLogsProvider(item.planDate)).asData?.value ??
               const <LoggedMeal>[];
     final eaten = item != null && isEaten(item, logs);
-    final loggable =
-        item != null &&
-        item.planDate == isoDate(dateOnly(ref.watch(planClockProvider)()));
+    final today = isoDate(dateOnly(ref.watch(planClockProvider)()));
+    final loggable = item != null && item.planDate == today;
+    // ISO dates compare as strings: today or earlier, never a future day (#303).
+    final skippable =
+        item != null && !eaten && item.planDate.compareTo(today) <= 0;
     final meal = item == null
         ? null
         : ref.watch(mealDetailProvider(item.mealId)).asData?.value;
@@ -118,7 +121,7 @@ class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            EatButton(item: item),
+                            EatButton(item: item, ratingScreen: 'plan_item'),
                             if (!eaten) ...<Widget>[
                               const SizedBox(width: 8),
                               Text(l10n.eatAction),
@@ -133,12 +136,19 @@ class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
                           ],
                         ),
                       ),
-                    if (eaten)
+                    if (eaten) ...<Widget>[
+                      RateMealRow(item: item),
                       Text(
                         l10n.swapLoggedNote,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium
                             ?.copyWith(color: colors.fg2),
+                      ),
+                    ],
+                    if (skippable)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: DidNotEatButton(item: item),
                       ),
                     FilledButton(
                       key: const Key('swap-button'),
@@ -318,6 +328,10 @@ Future<void> _logAmount(
     messenger.showSnackBar(SnackBar(content: Text(l10n.eatSaved)));
   } on Object {
     messenger.showSnackBar(SnackBar(content: Text(l10n.eatFailed)));
+    return;
+  }
+  if (context.mounted) {
+    await showRatingSheet(context, ref, item, screen: 'plan_item');
   }
 }
 

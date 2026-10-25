@@ -1675,4 +1675,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String adherenceRing(Object percent) {
     return 'التزام $percent%';
   }
+
+  @override
+  String get rateTitle => 'كيف كانت الوجبة؟';
+
+  @override
+  String get rateLater => 'لاحقًا';
+
+  @override
+  String get rateThanks => 'شكرًا، سنقترح ما يناسب ذوقك أكثر';
+
+  @override
+  String rateStar(Object value) {
+    return '$value من 5';
+  }
+
+  @override
+  String get rateThisMeal => 'قيّم الوجبة';
+
+  @override
+  String get didNotEat => 'لم آكلها';
+
+  @override
+  String get didNotEatConfirm => 'سنقلل اقتراح هذه الوجبة قليلًا. متابعة؟';
+
+  @override
+  String get didNotEatContinue => 'متابعة';
+
+  @override
+  String get didNotEatCancel => 'إلغاء';
+
+  @override
+  String get didNotEatMarked => 'سُجلت: لم تؤكل';
 }
