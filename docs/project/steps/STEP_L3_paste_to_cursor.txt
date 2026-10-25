@@ -1,0 +1,43 @@
+Step L.3 (supervised meal-slot tag classifier, evaluated by cross-validation on the real catalog; Decisions #297 to #300) for NutriGuideAI. Backend only, WSL clone. Small pass (~1 h). New working rules apply: pick the safest option for small issues and note it, targeted tests while working, full suite once, then COMMIT and PUSH via Windows without waiting if all green and the acceptance list below is met. Report hash + numbers.
+
+Read first: backend/app/ml/features.py (mf_v1, SLOT_TAGS), backend/app/services/meal_filter.py (SLOT_OCCASION), backend/app/db/models/catalog.py (MealTag, MealTagSource, MealIngredient), backend/data/catalog/meals/*.yaml (occasion_tags are team-labelled).
+
+## Hard rules
+- Suggestion and audit only: NO writes to meal_tags or any table, no API, no migration, no mobile change.
+- No leakage: the input matrix must not contain any slot:* column or any occasion tag.
+- Deterministic: random_state=42 everywhere.
+
+## 1. Dependency
+- `uv add "scikit-learn>=1.7,<2"` (latest compatible; record the resolved version). pyproject + uv.lock only.
+
+## 2. Dataset (#297) — app/ml/tag_classifier.py
+- Targets Y (multi-label, 4 columns): breakfast_suitable, lunch_suitable, dinner_suitable, snack_suitable, from MANUAL meal_tags of active meals.
+- Inputs X: mf_v1 features WITHOUT the slot:* columns and WITHOUT the bias; plus kcal per serving min-max scaled; plus ingredient gram-share vector (grams of ingredient / total grams of the meal) for ingredient codes used in >= 2 meals (record the count). TAG_FEATURE_VERSION = "tf_v1".
+- `build_tag_dataset(session) -> TagDataset(meal_ids, X, Y, feature_names, target_names)`.
+
+## 3. Models and evaluation (#298) — scripts/ml_tag_eval.py
+- Baselines: (a) prior: predict each tag as present iff its catalog frequency >= 0.5; (b) kcal-only logistic regression.
+- Models: one-vs-rest LogisticRegression (liblinear, class_weight="balanced", C chosen by inner 3-fold grid {0.1, 1, 10}); RandomForestClassifier (300 trees, class_weight="balanced_subsample", max_depth None, min_samples_leaf 2).
+- Protocol: NESTED cross-validation: outer KFold 5 folds shuffled, repeated 5 times (25 outer fits), hyperparameters picked inside each outer training fold only. Threshold 0.5.
+- Metrics per model: F1 per tag, micro-F1, macro-F1, Hamming loss, subset accuracy, each mean ± std over the 25 outer folds.
+- Output scripts/out/ml_tags/summary.md (committed) with the table, the resolved sklearn version, n meals, n features, runtime; plus for the logistic model the top 5 positive features per tag (fit on all data) for explainability.
+
+## 4. Data-quality audit (#299)
+- From the out-of-fold probabilities of the best model, list meals where the model disagrees with the team label with probability >= 0.8 (model says present but label absent, or < 0.2 while label present): ref_external, name_ar, tag, label, probability. Write it to scripts/out/ml_tags/review_candidates.md (committed). This is a review list for the team, never an automatic change.
+
+## 5. Inference API inside the backend (#300)
+- `suggest_slot_tags(session, meal_id) -> dict[tag, probability]` using a model fit on the whole catalog, cached in process by (dataset version, TAG_FEATURE_VERSION). Not wired to any endpoint now.
+
+## 6. Tests — tests/ml/test_tag_classifier.py
+- Dataset: shapes, target names, no slot:* or occasion columns in X (leakage test), gram shares sum to 1 per meal (before filtering rare codes they sum to 1; after filtering <= 1), determinism.
+- Evaluation on the catalog_mini fixture runs end to end with a small config (outer 2 folds, 1 repeat) and returns finite metrics.
+- suggest_slot_tags returns 4 probabilities in [0, 1] and touches no table (row counts unchanged).
+
+## Acceptance
+- ruff, mypy strict, alembic check (no diff), full backend suite green, export_openapi --check unchanged.
+- summary.md exists with all models; if the best model's macro-F1 is not above the prior baseline, still commit but say so plainly in the report (an honest negative result is acceptable).
+
+Commit message: "feat(ml): L.3 slot tag classifier with nested CV and data-quality audit (#297-#300)" plus the usual attribution lines. No force-push.
+
+## Report
+Hash, sklearn version, n meals / n features / n ingredient codes, the summary table (copy it), top features per tag, number of review candidates (and the first 10), runtime, test counts before/after, and any assumption (one line each).
