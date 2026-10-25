@@ -1,0 +1,38 @@
+Step K.7a (account: edit profile, appearance, delete account, about and privacy; Decisions #309 to #312) for NutriGuideAI. Mobile only, Windows clone. `git pull` first. Small pass (~1 h). Rules: safest option for small issues + note it; targeted tests while working, full suite once; if analyze clean, all tests green and acceptance holds, COMMIT and PUSH without waiting; report hash + numbers. Start right after K.6b is pushed.
+
+Read first: lib/features/today/presentation/account_screen.dart (the "me" tab), lib/app/router.dart, lib/features/profile/* (onboarding steps, controller, profile_repository, result_screen, profile_update_body, how_calculated_sheet), lib/features/auth/* (logout and the local wipe), lib/core/storage/secure_store.dart, lib/app/app.dart (theme, locale persistence), docs/api/API_GUIDE.md (GET/PUT /me/profile, DELETE /me, screening result), l10n ARB files.
+
+## Hard rules
+- No backend/API change; no drift schema change.
+- Reuse the onboarding steps and result screen; do not duplicate their widgets.
+- Arabic + English in ARB, RTL correct, wellness tone; no new package.
+
+## 1. Edit profile (#309)
+- Account tab row ar «تعديل بياناتي» / en "Edit my details" -> route /me/edit. Loads GET /me/profile, pre-fills the same onboarding steps (edit mode: a step list the user can jump into, not a forced wizard; Save button on each step), then PUT /me/profile and shows the existing result screen with the new target (or the general-mode screening message when not eligible, exactly as in onboarding).
+- Health conditions limited to the three supported ones (as onboarding already does). Weight is NOT edited here (it has its own log); show a hint linking to the weight sheet.
+- After a successful save: invalidate the targets/today providers so Today shows the new target; show a note ar «الخطط القادمة ستُبنى بهدفك الجديد» / en "Upcoming plans will use your new target". Existing plans are not rebuilt automatically.
+- Requires a connection: offline -> disabled Save with the existing offline message.
+- Tests: prefill from a fake profile, save sends the changed field, ineligible result path, offline disables save.
+
+## 2. Appearance (#310)
+- Row ar «المظهر» / en "Appearance": system / light / dark (radio sheet). Persist locally with the same mechanism the app already uses for the language choice; apply instantly via ThemeMode. Test: choice persists across a rebuild and maps to ThemeMode.
+
+## 3. Delete account (#311)
+- Row at the bottom in the danger color ar «حذف الحساب» / en "Delete account". Screen explains in plain words what is deleted (profile, plans, logs, weights, water, learning history on the server, and all data on this phone) and that it cannot be undone. The user must type ar «حذف» (or en "DELETE") to enable the button; then DELETE /me.
+- On 204: run the same local wipe as logout (tokens, encrypted DB user tables, outbox, earned badges, in-memory providers) and go to /welcome with a short message. Pending outbox items are discarded (say so on the screen before confirming when the outbox is not empty).
+- Offline or error: nothing is wiped; show the error, stay on the screen. 401 after refresh failure: go to login.
+- Tests: button disabled until the word is typed; success wipes and navigates; failure keeps data; pending-outbox warning shown.
+
+## 4. About and privacy (#312)
+- Row ar «عن التطبيق والخصوصية» / en "About and privacy": app version (from the build), a short wellness disclaimer (this app gives general dietary guidance and does not replace a doctor or dietitian; for diabetes, high blood pressure and heart disease follow your care team), data sources (USDA FoodData Central for nutrition values), and a plain-language "How the app learns from you" paragraph: which actions it uses (eaten, swapped, rated, did not eat, saved), that it only chooses between meals that already pass every health rule, and that deleting the account deletes this learning history. No external links required.
+- Test: screen renders both languages; version string present.
+
+## 5. Emulator (minimal)
+- Arabic screenshots of: account tab, edit details step list, delete account screen, about screen, under mobile/docs/screenshots/k7a/. Max 10 minutes; skip if the emulator fails and say so. Do NOT run the real delete on the k4api test account (use the widget tests for that).
+
+## Acceptance
+- flutter analyze clean; full mobile suite green; generated API files unchanged; schema unchanged.
+- Commit "feat(mobile): K.7a edit profile, appearance, delete account, about and privacy (#309-#312)" + usual attribution lines. Push, no force.
+
+## Report
+Hash, tests before/after with new file names, screenshot paths, assumptions (one line each with section).

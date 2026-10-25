@@ -1,0 +1,38 @@
+Step K.7b (reminders, release APK, small UI polish; Decisions #313 to #316) for NutriGuideAI. Mobile only, Windows clone. `git pull` first. Small pass (~1 h). Same rules: safest option + note; targeted tests, full suite once; if analyze clean, all green and acceptance holds, COMMIT and PUSH without waiting; report hash + numbers. Start right after K.7a is pushed.
+
+Read first: lib/core/db/tables.dart (MealWindows), lib/features/water/* (goalMl), lib/features/today/presentation/account_screen.dart (+ the K.7a settings rows), lib/app/app.dart, lib/core/config/app_config.dart (API_BASE_URL dart-define), android/app/build.gradle.kts, AndroidManifest.xml, lib/features/plan/presentation/plan_item_screen.dart (nutrition donuts), l10n ARB.
+
+## Hard rules
+- No backend/API change; no drift schema change (settings in shared_preferences, which the app already uses).
+- New packages allowed ONLY: flutter_local_notifications and timezone (latest stable compatible with the current Flutter; record versions). Inexact scheduling only: NO SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM permission.
+- Keystore and passwords are NEVER committed: android/key.properties and *.jks/*.keystore must be in .gitignore (verify).
+
+## 1. Reminders (#313)
+- Account row ar «التذكيرات» / en "Reminders": screen with three switches, all OFF by default:
+  - Meal reminders: one notification at the START of each of the user's meal windows (from MealWindows / profile), text ar «حان وقت {الوجبة}. وجبتك في خطة اليوم» / en "Time for {meal}. Your meal is in today's plan".
+  - Water reminders: every 2 hours between 09:00 and 21:00 local time (7 per day), ar «اشرب كوب ماء» / en "Have a glass of water". Only when a water goal is set; otherwise the switch shows the hint to set a goal.
+  - Weekly weigh-in: Friday 09:00 local, ar «وقت وزنك الأسبوعي» / en "Time for your weekly weigh-in".
+- Daily repeating schedules with matchDateTimeComponents (time / dayOfWeekAndTime), timezone from the existing flutter_timezone setup. Tapping a notification opens the matching tab (/today, /water, /progress).
+- Android 13+: request POST_NOTIFICATIONS when the user turns the first switch on; if denied, switch returns to off with a short explanation and a button to open app settings.
+- Reschedule on: switch change, profile save (meal windows may change), app start; cancel all on logout and account deletion.
+- Tests: scheduling logic with a fake notifications plugin (ids, times, count = windows / 7 / 1), permission denied path, cancel on logout.
+
+## 2. Release APK (#314)
+- Release signing: read android/key.properties if present (storeFile, storePassword, keyAlias, keyPassword); fall back to debug signing when absent so CI and other clones still build. Generate a keystore on the user's PC OUTSIDE the repo (C:\dev\keys\nutriguide-release.jks), write key.properties pointing to it, and tell me where it is (never print passwords in the report; store them in a text file next to the keystore and say so).
+- Build: `flutter build apk --release --dart-define=API_BASE_URL=http://<PC LAN IP>:8000` (find the LAN IP; the backend must listen on 0.0.0.0; if WSL port forwarding to the LAN is needed, document the exact netsh/portproxy command in the report but do NOT change Windows firewall rules without telling me). Copy the APK to C:\dev\NutriGuideAI_builds\nutriguide-<short hash>.apk (not committed). Report its size and sha256.
+- R8/minify: keep the Flutter defaults; if release build fails due to R8 rules for the new plugin, add the minimal keep rule and note it.
+- Install on the emulator from the release APK and smoke-test: login, Today, one log. One screenshot.
+
+## 3. Polish (#315)
+- Plan item screen: when the user's portion equals exactly one serving, show ONE nutrition donut (hide the duplicate "per serving" block). Test.
+- Water in the shopping list: if the shopping list shows WATER (tap water ingredient), hide it in the app list (it is not something to buy). Test. (Backend fix later.)
+
+## 4. Docs for the user (#316)
+- mobile/docs/INSTALL_APK.md: how to install the APK on an Android phone (enable install from unknown sources), that the phone must be on the same Wi-Fi as the PC while the server runs locally, and how to rebuild with another API_BASE_URL when hosting exists. Plain English is fine (I translate for the report).
+
+## Acceptance
+- flutter analyze clean; full mobile suite green; generated API files unchanged; schema unchanged; `git status` shows no keystore or key.properties.
+- Commit "feat(mobile): K.7b reminders, release APK signing, polish (#313-#316)" + usual attribution lines. Push, no force.
+
+## Report
+Hash, package versions, tests before/after with new file names, APK path/size/sha256, LAN URL used, screenshots, assumptions (one line each with section).
