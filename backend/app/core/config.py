@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_DAYS: int = 30
     RATE_LIMIT_ENABLED: bool = True
     PLANNER_MAX_CONCURRENT: int = 2
+    # #290: plans are cpsat_v2_learned when true, cpsat_v1 when false.
+    ML_PLANNING_ENABLED: bool = True
     CATALOG_MANIFEST_PATH: Path = (
         REPO_ROOT / "backend" / "data" / "catalog" / "DATASET_MANIFEST.yaml"
     )

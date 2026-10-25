@@ -20,6 +20,8 @@ from app.db.admin import admin_engine, create_database, drop_database, require_d
 # Must run before any test module imports the app (collection imports this file first).
 os.environ["JWT_SECRET"] = "test-only-jwt-secret-not-for-production-use"
 os.environ["RATE_LIMIT_ENABLED"] = "false"
+# Existing plan tests pin cpsat_v1 behaviour; tests/ml/ turns learned planning on per test.
+os.environ["ML_PLANNING_ENABLED"] = "false"
 
 
 class _TestDbSettings(BaseSettings):

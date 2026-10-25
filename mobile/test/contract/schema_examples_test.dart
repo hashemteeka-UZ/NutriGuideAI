@@ -379,7 +379,7 @@ void main() {
     test('DayPlanOut example round-trips', () {
       final example = jsonDecode(r'''
 {
-  "algorithm_version": "cpsat_v1",
+  "algorithm_version": "cpsat_v2_learned",
   "created_at": "2026-10-19T21:05:00Z",
   "date": "2026-10-20",
   "items": [
@@ -411,6 +411,7 @@ void main() {
       "plan_item_id": 5,
       "protein_g": 25,
       "reason_codes": [
+        "LEARNED_PREFERENCE",
         "HIGH_PROTEIN"
       ],
       "servings_multiplier": 1,
@@ -608,7 +609,7 @@ void main() {
     }
   ],
   "plan": {
-    "algorithm_version": "cpsat_v1",
+    "algorithm_version": "cpsat_v2_learned",
     "created_at": "2026-10-19T21:05:00Z",
     "date": "2026-10-20",
     "items": [
@@ -640,6 +641,7 @@ void main() {
         "plan_item_id": 5,
         "protein_g": 25,
         "reason_codes": [
+          "LEARNED_PREFERENCE",
           "HIGH_PROTEIN"
         ],
         "servings_multiplier": 1,
@@ -823,7 +825,7 @@ void main() {
     test('HealthResponse example round-trips', () {
       final example = jsonDecode(r'''
 {
-  "api_version": "1.0.0",
+  "api_version": "1.1.0",
   "database": "ok",
   "dataset_version": "catalog_v3",
   "default_planner": "cpsat",
@@ -1188,6 +1190,7 @@ void main() {
   "plan_item_id": 5,
   "protein_g": 25,
   "reason_codes": [
+    "LEARNED_PREFERENCE",
     "HIGH_PROTEIN"
   ],
   "servings_multiplier": 1,
@@ -1661,7 +1664,7 @@ void main() {
   ],
   "plans": [
     {
-      "algorithm_version": "cpsat_v1",
+      "algorithm_version": "cpsat_v2_learned",
       "created_at": "2026-10-19T21:05:00Z",
       "date": "2026-10-20",
       "items": [
@@ -1693,6 +1696,7 @@ void main() {
           "plan_item_id": 5,
           "protein_g": 25,
           "reason_codes": [
+            "LEARNED_PREFERENCE",
             "HIGH_PROTEIN"
           ],
           "servings_multiplier": 1,

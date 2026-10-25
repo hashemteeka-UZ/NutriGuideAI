@@ -671,7 +671,7 @@
       },
       "DayPlanOut": {
         "example": {
-          "algorithm_version": "cpsat_v1",
+          "algorithm_version": "cpsat_v2_learned",
           "created_at": "2026-10-19T21:05:00Z",
           "date": "2026-10-20",
           "items": [
@@ -703,6 +703,7 @@
               "plan_item_id": 5,
               "protein_g": 25,
               "reason_codes": [
+                "LEARNED_PREFERENCE",
                 "HIGH_PROTEIN"
               ],
               "servings_multiplier": 1,
@@ -959,7 +960,7 @@
             }
           ],
           "plan": {
-            "algorithm_version": "cpsat_v1",
+            "algorithm_version": "cpsat_v2_learned",
             "created_at": "2026-10-19T21:05:00Z",
             "date": "2026-10-20",
             "items": [
@@ -991,6 +992,7 @@
                 "plan_item_id": 5,
                 "protein_g": 25,
                 "reason_codes": [
+                  "LEARNED_PREFERENCE",
                   "HIGH_PROTEIN"
                 ],
                 "servings_multiplier": 1,
@@ -1289,7 +1291,7 @@
       },
       "HealthResponse": {
         "example": {
-          "api_version": "1.0.0",
+          "api_version": "1.1.0",
           "database": "ok",
           "dataset_version": "catalog_v3",
           "default_planner": "cpsat",
@@ -2430,6 +2432,7 @@
           "plan_item_id": 5,
           "protein_g": 25,
           "reason_codes": [
+            "LEARNED_PREFERENCE",
             "HIGH_PROTEIN"
           ],
           "servings_multiplier": 1,
@@ -3712,7 +3715,7 @@
           ],
           "plans": [
             {
-              "algorithm_version": "cpsat_v1",
+              "algorithm_version": "cpsat_v2_learned",
               "created_at": "2026-10-19T21:05:00Z",
               "date": "2026-10-20",
               "items": [
@@ -3744,6 +3747,7 @@
                   "plan_item_id": 5,
                   "protein_g": 25,
                   "reason_codes": [
+                    "LEARNED_PREFERENCE",
                     "HIGH_PROTEIN"
                   ],
                   "servings_multiplier": 1,
@@ -4958,7 +4962,7 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "openapi": "3.1.0",
   "paths": {

@@ -11,6 +11,13 @@ coefficient, floor on its bound, and the opposite for a lower bound). The object
 half-up scaled amounts. Its weighted sum — kcal, macro and fiber deviations already
 multiplied by their kcal per gram — is integer-divided by SCALE // 10, so a remainder below
 0.1 kcal is dropped. LIKED_BONUS is already in that unit.
+
+cpsat_v2_learned (Step L.2, #290-#292) is the same model with two more objective terms the
+caller passes per meal: a learned bonus (subtracted) and a weekly variety penalty (added).
+Both are objective-only; every constraint is unchanged, and empty mappings give cpsat_v1.
+At W_KCAL = 3, one kcal of day-energy deviation costs 3 x 1000 / 100 = 30 units, so the
+largest learned bonus (60 units) is worth 2 kcal of day deviation (1.5 kcal when the same
+kcal also moves a main slot away from its share, W_SLOT = 1).
 """
 
 from __future__ import annotations
@@ -39,6 +46,7 @@ from app.services.meal_filter import (
 )
 from app.services.planner import (
     KCAL_TOLERANCE,
+    LEARNED_PREFERENCE,
     LIMIT_TAG,
     MAIN_SLOTS,
     MAX_PER_DAY,
@@ -59,7 +67,29 @@ from app.services.planner import (
 from app.services.targets import KCAL_PER_G_CARB, KCAL_PER_G_FAT, KCAL_PER_G_PROTEIN
 
 PLANNER_VERSION: Final = "cpsat_v1"
+LEARNED_PLANNER_VERSION: Final = "cpsat_v2_learned"
 GENERATED_BY: Final = "cpsat"
+CPSAT_VERSIONS: Final = frozenset({PLANNER_VERSION, LEARNED_PLANNER_VERSION})
+
+# Weekly variety (#292), cpsat_v2_learned only. Yesterday's meals stay excluded (#72); a meal
+# planned `age` days before (2 <= age <= VARIETY_DAYS) costs
+# round(VARIETY_WEIGHT * (VARIETY_DAYS + 1 - age) / (VARIETY_DAYS - 1)) objective units:
+# 40 at age 2 down to 8 at age 6 (1.3 to 0.3 kcal of day deviation), summed over repeats.
+VARIETY_DAYS: Final = 6
+VARIETY_WEIGHT: Final = 40
+
+
+def is_cpsat_version(version: str) -> bool:
+    """True for both CP-SAT plan versions; they share limits and swap rules (#290)."""
+    return version in CPSAT_VERSIONS
+
+
+def variety_penalty_for_age(age: int) -> int:
+    if not 2 <= age <= VARIETY_DAYS:
+        return 0
+    value = Decimal(VARIETY_WEIGHT * (VARIETY_DAYS + 1 - age)) / (VARIETY_DAYS - 1)
+    return int(value.to_integral_value(rounding=ROUND_HALF_UP))
+
 
 # Positions. Snack positions both use MealSlot.SNACK for Layer 1 and in the plan items.
 MAIN_POSITIONS: Final = tuple(slot.name.lower() for slot in MAIN_SLOTS)
@@ -142,10 +172,18 @@ def optimize_day(
     plan_date: date,
     nutrient_codes: Sequence[str],
     excluded_meal_ids: frozenset[int] = frozenset(),
+    learned_bonus: Mapping[int, int] | None = None,
+    variety_penalty: Mapping[int, int] | None = None,
+    learned_reason_meal_ids: frozenset[int] = frozenset(),
+    planner_version: str = PLANNER_VERSION,
 ) -> OptimizedDay:
     """One day from the CP-SAT model.
 
     Raises NoFeasiblePlanError, PlannerTimeoutError, or PlanError.
+
+    learned_bonus and variety_penalty map meal_id to non-negative objective units; each
+    chosen meal subtracts its bonus and adds its penalty. learned_reason_meal_ids get
+    LEARNED_PREFERENCE first in their reason codes. With the defaults this is cpsat_v1.
 
     Three passes, in order. Pass 1 is phase 1 (day energy inside ±KCAL_TOLERANCE, weight
     W_KCAL) on the slot-banded candidates: every snack, and a main-position candidate only
@@ -157,12 +195,13 @@ def optimize_day(
     """
     required = _required_nutrients(limits)
     specs = _specs(meals, preferences, limits, excluded_meal_ids, required)
+    terms = _MealTerms(_non_negative(learned_bonus), _non_negative(variety_penalty))
     seconds = 0.0
     slot_band_pass = False
     solved: _PhaseResult | None = None
     banded = _slot_banded(specs, target)
     if banded is not None:
-        solved, elapsed = _solve(banded, preferences, limits, target, True, W_KCAL)
+        solved, elapsed = _solve(banded, preferences, limits, target, True, W_KCAL, terms)
         seconds += elapsed
         if solved.status in _ACCEPTED:
             slot_band_pass = True
@@ -170,10 +209,12 @@ def optimize_day(
             raise PlanError(f"cpsat solver status {solved.status}")
     relaxed = False
     if not slot_band_pass:
-        solved, elapsed = _solve(specs, preferences, limits, target, True, W_KCAL)
+        solved, elapsed = _solve(specs, preferences, limits, target, True, W_KCAL, terms)
         seconds += elapsed
         if solved.status == _INFEASIBLE:
-            solved, elapsed = _solve(specs, preferences, limits, target, False, W_KCAL_RELAXED)
+            solved, elapsed = _solve(
+                specs, preferences, limits, target, False, W_KCAL_RELAXED, terms
+            )
             seconds += elapsed
             relaxed = True
             if solved.status == _INFEASIBLE:
@@ -194,7 +235,16 @@ def optimize_day(
         kcal_band=not relaxed,
     )
     return OptimizedDay(
-        plan=_plan(chosen, preferences, limits, target, plan_date, nutrient_codes),
+        plan=_plan(
+            chosen,
+            preferences,
+            limits,
+            target,
+            plan_date,
+            nutrient_codes,
+            learned_reason_meal_ids,
+            planner_version,
+        ),
         solver_status=solved.status,
         kcal_relaxed=relaxed,
         objective=solved.objective,
@@ -212,6 +262,22 @@ class _PhaseResult:
     reasons: Mapping[str, int]
 
 
+@dataclass(frozen=True)
+class _MealTerms:
+    """Per-meal objective units of cpsat_v2_learned: bonus subtracted, penalty added."""
+
+    bonus: Mapping[int, int]
+    penalty: Mapping[int, int]
+
+
+def _non_negative(values: Mapping[int, int] | None) -> dict[int, int]:
+    if not values:
+        return {}
+    if any(value < 0 for value in values.values()):
+        raise ValueError("learned bonus and variety penalty must be non-negative")
+    return {meal_id: int(value) for meal_id, value in values.items() if value}
+
+
 def _required_nutrients(limits: ResolvedLimits) -> tuple[str, ...]:
     required = list(_OBJECTIVE_NUTRIENTS)
     for code in (*limits.max_per_day, *limits.min_per_day):
@@ -226,16 +292,12 @@ def _layer1_slot(position: str) -> MealSlot:
     return MealSlot[position.upper()]
 
 
-def _layer1_candidates(
+def layer1_candidate_ids(
     meals: Sequence[MealFacts],
     preferences: UserPreferences,
     limits: ResolvedLimits,
-) -> int:
-    """Distinct meals eligible for at least one position at one multiplier (#191).
-
-    This count is not an input to the model. Previous-day exclusion and unknown amounts
-    are not Layer 1, so they do not remove a meal from the count.
-    """
+) -> frozenset[int]:
+    """Meals eligible (Layer 1) for at least one position at one multiplier (#191)."""
     slots: list[MealSlot] = []
     for position in POSITIONS:
         slot = _layer1_slot(position)
@@ -250,7 +312,20 @@ def _layer1_candidates(
             ):
                 found.add(meal.meal_id)
                 break
-    return len(found)
+    return frozenset(found)
+
+
+def _layer1_candidates(
+    meals: Sequence[MealFacts],
+    preferences: UserPreferences,
+    limits: ResolvedLimits,
+) -> int:
+    """Count of layer1_candidate_ids (#191).
+
+    This count is not an input to the model. Previous-day exclusion and unknown amounts
+    are not Layer 1, so they do not remove a meal from the count.
+    """
+    return len(layer1_candidate_ids(meals, preferences, limits))
 
 
 def _rules_for(
@@ -342,7 +417,9 @@ def _solve(
     target: PlanTarget,
     kcal_band: bool,
     kcal_weight: int,
+    terms: _MealTerms | None = None,
 ) -> tuple[_PhaseResult, float]:
+    terms = terms or _MealTerms({}, {})
     model = cp_model.CpModel()
     choices = tuple(
         _Choice(
@@ -362,7 +439,7 @@ def _solve(
     _add_limit_tags(model, choices, limits, names)
     if kcal_band:
         _add_kcal_band(model, choices, target, zero)
-    _add_objective(model, choices, preferences, target, kcal_weight, zero)
+    _add_objective(model, choices, preferences, target, kcal_weight, zero, terms)
 
     solver = cp_model.CpSolver()
     _configure(solver)
@@ -575,6 +652,7 @@ def _add_objective(
     target: PlanTarget,
     kcal_weight: int,
     zero: Any,
+    terms: _MealTerms,
 ) -> None:
     kcal_target = _scale(target.kcal, ROUND_HALF_UP)
     kcal_bound = _position_bound(choices, ENERGY_NUTRIENT) + abs(kcal_target)
@@ -663,13 +741,44 @@ def _add_objective(
         for choice in choices
         if choice.meal.ingredient_ids & preferences.liked_ingredient_ids
     ]
-    bonus_bound = LIKED_BONUS * max(len(liked), 1)
-    objective = model.new_int_var(-bonus_bound, tenths_bound, "objective")
-    if liked:
-        bonus = cp_model.LinearExpr.WeightedSum(liked, [LIKED_BONUS] * len(liked))
-        model.add(objective == tenths - bonus)
-    else:
-        model.add(objective == tenths)
+    learned = [
+        (choice.var, terms.bonus[choice.meal.meal_id])
+        for choice in choices
+        if choice.meal.meal_id in terms.bonus
+    ]
+    variety = [
+        (choice.var, terms.penalty[choice.meal.meal_id])
+        for choice in choices
+        if choice.meal.meal_id in terms.penalty
+    ]
+    if not learned and not variety:
+        # cpsat_v1, unchanged.
+        bonus_bound = LIKED_BONUS * max(len(liked), 1)
+        objective = model.new_int_var(-bonus_bound, tenths_bound, "objective")
+        if liked:
+            bonus = cp_model.LinearExpr.WeightedSum(liked, [LIKED_BONUS] * len(liked))
+            model.add(objective == tenths - bonus)
+        else:
+            model.add(objective == tenths)
+        model.minimize(objective)
+        return
+
+    # cpsat_v2_learned: every term is a 0/1 variable times a non-negative constant, so the
+    # sums of the constants bound the objective (#291, #292).
+    low = LIKED_BONUS * len(liked) + sum(value for _var, value in learned)
+    high = tenths_bound + sum(value for _var, value in variety)
+    objective = model.new_int_var(-max(low, 1), high, "objective")
+    bonus_terms = [(var, LIKED_BONUS) for var in liked] + learned
+    expr = tenths
+    if bonus_terms:
+        expr = expr - cp_model.LinearExpr.WeightedSum(
+            [var for var, _value in bonus_terms], [value for _var, value in bonus_terms]
+        )
+    if variety:
+        expr = expr + cp_model.LinearExpr.WeightedSum(
+            [var for var, _value in variety], [value for _var, value in variety]
+        )
+    model.add(objective == expr)
     model.minimize(objective)
 
 
@@ -764,6 +873,8 @@ def _plan(
     target: PlanTarget,
     plan_date: date,
     nutrient_codes: Sequence[str],
+    learned_reason_meal_ids: frozenset[int] = frozenset(),
+    planner_version: str = PLANNER_VERSION,
 ) -> DayPlan:
     ordered = _ordered(chosen)
     snack_count = sum(1 for choice in ordered if choice.slot == MealSlot.SNACK)
@@ -779,12 +890,15 @@ def _plan(
                 for code in nutrient_codes
                 if (amount := choice.meal.amount(code, choice.step)) is not None
             },
-            reason_codes=reason_codes(
-                choice.meal,
-                choice.step,
-                slot_target_kcal(choice.slot, target.kcal, snack_count),
-                limits,
-                preferences,
+            reason_codes=with_learned_reason(
+                reason_codes(
+                    choice.meal,
+                    choice.step,
+                    slot_target_kcal(choice.slot, target.kcal, snack_count),
+                    limits,
+                    preferences,
+                ),
+                choice.meal.meal_id in learned_reason_meal_ids,
             ),
         )
         for choice in ordered
@@ -800,8 +914,24 @@ def _plan(
         totals=totals,
         kcal_within_10pct=abs(kcal - target.kcal) <= KCAL_TOLERANCE * target.kcal,
         unmet_minimums=unmet_minimums(totals, limits),
-        planner_version=PLANNER_VERSION,
+        planner_version=planner_version,
     )
+
+
+def with_learned_reason(codes: Sequence[str], learned: bool) -> tuple[str, ...]:
+    """LEARNED_PREFERENCE first (#294), so it is among the two codes the app shows."""
+    rest = tuple(code for code in codes if code != LEARNED_PREFERENCE)
+    return (LEARNED_PREFERENCE, *rest) if learned else rest
+
+
+@dataclass(frozen=True)
+class LearnedInputs:
+    """What cpsat_v2_learned adds to optimize_day; built by app.ml.planning."""
+
+    bonus: Mapping[int, int]
+    penalty: Mapping[int, int]
+    reason_meal_ids: frozenset[int]
+    snapshot: Mapping[str, Any]
 
 
 def build_optimized_day_plan(
@@ -811,11 +941,13 @@ def build_optimized_day_plan(
     target: PlanTarget,
     plan_date: date,
     excluded_meal_ids: frozenset[int],
+    learned: LearnedInputs | None = None,
 ) -> OptimizedDay:
     """One optimized day for the user (no writes); raises NoFeasiblePlanError.
 
     Meal facts, preferences and nutrient codes are loaded the same way as build_day_plan.
     Limits are used as given: this function does not add the #87 general limits.
+    learned=None builds cpsat_v1; otherwise cpsat_v2_learned with those inputs.
     """
     nutrient_codes = tuple(
         session.execute(select(Nutrient.code).order_by(Nutrient.nutrient_id)).scalars()
@@ -828,4 +960,8 @@ def build_optimized_day_plan(
         plan_date,
         nutrient_codes,
         excluded_meal_ids=excluded_meal_ids,
+        learned_bonus=None if learned is None else learned.bonus,
+        variety_penalty=None if learned is None else learned.penalty,
+        learned_reason_meal_ids=frozenset() if learned is None else learned.reason_meal_ids,
+        planner_version=PLANNER_VERSION if learned is None else LEARNED_PLANNER_VERSION,
     )

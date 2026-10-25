@@ -20,6 +20,7 @@ from app.db.models.user import MealSlot
 from app.services.common import round_half_up
 from app.services.condition_limits import ENERGY_NUTRIENT, ResolvedLimits
 from app.services.meal_catalog import MealSummaryData, summaries_for
+from app.services.optimizer import is_cpsat_version
 from app.services.planner import KCAL_TOLERANCE, UnmetMinimum, unmet_minimums
 
 _SLOT_RANK = case(
@@ -42,7 +43,6 @@ TOTAL_FIELDS: tuple[tuple[str, str], ...] = (
     ("saturated_fat_g", "saturated_fat"),
 )
 _PLACES = 3
-_CPSAT = "cpsat_v1"
 _STATS_KEYS = ("solver_status", "kcal_relaxed", "solve_seconds", "candidate_meals")
 
 
@@ -121,7 +121,7 @@ def _target(snapshot: Mapping[str, object]) -> tuple[PlanTargetData, Decimal]:
 
 
 def _stats(plan: MealPlan) -> PlanStatsData | None:
-    if plan.algorithm_version != _CPSAT:
+    if not is_cpsat_version(plan.algorithm_version):
         return None
     solver = plan.target_snapshot.get("solver")
     if not isinstance(solver, Mapping) or any(key not in solver for key in _STATS_KEYS):

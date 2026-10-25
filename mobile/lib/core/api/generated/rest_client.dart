@@ -21,7 +21,7 @@ import 'clients/sync_client.dart';
 import 'clients/water_client.dart';
 import 'clients/weights_client.dart';
 
-/// NutriGuideAI API `v1.0.0`
+/// NutriGuideAI API `v1.1.0`
 class RestClient {
   RestClient(
     Dio dio, {
@@ -32,7 +32,7 @@ class RestClient {
   final Dio _dio;
   final String? _baseUrl;
 
-  static String get version => '1.0.0';
+  static String get version => '1.1.0';
 
   AdherenceClient? _adherence;
   AuthClient? _auth;

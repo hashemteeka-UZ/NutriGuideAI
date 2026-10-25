@@ -24,6 +24,7 @@ def _plan_item(
     plan_item_id: int,
     slot: str,
     meal: dict[str, object],
+    reason_codes: tuple[str, ...] = ("HIGH_PROTEIN",),
 ) -> dict[str, object]:
     return {
         "plan_item_id": plan_item_id,
@@ -35,14 +36,14 @@ def _plan_item(
         "protein_g": meal["protein_g"],
         "carb_g": meal["carb_g"],
         "fat_g": meal["fat_g"],
-        "reason_codes": ["HIGH_PROTEIN"],
+        "reason_codes": list(reason_codes),
         "was_swapped": False,
         "logged": True,
     }
 
 
 PLAN_ITEMS = [
-    _plan_item(5, "BREAKFAST", SHAKSHUKA),
+    _plan_item(5, "BREAKFAST", SHAKSHUKA, ("LEARNED_PREFERENCE", "HIGH_PROTEIN")),
     _plan_item(6, "LUNCH", MOLOKHIA),
     _plan_item(7, "DINNER", COUSCOUS),
     _plan_item(8, "SNACK", LABNEH),
@@ -69,7 +70,7 @@ PLAN_TOTALS = {
 DAY_PLAN_EXAMPLE = {
     "plan_id": 15,
     "date": "2026-10-20",
-    "algorithm_version": "cpsat_v1",
+    "algorithm_version": "cpsat_v2_learned",
     "created_at": "2026-10-19T21:05:00Z",
     "target": PLAN_TARGET,
     "items": PLAN_ITEMS,

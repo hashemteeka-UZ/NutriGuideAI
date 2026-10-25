@@ -68,6 +68,11 @@ class HybridLinUCB:
 
     def score(self, user: Hashable, x: FloatMatrix) -> tuple[FloatVector, FloatVector]:
         """(mean, ucb) for each row of x, without creating state for an unknown user."""
+        mean, width = self.score_parts(user, x)
+        return mean, mean + self.alpha * width
+
+    def score_parts(self, user: Hashable, x: FloatMatrix) -> tuple[FloatVector, FloatVector]:
+        """(mean, confidence width) for each row of x; ucb = mean + alpha * width."""
         x = np.atleast_2d(x)
         beta, theta = self.coefficients(user)
         mean = x @ beta + x @ theta
@@ -83,8 +88,7 @@ class HybridLinUCB:
             width -= 2.0 * np.einsum("ij,ij->j", a0_inv_z, bt_au_inv_x)
             width += np.einsum("ij,ij->j", z_t, au_inv_x)
             width += np.einsum("ij,ij->j", bt_au_inv_x, np.linalg.solve(self.a0, bt_au_inv_x))
-        ucb = mean + self.alpha * np.sqrt(np.maximum(width, 0.0))
-        return mean, ucb
+        return mean, np.sqrt(np.maximum(width, 0.0))
 
     def update(self, user: Hashable, x: FloatVector, reward: float, weight: float = 1.0) -> None:
         """Algorithm 2, lines 17-23. weight scales the observation (cold-start pseudo-rows)."""
@@ -148,6 +152,7 @@ class RankedMeal:
     meal_id: int
     mean: float
     ucb: float
+    width: float = 0.0  # confidence width; ucb = mean + alpha * width
 
 
 @dataclass(frozen=True)
@@ -162,10 +167,11 @@ class LearnedScorer:
         known = sorted({meal_id for meal_id in meal_ids if meal_id in self.features})
         if not known:
             return []
-        mean, ucb = self.model.score(user_id, self.features.rows(known))
+        mean, width = self.model.score_parts(user_id, self.features.rows(known))
+        ucb = mean + self.model.alpha * width
         ranked = [
-            RankedMeal(meal_id, float(m), float(u))
-            for meal_id, m, u in zip(known, mean, ucb, strict=True)
+            RankedMeal(meal_id, float(m), float(u), float(w))
+            for meal_id, m, u, w in zip(known, mean, ucb, width, strict=True)
         ]
         return sorted(ranked, key=lambda meal: (-meal.ucb, meal.meal_id))
 

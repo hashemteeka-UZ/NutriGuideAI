@@ -2,4 +2,5 @@
 
 from typing import Final
 
-API_VERSION: Final = "1.0.0"
+# 1.1.0 (Step L.2, #294): additive, the LEARNED_PREFERENCE reason code and cpsat_v2_learned.
+API_VERSION: Final = "1.1.0"

@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `1.0.0`). If this guide and that file disagree, the file wins. Every route in this version is implemented. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `1.1.0`). If this guide and that file disagree, the file wins. Every route in this version is implemented. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -93,6 +93,22 @@ Write a new UUID into `client_uuid` (and `op_id` for sync) before the request le
 The app calls `POST /plans/days` seven times in sequence, one date at a time, and shows progress (day 3 of 7). Each call stores that day, so the first day can be shown as soon as it returns. On **503** `PLANNER_BUSY`, wait the number of seconds in the `Retry-After` header, then retry that same day. On **503** `PLANNER_TIMEOUT`, show "could not build the plan now, try again". Do not retry that error in a loop.
 
 Logging a plan item, swapping, and saving a meal preference also write learning events on the server. The app only posts `IMPRESSION`, `VIEW`, `SAVE`, `RATE`, `COOK`, and `SKIP` to `POST /interactions`. `RATE` must include `value` from 1 to 5.
+
+`algorithm_version` is `cpsat_v2_learned` when the server uses what it learned from these events to choose between meals that already pass every health rule, and `cpsat_v1` when learning is off or could not run. Both have the same nutrition rules and the same `stats`. Older plans keep their version.
+
+Each plan item has `reason_codes`. Show at most the first two the app has a label for and skip unknown codes:
+
+| Code | Meaning |
+|---|---|
+| LEARNED_PREFERENCE | Chosen because the user's own logs, swaps, ratings, and likes suggest they will enjoy it (at least 5 of the user's events). Always first when present. |
+| FITS_KCAL_TARGET | Energy within 15% of that slot's target. |
+| HIGH_PROTEIN | Protein gives at least 20% of the meal's energy. |
+| LOW_SODIUM, LOW_SUGAR, LOW_SATURATED_FAT | Low per 100 g (drink thresholds for drinks). |
+| HIGH_FIBER | At least 6 g fiber per 100 g. |
+| SUITS_CONDITION_{CODE} | Within that condition's per-meal limits and avoided tags. |
+| MATCHES_LIKED_INGREDIENT | Contains an ingredient the user marked as liked. |
+
+`GET /plan-items/{plan_item_id}/alternatives` lists, for a user with learning events, the meals the server expects them to like first, then the nearest in kcal. Every alternative still passes the same swap checks.
 
 ## Logging
 
@@ -206,3 +222,7 @@ Paths are under `/api/v1`. This is the plan’s screen table, with food search r
 ## 8. Contract stability
 
 From `1.0.0` the contract is stable for the Flutter app. Changes are additive only: new optional fields, new endpoints, and new error codes. Clients must ignore unknown fields and treat an unknown error code as a generic error. A breaking change goes to `/api/v2`.
+
+Changes:
+
+- `1.1.0` (Step L.2): the reason code `LEARNED_PREFERENCE` and the plan version `cpsat_v2_learned`. Additive; no field, route, or error code changed.

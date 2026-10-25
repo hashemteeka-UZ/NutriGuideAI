@@ -36,7 +36,11 @@ from app.services.meal_filter import (
     load_meal_facts,
     load_user_preferences,
 )
-from app.services.optimizer import PLANNER_VERSION as CPSAT_VERSION
+from app.services.optimizer import (
+    LEARNED_PLANNER_VERSION,
+    is_cpsat_version,
+    with_learned_reason,
+)
 from app.services.planner import placement_rejections, reason_codes, slot_target_kcal
 
 SAME_MEAL: Final = "SAME_MEAL"
@@ -121,7 +125,7 @@ def swap_plan_item(
 
     target_kcal = plan_target_kcal(plan)
     limits = resolve_condition_limits(session, user_id, target_kcal)
-    if plan.algorithm_version == CPSAT_VERSION:
+    if is_cpsat_version(plan.algorithm_version):
         limits = apply_general_limits(limits)
     preferences = load_user_preferences(session, user_id)
     rejected = swap_rejections(
@@ -142,21 +146,25 @@ def swap_plan_item(
     snack_count = sum(1 for slot, _meal_id, _servings in others if slot == MealSlot.SNACK) + (
         item.slot == MealSlot.SNACK
     )
+    codes = reason_codes(
+        meal,
+        multiplier,
+        slot_target_kcal(item.slot, target_kcal, snack_count),
+        limits,
+        preferences,
+    )
+    if plan.algorithm_version == LEARNED_PLANNER_VERSION:
+        # Local import: app.ml.planning imports the planner and the optimizer.
+        from app.ml.planning import learned_reason
+
+        codes = with_learned_reason(codes, learned_reason(session, user_id, new_meal_id))
     session.execute(
         update(MealPlanItem)
         .where(MealPlanItem.id == item.id)
         .values(
             meal_id=new_meal_id,
             was_swapped=True,
-            reason_codes=list(
-                reason_codes(
-                    meal,
-                    multiplier,
-                    slot_target_kcal(item.slot, target_kcal, snack_count),
-                    limits,
-                    preferences,
-                )
-            ),
+            reason_codes=list(codes),
             # ORM onupdate=now() would ignore a Python assignment (§15.10).
             updated_at=now,
         )

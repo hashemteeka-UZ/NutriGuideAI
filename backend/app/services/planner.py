@@ -92,6 +92,8 @@ LOW_SATURATED_FAT: Final = "LOW_SATURATED_FAT"
 HIGH_FIBER: Final = "HIGH_FIBER"
 SUITS_CONDITION_PREFIX: Final = "SUITS_CONDITION_"
 MATCHES_LIKED_INGREDIENT: Final = "MATCHES_LIKED_INGREDIENT"
+# #294: the learned model expects this user to accept the meal (cpsat_v2_learned only).
+LEARNED_PREFERENCE: Final = "LEARNED_PREFERENCE"
 PER_100G_REASONS: Final = (
     (LOW_SODIUM, "sodium", LOW_SODIUM_MG_PER_100G, False),
     (LOW_SUGAR, "sugars", LOW_SUGAR_G_PER_100G, False),
@@ -602,20 +604,23 @@ def create_day_plan(
         snapshot = target_snapshot(target, limits)
     else:
         # optimizer imports this module, so a module-level import would cycle.
+        from app.ml.planning import learned_inputs_or_none
         from app.services.optimizer import GENERATED_BY as CPSAT_GENERATED_BY
-        from app.services.optimizer import PLANNER_VERSION as CPSAT_VERSION
         from app.services.optimizer import build_optimized_day_plan
 
         limits = apply_general_limits(limits)
         excluded = _previous_meal_ids(session, user_id, plan_date)
-        optimized = build_optimized_day_plan(session, user_id, limits, target, plan_date, excluded)
+        learned, ml_block = learned_inputs_or_none(session, user_id, plan_date, limits)
+        optimized = build_optimized_day_plan(
+            session, user_id, limits, target, plan_date, excluded, learned
+        )
         day_items = optimized.plan.items
         generated_by = CPSAT_GENERATED_BY
-        algorithm_version = CPSAT_VERSION
+        algorithm_version = optimized.plan.planner_version
         snapshot = target_snapshot(
             target,
             limits,
-            CPSAT_VERSION,
+            algorithm_version,
             {
                 "solver_status": optimized.solver_status,
                 "kcal_relaxed": optimized.kcal_relaxed,
@@ -626,6 +631,7 @@ def create_day_plan(
                 "slot_band_pass": optimized.slot_band_pass,
             },
         )
+        snapshot.update(ml_block)
 
     plan = MealPlan(
         user_id=user_id,

@@ -26,6 +26,7 @@ from app.db.models import (
     UserProfile,
 )
 from app.db.models.user import InteractionEventType, WaterLog
+from app.ml.planning import learned_means
 from app.services.adherence import DayAdherence, daily_adherence
 from app.services.common import round_half_up, to_decimal, zone
 from app.services.condition_limits import (
@@ -37,7 +38,7 @@ from app.services.consumption import PlanItemNotFoundError, has_active_log
 from app.services.meal_catalog import MealSummaryData, summaries_for
 from app.services.meal_filter import load_meal_facts, load_user_preferences
 from app.services.meal_windows import MealWindow, meal_windows
-from app.services.optimizer import PLANNER_VERSION as CPSAT_VERSION
+from app.services.optimizer import is_cpsat_version
 from app.services.plan_swap import plan_target_kcal, swap_plan_item, swap_rejections
 from app.services.plan_view import PlanItemData, PlanViewData, plan_view
 from app.services.planner import create_day_plan, current_plan_id
@@ -209,7 +210,11 @@ def _shown_kcal(amount: Decimal) -> float:
 def list_alternatives(
     session: Session, user_id: int, plan_item_id: int, lang: str
 ) -> list[AlternativeData]:
-    """Up to 10 meals swap_plan_item would accept, nearest in kcal (#194)."""
+    """Up to 10 meals swap_plan_item would accept (#194).
+
+    Ordered by the learned mean (no exploration term), highest first, then nearest in kcal
+    (#293). A user with no events of their own gets the kcal order alone.
+    """
     item, plan = _owned_item(session, user_id, plan_item_id)
     if has_active_log(session, item.id):
         return []
@@ -221,7 +226,7 @@ def list_alternatives(
     multiplier = to_decimal(item.servings_multiplier)
     current_kcal = current.per_serving[ENERGY_NUTRIENT] * multiplier
     limits = resolve_condition_limits(session, user_id, plan_target_kcal(plan))
-    if plan.algorithm_version == CPSAT_VERSION:
+    if is_cpsat_version(plan.algorithm_version):
         limits = apply_general_limits(limits)
     preferences = load_user_preferences(session, user_id)
     accepted: list[tuple[Decimal, int, Decimal]] = []
@@ -244,7 +249,8 @@ def list_alternatives(
             continue
         kcal = energy * multiplier
         accepted.append((abs(kcal - current_kcal), meal.meal_id, kcal))
-    accepted.sort(key=lambda row: (row[0], row[1]))
+    means = learned_means(session, user_id, [meal_id for _gap, meal_id, _kcal in accepted])
+    accepted.sort(key=lambda row: (-means.get(row[1], 0.0), row[0], row[1]))
     chosen = accepted[:_ALTERNATIVE_LIMIT]
     summaries = summaries_for(session, user_id, [meal_id for _gap, meal_id, _kcal in chosen], lang)
     alternatives: list[AlternativeData] = []

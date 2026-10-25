@@ -8,9 +8,9 @@ cache key, so the next call replays again.
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 import numpy as np
@@ -53,6 +53,8 @@ class ModelState:
     last_interaction_id: int | None
     taught: int
     pseudo: int
+    # Real events per user that taught at least one observation (pseudo rows not counted).
+    user_events: Mapping[int, int] = field(default_factory=dict)
 
     def scorer(self) -> LearnedScorer:
         return LearnedScorer(self.model, self.features)
@@ -64,12 +66,14 @@ def replay_events(
     events: Iterable[InteractionEvent],
     active_plan_items: frozenset[int] | None = None,
     cold_start: Mapping[int, Sequence[PseudoObservation]] | None = None,
+    user_events: Counter[int] | None = None,
 ) -> tuple[int, int]:
     """Apply events in the given order. Returns (observations taught, pseudo-observations).
 
     active_plan_items: plan items that still have a non-deleted log; None trusts every ACCEPT.
     A user's cold-start rows go in just before that user's first event; users with rows but
-    no events get them at the end.
+    no events get them at the end. user_events, when given, counts per user the real events
+    that taught something.
     """
     cold_start = cold_start or {}
     started: set[int] = set()
@@ -90,10 +94,14 @@ def replay_events(
             item = event.context.get("plan_item_id")
             if not isinstance(item, int) or item not in active_plan_items:
                 continue
+        learned = False
         for observation in observations(event):
             if observation.meal_id in features:
                 model.update(event.user_id, features.row(observation.meal_id), observation.reward)
                 taught += 1
+                learned = True
+        if learned and user_events is not None:
+            user_events[event.user_id] += 1
     for user_id in sorted(set(cold_start) - started):
         start(user_id)
     return taught, pseudo
@@ -238,12 +246,14 @@ def replay(
     features = build_meal_features(session)
     model = HybridLinUCB(features.d, alpha=alpha, ridge=ridge)
     events = _events(session, user_ids)
+    user_events: Counter[int] = Counter()
     taught, pseudo = replay_events(
         model,
         features,
         events,
         _active_plan_items(session, user_ids),
         load_cold_start(session, features, user_ids),
+        user_events,
     )
     state = ModelState(
         model=model,
@@ -251,6 +261,7 @@ def replay(
         last_interaction_id=max((event.id for event in events), default=None),
         taught=taught,
         pseudo=pseudo,
+        user_events=dict(user_events),
     )
     _cache.clear()
     _cache[key] = state
