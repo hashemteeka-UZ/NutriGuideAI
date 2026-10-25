@@ -1,0 +1,53 @@
+Step K.5a (outbox, sync engine, logging plan meals; Decisions #262 to #268) for NutriGuideAI. K.0-K.4 are committed. This pass adds the device side of offline sync (PROJECT_CONTEXT 33.4, API_GUIDE "Offline sync", "Logging") and the first thing that uses it: logging a plan meal from Today. Water, weight and logging another catalog meal come in K.5b.
+
+Work in C:\dev\NutriGuideAI, PowerShell. `git pull`, `git status` clean. Read: docs/project/steps/STEP_K_plan.md (#262-#268), docs/api/API_GUIDE.md ("5. Offline and the planner", "Logging", "Offline sync"), docs/api/openapi.json (`POST /api/v1/sync/batch`, `GET /api/v1/sync/changes`, `POST /api/v1/consumption-logs`, `DELETE /api/v1/consumption-logs/{log_id}`, `POST /api/v1/interactions`; schemas `SyncBatch`, `SyncConsumptionCreate`, `PlanItemLog`, `SyncConsumptionDelete`, `SyncConsumptionCorrect`, `SyncInteractionCreate`, `SyncResult`, `SyncOpResult`, `SyncChanges`, `ConsumptionLogOut`). Prototype: `7_home.js` (`mealCard` eat button, `mealState` done), `8_screens.js` (`mealSheet` "I ate it" / "Undo log").
+
+## 0. K.4 carry-over
+Startup with a stored session must not wait ~10 s on `GET /me` when the backend is unreachable: route from the cached session state immediately (cached has_profile) and refresh `/me` in the background with a short timeout (3 s).
+
+## Hard rules
+Same as K.4: only `mobile/`; never log health data, plan contents, log contents or request bodies; the app never computes nutrition except the provisional sums allowed in section 4; generated models stay in `data/`; no new packages; do not commit until told.
+
+## 1. Sync wire models (#262)
+The generator excluded the sync union (K.0 carry-over). Hand-write `lib/core/api/manual/sync_models.dart`: sealed `SyncOperation` with `PlanItemLogCreateOp` (op CONSUMPTION_CREATE, log kind PLAN_ITEM), `MealLogCreateOp` (kind MEAL, used in K.5b), `ConsumptionDeleteOp`, `WaterCreateOp`, `WaterDeleteOp`, `WeightPutOp`, `InteractionCreateOp`, each with `toJson()` exactly matching the schemas (snake_case, `op`, `op_id`, instants ISO-8601 UTC with `Z`, dates YYYY-MM-DD), plus `SyncResult`/`SyncOpResult` parsing. A contract test builds one of each op and validates it against `docs/api/openapi.json` (required keys present, no extra keys, enum values).
+
+## 2. Outbox (#263)
+- drift table `outbox` (schemaVersion 4, migration 3 -> 4 with generated test): `op_id` PK (UUID v4), `seq` autoincrement unique (send order), `op_type`, `payload_json`, `client_uuid` (nullable), `entity_ref` (local key the op concerns, e.g. `plan_item:123`), `created_at`, `attempts`, `last_error_code`, `state` (PENDING, REJECTED). Personal: wiped on logout/account switch ONLY after a final upload attempt; if that attempt fails, logout asks «لديك تسجيلات لم تُرفع بعد. الخروج سيحذفها من الهاتف.» with cancel/confirm (33.4: queued records are never discarded silently).
+- Each user action writes its domain row and its outbox op in ONE transaction, with a fresh `op_id` and `client_uuid` generated before anything leaves the phone. The same ids are reused on every retry.
+- Compaction (#210 on the device): if a CONSUMPTION_CREATE for a log is still PENDING and the user undoes it, delete the queued create instead of queuing a delete. A delete is queued only for a log the server confirmed (has `server_log_id`).
+
+## 3. Sync engine (#264)
+- `SyncEngine.syncNow()` (one run in flight, shared future): (a) upload: take up to 500 PENDING ops by `seq`, `POST /sync/batch`; on network failure or 5xx resend the SAME batch next time; on 200 apply each `SyncOpResult`: CREATED/UPDATED/DUPLICATE -> delete the op, store `entity_id` as `server_log_id` on the domain row; REJECTED -> state REJECTED with `code`, keep the domain row marked rejected, never resend; repeat while ops remain. (b) download: `GET /sync/changes?since=<stored server_time>` (first run: now minus 30 days); upsert consumption logs by `log_id`, delete ids in `deleted_consumption_log_ids`, replace `meal_prefs`, upsert plans from `plans` into the K.4 cache, store `server_time` as the next `since`; `CLOCK_SKEW` -> retry once with `since` = now minus 2 minutes; `VALIDATION_ERROR` (too old) -> reset `since` and do a full refresh (plans range + today). `profile_changed` -> refetch targets and `GET /me/profile` allergens. Water and weights from the feed are stored by K.5b; for now keep them in memory or ignore them.
+- Triggers: after each user action (debounced 2 s), app start and resume, pull-to-refresh, and every 5 minutes while the app is in the foreground. 401 is handled by the K.1 refresh interceptor; if the refresh token is dead, keep the outbox and retry after the next sign-in.
+- A small sync status in Today's header: nothing when idle and empty; «⟳ جارٍ الرفع» while uploading; «⇡ N بانتظار الاتصال» when ops are pending offline; a red dot with «تعذر حفظ تسجيل» if any op is REJECTED (tap shows which meal and «حذف»).
+
+## 4. Logging a plan meal (#265, #266)
+- drift table `consumption_logs`: `client_uuid` PK, `server_log_id` (nullable, unique), `kind`, `plan_item_id`, `meal_id`, `log_date`, `slot`, `servings_consumed`, `consumed_at`, nutrient fields from the server (nullable until confirmed), `state` (PENDING, CONFIRMED, REJECTED, DELETING). Personal.
+- Today timeline and plan item details: the round button «أكلتها» (`.eat`). Tap = log the planned portion now: `servings_consumed` = the item's `servings_multiplier`, `consumed_at` = now. Long-press or the details sheet offers «كمية مختلفة»: ½, 1, 1½ of the planned portion. Once logged, the button shows a check and «تراجع» undoes (compaction rule). A logged item cannot be swapped (K.4 already disables it).
+- Missed window card from the prototype: when the current time is past a slot window and that item is not logged, show «فاتك موعد <slot>» / «هل أكلتها؟ سجلها الآن حتى يبقى يومك دقيقًا» with «سجّلها» (consumed_at = window end).
+- Today's calorie card eaten values: server `day_summaries` totals for confirmed logs PLUS a provisional sum for PENDING logs = the plan item's server kcal/protein/carb/fat × (servings_consumed / servings_multiplier). Mark the card «مؤقت حتى المزامنة» while any pending log exists. After sync, refresh `GET /days/{today}` so the server totals replace the provisional sum.
+- Haptic light impact and a short check animation on log (off with reduce motion).
+
+## 5. Learning events (#267)
+Queue `INTERACTION_CREATE` ops (never direct POST): `IMPRESSION` once per plan item per day when Today first shows it (screen `today`), `VIEW` when catalog or plan details open (screen `meal_detail`), `COOK` is not used yet. Include `plan_item_id` when the context is a plan item. Do not send `ACCEPT` (the server writes it). Dedupe IMPRESSION per (plan_item_id, date) locally.
+
+## 6. Errors (#268)
+Messages ar/en for: `CLIENT_UUID_CONFLICT`, `PLAN_ITEM_NOT_FOUND`, `LOG_NOT_FOUND`, `CLOCK_SKEW`, and a generic «تعذر حفظ هذا التسجيل» for any other REJECTED code. Never crash on an unknown code.
+
+## 7. Tests
+- Wire models vs contract (one per op type), result parsing.
+- Outbox: action + op in one transaction; compaction (undo of a pending create removes it, no delete queued); delete queued only with server_log_id.
+- Engine with a fake API and fake clock: ordered upload; network failure resends the same batch (same op_ids); CREATED stores server_log_id; DUPLICATE treated as success; REJECTED kept and not resent; 501 ops -> two batches; changes upsert and deletes; CLOCK_SKEW retry; profile_changed refetch; concurrent syncNow share one run.
+- Logout with pending ops: success path wipes; failure shows the confirm dialog.
+- Provisional totals: pending ½ portion adds half the item's server kcal; disappears after the confirmed refresh.
+- Widget: tap «أكلتها» -> check + status «⇡ 1 بانتظار الاتصال» offline; undo; missed-window card; English LTR at 1.3.
+- Migration 3 -> 4; architecture tests cover features/logging and core/sync.
+
+## 8. Emulator runs (keep it short)
+1. Online: log breakfast from Today -> check appears, after sync the calorie card shows the server value (report kcal) and «مؤقت» disappears.
+2. Offline (stop the backend): log lunch, then log and undo dinner; status shows pending; start the backend -> pending goes to 0 within a sync cycle; reopen -> logs still there.
+3. Undo a confirmed log online -> server total drops back.
+4. Screenshots: `k5a_today_logged.png`, `k5a_pending.png`.
+
+## Checks and report
+`dart format`, `flutter analyze`, full `flutter test`, `flutter build apk --debug --target-platform android-x64`. Report: files, tables, test counts before/after with new names, runs 1-3 with numbers, contradictions and assumptions (one line each with section).
