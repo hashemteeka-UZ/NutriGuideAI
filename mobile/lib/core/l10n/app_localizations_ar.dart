@@ -1785,4 +1785,120 @@ class AppLocalizationsAr extends AppLocalizations {
   String badgeCelebrate(Object name) {
     return 'أحسنت! حصلت على $name';
   }
+
+  @override
+  String get accountEditProfile => 'تعديل بياناتي';
+
+  @override
+  String get editIntro => 'اختر ما تريد تعديله، ثم احفظ';
+
+  @override
+  String get editStepAbout => 'عنك';
+
+  @override
+  String get editStepMeasure => 'الطول';
+
+  @override
+  String get editStepGoal => 'الهدف';
+
+  @override
+  String get editStepPace => 'الوزن المستهدف والسرعة';
+
+  @override
+  String get editStepActivity => 'النشاط';
+
+  @override
+  String get editStepCare => 'الحالات الصحية';
+
+  @override
+  String get editStepAllergy => 'الحساسية';
+
+  @override
+  String get editStepSafety => 'الإنسولين';
+
+  @override
+  String get editStepRhythm => 'يومك';
+
+  @override
+  String get editStepFluid => 'الماء مع طبيبك';
+
+  @override
+  String get editSave => 'حفظ';
+
+  @override
+  String get editDone => 'تم';
+
+  @override
+  String get editWeightHint => 'الوزن يُسجّل من شاشة الوزن';
+
+  @override
+  String get editSavedNote => 'الخطط القادمة ستُبنى بهدفك الجديد';
+
+  @override
+  String get accountAppearance => 'المظهر';
+
+  @override
+  String get themeSystem => 'حسب الجهاز';
+
+  @override
+  String get themeLight => 'فاتح';
+
+  @override
+  String get themeDark => 'داكن';
+
+  @override
+  String get accountDelete => 'حذف الحساب';
+
+  @override
+  String get deleteBody =>
+      'سيُحذف نهائيًا: ملفك الشخصي، وخططك، وسجلات أكلك، وأوزانك، وسجلات الماء، وما تعلّمه التطبيق من تفاعلاتك على الخادم، وكل بياناتك على هذا الهاتف. لا يمكن التراجع عن ذلك.';
+
+  @override
+  String get deleteTypeHint => 'اكتب «حذف» للتأكيد';
+
+  @override
+  String get deleteWord => 'حذف';
+
+  @override
+  String get deleteConfirm => 'حذف حسابي نهائيًا';
+
+  @override
+  String get deletePending =>
+      'لديك عناصر لم تُرسل بعد إلى الخادم، وستُحذف أيضًا.';
+
+  @override
+  String get deleteFailed =>
+      'تعذّر حذف الحساب الآن. لم يُحذف شيء، حاول مرة أخرى.';
+
+  @override
+  String get deleteDone => 'حُذف حسابك وكل بياناتك';
+
+  @override
+  String get accountAbout => 'عن التطبيق والخصوصية';
+
+  @override
+  String aboutVersion(Object version) {
+    return 'الإصدار $version';
+  }
+
+  @override
+  String get aboutDisclaimerTitle => 'تنبيه صحي';
+
+  @override
+  String get aboutDisclaimer =>
+      'يقدّم التطبيق إرشادات غذائية عامة، ولا يغني عن الطبيب أو أخصائي التغذية. إذا كان لديك السكري أو ارتفاع ضغط الدم أو مرض القلب فاتبع توجيهات فريقك الطبي.';
+
+  @override
+  String get aboutDataTitle => 'مصدر البيانات';
+
+  @override
+  String get aboutData =>
+      'القيم الغذائية مبنية على قاعدة بيانات USDA FoodData Central.';
+
+  @override
+  String get aboutLearnTitle => 'كيف يتعلّم التطبيق منك';
+
+  @override
+  String get aboutLearn =>
+      'يستفيد التطبيق مما تفعله: الوجبات التي تأكلها، وما تستبدله، وتقييماتك، وما لم تأكله، وما تحفظه. ويختار فقط بين وجبات تجتاز كل القواعد الصحية. حذف حسابك يحذف سجل التعلّم هذا.';
 }

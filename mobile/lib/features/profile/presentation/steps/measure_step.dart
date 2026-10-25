@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/ui/rise_in.dart';
+import '../../../weight/presentation/weight_sheet.dart';
 import '../../domain/bmi.dart';
 import '../format_number.dart';
 import '../onboarding_controller.dart';
@@ -16,7 +19,8 @@ class MeasureStep extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final draft = ref.watch(onboardingControllerProvider).draft;
+    final onboarding = ref.watch(onboardingControllerProvider);
+    final draft = onboarding.draft;
     final notifier = ref.read(onboardingControllerProvider.notifier);
     final bmi = bmiValue(heightCm: draft.heightCm, weightKg: draft.weightKg);
     return Column(
@@ -50,21 +54,40 @@ class MeasureStep extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Expanded(
-                child: _LabeledWheel(
-                  label: l10n.onbWeight,
-                  unit: l10n.onbKg,
-                  child: NumberWheel(
-                    min: 20,
-                    max: 400,
-                    step: 0.5,
-                    fractionDigits: 1,
-                    value: draft.weightKg,
-                    semanticLabel: l10n.onbWeight,
-                    onChanged: notifier.setWeight,
+              // Editing a profile: weight has its own sheet (#309).
+              if (onboarding.editing)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: Column(
+                      key: const Key('edit-weight-hint'),
+                      children: <Widget>[
+                        Text(l10n.editWeightHint, textAlign: TextAlign.center),
+                        TextButton(
+                          key: const Key('edit-weight-open'),
+                          onPressed: () => unawaited(showWeightSheet(context)),
+                          child: Text(l10n.weightTitle),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: _LabeledWheel(
+                    label: l10n.onbWeight,
+                    unit: l10n.onbKg,
+                    child: NumberWheel(
+                      min: 20,
+                      max: 400,
+                      step: 0.5,
+                      fractionDigits: 1,
+                      value: draft.weightKg,
+                      semanticLabel: l10n.onbWeight,
+                      onChanged: notifier.setWeight,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

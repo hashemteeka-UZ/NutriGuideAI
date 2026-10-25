@@ -68,28 +68,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               state: state,
               child: const ResultView(),
             ),
-            _ => _QuestionFrame(state: state, child: _step(state.step)),
+            _ => _QuestionFrame(
+              state: state,
+              child: onboardingStepView(state.step),
+            ),
           },
         ),
       ),
     );
   }
+}
 
-  Widget _step(OnboardingStep? step) {
-    return switch (step) {
-      OnboardingStep.about => const AboutStep(),
-      OnboardingStep.measure => const MeasureStep(),
-      OnboardingStep.goal => const GoalStep(),
-      OnboardingStep.pace => const PaceStep(),
-      OnboardingStep.activity => const ActivityStep(),
-      OnboardingStep.care => const CareStep(),
-      OnboardingStep.allergy => const AllergyStep(),
-      OnboardingStep.safety => const SafetyStep(),
-      OnboardingStep.rhythm => const RhythmStep(),
-      OnboardingStep.fluid => const FluidStep(),
-      null => const SizedBox.shrink(),
-    };
-  }
+/// The widget of one step; onboarding and the profile edit share them.
+Widget onboardingStepView(OnboardingStep? step) {
+  return switch (step) {
+    OnboardingStep.about => const AboutStep(),
+    OnboardingStep.measure => const MeasureStep(),
+    OnboardingStep.goal => const GoalStep(),
+    OnboardingStep.pace => const PaceStep(),
+    OnboardingStep.activity => const ActivityStep(),
+    OnboardingStep.care => const CareStep(),
+    OnboardingStep.allergy => const AllergyStep(),
+    OnboardingStep.safety => const SafetyStep(),
+    OnboardingStep.rhythm => const RhythmStep(),
+    OnboardingStep.fluid => const FluidStep(),
+    null => const SizedBox.shrink(),
+  };
 }
 
 class _QuestionFrame extends ConsumerWidget {

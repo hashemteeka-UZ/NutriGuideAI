@@ -1796,4 +1796,120 @@ class AppLocalizationsEn extends AppLocalizations {
   String badgeCelebrate(Object name) {
     return 'Well done! You earned $name';
   }
+
+  @override
+  String get accountEditProfile => 'Edit my details';
+
+  @override
+  String get editIntro => 'Choose what to change, then save';
+
+  @override
+  String get editStepAbout => 'About you';
+
+  @override
+  String get editStepMeasure => 'Height';
+
+  @override
+  String get editStepGoal => 'Goal';
+
+  @override
+  String get editStepPace => 'Target and pace';
+
+  @override
+  String get editStepActivity => 'Activity';
+
+  @override
+  String get editStepCare => 'Health conditions';
+
+  @override
+  String get editStepAllergy => 'Allergies';
+
+  @override
+  String get editStepSafety => 'Insulin';
+
+  @override
+  String get editStepRhythm => 'Your day';
+
+  @override
+  String get editStepFluid => 'Water with your doctor';
+
+  @override
+  String get editSave => 'Save';
+
+  @override
+  String get editDone => 'Done';
+
+  @override
+  String get editWeightHint => 'Weight is logged from the weight sheet';
+
+  @override
+  String get editSavedNote => 'Upcoming plans will use your new target';
+
+  @override
+  String get accountAppearance => 'Appearance';
+
+  @override
+  String get themeSystem => 'Use device setting';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get accountDelete => 'Delete account';
+
+  @override
+  String get deleteBody =>
+      'This permanently deletes your profile, plans, meal logs, weights, water logs, what the app learned from your actions on the server, and all your data on this phone. It cannot be undone.';
+
+  @override
+  String get deleteTypeHint => 'Type DELETE to confirm';
+
+  @override
+  String get deleteWord => 'DELETE';
+
+  @override
+  String get deleteConfirm => 'Delete my account';
+
+  @override
+  String get deletePending =>
+      'Some items were not sent to the server yet; they will be discarded too.';
+
+  @override
+  String get deleteFailed =>
+      'Could not delete the account now. Nothing was deleted; try again.';
+
+  @override
+  String get deleteDone => 'Your account and all your data were deleted';
+
+  @override
+  String get accountAbout => 'About and privacy';
+
+  @override
+  String aboutVersion(Object version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutDisclaimerTitle => 'Health note';
+
+  @override
+  String get aboutDisclaimer =>
+      'The app gives general dietary guidance and does not replace a doctor or dietitian. If you have diabetes, high blood pressure or heart disease, follow your care team.';
+
+  @override
+  String get aboutDataTitle => 'Data source';
+
+  @override
+  String get aboutData =>
+      'Nutrition values are based on USDA FoodData Central.';
+
+  @override
+  String get aboutLearnTitle => 'How the app learns from you';
+
+  @override
+  String get aboutLearn =>
+      'The app uses what you do: meals you eat, swap, rate, did not eat, or save. It only chooses between meals that already pass every health rule. Deleting your account deletes this learning history.';
 }

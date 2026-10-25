@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/l10n/app_localizations.dart';
 import '../core/locale/locale_controller.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/theme_mode_controller.dart';
 import '../features/auth/data/auth_interceptor.dart';
 import '../features/catalog/presentation/catalog_lifecycle.dart';
 import '../features/logging/presentation/sync_lifecycle.dart';
@@ -28,7 +29,7 @@ class App extends ConsumerWidget {
       routerConfig: router,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      themeMode: ref.watch(themeModeProvider),
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[

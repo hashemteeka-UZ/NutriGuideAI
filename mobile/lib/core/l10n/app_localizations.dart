@@ -3144,6 +3144,222 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'أحسنت! حصلت على {name}'**
   String badgeCelebrate(Object name);
+
+  /// No description provided for @accountEditProfile.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل بياناتي'**
+  String get accountEditProfile;
+
+  /// No description provided for @editIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر ما تريد تعديله، ثم احفظ'**
+  String get editIntro;
+
+  /// No description provided for @editStepAbout.
+  ///
+  /// In ar, this message translates to:
+  /// **'عنك'**
+  String get editStepAbout;
+
+  /// No description provided for @editStepMeasure.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول'**
+  String get editStepMeasure;
+
+  /// No description provided for @editStepGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف'**
+  String get editStepGoal;
+
+  /// No description provided for @editStepPace.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن المستهدف والسرعة'**
+  String get editStepPace;
+
+  /// No description provided for @editStepActivity.
+  ///
+  /// In ar, this message translates to:
+  /// **'النشاط'**
+  String get editStepActivity;
+
+  /// No description provided for @editStepCare.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحالات الصحية'**
+  String get editStepCare;
+
+  /// No description provided for @editStepAllergy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحساسية'**
+  String get editStepAllergy;
+
+  /// No description provided for @editStepSafety.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإنسولين'**
+  String get editStepSafety;
+
+  /// No description provided for @editStepRhythm.
+  ///
+  /// In ar, this message translates to:
+  /// **'يومك'**
+  String get editStepRhythm;
+
+  /// No description provided for @editStepFluid.
+  ///
+  /// In ar, this message translates to:
+  /// **'الماء مع طبيبك'**
+  String get editStepFluid;
+
+  /// No description provided for @editSave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get editSave;
+
+  /// No description provided for @editDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم'**
+  String get editDone;
+
+  /// No description provided for @editWeightHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن يُسجّل من شاشة الوزن'**
+  String get editWeightHint;
+
+  /// No description provided for @editSavedNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطط القادمة ستُبنى بهدفك الجديد'**
+  String get editSavedNote;
+
+  /// No description provided for @accountAppearance.
+  ///
+  /// In ar, this message translates to:
+  /// **'المظهر'**
+  String get accountAppearance;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب الجهاز'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتح'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In ar, this message translates to:
+  /// **'داكن'**
+  String get themeDark;
+
+  /// No description provided for @accountDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get accountDelete;
+
+  /// No description provided for @deleteBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيُحذف نهائيًا: ملفك الشخصي، وخططك، وسجلات أكلك، وأوزانك، وسجلات الماء، وما تعلّمه التطبيق من تفاعلاتك على الخادم، وكل بياناتك على هذا الهاتف. لا يمكن التراجع عن ذلك.'**
+  String get deleteBody;
+
+  /// No description provided for @deleteTypeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب «حذف» للتأكيد'**
+  String get deleteTypeHint;
+
+  /// No description provided for @deleteWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get deleteWord;
+
+  /// No description provided for @deleteConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف حسابي نهائيًا'**
+  String get deleteConfirm;
+
+  /// No description provided for @deletePending.
+  ///
+  /// In ar, this message translates to:
+  /// **'لديك عناصر لم تُرسل بعد إلى الخادم، وستُحذف أيضًا.'**
+  String get deletePending;
+
+  /// No description provided for @deleteFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر حذف الحساب الآن. لم يُحذف شيء، حاول مرة أخرى.'**
+  String get deleteFailed;
+
+  /// No description provided for @deleteDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'حُذف حسابك وكل بياناتك'**
+  String get deleteDone;
+
+  /// No description provided for @accountAbout.
+  ///
+  /// In ar, this message translates to:
+  /// **'عن التطبيق والخصوصية'**
+  String get accountAbout;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإصدار {version}'**
+  String aboutVersion(Object version);
+
+  /// No description provided for @aboutDisclaimerTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تنبيه صحي'**
+  String get aboutDisclaimerTitle;
+
+  /// No description provided for @aboutDisclaimer.
+  ///
+  /// In ar, this message translates to:
+  /// **'يقدّم التطبيق إرشادات غذائية عامة، ولا يغني عن الطبيب أو أخصائي التغذية. إذا كان لديك السكري أو ارتفاع ضغط الدم أو مرض القلب فاتبع توجيهات فريقك الطبي.'**
+  String get aboutDisclaimer;
+
+  /// No description provided for @aboutDataTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصدر البيانات'**
+  String get aboutDataTitle;
+
+  /// No description provided for @aboutData.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيم الغذائية مبنية على قاعدة بيانات USDA FoodData Central.'**
+  String get aboutData;
+
+  /// No description provided for @aboutLearnTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف يتعلّم التطبيق منك'**
+  String get aboutLearnTitle;
+
+  /// No description provided for @aboutLearn.
+  ///
+  /// In ar, this message translates to:
+  /// **'يستفيد التطبيق مما تفعله: الوجبات التي تأكلها، وما تستبدله، وتقييماتك، وما لم تأكله، وما تحفظه. ويختار فقط بين وجبات تجتاز كل القواعد الصحية. حذف حسابك يحذف سجل التعلّم هذا.'**
+  String get aboutLearn;
 }
 
 class _AppLocalizationsDelegate

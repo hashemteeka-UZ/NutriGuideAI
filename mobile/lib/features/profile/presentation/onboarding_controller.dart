@@ -13,6 +13,7 @@ import '../../plan/domain/cached_user.dart';
 import '../../reference/data/reference_repository.dart';
 import '../../reference/domain/reference_data.dart';
 import '../data/device_timezone.dart';
+import '../data/profile_editor.dart';
 import '../data/profile_repository.dart';
 import '../domain/onboarding_steps.dart';
 import '../domain/pace_rules.dart';
@@ -38,6 +39,8 @@ class OnboardingState {
     this.timezoneFellBack = false,
     this.fieldError,
     this.actionError,
+    this.editing = false,
+    this.edit,
   });
 
   final OnboardingPhase phase;
@@ -50,6 +53,11 @@ class OnboardingState {
   final bool timezoneFellBack;
   final AppFailure? fieldError;
   final AppFailure? actionError;
+
+  /// Editing an existing profile from «حسابي» (#309): the same steps, opened
+  /// from a list, saved one at a time. stepIndex -1 is the list.
+  final bool editing;
+  final EditableProfile? edit;
 
   List<OnboardingStep> get steps => onboardingSteps(
     draft,
@@ -75,6 +83,8 @@ class OnboardingState {
     bool? timezoneFellBack,
     Object? fieldError = _keep,
     Object? actionError = _keep,
+    bool? editing,
+    Object? edit = _keep,
   }) {
     return OnboardingState(
       phase: phase ?? this.phase,
@@ -93,6 +103,8 @@ class OnboardingState {
       actionError: actionError == _keep
           ? this.actionError
           : actionError as AppFailure?,
+      editing: editing ?? this.editing,
+      edit: edit == _keep ? this.edit : edit as EditableProfile?,
     );
   }
 }
@@ -423,6 +435,101 @@ class OnboardingController extends Notifier<OnboardingState> {
     }
     ref.read(recheckOnboardingProvider.notifier).close();
     await ref.read(sessionControllerProvider.notifier).completeOnboarding();
+  }
+
+  /// Opens the edit list with the saved profile (#309). A failure to read it
+  /// (offline) leaves nothing to save.
+  Future<void> startEdit() async {
+    _started = false;
+    state = const OnboardingState(editing: true);
+    try {
+      final edit = await ref.read(profileEditorProvider).load();
+      if (!ref.mounted) {
+        return;
+      }
+      state = state.copyWith(draft: edit.draft, edit: edit, stepIndex: -1);
+    } on Object catch (error) {
+      if (!ref.mounted) {
+        return;
+      }
+      state = state.copyWith(phase: OnboardingPhase.ready, loadError: error);
+      return;
+    }
+    await reloadReference();
+  }
+
+  void openStep(OnboardingStep step) {
+    final index = state.steps.indexOf(step);
+    if (index < 0) {
+      return;
+    }
+    state = state.copyWith(
+      stepIndex: index,
+      forward: true,
+      fieldError: null,
+      actionError: null,
+    );
+  }
+
+  void closeStep() {
+    state = state.copyWith(
+      stepIndex: -1,
+      forward: false,
+      fieldError: null,
+      actionError: null,
+      phase: OnboardingPhase.ready,
+    );
+  }
+
+  /// True when every step of the edited draft is complete.
+  bool get editIsValid {
+    final draft = state.draft;
+    return state.steps.every((OnboardingStep step) => stepIsValid(step, draft));
+  }
+
+  Future<void> saveEdit() async {
+    final edit = state.edit;
+    if (edit == null || state.phase == OnboardingPhase.saving || !editIsValid) {
+      return;
+    }
+    state = state.copyWith(
+      phase: OnboardingPhase.saving,
+      fieldError: null,
+      actionError: null,
+    );
+    try {
+      final result = await ref
+          .read(profileEditorProvider)
+          .save(state.draft, edit);
+      if (!ref.mounted) {
+        return;
+      }
+      state = state.copyWith(phase: OnboardingPhase.result, result: result);
+    } on AppFailure catch (failure) {
+      if (!ref.mounted) {
+        return;
+      }
+      _showFailure(failure);
+    } on Object {
+      if (!ref.mounted) {
+        return;
+      }
+      _showFailure(const UnexpectedResponse(null));
+    }
+  }
+
+  /// Leaves the edit flow: targets and today are read again; plans already
+  /// built keep their target (#309).
+  Future<void> finishEdit() async {
+    _reset();
+    try {
+      await ref.read(userContextRefreshProvider)();
+      await ref
+          .read(todayRepositoryProvider)
+          .refreshDay(ref.read(planClockProvider)());
+    } on Object {
+      // The next refresh reads them.
+    }
   }
 
   Future<bool> _redirectIfProfileExists() async {

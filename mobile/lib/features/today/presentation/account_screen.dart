@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/locale/locale_controller.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_mode_controller.dart';
 import '../../auth/presentation/session_controller.dart';
 import '../../logging/data/logging_providers.dart';
 import '../../weight/data/weight_providers.dart';
@@ -42,11 +43,21 @@ class AccountScreen extends ConsumerWidget {
               onTap: () => unawaited(showWeightSheet(context)),
             ),
             _Row(
+              key: const Key('account-edit'),
+              label: l10n.accountEditProfile,
+              onTap: () => context.push('/me/edit'),
+            ),
+            _Row(
               key: const Key('account-language'),
               label: l10n.accountLanguage,
               onTap: () {
                 unawaited(ref.read(localeProvider.notifier).toggle());
               },
+            ),
+            _Row(
+              key: const Key('account-appearance'),
+              label: l10n.accountAppearance,
+              onTap: () => unawaited(showAppearanceSheet(context, ref)),
             ),
             _Row(
               key: const Key('account-favourites'),
@@ -59,9 +70,21 @@ class AccountScreen extends ConsumerWidget {
               onTap: () => context.push('/meals'),
             ),
             _Row(
+              key: const Key('account-about'),
+              label: l10n.accountAbout,
+              onTap: () => context.push('/me/about'),
+            ),
+            _Row(
               key: const Key('account-logout'),
               label: l10n.logout,
               onTap: () => unawaited(confirmLogout(context, ref)),
+            ),
+            const SizedBox(height: 16),
+            _Row(
+              key: const Key('account-delete'),
+              label: l10n.accountDelete,
+              color: context.appColors.danger,
+              onTap: () => context.push('/me/delete'),
             ),
           ],
         ),
@@ -107,16 +130,62 @@ Future<void> confirmLogout(BuildContext context, WidgetRef ref) async {
   await ref.read(sessionControllerProvider.notifier).logout();
 }
 
+/// «المظهر»: device, light or dark (#310).
+Future<void> showAppearanceSheet(BuildContext context, WidgetRef ref) {
+  final l10n = AppLocalizations.of(context);
+  return showModalBottomSheet<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? _) {
+          final current = ref.watch(themeModeProvider);
+          final labels = <ThemeMode, String>{
+            ThemeMode.system: l10n.themeSystem,
+            ThemeMode.light: l10n.themeLight,
+            ThemeMode.dark: l10n.themeDark,
+          };
+          return SafeArea(
+            child: RadioGroup<ThemeMode>(
+              groupValue: current,
+              onChanged: (ThemeMode? mode) {
+                if (mode != null) {
+                  unawaited(ref.read(themeModeProvider.notifier).select(mode));
+                }
+              },
+              child: Column(
+                key: const Key('appearance-sheet'),
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  for (final entry in labels.entries)
+                    RadioListTile<ThemeMode>(
+                      key: Key('theme-${entry.key.name}'),
+                      value: entry.key,
+                      title: Text(entry.value),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
 class _Row extends StatelessWidget {
   const _Row({
     required this.label,
     required this.onTap,
     this.action,
+    this.color,
     super.key,
   });
 
   final String label;
   final VoidCallback onTap;
+
+  /// Label color; the danger color for «حذف الحساب».
+  final Color? color;
 
   /// A short call to action shown at the end of the row.
   final String? action;
@@ -141,7 +210,8 @@ class _Row extends StatelessWidget {
                   Expanded(
                     child: Text(
                       label,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(color: color),
                     ),
                   ),
                   if (action != null)
