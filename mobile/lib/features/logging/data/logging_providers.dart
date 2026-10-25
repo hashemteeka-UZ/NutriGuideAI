@@ -15,6 +15,7 @@ import '../../catalog/data/meal_pref_writer.dart';
 import '../../plan/data/plan_mapper.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/plan_sync.dart';
+import '../../progress/data/progress_providers.dart';
 import '../../weight/data/weight_providers.dart';
 import '../domain/logging.dart';
 import 'interaction_queue.dart';
@@ -67,10 +68,16 @@ final syncEngineProvider = Provider<SyncEngine>((ref) {
             .sync(lang: ref.read(localeCodeProvider).code);
       },
       fullRefresh: () => ref.read(planSyncProvider).refresh(),
-      todayChanged: () {
-        return ref
+      todayChanged: () async {
+        await ref
             .read(todayRepositoryProvider)
             .refreshDay(ref.read(planClockProvider)());
+        // Logs changed: the Progress tab reads the new server days (#281).
+        try {
+          await ref.read(progressRepositoryProvider).refresh();
+        } on Object {
+          // The cached report stays until the next refresh.
+        }
       },
       weightConfirmed: () => ref.read(targetRecheckProvider)(),
     ),

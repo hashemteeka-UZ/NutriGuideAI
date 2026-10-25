@@ -15,6 +15,7 @@ void main() {
       expect(Directory('lib/features/logging').existsSync(), isTrue);
       expect(Directory('lib/features/water').existsSync(), isTrue);
       expect(Directory('lib/features/weight').existsSync(), isTrue);
+      expect(Directory('lib/features/progress').existsSync(), isTrue);
       final importPattern = RegExp(
         '^\\s*(?:import|export)\\s+[\'"]([^\'"]+)[\'"]',
         multiLine: true,

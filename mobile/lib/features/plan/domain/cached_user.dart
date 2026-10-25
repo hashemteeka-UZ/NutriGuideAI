@@ -4,11 +4,19 @@ class EnergyTarget {
     required this.bmrKcal,
     required this.tdeeKcal,
     this.targetId,
+    this.proteinG,
+    this.carbG,
+    this.fatG,
   });
 
   final int kcal;
   final double bmrKcal;
   final double tdeeKcal;
+
+  /// Server grams of the current target (the Progress macro card, #278).
+  final double? proteinG;
+  final double? carbG;
+  final double? fatG;
 
   /// Changes when the server writes a new target (#275).
   final int? targetId;
@@ -25,7 +33,11 @@ class CachedUser {
     this.target,
     this.sex,
     this.latestWeightKg,
+    this.targetWeightKg,
   });
+
+  /// The goal line of the weight chart (#280).
+  final double? targetWeightKg;
 
   final bool eligible;
   final String goalType;
@@ -50,6 +62,7 @@ class CachedUser {
       target: target,
       sex: sex,
       latestWeightKg: latestWeightKg,
+      targetWeightKg: targetWeightKg,
     );
   }
 }

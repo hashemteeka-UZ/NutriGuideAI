@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/l10n/app_localizations.dart';
 import '../features/auth/domain/session.dart';
 import '../features/auth/presentation/auth_form_screen.dart';
 import '../features/auth/presentation/session_controller.dart';
@@ -19,10 +18,10 @@ import '../features/plan/presentation/plan_item_screen.dart';
 import '../features/plan/presentation/plan_screen.dart';
 import '../features/plan/presentation/showcase_screen.dart';
 import '../features/profile/presentation/onboarding_screen.dart';
+import '../features/progress/presentation/progress_screen.dart';
 import '../features/server_check/presentation/server_check_screen.dart';
 import '../features/shopping/presentation/shopping_screen.dart';
 import '../features/today/presentation/account_screen.dart';
-import '../features/today/presentation/coming_soon_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/water/presentation/water_screen.dart';
 import 'shell.dart';
@@ -208,11 +207,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/progress',
                 builder: (BuildContext context, GoRouterState state) {
-                  final l10n = AppLocalizations.of(context);
-                  return ComingSoonScreen(
-                    detail: l10n.progressSoon,
-                    screenKey: 'progress-screen',
-                  );
+                  return const ProgressScreen();
                 },
               ),
             ],

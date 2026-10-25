@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutriguide/app/app.dart';
+import 'package:nutriguide/core/api/generated/models/adherence_range_out.dart';
 import 'package:nutriguide/core/api/generated/models/sync_changes.dart';
 import 'package:nutriguide/core/api/generated/models/water_day.dart';
 import 'package:nutriguide/core/api/generated/models/weight_out.dart';
+import 'package:nutriguide/core/api/generated/models/weight_point.dart';
 import 'package:nutriguide/core/api/manual/sync_models.dart';
 import 'package:nutriguide/core/db/app_database.dart' hide PlanItem;
 import 'package:nutriguide/core/db/database_provider.dart';
@@ -27,6 +29,8 @@ import 'package:nutriguide/features/profile/data/device_timezone.dart';
 import 'package:nutriguide/features/profile/data/profile_repository.dart';
 import 'package:nutriguide/features/profile/domain/profile_repository.dart';
 import 'package:nutriguide/features/profile/presentation/onboarding_controller.dart';
+import 'package:nutriguide/features/progress/data/progress_providers.dart';
+import 'package:nutriguide/features/progress/data/progress_repository.dart';
 import 'package:nutriguide/features/reference/data/reference_repository.dart';
 import 'package:nutriguide/features/reference/domain/reference_data.dart';
 import 'package:nutriguide/features/shopping/domain/shopping.dart';
@@ -88,6 +92,7 @@ Future<void> pumpNutriguide(
   SyncApi? syncApi,
   WaterApi? waterApi,
   WeightApi? weightApi,
+  ProgressApi? progressApi,
   List<Override> extra = const <Override>[],
 }) async {
   SharedPreferences.setMockInitialValues(
@@ -135,6 +140,9 @@ Future<void> pumpNutriguide(
         syncApiProvider.overrideWithValue(syncApi ?? OfflineSyncApi()),
         waterApiProvider.overrideWithValue(waterApi ?? OfflineWaterApi()),
         userContextRefreshProvider.overrideWithValue(() async {}),
+        progressApiProvider.overrideWithValue(
+          progressApi ?? OfflineProgressApi(),
+        ),
         weightApiProvider.overrideWithValue(weightApi ?? OfflineWeightApi()),
         ...extra,
       ],
@@ -172,6 +180,21 @@ class OfflineWaterApi extends WaterApi {
   @override
   Future<void> setGoal(int goalMl) async {
     throw const WaterException('NETWORK', network: true);
+  }
+}
+
+/// Progress calls from widget tests behave like a phone with no connection.
+class OfflineProgressApi extends ProgressApi {
+  OfflineProgressApi() : super(Dio());
+
+  @override
+  Future<AdherenceRangeOut> adherence(DateTime from, DateTime to) async {
+    throw const ProgressException('NETWORK', network: true);
+  }
+
+  @override
+  Future<List<WeightPoint>> weights(DateTime from, DateTime to) async {
+    throw const ProgressException('NETWORK', network: true);
   }
 }
 

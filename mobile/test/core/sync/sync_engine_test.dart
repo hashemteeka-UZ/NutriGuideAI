@@ -188,16 +188,9 @@ void main() {
     expect(hooks.todayRefreshed, 1);
   });
 
-  test('the first download asks for the last 30 days', () async {
+  test('the first download asks for 29 days, a day inside the limit', () async {
     await engine().syncNow();
-    expect(
-      api.sinces.single.isAfter(_now.subtract(const Duration(days: 30))),
-      isTrue,
-    );
-    expect(
-      api.sinces.single.isBefore(_now.subtract(const Duration(days: 29))),
-      isTrue,
-    );
+    expect(api.sinces.single, _now.subtract(const Duration(days: 29)));
   });
 
   test('CLOCK_SKEW retries once two minutes back', () async {
