@@ -1,0 +1,87 @@
+[1] World Health Organization, "Healthy diet," Fact sheet, Apr. 2020. [Online]. Available: https://www.who.int/news-room/fact-sheets/detail/healthy-diet (accessed Oct. 13, 2026).
+[2] World Health Organization, "Noncommunicable diseases," Fact sheet. [Online]. Available: https://www.who.int/news-room/fact-sheets/detail/noncommunicable-diseases (accessed Oct. 13, 2026).
+[3] American Diabetes Association Professional Practice Committee, "5. Facilitating positive health behaviors and well-being to improve health outcomes: Standards of Care in Diabetes—2025," Diabetes Care, vol. 48, suppl. 1, 2025.
+[4] L. J. Appel et al., "A clinical trial of the effects of dietary patterns on blood pressure," N. Engl. J. Med., vol. 336, no. 16, pp. 1117–1124, 1997.
+[5] A. H. Lichtenstein et al., "2021 dietary guidance to improve cardiovascular health: A scientific statement from the American Heart Association," Circulation, vol. 144, no. 23, pp. e472–e487, 2021.
+[6] C. Trattner and D. Elsweiler, "Food recommender systems: Important contributions, challenges and future research directions," arXiv:1711.02760, 2017.
+[7] W. Min, S. Jiang, L. Liu, Y. Rui, and R. Jain, "A survey on food computing," ACM Comput. Surv., vol. 52, no. 5, pp. 1–36, 2019, doi: 10.1145/3329168.
+[8] A. O. Bawajeeh et al., "Development of an Arabic food composition database for use in an Arabic online dietary assessment tool (myfood24)," J. Food Compos. Anal., vol. 102, Art. no. 104047, 2021, doi: 10.1016/j.jfca.2021.104047.
+[9] U.S. Food and Drug Administration, "General wellness: Policy for low risk devices," Guidance for Industry and FDA Staff, Sep. 2019.
+[10] U.S. Department of Agriculture, Agricultural Research Service, "FoodData Central." [Online]. Available: https://fdc.nal.usda.gov (accessed Oct. 13, 2026).
+[11] U.S. Department of Agriculture, Agricultural Research Service, "Food and Nutrient Database for Dietary Studies (FNDDS)." [Online]. Available: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds/ (accessed Oct. 13, 2026).
+[12] L. Perron and V. Furnon, "OR-Tools," Google. [Online]. Available: https://developers.google.com/optimization (accessed Oct. 13, 2026).
+[13] L. Li, W. Chu, J. Langford, and R. E. Schapire, "A contextual-bandit approach to personalized news article recommendation," in Proc. 19th Int. Conf. World Wide Web (WWW), 2010, pp. 661–670, doi: 10.1145/1772690.1772758.
+[14] G. J. Stigler, "The cost of subsistence," J. Farm Econ., vol. 27, no. 2, pp. 303–314, 1945.
+[15] G. B. Dantzig, "The diet problem," Interfaces, vol. 20, no. 4, pp. 43–47, 1990, doi: 10.1287/inte.20.4.43.
+[16] World Health Organization, Guideline: Sodium Intake for Adults and Children. Geneva, Switzerland: WHO, 2012.
+[17] World Health Organization, Saturated Fatty Acid and Trans-Fatty Acid Intake for Adults and Children: WHO Guideline. Geneva, Switzerland: WHO, 2023.
+[18] J. A. Harris and F. G. Benedict, "A biometric study of human basal metabolism," Proc. Natl. Acad. Sci. USA, vol. 4, no. 12, pp. 370–373, 1918.
+[19] M. D. Mifflin, S. T. St Jeor, L. A. Hill, B. J. Scott, S. A. Daugherty, and Y. O. Koh, "A new predictive equation for resting energy expenditure in healthy individuals," Am. J. Clin. Nutr., vol. 51, no. 2, pp. 241–247, 1990.
+[20] Institute of Medicine, Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids. Washington, DC, USA: National Academies Press, 2005.
+[21] EFSA Panel on Dietetic Products, Nutrition, and Allergies, "Scientific opinion on dietary reference values for water," EFSA J., vol. 8, no. 3, Art. no. 1459, 2010.
+[22] B. Koroušić Seljak, "Computer-based dietary menu planning," J. Food Compos. Anal., vol. 22, no. 5, pp. 414–420, 2009.
+[23] R. Burke, "Hybrid recommender systems: Survey and experiments," User Model. User-Adapt. Interact., vol. 12, no. 4, pp. 331–370, 2002.
+[24] F. Ricci, L. Rokach, and B. Shapira, Eds., Recommender Systems Handbook, 3rd ed. New York, NY, USA: Springer, 2022.
+[25] T. Lattimore and C. Szepesvári, Bandit Algorithms. Cambridge, U.K.: Cambridge Univ. Press, 2020.
+[26] P. Auer, "Using confidence bounds for exploitation-exploration trade-offs," J. Mach. Learn. Res., vol. 3, pp. 397–422, 2002.
+[27] L. Breiman, "Random forests," Mach. Learn., vol. 45, no. 1, pp. 5–32, 2001.
+[28] F. Rossi, P. van Beek, and T. Walsh, Eds., Handbook of Constraint Programming. Amsterdam, The Netherlands: Elsevier, 2006.
+[29] D. Elsweiler, C. Trattner, and M. Harvey, "Exploiting food choice biases for healthier recipe recommendation," in Proc. 40th Int. ACM SIGIR Conf. Res. Dev. Inf. Retr., 2017, doi: 10.1145/3077136.3080826.
+[30] N. Tintarev and J. Masthoff, "Evaluating the effectiveness of explanations for recommender systems," User Model. User-Adapt. Interact., vol. 22, no. 4–5, pp. 399–439, 2012, doi: 10.1007/s11257-011-9117-5.
+[31] L. E. Burke, J. Wang, and M. A. Sevick, "Self-monitoring in weight loss: A systematic review of the literature," J. Am. Diet. Assoc., vol. 111, no. 1, pp. 92–102, 2011.
+[32] S. Michie et al., "The behavior change technique taxonomy (v1) of 93 hierarchically clustered techniques," Ann. Behav. Med., vol. 46, no. 1, pp. 81–95, 2013.
+[33] S. Deterding, D. Dixon, R. Khaled, and L. Nacke, "From game design elements to gamefulness: Defining 'gamification'," in Proc. 15th Int. Academic MindTrek Conf., 2011, pp. 9–15.
+[34] M.-P. St-Onge et al., "Meal timing and frequency: Implications for cardiovascular disease prevention: A scientific statement from the American Heart Association," Circulation, vol. 135, no. 9, pp. e96–e121, 2017.
+[35] M. Ge, F. Ricci, and D. Massimo, "Health-aware food recommender system," in Proc. 9th ACM Conf. Recommender Systems (RecSys '15), 2015, doi: 10.1145/2792838.2796554.
+[36] R. Yera Toledo, A. A. Alzahrani, and L. Martínez, "A food recommender system considering nutritional information and user preferences," IEEE Access, vol. 7, pp. 96695–96711, 2019, doi: 10.1109/ACCESS.2019.2929413.
+[37] M. Nygard, "Documenting architecture decisions," Cognitect blog, Nov. 2011. [Online]. Available: https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions (accessed Oct. 26, 2026).
+[38] A. Wiggins, "The twelve-factor app," 2017. [Online]. Available: https://12factor.net (accessed Oct. 26, 2026).
+[39] M. Kleppmann, A. Wiggins, P. van Hardenberg, and M. McGranaghan, "Local-first software: You own your data, in spite of the cloud," in Proc. ACM SIGPLAN Onward!, 2019, pp. 154–178.
+[40] S. W. Ambler and P. J. Sadalage, Refactoring Databases: Evolutionary Database Design. Boston, MA, USA: Addison-Wesley, 2006.
+[41] Food Standards Agency, "Guide to creating a front of pack (FoP) nutrition label for pre-packed products sold through retail outlets," London, U.K., 2016.
+[42] D. Frankenfield, L. Roth-Yousey, and C. Compher, "Comparison of predictive equations for resting metabolic rate in healthy nonobese and obese adults: A systematic review," J. Am. Diet. Assoc., vol. 105, no. 5, pp. 775–789, 2005.
+[43] FAO/WHO/UNU, "Human energy requirements: Report of a joint FAO/WHO/UNU expert consultation," FAO Food Nutr. Tech. Rep. Ser. 1, Rome, Italy, 2004.
+[44] World Health Organization, "Obesity: Preventing and managing the global epidemic," WHO Tech. Rep. Ser. 894, Geneva, Switzerland, 2000.
+[45] P. A. Heidenreich et al., "2022 AHA/ACC/HFSA guideline for the management of heart failure," Circulation, vol. 145, no. 18, pp. e895–e1032, 2022.
+[46] R. H. Eckel et al., "2013 AHA/ACC guideline on lifestyle management to reduce cardiovascular risk," Circulation, vol. 129, no. 25, suppl. 2, pp. S76–S99, 2014.
+[47] National Cholesterol Education Program Expert Panel, "Third report of the NCEP Expert Panel on detection, evaluation, and treatment of high blood cholesterol in adults (Adult Treatment Panel III)," Circulation, vol. 106, no. 25, pp. 3143–3421, 2002.
+[48] World Health Organization, Guideline: Sugars Intake for Adults and Children. Geneva, Switzerland: WHO, 2015.
+[49] T. H. Cormen, C. E. Leiserson, R. L. Rivest, and C. Stein, Introduction to Algorithms, 3rd ed. Cambridge, MA, USA: MIT Press, 2009.
+[50] L. A. Wolsey, Integer Programming, 2nd ed. Hoboken, NJ, USA: Wiley, 2020.
+[51] L. Perron, F. Didier, and S. Gay, "The CP-SAT-LP solver," in Proc. 29th Int. Conf. Principles and Practice of Constraint Programming (CP 2023), LIPIcs, vol. 280, 2023, Art. no. 3.
+[52] Y. Hu, Y. Koren, and C. Volinsky, "Collaborative filtering for implicit feedback datasets," in Proc. 8th IEEE Int. Conf. Data Mining (ICDM), 2008, pp. 263–272.
+[53] G. Jawaheer, P. Weller, and P. Kostkova, "Modeling user preferences in recommender systems: A classification framework for explicit and implicit user feedback," ACM Trans. Interact. Intell. Syst., vol. 4, no. 2, Art. no. 8, 2014.
+[54] A. E. Hoerl and R. W. Kennard, "Ridge regression: Biased estimation for nonorthogonal problems," Technometrics, vol. 12, no. 1, pp. 55–67, 1970.
+[55] A. I. Schein, A. Popescul, L. H. Ungar, and D. M. Pennock, "Methods and metrics for cold-start recommendations," in Proc. 25th ACM SIGIR Conf., 2002, pp. 253–260.
+[56] B. J. Rolls, E. T. Rolls, E. A. Rowe, and K. Sweeney, "Sensory specific satiety in man," Physiol. Behav., vol. 27, no. 1, pp. 137–142, 1981.
+[57] C.-N. Ziegler, S. M. McNee, J. A. Konstan, and G. Lausen, "Improving recommendation lists through topic diversification," in Proc. 14th Int. Conf. World Wide Web (WWW), 2005, pp. 22–32.
+[58] G. Tsoumakas and I. Katakis, "Multi-label classification: An overview," Int. J. Data Warehousing Mining, vol. 3, no. 3, pp. 1–13, 2007.
+[59] S. Kaufman, S. Rosset, C. Perlich, and O. Stitelman, "Leakage in data mining: Formulation, detection, and avoidance," ACM Trans. Knowl. Discov. Data, vol. 6, no. 4, Art. no. 15, 2012.
+[60] S. Varma and R. Simon, "Bias in error estimation when using cross-validation for model selection," BMC Bioinformatics, vol. 7, Art. no. 91, 2006.
+[61] G. C. Cawley and N. L. C. Talbot, "On over-fitting in model selection and subsequent selection bias in performance evaluation," J. Mach. Learn. Res., vol. 11, pp. 2079–2107, 2010.
+[62] C. Rudin, "Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead," Nat. Mach. Intell., vol. 1, no. 5, pp. 206–215, 2019.
+[63] E. Ie et al., "RecSim: A configurable simulation platform for recommender systems," arXiv:1909.04847, 2019.
+[64] OpenAPI Initiative, "OpenAPI Specification v3.1.0," 2021. [Online]. Available: https://spec.openapis.org/oas/v3.1.0 (accessed Oct. 26, 2026).
+[65] T. Preston-Werner, "Semantic Versioning 2.0.0." [Online]. Available: https://semver.org (accessed Oct. 26, 2026).
+[66] R. T. Fielding, "Architectural styles and the design of network-based software architectures," Ph.D. dissertation, Univ. California, Irvine, CA, USA, 2000.
+[67] M. Nottingham, E. Wilde, and S. Dalal, "Problem details for HTTP APIs," IETF RFC 9457, 2023.
+[68] A. Biryukov, D. Dinu, D. Khovratovich, and S. Josefsson, "Argon2 memory-hard function for password hashing and proof-of-work applications," IETF RFC 9106, 2021.
+[69] OWASP Foundation, "Application Security Verification Standard (ASVS) 5.0," 2025.
+[70] M. Jones, J. Bradley, and N. Sakimura, "JSON Web Token (JWT)," IETF RFC 7519, 2015.
+[71] T. Lodderstedt, J. Bradley, A. Labunets, and D. Fett, "Best current practice for OAuth 2.0 security," IETF RFC 9700, 2025.
+[72] C. Richardson, Microservices Patterns. Shelter Island, NY, USA: Manning, 2018.
+[73] M. Kleppmann, Designing Data-Intensive Applications. Sebastopol, CA, USA: O'Reilly, 2017.
+[74] OWASP Foundation, "OWASP API Security Top 10," 2023.
+[75] Google, "Guide to app architecture," Flutter documentation. [Online]. Available: https://docs.flutter.dev/app-architecture/guide (accessed Oct. 26, 2026).
+[76] OWASP Foundation, "Mobile Application Security Verification Standard (MASVS) v2.1," 2024.
+[77] L. S. Larkey, L. Ballesteros, and M. E. Connell, "Improving stemming for Arabic information retrieval: Light stemming and co-occurrence analysis," in Proc. 25th ACM SIGIR Conf., 2002, pp. 275–282.
+[78] K. D. Hall et al., "Quantification of the effect of energy imbalance on bodyweight," Lancet, vol. 378, no. 9793, pp. 826–837, 2011.
+[79] National Institute of Standards and Technology, "Digital identity guidelines: Authentication and authenticator management," NIST SP 800-63B-4, 2025.
+[80] European Parliament and Council, "Regulation (EU) 2016/679 (General Data Protection Regulation)," Off. J. Eur. Union, L 119, 2016.
+[81] M. Cohn, Succeeding with Agile: Software Development Using Scrum. Boston, MA, USA: Addison-Wesley, 2009.
+[82] J. Pineau et al., "Improving reproducibility in machine learning research," J. Mach. Learn. Res., vol. 22, no. 164, pp. 1–20, 2021.
+[83] J. Dean and L. A. Barroso, "The tail at scale," Commun. ACM, vol. 56, no. 2, pp. 74–80, 2013.
+[84] M. Kaminskas and D. Bridge, "Diversity, serendipity, novelty, and coverage: A survey and empirical analysis of beyond-accuracy objectives in recommender systems," ACM Trans. Interact. Intell. Syst., vol. 7, no. 1, Art. no. 2, 2016.
+[85] L. Li, W. Chu, J. Langford, and X. Wang, "Unbiased offline evaluation of contextual-bandit-based news article recommendation algorithms," in Proc. 4th ACM Int. Conf. Web Search and Data Mining (WSDM), 2011, pp. 297–306.
+[86] R. Kohavi, R. Longbotham, D. Sommerfield, and R. M. Henne, "Controlled experiments on the web: Survey and practical guide," Data Min. Knowl. Discov., vol. 18, no. 1, pp. 140–181, 2009.
+[87] J. Brooke, "SUS: A quick and dirty usability scale," in Usability Evaluation in Industry, P. W. Jordan et al., Eds. London, U.K.: Taylor & Francis, 1996, pp. 189–194.

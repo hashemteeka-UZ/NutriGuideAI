@@ -1,0 +1,11 @@
+flowchart TB
+  APP["Mobile app<br/>ate it, rating, did not eat,<br/>swap, like / dislike"] -- "outbox + sync" --> EV[("user_interactions<br/>append-only event log")]
+  EV --> RW["Reward mapping<br/>e.g. rating (s-3)/2, swap -0.6"]
+  RW --> REP["Event replay<br/>rebuild model per request"]
+  CS["Cold start<br/>onboarding likes and cuisines<br/>weight 0.3, max 20"] --> REP
+  REP --> M["Hybrid LinUCB<br/>shared beta + per-user theta<br/>features mf_v1, d = 25"]
+  M --> SC["Score = p + 0.1 x width<br/>relative to day minimum"]
+  SC --> B["Bonus 0-60 objective units<br/>(about 2 kcal of deviation)"]
+  B --> OPT["CP-SAT objective<br/>hard limits unchanged"]
+  M --> SW["Swap alternatives order"]
+  M --> WHY["Reason: fits your taste"]

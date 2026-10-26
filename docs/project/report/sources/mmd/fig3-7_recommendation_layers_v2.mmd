@@ -1,0 +1,6 @@
+flowchart TB
+  CAT["Active catalog<br/>158 meals"] --> L1["Layer 1: hard filtering (rules)<br/>allergens, excluded ingredients,<br/>AVOID tags, per-meal limits, slot fit,<br/>disliked meals"]
+  L1 --> L2["Layer 2: machine learning<br/>hybrid LinUCB score per safe meal<br/>(learned from real interactions)"]
+  L2 --> L3["Layer 3: optimization<br/>CP-SAT day plan: hard health limits,<br/>kcal band, macros, slot shares,<br/>bounded learned bonus, variety penalty"]
+  L3 --> OUT["Plan + reason codes<br/>(incl. LEARNED_PREFERENCE)"]
+  OUT -. "eat / swap / rate / skip events" .-> L2

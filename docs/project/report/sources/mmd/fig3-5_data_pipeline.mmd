@@ -1,0 +1,11 @@
+flowchart TB
+  F["USDA FNDDS / SR Legacy<br/>(development time only)"] --> X["Extraction and profiling<br/>(pandas, pandera)"]
+  X --> I["Approved ingredients<br/>codes, aliases, allergens, tags"]
+  T["Team recipes<br/>YAML batches 01-05"] --> G["Quality gates<br/>(missing is not zero, units,<br/>excluded ingredients, isolation)"]
+  I --> G
+  G --> L["Loader"]
+  L --> N["calc_v1 nutrients<br/>per serving and per 100 g"]
+  L --> TG["tags_v2 derived tags"]
+  N --> DB[("PostgreSQL catalog")]
+  TG --> DB
+  DB --> MF["DATASET_MANIFEST.yaml<br/>+ git tag dataset-v3"]

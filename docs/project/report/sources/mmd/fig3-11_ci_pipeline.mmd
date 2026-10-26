@@ -1,0 +1,7 @@
+flowchart TB
+  PUSH["git push"] --> GA["GitHub Actions<br/>postgres:16 service"]
+  GA --> RL["ruff check<br/>ruff format --check"]
+  RL --> MY["mypy (strict)"]
+  MY --> AL["alembic upgrade head"]
+  AL --> PT["pytest (CI=true,<br/>0 skipped allowed)"]
+  PT --> OK["green / red"]
