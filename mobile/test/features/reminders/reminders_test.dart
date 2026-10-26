@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutriguide/core/db/app_database.dart' hide PlanItem;
 import 'package:nutriguide/features/auth/domain/account_info.dart';
@@ -170,6 +173,44 @@ void main() {
       expect(fake.scheduled, hasLength(7 + 1));
     });
 
+    testNutriguide(
+      'subtitles are not cut and off switches are visible (#319)',
+      (tester) async {
+        final database = await seeded();
+        addTearDown(database.close);
+        await pumpNutriguide(
+          tester,
+          auth: _signedIn(),
+          database: database,
+          notifications: FakeNotificationsGateway(),
+        );
+        await open(tester);
+        expect(
+          MediaQuery.textScalerOf(
+            tester.element(find.byKey(const Key('reminders-screen'))),
+          ).scale(10),
+          10,
+        );
+        for (final kind in ReminderKind.values) {
+          final tile = find.byKey(Key('reminder-${kind.name}'));
+          final paragraphs = tester.renderObjectList<RenderParagraph>(
+            find.descendant(of: tile, matching: find.byType(RichText)),
+          );
+          expect(paragraphs, isNotEmpty);
+          for (final paragraph in paragraphs) {
+            expect(paragraph.didExceedMaxLines, isFalse);
+          }
+        }
+        final context = tester.element(
+          find.byKey(const Key('reminders-screen')),
+        );
+        final theme = Theme.of(context);
+        final off = theme.switchTheme.thumbColor!.resolve(<WidgetState>{})!;
+        final ratio = _contrast(off, theme.scaffoldBackgroundColor);
+        expect(ratio, greaterThanOrEqualTo(3));
+      },
+    );
+
     testNutriguide('denied permission keeps the switch off', (tester) async {
       final database = await seeded();
       addTearDown(database.close);
@@ -254,4 +295,10 @@ FakeAuthRepository _signedIn() {
       account: AccountInfo(hasProfile: true, email: 'a@b.co'),
     ),
   );
+}
+
+double _contrast(Color a, Color b) {
+  final high = math.max(a.computeLuminance(), b.computeLuminance());
+  final low = math.min(a.computeLuminance(), b.computeLuminance());
+  return (high + 0.05) / (low + 0.05);
 }

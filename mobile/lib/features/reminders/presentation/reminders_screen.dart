@@ -63,7 +63,8 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                 key: Key('reminder-${kind.name}'),
                 value: settings.isOn(kind),
                 title: Text(title),
-                subtitle: Text(subtitle),
+                // Up to two lines, so the hint is never cut (#319).
+                subtitle: Text(subtitle, maxLines: 2),
                 onChanged: _busy
                     ? null
                     : (bool on) => unawaited(_toggle(kind, on)),

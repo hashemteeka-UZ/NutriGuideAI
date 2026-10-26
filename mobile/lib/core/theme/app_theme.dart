@@ -38,6 +38,16 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: colors.bg,
       fontFamily: fontFamily,
       extensions: <ThemeExtension<dynamic>>[colors],
+      // `outline` is the faint divider color, too light for an off switch;
+      // fg2 keeps the off thumb and track edge at 3:1 or more (#319).
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected) ? null : colors.fg2,
+        ),
+        trackOutlineColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected) ? null : colors.fg2,
+        ),
+      ),
       textTheme: typography.apply(
         bodyColor: colors.fg,
         displayColor: colors.fg,
