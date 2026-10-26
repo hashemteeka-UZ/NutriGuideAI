@@ -51,6 +51,8 @@ _PAST_DAYS = 1
 _FUTURE_DAYS = 13
 _ALTERNATIVE_LIMIT = 10
 _GRAM_PLACES = 1
+# Ingredients never listed for shopping (#317). The reference data has no drinking-water tag.
+SHOPPING_EXCLUDED_CODES = ("WATER",)
 
 
 class PlanDateOutOfRangeError(ValueError):
@@ -311,7 +313,10 @@ def swap_item(
 def shopping_list(
     session: Session, user_id: int, date_from: date, date_to: date, lang: str
 ) -> list[ShoppingLine]:
-    """Non-optional ingredient grams of the current plans in the range (#195)."""
+    """Non-optional ingredient grams of the current plans in the range (#195).
+
+    Tap water (ingredient code WATER) is cooking water, not something to buy (#317).
+    """
     plan_ids = [plan.plan_id for _day, plan in _current_plans(session, user_id, date_from, date_to)]
     if not plan_ids:
         return []
@@ -331,6 +336,7 @@ def shopping_list(
         .where(
             MealPlanItem.plan_id.in_(plan_ids),
             MealIngredient.is_optional.is_(False),
+            Ingredient.code.not_in(SHOPPING_EXCLUDED_CODES),
         )
     ).all()
     grams: dict[int, Decimal] = defaultdict(lambda: Decimal(0))

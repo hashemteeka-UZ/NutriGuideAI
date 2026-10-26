@@ -12,6 +12,7 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from app.core.text import normalize_search_text
 from app.db.models import (
+    Ingredient,
     Meal,
     MealIngredient,
     MealNutrient,
@@ -266,3 +267,42 @@ def test_water_day_sums_nothing_and_uses_the_default_goal(
     assert logs == []
     assert goal.goal_ml == 2000
     assert goal.source == "DEFAULT"
+
+
+def test_shopping_list_leaves_out_tap_water(
+    slice_session: Session, integrity_conn: Connection
+) -> None:
+    user = case_1_user(integrity_conn)
+    plan_target(slice_session, user)
+    create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    used = slice_session.scalar(
+        select(MealIngredient.ingredient_id)
+        .join(MealPlanItem, MealPlanItem.meal_id == MealIngredient.meal_id)
+        .join(MealPlan, MealPlan.plan_id == MealPlanItem.plan_id)
+        .where(MealPlan.user_id == user, MealIngredient.is_optional.is_(False))
+        .order_by(MealIngredient.ingredient_id)
+        .limit(1)
+    )
+    assert used is not None
+    before = {
+        line.ingredient_id
+        for line in shopping_list(slice_session, user, PLAN_DATE, PLAN_DATE, "ar")
+    }
+    assert used in before
+    water = slice_session.scalar(select(Ingredient.ingredient_id).where(Ingredient.code == "WATER"))
+    assert water is None or water not in before
+    # Make that ingredient the tap-water one (#317); move any existing WATER code aside.
+    slice_session.execute(
+        update(Ingredient).where(Ingredient.code == "WATER").values(code="WATER_SLICE")
+    )
+    slice_session.execute(
+        update(Ingredient).where(Ingredient.ingredient_id == used).values(code="WATER")
+    )
+    slice_session.flush()
+    after = {
+        line.ingredient_id
+        for line in shopping_list(slice_session, user, PLAN_DATE, PLAN_DATE, "ar")
+    }
+    assert used not in after
+    # The old tap water is now an ordinary ingredient again, so it may come back.
+    assert after - {water} == before - {used}
