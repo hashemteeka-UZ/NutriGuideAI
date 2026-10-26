@@ -102,7 +102,18 @@ void main() {
     await reveal(tester, const Key('account-about'));
     await tester.tap(find.byKey(const Key('account-about')));
     await tester.pumpAndSettle();
-    expect(find.text('الإصدار $appVersion'), findsOneWidget);
+    // The version and the English name sit in isolates so RTL keeps their
+    // order and the final period (#315).
+    final version = tester.widget<Text>(
+      find.byKey(const Key('about-version-number')),
+    );
+    expect(version.data, appVersion);
+    expect(version.textDirection, TextDirection.ltr);
+    expect(find.text('الإصدار'), findsOneWidget);
+    expect(
+      find.textContaining('\u2066USDA FoodData Central\u2069.'),
+      findsOneWidget,
+    );
     expect(find.text('كيف يتعلّم التطبيق منك'), findsOneWidget);
     expect(find.textContaining('USDA FoodData Central'), findsOneWidget);
   });
@@ -113,7 +124,8 @@ void main() {
     await reveal(tester, const Key('account-about'));
     await tester.tap(find.byKey(const Key('account-about')));
     await tester.pumpAndSettle();
-    expect(find.text('Version $appVersion'), findsOneWidget);
+    expect(find.text('Version'), findsOneWidget);
+    expect(find.text(appVersion), findsOneWidget);
     expect(find.text('How the app learns from you'), findsOneWidget);
   });
 

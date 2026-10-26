@@ -1241,8 +1241,8 @@ abstract class AppLocalizations {
   /// No description provided for @onbHowRestTitle.
   ///
   /// In ar, this message translates to:
-  /// **'الطاقة وقت الراحة (معادلة Mifflin-St Jeor)'**
-  String get onbHowRestTitle;
+  /// **'الطاقة وقت الراحة (معادلة {formula})'**
+  String onbHowRestTitle(Object formula);
 
   /// No description provided for @onbHowRestBody.
   ///
@@ -1379,8 +1379,8 @@ abstract class AppLocalizations {
   /// No description provided for @onbTimezoneNote.
   ///
   /// In ar, this message translates to:
-  /// **'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت UTC.'**
-  String get onbTimezoneNote;
+  /// **'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت {zone}.'**
+  String onbTimezoneNote(Object zone);
 
   /// No description provided for @browseMeals.
   ///
@@ -3319,11 +3319,11 @@ abstract class AppLocalizations {
   /// **'عن التطبيق والخصوصية'**
   String get accountAbout;
 
-  /// No description provided for @aboutVersion.
+  /// No description provided for @aboutVersionLabel.
   ///
   /// In ar, this message translates to:
-  /// **'الإصدار {version}'**
-  String aboutVersion(Object version);
+  /// **'الإصدار'**
+  String get aboutVersionLabel;
 
   /// No description provided for @aboutDisclaimerTitle.
   ///
@@ -3346,8 +3346,8 @@ abstract class AppLocalizations {
   /// No description provided for @aboutData.
   ///
   /// In ar, this message translates to:
-  /// **'القيم الغذائية مبنية على قاعدة بيانات USDA FoodData Central.'**
-  String get aboutData;
+  /// **'القيم الغذائية مبنية على قاعدة بيانات {source}.'**
+  String aboutData(Object source);
 
   /// No description provided for @aboutLearnTitle.
   ///
@@ -3360,6 +3360,90 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'يستفيد التطبيق مما تفعله: الوجبات التي تأكلها، وما تستبدله، وتقييماتك، وما لم تأكله، وما تحفظه. ويختار فقط بين وجبات تجتاز كل القواعد الصحية. حذف حسابك يحذف سجل التعلّم هذا.'**
   String get aboutLearn;
+
+  /// No description provided for @accountReminders.
+  ///
+  /// In ar, this message translates to:
+  /// **'التذكيرات'**
+  String get accountReminders;
+
+  /// No description provided for @remindersIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل التذكيرات متوقفة حتى تفعّلها. تصل في وقت تقريبي.'**
+  String get remindersIntro;
+
+  /// No description provided for @remindersMeals.
+  ///
+  /// In ar, this message translates to:
+  /// **'تذكير الوجبات'**
+  String get remindersMeals;
+
+  /// No description provided for @remindersMealsSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'في بداية وقت كل وجبة'**
+  String get remindersMealsSub;
+
+  /// No description provided for @remindersWater.
+  ///
+  /// In ar, this message translates to:
+  /// **'تذكير الماء'**
+  String get remindersWater;
+
+  /// No description provided for @remindersWaterSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل ساعتين من 9 صباحًا إلى 9 مساءً'**
+  String get remindersWaterSub;
+
+  /// No description provided for @remindersWeighIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'تذكير الوزن الأسبوعي'**
+  String get remindersWeighIn;
+
+  /// No description provided for @remindersWeighInSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل جمعة الساعة 9 صباحًا'**
+  String get remindersWeighInSub;
+
+  /// No description provided for @remindersNeedWaterGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدّد هدف الماء أولًا لتفعيل هذا التذكير'**
+  String get remindersNeedWaterGoal;
+
+  /// No description provided for @remindersDenied.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يُسمح بالإشعارات. يمكنك السماح بها من إعدادات التطبيق.'**
+  String get remindersDenied;
+
+  /// No description provided for @remindersOpenSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'فتح الإعدادات'**
+  String get remindersOpenSettings;
+
+  /// No description provided for @reminderMealBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'حان وقت {meal}. وجبتك في خطة اليوم'**
+  String reminderMealBody(Object meal);
+
+  /// No description provided for @reminderWaterBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشرب كوب ماء'**
+  String get reminderWaterBody;
+
+  /// No description provided for @reminderWeighInBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقت وزنك الأسبوعي'**
+  String get reminderWeighInBody;
 }
 
 class _AppLocalizationsDelegate

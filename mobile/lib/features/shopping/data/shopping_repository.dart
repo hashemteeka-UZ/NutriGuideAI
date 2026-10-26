@@ -105,13 +105,14 @@ class ShoppingRepository {
       final mapped =
           <ShoppingRow>[
             for (final row in rows)
-              ShoppingRow(
-                ingredientId: row.ingredientId,
-                name: row.name,
-                grams: row.grams,
-                meals: row.meals,
-                checked: row.checked,
-              ),
+              if (!isTapWater(row.name))
+                ShoppingRow(
+                  ingredientId: row.ingredientId,
+                  name: row.name,
+                  grams: row.grams,
+                  meals: row.meals,
+                  checked: row.checked,
+                ),
           ]..sort(
             (ShoppingRow a, ShoppingRow b) =>
                 normalizeSearch(a.name).compareTo(normalizeSearch(b.name)),

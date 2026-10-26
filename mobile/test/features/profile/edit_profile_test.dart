@@ -131,6 +131,21 @@ void main() {
     final fake = await open(tester);
     expect(find.byKey(const Key('edit-step-list')), findsOneWidget);
     expect(find.text('النشاط'), findsOneWidget);
+    // The row chevron mirrors in RTL so it points to the reading end (#315).
+    final chevron = tester.widget<Icon>(
+      find.descendant(
+        of: find.byKey(const Key('edit-step-activity')),
+        matching: find.byType(Icon),
+      ),
+    );
+    expect(chevron.icon, Icons.chevron_right);
+    expect(chevron.icon!.matchTextDirection, isTrue);
+    expect(
+      Directionality.of(
+        tester.element(find.byKey(const Key('edit-step-list'))),
+      ),
+      TextDirection.rtl,
+    );
     final container = ProviderScope.containerOf(
       tester.element(find.byKey(const Key('edit-profile-screen'))),
     );

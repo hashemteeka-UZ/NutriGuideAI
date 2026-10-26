@@ -353,6 +353,8 @@ void main() {
     expect(find.byKey(const Key('plan-item-header')), findsOneWidget);
     expect(find.textContaining('كميتك'), findsOneWidget);
     expect(find.text('لماذا اخترناها لك؟'), findsOneWidget);
+    // One serving: one donut, no repeated per-serving block (#315).
+    expect(find.byKey(const Key('per-serving-facts')), findsNothing);
     await tester.tap(find.byKey(const Key('swap-button')));
     await tester.pumpAndSettle();
     expect(find.text('بدائل تناسب خطتك'), findsOneWidget);
@@ -398,6 +400,19 @@ void main() {
             checked: false,
           ),
         );
+    // Tap water is cooking water, not something to buy (#315).
+    await database
+        .into(database.shoppingItems)
+        .insert(
+          ShoppingItemsCompanion.insert(
+            rangeKey: '2026-10-24_2026-10-30',
+            ingredientId: 3,
+            name: 'ماء',
+            grams: 900,
+            meals: 3,
+            checked: false,
+          ),
+        );
     final share = _RecordShare();
     await pumpNutriguide(
       tester,
@@ -437,6 +452,8 @@ void main() {
     expect(share.last, isNotNull);
     expect(share.last!, contains('بصل'));
     expect(share.last!, isNot(contains('طماطم')));
+    expect(share.last!, isNot(contains('ماء')));
+    expect(find.byKey(const Key('shop-item-3')), findsNothing);
   });
 
   testNutriguide('english today and plan at text scale 1.3 do not overflow', (

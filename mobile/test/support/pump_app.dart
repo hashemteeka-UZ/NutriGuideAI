@@ -33,6 +33,8 @@ import 'package:nutriguide/features/progress/data/progress_providers.dart';
 import 'package:nutriguide/features/progress/data/progress_repository.dart';
 import 'package:nutriguide/features/reference/data/reference_repository.dart';
 import 'package:nutriguide/features/reference/domain/reference_data.dart';
+import 'package:nutriguide/features/reminders/data/notifications_gateway.dart';
+import 'package:nutriguide/features/reminders/data/reminders_controller.dart';
 import 'package:nutriguide/features/shopping/domain/shopping.dart';
 import 'package:nutriguide/features/water/data/water_api.dart';
 import 'package:nutriguide/features/water/data/water_providers.dart';
@@ -42,6 +44,7 @@ import 'package:nutriguide/features/weight/data/weight_repository.dart';
 import 'package:nutriguide/features/weight/domain/weight.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fake_notifications.dart';
 import 'memory_secure.dart';
 import 'onboarding_fakes.dart';
 
@@ -93,6 +96,7 @@ Future<void> pumpNutriguide(
   WaterApi? waterApi,
   WeightApi? weightApi,
   ProgressApi? progressApi,
+  NotificationsGateway? notifications,
   List<Override> extra = const <Override>[],
 }) async {
   SharedPreferences.setMockInitialValues(
@@ -144,6 +148,9 @@ Future<void> pumpNutriguide(
           progressApi ?? OfflineProgressApi(),
         ),
         weightApiProvider.overrideWithValue(weightApi ?? OfflineWeightApi()),
+        notificationsGatewayProvider.overrideWithValue(
+          notifications ?? FakeNotificationsGateway(),
+        ),
         ...extra,
       ],
       child: const App(),

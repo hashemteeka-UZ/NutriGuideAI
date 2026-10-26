@@ -332,6 +332,9 @@ void main() {
         'حدّد هدف الماء لتبدأ',
       );
       expect(find.byKey(const Key('badge-progress-STREAK_7')), findsOneWidget);
+      // Cards size to their content: well under the old 0.82 aspect ratio.
+      final card = tester.getSize(find.byKey(const Key('badge-STREAK_7')));
+      expect(card.height, lessThan(card.width * 1.1));
       expect(find.byKey(const Key('badge-progress-STREAK_3')), findsNothing);
 
       // New badges were celebrated once and are now marked seen.
@@ -343,7 +346,9 @@ void main() {
       expect(rows.every((r) => r.seen), isTrue);
     });
 
-    testNutriguide('english labels', (tester) async {
+    testNutriguide('english labels at text scale 1.3 without overflow', (
+      tester,
+    ) async {
       final database = await seeded();
       addTearDown(database.close);
       await pumpNutriguide(
@@ -351,9 +356,12 @@ void main() {
         auth: _signedIn(),
         database: database,
         storedLocale: 'en',
+        textScale: 1.3,
+        logicalSize: const Size(390, 844),
         extra: at(),
       );
       await openBadges(tester, 'Achievements');
+      expect(tester.takeException(), isNull);
       expect(find.text('3-day streak'), findsOneWidget);
       expect(find.textContaining('Well done! You earned'), findsWidgets);
     });

@@ -20,6 +20,7 @@ import '../features/plan/presentation/showcase_screen.dart';
 import '../features/profile/presentation/edit_profile_screen.dart';
 import '../features/profile/presentation/onboarding_screen.dart';
 import '../features/progress/presentation/progress_screen.dart';
+import '../features/reminders/presentation/reminders_screen.dart';
 import '../features/server_check/presentation/server_check_screen.dart';
 import '../features/shopping/presentation/shopping_screen.dart';
 import '../features/today/presentation/about_screen.dart';
@@ -89,7 +90,8 @@ bool _signedInLocation(String location) {
   }
   if (location == '/me/edit' ||
       location == '/me/delete' ||
-      location == '/me/about') {
+      location == '/me/about' ||
+      location == '/me/reminders') {
     return true;
   }
   return location == '/meals' || location.startsWith('/meals/');
@@ -242,6 +244,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/me/delete',
         builder: (BuildContext context, GoRouterState state) {
           return const DeleteAccountScreen();
+        },
+      ),
+      GoRoute(
+        path: '/me/reminders',
+        builder: (BuildContext context, GoRouterState state) {
+          return const RemindersScreen();
         },
       ),
       GoRoute(

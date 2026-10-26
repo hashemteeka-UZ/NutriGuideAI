@@ -220,13 +220,16 @@ class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
                     conditionNames: names,
                     max: item.reasonCodes.length,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.perServingFacts,
-                    style: Theme.of(context).textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  if (meal != null) ...<Widget>[
+                  // One serving: the portion ring above already shows
+                  // these numbers, so the per-serving block is not repeated (#315).
+                  if (meal != null && item.servingsMultiplier != 1) ...<Widget>[
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.perServingFacts,
+                      key: const Key('per-serving-facts'),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.mealServing(
@@ -248,6 +251,8 @@ class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
                       gramsLabel: (double grams) =>
                           l10n.mealServing(formatAmount(context, grams)),
                     ),
+                  ],
+                  if (meal != null) ...<Widget>[
                     if (meal.warningAllergenCodes.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 12),

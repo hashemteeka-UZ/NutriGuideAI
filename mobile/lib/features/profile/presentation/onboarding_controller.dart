@@ -12,6 +12,7 @@ import '../../plan/data/user_context.dart';
 import '../../plan/domain/cached_user.dart';
 import '../../reference/data/reference_repository.dart';
 import '../../reference/domain/reference_data.dart';
+import '../../reminders/data/reminders_controller.dart';
 import '../data/device_timezone.dart';
 import '../data/profile_editor.dart';
 import '../data/profile_repository.dart';
@@ -529,6 +530,12 @@ class OnboardingController extends Notifier<OnboardingState> {
           .refreshDay(ref.read(planClockProvider)());
     } on Object {
       // The next refresh reads them.
+    }
+    // New wake and sleep times move the meal windows (#313).
+    try {
+      await ref.read(remindersProvider.notifier).reschedule();
+    } on Object {
+      // Scheduled again on the next start.
     }
   }
 

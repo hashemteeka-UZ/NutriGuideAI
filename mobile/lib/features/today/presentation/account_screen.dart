@@ -55,6 +55,11 @@ class AccountScreen extends ConsumerWidget {
               },
             ),
             _Row(
+              key: const Key('account-reminders'),
+              label: l10n.accountReminders,
+              onTap: () => context.push('/me/reminders'),
+            ),
+            _Row(
               key: const Key('account-appearance'),
               label: l10n.accountAppearance,
               onTap: () => unawaited(showAppearanceSheet(context, ref)),

@@ -14,6 +14,13 @@ class ShoppingRow {
   final bool checked;
 }
 
+/// Tap water is an ingredient for cooking but nothing to buy (#315). The
+/// list has names only, so the WATER ingredient is matched by its name.
+bool isTapWater(String name) {
+  final trimmed = name.trim().toLowerCase();
+  return trimmed == 'ماء' || trimmed == 'water';
+}
+
 class ShoppingSnapshot {
   const ShoppingSnapshot({
     required this.rangeKey,

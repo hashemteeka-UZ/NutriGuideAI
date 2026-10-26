@@ -109,11 +109,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 key: Key('edit-step-${step.name}'),
                 minTileHeight: 56,
                 title: Text(editStepLabel(l10n, step)),
+                // chevron_right mirrors in RTL: it points to the reading end.
                 trailing: Icon(
                   stepIsValid(step, state.draft)
-                      ? Icons.chevron_left
+                      ? Icons.chevron_right
                       : Icons.error_outline,
-                  textDirection: Directionality.of(context),
                 ),
                 onTap: () => notifier.openStep(step),
               ),

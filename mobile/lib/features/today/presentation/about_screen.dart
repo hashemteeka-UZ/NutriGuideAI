@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/config/app_version.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/l10n/bidi.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// «عن التطبيق والخصوصية» (#312).
@@ -18,7 +19,11 @@ class AboutScreen extends StatelessWidget {
         l10n.aboutDisclaimerTitle,
         l10n.aboutDisclaimer,
       ),
-      (const Key('about-data'), l10n.aboutDataTitle, l10n.aboutData),
+      (
+        const Key('about-data'),
+        l10n.aboutDataTitle,
+        l10n.aboutData(isolate('USDA FoodData Central')),
+      ),
       (const Key('about-learning'), l10n.aboutLearnTitle, l10n.aboutLearn),
     ];
     return Scaffold(
@@ -38,10 +43,23 @@ class AboutScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge
                   ?.copyWith(fontWeight: FontWeight.w700),
             ),
-            Text(
-              l10n.aboutVersion(appVersion),
+            // The version is laid out left to right on its own, so the
+            // digits keep their order inside Arabic text (#315).
+            Row(
               key: const Key('about-version'),
-              style: TextStyle(color: colors.fg2),
+              children: <Widget>[
+                Text(
+                  l10n.aboutVersionLabel,
+                  style: TextStyle(color: colors.fg2),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  appVersion,
+                  key: const Key('about-version-number'),
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(color: colors.fg2),
+                ),
+              ],
             ),
             for (final (key, title, body) in sections) ...<Widget>[
               const SizedBox(height: 16),

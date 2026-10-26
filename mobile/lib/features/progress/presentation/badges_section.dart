@@ -90,25 +90,42 @@ class _BadgesSectionState extends ConsumerState<BadgesSection> {
               ),
             ),
           ),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.82,
-          children: <Widget>[
-            for (final item in items)
-              AnimatedScale(
-                scale: fresh.contains(item.code) && !_shown ? 0.8 : 1,
-                duration: animate
-                    ? const Duration(milliseconds: 400)
-                    : Duration.zero,
-                curve: Curves.easeOutBack,
-                child: _BadgeTile(item: item),
+        // Rows of two whose height follows the taller card (#315): no
+        // fixed aspect ratio, so short text leaves no gap and a large text
+        // scale does not overflow.
+        for (var start = 0; start < items.length; start += 2)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  for (
+                    var index = start;
+                    index < start + 2;
+                    index++
+                  ) ...<Widget>[
+                    if (index > start) const SizedBox(width: 12),
+                    Expanded(
+                      child: index < items.length
+                          ? AnimatedScale(
+                              scale:
+                                  fresh.contains(items[index].code) && !_shown
+                                  ? 0.8
+                                  : 1,
+                              duration: animate
+                                  ? const Duration(milliseconds: 400)
+                                  : Duration.zero,
+                              curve: Curves.easeOutBack,
+                              child: _BadgeTile(item: items[index]),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ],
               ),
-          ],
-        ),
+            ),
+          ),
       ],
     );
   }
@@ -161,23 +178,20 @@ class _BadgeTile extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               badgeName(l10n, item.code),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: earned ? colors.fg : colors.fg2,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 2),
-            Expanded(
-              child: Text(
-                badgeDescription(l10n, item.code),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(color: colors.fg2),
-              ),
+            Text(
+              badgeDescription(l10n, item.code),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.fg2),
             ),
+            // Keeps the date or progress at the bottom of the card.
+            const Spacer(),
+            const SizedBox(height: 8),
             if (!earned && !progress.needsWaterGoal) ...<Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
@@ -196,8 +210,6 @@ class _BadgeTile extends StatelessWidget {
             Text(
               status,
               key: Key('badge-status-${item.code.code}'),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelSmall
                   ?.copyWith(color: colors.fg2),
             ),

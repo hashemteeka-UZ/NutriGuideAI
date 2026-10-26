@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/l10n/bidi.dart';
 import '../../../core/theme/app_colors.dart';
 import '../domain/profile_result.dart';
 import 'format_number.dart';
@@ -111,7 +112,10 @@ class _Line extends StatelessWidget {
   ) {
     switch (line.kind) {
       case CalcLineKind.resting:
-        return (title: l10n.onbHowRestTitle, body: l10n.onbHowRestBody);
+        return (
+          title: l10n.onbHowRestTitle(isolate('Mifflin-St Jeor')),
+          body: l10n.onbHowRestBody,
+        );
       case CalcLineKind.activity:
         final factor = line.secondary == null
             ? '—'

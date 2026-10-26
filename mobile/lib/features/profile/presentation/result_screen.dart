@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/l10n/bidi.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/ui/emoji.dart';
@@ -76,7 +77,7 @@ class _PersonalResult extends ConsumerWidget {
         if (fellBack) ...<Widget>[
           const SizedBox(height: 12),
           Text(
-            l10n.onbTimezoneNote,
+            l10n.onbTimezoneNote(isolate('UTC')),
             key: const Key('onb-timezone-note'),
             style: Theme.of(context).textTheme.bodyMedium,
           ),

@@ -706,7 +706,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onbHowTitle => 'كيف حسبناها؟';
 
   @override
-  String get onbHowRestTitle => 'الطاقة وقت الراحة (معادلة Mifflin-St Jeor)';
+  String onbHowRestTitle(Object formula) {
+    return 'الطاقة وقت الراحة (معادلة $formula)';
+  }
 
   @override
   String get onbHowRestBody =>
@@ -784,8 +786,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onbEnterApp => 'ادخل التطبيق';
 
   @override
-  String get onbTimezoneNote =>
-      'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت UTC.';
+  String onbTimezoneNote(Object zone) {
+    return 'لم تُقبل المنطقة الزمنية للجهاز، فحُفظ الملف بتوقيت $zone.';
+  }
 
   @override
   String get browseMeals => 'تصفح الوجبات';
@@ -1877,9 +1880,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountAbout => 'عن التطبيق والخصوصية';
 
   @override
-  String aboutVersion(Object version) {
-    return 'الإصدار $version';
-  }
+  String get aboutVersionLabel => 'الإصدار';
 
   @override
   String get aboutDisclaimerTitle => 'تنبيه صحي';
@@ -1892,8 +1893,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get aboutDataTitle => 'مصدر البيانات';
 
   @override
-  String get aboutData =>
-      'القيم الغذائية مبنية على قاعدة بيانات USDA FoodData Central.';
+  String aboutData(Object source) {
+    return 'القيم الغذائية مبنية على قاعدة بيانات $source.';
+  }
 
   @override
   String get aboutLearnTitle => 'كيف يتعلّم التطبيق منك';
@@ -1901,4 +1903,51 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get aboutLearn =>
       'يستفيد التطبيق مما تفعله: الوجبات التي تأكلها، وما تستبدله، وتقييماتك، وما لم تأكله، وما تحفظه. ويختار فقط بين وجبات تجتاز كل القواعد الصحية. حذف حسابك يحذف سجل التعلّم هذا.';
+
+  @override
+  String get accountReminders => 'التذكيرات';
+
+  @override
+  String get remindersIntro =>
+      'كل التذكيرات متوقفة حتى تفعّلها. تصل في وقت تقريبي.';
+
+  @override
+  String get remindersMeals => 'تذكير الوجبات';
+
+  @override
+  String get remindersMealsSub => 'في بداية وقت كل وجبة';
+
+  @override
+  String get remindersWater => 'تذكير الماء';
+
+  @override
+  String get remindersWaterSub => 'كل ساعتين من 9 صباحًا إلى 9 مساءً';
+
+  @override
+  String get remindersWeighIn => 'تذكير الوزن الأسبوعي';
+
+  @override
+  String get remindersWeighInSub => 'كل جمعة الساعة 9 صباحًا';
+
+  @override
+  String get remindersNeedWaterGoal =>
+      'حدّد هدف الماء أولًا لتفعيل هذا التذكير';
+
+  @override
+  String get remindersDenied =>
+      'لم يُسمح بالإشعارات. يمكنك السماح بها من إعدادات التطبيق.';
+
+  @override
+  String get remindersOpenSettings => 'فتح الإعدادات';
+
+  @override
+  String reminderMealBody(Object meal) {
+    return 'حان وقت $meal. وجبتك في خطة اليوم';
+  }
+
+  @override
+  String get reminderWaterBody => 'اشرب كوب ماء';
+
+  @override
+  String get reminderWeighInBody => 'وقت وزنك الأسبوعي';
 }

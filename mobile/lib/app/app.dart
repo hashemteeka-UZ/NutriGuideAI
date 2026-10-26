@@ -10,6 +10,7 @@ import '../features/auth/data/auth_interceptor.dart';
 import '../features/catalog/presentation/catalog_lifecycle.dart';
 import '../features/logging/presentation/sync_lifecycle.dart';
 import '../features/plan/presentation/plan_lifecycle.dart';
+import '../features/reminders/data/reminders_controller.dart';
 import 'router.dart';
 
 class App extends ConsumerWidget {
@@ -23,6 +24,7 @@ class App extends ConsumerWidget {
     ref.watch(catalogLifecycleProvider);
     ref.watch(planLifecycleProvider);
     ref.watch(syncLifecycleProvider);
+    ref.watch(remindersLifecycleProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,

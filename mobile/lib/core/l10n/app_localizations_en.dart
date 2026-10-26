@@ -710,7 +710,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbHowTitle => 'How did we calculate this?';
 
   @override
-  String get onbHowRestTitle => 'Resting energy (Mifflin-St Jeor)';
+  String onbHowRestTitle(Object formula) {
+    return 'Resting energy ($formula)';
+  }
 
   @override
   String get onbHowRestBody =>
@@ -789,8 +791,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbEnterApp => 'Enter the app';
 
   @override
-  String get onbTimezoneNote =>
-      'The device timezone was not accepted, so the profile was saved with UTC.';
+  String onbTimezoneNote(Object zone) {
+    return 'The device timezone was not accepted, so the profile was saved with $zone.';
+  }
 
   @override
   String get browseMeals => 'Browse meals';
@@ -1888,9 +1891,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountAbout => 'About and privacy';
 
   @override
-  String aboutVersion(Object version) {
-    return 'Version $version';
-  }
+  String get aboutVersionLabel => 'Version';
 
   @override
   String get aboutDisclaimerTitle => 'Health note';
@@ -1903,8 +1904,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutDataTitle => 'Data source';
 
   @override
-  String get aboutData =>
-      'Nutrition values are based on USDA FoodData Central.';
+  String aboutData(Object source) {
+    return 'Nutrition values are based on $source.';
+  }
 
   @override
   String get aboutLearnTitle => 'How the app learns from you';
@@ -1912,4 +1914,50 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutLearn =>
       'The app uses what you do: meals you eat, swap, rate, did not eat, or save. It only chooses between meals that already pass every health rule. Deleting your account deletes this learning history.';
+
+  @override
+  String get accountReminders => 'Reminders';
+
+  @override
+  String get remindersIntro =>
+      'All reminders stay off until you turn them on. They arrive at about the set time.';
+
+  @override
+  String get remindersMeals => 'Meal reminders';
+
+  @override
+  String get remindersMealsSub => 'At the start of each meal window';
+
+  @override
+  String get remindersWater => 'Water reminders';
+
+  @override
+  String get remindersWaterSub => 'Every 2 hours from 9 am to 9 pm';
+
+  @override
+  String get remindersWeighIn => 'Weekly weigh-in';
+
+  @override
+  String get remindersWeighInSub => 'Fridays at 9 am';
+
+  @override
+  String get remindersNeedWaterGoal => 'Set a water goal first to turn this on';
+
+  @override
+  String get remindersDenied =>
+      'Notifications are not allowed. You can allow them in the app settings.';
+
+  @override
+  String get remindersOpenSettings => 'Open settings';
+
+  @override
+  String reminderMealBody(Object meal) {
+    return 'Time for $meal. Your meal is in today\'s plan';
+  }
+
+  @override
+  String get reminderWaterBody => 'Have a glass of water';
+
+  @override
+  String get reminderWeighInBody => 'Time for your weekly weigh-in';
 }
