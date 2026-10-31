@@ -556,5 +556,10 @@
   "remindersOpenSettings": "Open settings",
   "reminderMealBody": "Time for {meal}. Your meal is in today's plan",
   "reminderWaterBody": "Have a glass of water",
-  "reminderWeighInBody": "Time for your weekly weigh-in"
+  "reminderWeighInBody": "Time for your weekly weigh-in",
+  "caloriesTitle": "Calories",
+  "macroOfTarget": " / {target} g",
+  "remindersOpen": "Reminders",
+  "streakPill": "{count}-day streak",
+  "mealMetaLine": "{kcal} kcal · ≈ {grams} g"
 }

@@ -659,5 +659,13 @@
   "remindersOpenSettings": "فتح الإعدادات",
   "reminderMealBody": "حان وقت {meal}. وجبتك في خطة اليوم",
   "reminderWaterBody": "اشرب كوب ماء",
-  "reminderWeighInBody": "وقت وزنك الأسبوعي"
+  "reminderWeighInBody": "وقت وزنك الأسبوعي",
+  "caloriesTitle": "السعرات",
+  "macroOfTarget": " / {target} غ",
+  "@macroOfTarget": {"placeholders": {"target": {"type": "String"}}},
+  "remindersOpen": "التذكيرات",
+  "streakPill": "{count} أيام متتالية",
+  "@streakPill": {"placeholders": {"count": {"type": "String"}}},
+  "mealMetaLine": "{kcal} سعرة · ≈ {grams} غ",
+  "@mealMetaLine": {"placeholders": {"kcal": {"type": "String"}, "grams": {"type": "String"}}}
 }

@@ -1950,4 +1950,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reminderWeighInBody => 'وقت وزنك الأسبوعي';
+
+  @override
+  String get caloriesTitle => 'السعرات';
+
+  @override
+  String macroOfTarget(String target) {
+    return ' / $target غ';
+  }
+
+  @override
+  String get remindersOpen => 'التذكيرات';
+
+  @override
+  String streakPill(String count) {
+    return '$count أيام متتالية';
+  }
+
+  @override
+  String mealMetaLine(String kcal, String grams) {
+    return '$kcal سعرة · ≈ $grams غ';
+  }
 }

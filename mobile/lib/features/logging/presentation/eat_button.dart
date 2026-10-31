@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/ui/kit.dart';
 import '../../plan/domain/plan.dart';
 import '../data/logging_providers.dart';
 import '../domain/logging.dart';
@@ -62,7 +63,15 @@ class EatButton extends ConsumerWidget {
         children: <Widget>[
           Semantics(
             label: l10n.eatLogged,
-            child: Icon(Icons.check_circle, color: colors.brand, size: 32),
+            child: Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: colors.brand,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(Icons.check_rounded, color: colors.onBrand),
+            ),
           ),
           if (log != null)
             TextButton(
@@ -83,16 +92,20 @@ class EatButton extends ConsumerWidget {
           child: InkResponse(
             key: Key('eat-${item.planItemId}'),
             radius: 28,
+            borderRadius: BorderRadius.circular(16),
             onTap: () => unawaited(_log(context, ref, 1)),
             onLongPress: () => unawaited(_chooseAmount(context, ref)),
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: colors.brand, width: 2),
+            child: CustomPaint(
+              painter: DashedBorderPainter(
+                color: mixColor(colors.brand, 0.6, colors.line),
+                dashed: true,
+                width: 1.5,
               ),
-              child: Icon(Icons.check, color: colors.brand),
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Icon(Icons.add_rounded, color: colors.brand),
+              ),
             ),
           ),
         ),

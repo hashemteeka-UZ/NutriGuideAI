@@ -3444,6 +3444,36 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'وقت وزنك الأسبوعي'**
   String get reminderWeighInBody;
+
+  /// No description provided for @caloriesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعرات'**
+  String get caloriesTitle;
+
+  /// No description provided for @macroOfTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **' / {target} غ'**
+  String macroOfTarget(String target);
+
+  /// No description provided for @remindersOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'التذكيرات'**
+  String get remindersOpen;
+
+  /// No description provided for @streakPill.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} أيام متتالية'**
+  String streakPill(String count);
+
+  /// No description provided for @mealMetaLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'{kcal} سعرة · ≈ {grams} غ'**
+  String mealMetaLine(String kcal, String grams);
 }
 
 class _AppLocalizationsDelegate

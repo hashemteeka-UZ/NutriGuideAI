@@ -1960,4 +1960,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderWeighInBody => 'Time for your weekly weigh-in';
+
+  @override
+  String get caloriesTitle => 'Calories';
+
+  @override
+  String macroOfTarget(String target) {
+    return ' / $target g';
+  }
+
+  @override
+  String get remindersOpen => 'Reminders';
+
+  @override
+  String streakPill(String count) {
+    return '$count-day streak';
+  }
+
+  @override
+  String mealMetaLine(String kcal, String grams) {
+    return '$kcal kcal · ≈ $grams g';
+  }
 }
