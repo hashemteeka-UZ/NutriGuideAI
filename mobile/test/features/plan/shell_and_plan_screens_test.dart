@@ -191,6 +191,17 @@ void main() {
     expect(find.byKey(const Key('water-screen')), findsOneWidget);
     await tester.tap(find.byKey(const Key('tab-me')));
     await tester.pumpAndSettle();
+    // V4: the account screen is longer; scroll to the favourites row.
+    await tester.scrollUntilVisible(
+      find.text('وجباتي المفضلة'),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('account-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
     expect(find.text('وجباتي المفضلة'), findsOneWidget);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();

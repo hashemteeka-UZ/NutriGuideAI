@@ -54,6 +54,8 @@ class UserContextController extends Notifier<CachedUser?> {
         targetWeightKg: profile.profile.targetWeightKg?.toDouble(),
         wakeMinutes: clockToMinutes(profile.profile.wakeTime),
         sleepMinutes: clockToMinutes(profile.profile.sleepTime),
+        heightCm: profile.profile.heightCm.toDouble(),
+        activityLevel: profile.profile.activityLevel.json,
         conditions: <String>[
           for (final condition in profile.profile.conditions) condition.code,
         ],

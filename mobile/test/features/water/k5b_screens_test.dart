@@ -350,6 +350,18 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('tab-me')));
     await tester.pumpAndSettle();
+    // V4: the account screen is longer; scroll to the row.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('account-weight')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('account-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     expect(find.text('لم تسجل وزنًا بعد'), findsOneWidget);
     await tester.tap(find.byKey(const Key('account-weight')));
     await tester.pumpAndSettle();

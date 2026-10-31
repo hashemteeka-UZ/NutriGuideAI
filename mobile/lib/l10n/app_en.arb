@@ -573,5 +573,18 @@
   "waterMlUnit": "ml",
   "planChartTitle": "Planned calories this week",
   "planChartTarget": "Target {kcal}",
-  "adherenceThisWeek": "Your adherence this week"
+  "adherenceThisWeek": "Your adherence this week",
+  "accountHello": "Welcome",
+  "accountStreakDays": "days",
+  "accountGoal": "My goal",
+  "accountHeightWeight": "Height and weight",
+  "accountActivity": "Activity",
+  "accountCare": "What we keep in mind",
+  "accountAvoid": "What I avoid",
+  "accountDislikes": "Meals I don’t like",
+  "accountRhythm": "My daily rhythm",
+  "accountEditShort": "Edit",
+  "accountWakeSleep": "Wake {wake} · Sleep {sleep}",
+  "accountDisclaimer": "NutriGuide helps you eat well and does not replace your doctor or dietitian.",
+  "genWeekDays": "Days of the week"
 }

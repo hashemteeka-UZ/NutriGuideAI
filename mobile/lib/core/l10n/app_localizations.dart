@@ -3540,6 +3540,84 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'التزامك هذا الأسبوع'**
   String get adherenceThisWeek;
+
+  /// No description provided for @accountHello.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلًا بك'**
+  String get accountHello;
+
+  /// No description provided for @accountStreakDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'أيام'**
+  String get accountStreakDays;
+
+  /// No description provided for @accountGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدفي'**
+  String get accountGoal;
+
+  /// No description provided for @accountHeightWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول والوزن'**
+  String get accountHeightWeight;
+
+  /// No description provided for @accountActivity.
+  ///
+  /// In ar, this message translates to:
+  /// **'نشاطي'**
+  String get accountActivity;
+
+  /// No description provided for @accountCare.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما نراعيه في أكلي'**
+  String get accountCare;
+
+  /// No description provided for @accountAvoid.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما أتجنبه'**
+  String get accountAvoid;
+
+  /// No description provided for @accountDislikes.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبات لا أحبها'**
+  String get accountDislikes;
+
+  /// No description provided for @accountRhythm.
+  ///
+  /// In ar, this message translates to:
+  /// **'مواعيد يومي'**
+  String get accountRhythm;
+
+  /// No description provided for @accountEditShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل'**
+  String get accountEditShort;
+
+  /// No description provided for @accountWakeSleep.
+  ///
+  /// In ar, this message translates to:
+  /// **'أستيقظ {wake} · أنام {sleep}'**
+  String accountWakeSleep(String sleep, String wake);
+
+  /// No description provided for @accountDisclaimer.
+  ///
+  /// In ar, this message translates to:
+  /// **'NutriGuide يساعدك على الأكل الصحي ولا يغني عن استشارة طبيبك أو أخصائي التغذية.'**
+  String get accountDisclaimer;
+
+  /// No description provided for @genWeekDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'أيام الأسبوع'**
+  String get genWeekDays;
 }
 
 class _AppLocalizationsDelegate

@@ -1254,9 +1254,8 @@ class _TimelineRow extends StatelessWidget {
                       ),
                       ReasonChips(
                         codes: item.reasonCodes,
-                        languageCode: Localizations.localeOf(
-                          context,
-                        ).languageCode,
+                        languageCode: Localizations.localeOf(context)
+                            .languageCode,
                         conditionNames: names,
                       ),
                     ],

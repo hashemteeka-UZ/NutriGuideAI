@@ -2021,4 +2021,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adherenceThisWeek => 'Your adherence this week';
+
+  @override
+  String get accountHello => 'Welcome';
+
+  @override
+  String get accountStreakDays => 'days';
+
+  @override
+  String get accountGoal => 'My goal';
+
+  @override
+  String get accountHeightWeight => 'Height and weight';
+
+  @override
+  String get accountActivity => 'Activity';
+
+  @override
+  String get accountCare => 'What we keep in mind';
+
+  @override
+  String get accountAvoid => 'What I avoid';
+
+  @override
+  String get accountDislikes => 'Meals I don’t like';
+
+  @override
+  String get accountRhythm => 'My daily rhythm';
+
+  @override
+  String get accountEditShort => 'Edit';
+
+  @override
+  String accountWakeSleep(String sleep, String wake) {
+    return 'Wake $wake · Sleep $sleep';
+  }
+
+  @override
+  String get accountDisclaimer =>
+      'NutriGuide helps you eat well and does not replace your doctor or dietitian.';
+
+  @override
+  String get genWeekDays => 'Days of the week';
 }

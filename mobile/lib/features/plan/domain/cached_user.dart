@@ -36,6 +36,8 @@ class CachedUser {
     this.targetWeightKg,
     this.wakeMinutes,
     this.sleepMinutes,
+    this.heightCm,
+    this.activityLevel,
   });
 
   /// The goal line of the weight chart (#280).
@@ -58,6 +60,10 @@ class CachedUser {
   final int? wakeMinutes;
   final int? sleepMinutes;
 
+  /// The account rows (V4).
+  final double? heightCm;
+  final String? activityLevel;
+
   CachedUser copyWith({bool? eligible, bool? hasDislike}) {
     return CachedUser(
       eligible: eligible ?? this.eligible,
@@ -71,6 +77,8 @@ class CachedUser {
       targetWeightKg: targetWeightKg,
       wakeMinutes: wakeMinutes,
       sleepMinutes: sleepMinutes,
+      heightCm: heightCm,
+      activityLevel: activityLevel,
     );
   }
 }

@@ -682,5 +682,19 @@
   "planChartTitle": "سعرات الأسبوع المخطط",
   "planChartTarget": "الهدف {kcal}",
   "@planChartTarget": {"placeholders": {"kcal": {"type": "String"}}},
-  "adherenceThisWeek": "التزامك هذا الأسبوع"
+  "adherenceThisWeek": "التزامك هذا الأسبوع",
+  "accountHello": "أهلًا بك",
+  "accountStreakDays": "أيام",
+  "accountGoal": "هدفي",
+  "accountHeightWeight": "الطول والوزن",
+  "accountActivity": "نشاطي",
+  "accountCare": "ما نراعيه في أكلي",
+  "accountAvoid": "ما أتجنبه",
+  "accountDislikes": "وجبات لا أحبها",
+  "accountRhythm": "مواعيد يومي",
+  "accountEditShort": "تعديل",
+  "accountWakeSleep": "أستيقظ {wake} · أنام {sleep}",
+  "@accountWakeSleep": {"placeholders": {"sleep": {"type": "String"}, "wake": {"type": "String"}}},
+  "accountDisclaimer": "NutriGuide يساعدك على الأكل الصحي ولا يغني عن استشارة طبيبك أو أخصائي التغذية.",
+  "genWeekDays": "أيام الأسبوع"
 }

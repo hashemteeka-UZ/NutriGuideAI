@@ -131,6 +131,18 @@ void main() {
     Future<void> open(WidgetTester tester) async {
       await tester.tap(find.byKey(const Key('tab-me')));
       await tester.pumpAndSettle();
+      // V4: the account screen is longer; scroll to the row.
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('account-reminders')),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const Key('account-screen')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('account-reminders')));
       await tester.pumpAndSettle();
     }

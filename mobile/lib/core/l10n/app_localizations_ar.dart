@@ -2011,4 +2011,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adherenceThisWeek => 'التزامك هذا الأسبوع';
+
+  @override
+  String get accountHello => 'أهلًا بك';
+
+  @override
+  String get accountStreakDays => 'أيام';
+
+  @override
+  String get accountGoal => 'هدفي';
+
+  @override
+  String get accountHeightWeight => 'الطول والوزن';
+
+  @override
+  String get accountActivity => 'نشاطي';
+
+  @override
+  String get accountCare => 'ما نراعيه في أكلي';
+
+  @override
+  String get accountAvoid => 'ما أتجنبه';
+
+  @override
+  String get accountDislikes => 'وجبات لا أحبها';
+
+  @override
+  String get accountRhythm => 'مواعيد يومي';
+
+  @override
+  String get accountEditShort => 'تعديل';
+
+  @override
+  String accountWakeSleep(String sleep, String wake) {
+    return 'أستيقظ $wake · أنام $sleep';
+  }
+
+  @override
+  String get accountDisclaimer =>
+      'NutriGuide يساعدك على الأكل الصحي ولا يغني عن استشارة طبيبك أو أخصائي التغذية.';
+
+  @override
+  String get genWeekDays => 'أيام الأسبوع';
 }

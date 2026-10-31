@@ -89,6 +89,13 @@ final likeCountProvider = StreamProvider<int>((ref) {
   return watchLikeCount(ref.watch(appDatabaseProvider));
 });
 
+final dislikeCountProvider = StreamProvider<int>((ref) {
+  final database = ref.watch(appDatabaseProvider);
+  final query = database.select(database.localMealPrefs)
+    ..where((t) => t.stance.equals('DISLIKE'));
+  return query.watch().map((List<LocalMealPref> rows) => rows.length);
+});
+
 Future<bool> anyMealDislike(AppDatabase database) async {
   final row = await (database.select(
     database.localMealPrefs,
