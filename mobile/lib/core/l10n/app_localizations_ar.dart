@@ -1971,4 +1971,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String mealMetaLine(String kcal, String grams) {
     return '$kcal سعرة · ≈ $grams غ';
   }
+
+  @override
+  String waterRemaining(String ml) {
+    return 'متبقٍ $ml مل';
+  }
+
+  @override
+  String get waterGoalReached => 'أحسنت! وصلت هدفك اليوم';
+
+  @override
+  String get waterSessions => 'جلسات الشرب';
+
+  @override
+  String waterSessionsCount(String done, String total) {
+    return '$done من $total';
+  }
+
+  @override
+  String get waterSessionDone => 'تمت';
+
+  @override
+  String get waterSessionLater => 'لاحقًا';
+
+  @override
+  String get waterSessionTip =>
+      'الأفضل للجلسة الواحدة كوب إلى كوبين (250 إلى 500 مل)';
+
+  @override
+  String get waterAnyAmount => 'أي كمية';
+
+  @override
+  String get waterMlUnit => 'مل';
 }

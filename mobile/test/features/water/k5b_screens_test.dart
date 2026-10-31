@@ -106,6 +106,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('750 / 2,000 مل'), findsOneWidget);
     expect(find.text('هدف اليوم'), findsOneWidget);
+    // V2: the quick buttons sit below the drinking sessions.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('water-add-250')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('water-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('water-add-250')));
     await tester.pumpAndSettle();
     expect(find.text('1,000 / 2,000 مل'), findsOneWidget);
@@ -133,6 +145,14 @@ void main() {
       ),
       findsOneWidget,
     );
+    // Total first, then the goal (V2: the arguments were swapped in V1).
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('water-card')),
+        matching: find.text('1,000 / 2,000 مل'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testNutriguide('custom amount above 500 shows the neutral tip', (
@@ -147,6 +167,17 @@ void main() {
       extra: at(),
     );
     await tester.tap(find.byKey(const Key('tab-water')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('water-custom')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('water-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('water-custom')));
     await tester.pumpAndSettle();
@@ -212,6 +243,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('750 / 2,000 ml'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('water-custom')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('water-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('water-custom')));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);

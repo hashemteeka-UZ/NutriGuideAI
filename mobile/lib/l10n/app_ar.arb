@@ -667,5 +667,16 @@
   "streakPill": "{count} أيام متتالية",
   "@streakPill": {"placeholders": {"count": {"type": "String"}}},
   "mealMetaLine": "{kcal} سعرة · ≈ {grams} غ",
-  "@mealMetaLine": {"placeholders": {"kcal": {"type": "String"}, "grams": {"type": "String"}}}
+  "@mealMetaLine": {"placeholders": {"kcal": {"type": "String"}, "grams": {"type": "String"}}},
+  "waterRemaining": "متبقٍ {ml} مل",
+  "@waterRemaining": {"placeholders": {"ml": {"type": "String"}}},
+  "waterGoalReached": "أحسنت! وصلت هدفك اليوم",
+  "waterSessions": "جلسات الشرب",
+  "waterSessionsCount": "{done} من {total}",
+  "@waterSessionsCount": {"placeholders": {"done": {"type": "String"}, "total": {"type": "String"}}},
+  "waterSessionDone": "تمت",
+  "waterSessionLater": "لاحقًا",
+  "waterSessionTip": "الأفضل للجلسة الواحدة كوب إلى كوبين (250 إلى 500 مل)",
+  "waterAnyAmount": "أي كمية",
+  "waterMlUnit": "مل"
 }

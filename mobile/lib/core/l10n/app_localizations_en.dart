@@ -1981,4 +1981,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String mealMetaLine(String kcal, String grams) {
     return '$kcal kcal · ≈ $grams g';
   }
+
+  @override
+  String waterRemaining(String ml) {
+    return '$ml ml to go';
+  }
+
+  @override
+  String get waterGoalReached => 'Well done! You reached today’s goal';
+
+  @override
+  String get waterSessions => 'Drinking sessions';
+
+  @override
+  String waterSessionsCount(String done, String total) {
+    return '$done of $total';
+  }
+
+  @override
+  String get waterSessionDone => 'Done';
+
+  @override
+  String get waterSessionLater => 'Later';
+
+  @override
+  String get waterSessionTip =>
+      'One sitting is best at one to two glasses (250 to 500 ml)';
+
+  @override
+  String get waterAnyAmount => 'Any amount';
+
+  @override
+  String get waterMlUnit => 'ml';
 }

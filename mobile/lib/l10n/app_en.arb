@@ -561,5 +561,14 @@
   "macroOfTarget": " / {target} g",
   "remindersOpen": "Reminders",
   "streakPill": "{count}-day streak",
-  "mealMetaLine": "{kcal} kcal · ≈ {grams} g"
+  "mealMetaLine": "{kcal} kcal · ≈ {grams} g",
+  "waterRemaining": "{ml} ml to go",
+  "waterGoalReached": "Well done! You reached today’s goal",
+  "waterSessions": "Drinking sessions",
+  "waterSessionsCount": "{done} of {total}",
+  "waterSessionDone": "Done",
+  "waterSessionLater": "Later",
+  "waterSessionTip": "One sitting is best at one to two glasses (250 to 500 ml)",
+  "waterAnyAmount": "Any amount",
+  "waterMlUnit": "ml"
 }

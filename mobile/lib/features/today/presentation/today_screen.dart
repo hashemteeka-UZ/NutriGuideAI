@@ -935,9 +935,10 @@ class _WaterCard extends ConsumerWidget {
                       ? l10n.waterWithDoctor
                       : goal == null
                       ? l10n.waterAmountMl(formatWhole(context, total))
+                      // Generated placeholders are alphabetical: goal, total.
                       : l10n.waterTotalOfGoal(
-                          formatWhole(context, total),
                           formatWhole(context, goal),
+                          formatWhole(context, total),
                         ),
                   style: colors.numeric.copyWith(
                     fontSize: 13,

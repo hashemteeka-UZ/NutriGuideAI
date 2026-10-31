@@ -3474,6 +3474,60 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'{kcal} سعرة · ≈ {grams} غ'**
   String mealMetaLine(String kcal, String grams);
+
+  /// No description provided for @waterRemaining.
+  ///
+  /// In ar, this message translates to:
+  /// **'متبقٍ {ml} مل'**
+  String waterRemaining(String ml);
+
+  /// No description provided for @waterGoalReached.
+  ///
+  /// In ar, this message translates to:
+  /// **'أحسنت! وصلت هدفك اليوم'**
+  String get waterGoalReached;
+
+  /// No description provided for @waterSessions.
+  ///
+  /// In ar, this message translates to:
+  /// **'جلسات الشرب'**
+  String get waterSessions;
+
+  /// No description provided for @waterSessionsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{done} من {total}'**
+  String waterSessionsCount(String done, String total);
+
+  /// No description provided for @waterSessionDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت'**
+  String get waterSessionDone;
+
+  /// No description provided for @waterSessionLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقًا'**
+  String get waterSessionLater;
+
+  /// No description provided for @waterSessionTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأفضل للجلسة الواحدة كوب إلى كوبين (250 إلى 500 مل)'**
+  String get waterSessionTip;
+
+  /// No description provided for @waterAnyAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي كمية'**
+  String get waterAnyAmount;
+
+  /// No description provided for @waterMlUnit.
+  ///
+  /// In ar, this message translates to:
+  /// **'مل'**
+  String get waterMlUnit;
 }
 
 class _AppLocalizationsDelegate

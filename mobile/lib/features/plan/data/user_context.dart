@@ -52,6 +52,8 @@ class UserContextController extends Notifier<CachedUser?> {
         sex: profile.profile.sex.json,
         latestWeightKg: profile.profile.latestWeightKg?.toDouble(),
         targetWeightKg: profile.profile.targetWeightKg?.toDouble(),
+        wakeMinutes: clockToMinutes(profile.profile.wakeTime),
+        sleepMinutes: clockToMinutes(profile.profile.sleepTime),
         conditions: <String>[
           for (final condition in profile.profile.conditions) condition.code,
         ],
@@ -77,3 +79,17 @@ final userContextProvider =
     NotifierProvider<UserContextController, CachedUser?>(
       UserContextController.new,
     );
+
+/// «07:30» or «07:30:00» -> 450; null when it does not parse.
+int? clockToMinutes(String clock) {
+  final parts = clock.split(':');
+  if (parts.length < 2) {
+    return null;
+  }
+  final hours = int.tryParse(parts[0]);
+  final minutes = int.tryParse(parts[1]);
+  if (hours == null || minutes == null) {
+    return null;
+  }
+  return hours * 60 + minutes;
+}

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../../plan/domain/plan.dart';
 
 /// One glass of water as the phone knows it.
@@ -130,4 +132,51 @@ class WaterException implements Exception {
 
   @override
   String toString() => 'WaterException($code, network: $network)';
+}
+
+/// One drinking session of the Water tab (prototype `sessions()`).
+class WaterSession {
+  const WaterSession({
+    required this.minutes,
+    required this.amountMl,
+    required this.done,
+  });
+
+  /// Minutes after midnight.
+  final int minutes;
+  final int amountMl;
+  final bool done;
+}
+
+/// Sessions about every two hours from 30 minutes after waking to one hour
+/// before sleep. The goal is split evenly and rounded to 50 ml; sessions are
+/// done in order while today's total covers them. Defaults: 07:00 to 23:00.
+List<WaterSession> waterSessions({
+  required int goalMl,
+  required int totalMl,
+  int? wakeMinutes,
+  int? sleepMinutes,
+}) {
+  final wake = wakeMinutes ?? 7 * 60;
+  var sleep = sleepMinutes ?? 23 * 60;
+  if (sleep <= wake) {
+    sleep += 24 * 60;
+  }
+  final first = wake + 30;
+  var last = sleep - 60;
+  if (last <= first) {
+    last = first + 4 * 120;
+  }
+  final count = math.max(4, ((last - first) / 120).round() + 1);
+  final step = (last - first) / (count - 1);
+  final amount = math.max(50, (goalMl / count / 50).round() * 50);
+  var covered = 0;
+  return <WaterSession>[
+    for (var i = 0; i < count; i++)
+      WaterSession(
+        minutes: (((first + i * step) / 15).round() * 15) % (24 * 60),
+        amountMl: amount,
+        done: (covered += amount) <= totalMl,
+      ),
+  ];
 }
