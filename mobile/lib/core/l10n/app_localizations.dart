@@ -3528,6 +3528,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'مل'**
   String get waterMlUnit;
+
+  /// No description provided for @planChartTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف {kcal}'**
+  String planChartTarget(String kcal);
+
+  /// No description provided for @adherenceThisWeek.
+  ///
+  /// In ar, this message translates to:
+  /// **'التزامك هذا الأسبوع'**
+  String get adherenceThisWeek;
 }
 
 class _AppLocalizationsDelegate

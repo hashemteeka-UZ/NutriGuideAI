@@ -570,5 +570,8 @@
   "waterSessionLater": "Later",
   "waterSessionTip": "One sitting is best at one to two glasses (250 to 500 ml)",
   "waterAnyAmount": "Any amount",
-  "waterMlUnit": "ml"
+  "waterMlUnit": "ml",
+  "planChartTitle": "Planned calories this week",
+  "planChartTarget": "Target {kcal}",
+  "adherenceThisWeek": "Your adherence this week"
 }

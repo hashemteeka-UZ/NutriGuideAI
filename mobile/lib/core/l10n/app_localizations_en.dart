@@ -2013,4 +2013,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waterMlUnit => 'ml';
+
+  @override
+  String planChartTarget(String kcal) {
+    return 'Target $kcal';
+  }
+
+  @override
+  String get adherenceThisWeek => 'Your adherence this week';
 }

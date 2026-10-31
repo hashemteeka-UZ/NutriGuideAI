@@ -678,5 +678,9 @@
   "waterSessionLater": "لاحقًا",
   "waterSessionTip": "الأفضل للجلسة الواحدة كوب إلى كوبين (250 إلى 500 مل)",
   "waterAnyAmount": "أي كمية",
-  "waterMlUnit": "مل"
+  "waterMlUnit": "مل",
+  "planChartTitle": "سعرات الأسبوع المخطط",
+  "planChartTarget": "الهدف {kcal}",
+  "@planChartTarget": {"placeholders": {"kcal": {"type": "String"}}},
+  "adherenceThisWeek": "التزامك هذا الأسبوع"
 }

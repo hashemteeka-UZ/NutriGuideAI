@@ -2003,4 +2003,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get waterMlUnit => 'مل';
+
+  @override
+  String planChartTarget(String kcal) {
+    return 'الهدف $kcal';
+  }
+
+  @override
+  String get adherenceThisWeek => 'التزامك هذا الأسبوع';
 }

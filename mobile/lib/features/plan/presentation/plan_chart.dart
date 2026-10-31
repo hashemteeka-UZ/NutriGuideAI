@@ -32,15 +32,15 @@ class PlanChart extends StatelessWidget {
       container: true,
       label: summary,
       child: SizedBox(
-        height: 160,
+        height: 120,
         child: CustomPaint(
           painter: _ChartPainter(
             days: days,
             targetKcal: targetKcal,
             direction: Directionality.of(context),
-            bar: colors.brand,
-            selected: colors.brand2,
-            band: colors.brand.withValues(alpha: 0.16),
+            bar: colors.brand.withValues(alpha: 0.35),
+            selected: colors.brand,
+            band: colors.ok.withValues(alpha: 0.14),
             line: colors.line,
           ),
           child: const SizedBox.expand(),

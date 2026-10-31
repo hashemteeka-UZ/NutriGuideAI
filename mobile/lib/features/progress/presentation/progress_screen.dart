@@ -9,6 +9,8 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/ui/emoji.dart';
+import '../../../core/ui/kit.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/user_context.dart';
 import '../../plan/domain/plan_dates.dart';
@@ -226,8 +228,9 @@ class _ReportSection extends ConsumerWidget {
 BoxDecoration _card(AppColors colors) {
   return BoxDecoration(
     color: colors.surface,
-    borderRadius: BorderRadius.circular(20),
+    borderRadius: BorderRadius.circular(cardRadius),
     border: Border.all(color: colors.line),
+    boxShadow: softShadow(colors),
   );
 }
 
@@ -270,38 +273,34 @@ class _HeroRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colors = context.appColors;
     final ratio = report.ratio ?? 0;
     final percent = (ratio * 100).round();
-    final headline = switch (report.headline) {
-      WeekHeadline.excellent => l10n.headlineExcellent,
-      WeekHeadline.good => l10n.headlineGood,
-      _ => l10n.headlineFresh,
+    final (String headline, String emoji) = switch (report.headline) {
+      WeekHeadline.excellent => (l10n.headlineExcellent, 'star-struck'),
+      WeekHeadline.good => (l10n.headlineGood, 'sparkles'),
+      _ => (l10n.headlineFresh, 'seedling'),
     };
-    return Container(
+    return GradientHero(
       key: const Key('progress-ring'),
-      padding: const EdgeInsets.all(16),
-      decoration: _card(colors),
+      padding: const EdgeInsets.all(18),
       child: Row(
         children: <Widget>[
           Semantics(
             label: l10n.adherenceRing(formatWhole(context, percent)),
-            child: SizedBox(
-              width: 96,
-              height: 96,
-              child: CustomPaint(
-                painter: _RingPainter(
-                  ratio: ratio,
-                  color: colors.ok,
-                  track: colors.line,
-                ),
-                child: Center(
-                  child: Text(
-                    '${formatWhole(context, percent)}%',
-                    key: const Key('progress-ring-value'),
-                    style: Theme.of(context).textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.w700),
-                  ),
+            child: RingPercent(
+              value: ratio,
+              color: Colors.white,
+              track: const Color(0x40FFFFFF),
+              size: 100,
+              stroke: 11,
+              center: Text(
+                '${formatWhole(context, percent)}%',
+                key: const Key('progress-ring-value'),
+                style: const TextStyle(
+                  fontFamily: 'Readex Pro',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -312,16 +311,35 @@ class _HeroRing extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  headline,
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  l10n.adherenceThisWeek,
+                  style: const TextStyle(color: Color(0xE6FFFFFF)),
                 ),
-                const SizedBox(height: 4),
+                Row(
+                  children: <Widget>[
+                    Flexible(
+                      child: Text(
+                        headline,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          height: 1.3,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Emoji(emoji, size: 24),
+                  ],
+                ),
                 Text(
                   l10n.weekAchievedOf(
                     formatWhole(context, report.achieved),
                     formatWhole(context, report.counted),
                     sex == 'FEMALE' ? 'female' : 'other',
+                  ),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xE6FFFFFF),
                   ),
                 ),
               ],
@@ -331,35 +349,6 @@ class _HeroRing extends StatelessWidget {
       ),
     );
   }
-}
-
-class _RingPainter extends CustomPainter {
-  _RingPainter({required this.ratio, required this.color, required this.track});
-
-  final double ratio;
-  final Color color;
-  final Color track;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    final radius = size.shortestSide / 2 - 6;
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 9
-      ..strokeCap = StrokeCap.round;
-    canvas.drawCircle(center, radius, paint..color = track);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -math.pi / 2,
-      math.pi * 2 * ratio.clamp(0, 1),
-      false,
-      paint..color = color,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_RingPainter oldDelegate) => oldDelegate.ratio != ratio;
 }
 
 class _Cards extends StatelessWidget {
@@ -378,18 +367,19 @@ class _Cards extends StatelessWidget {
       if (best != null)
         _InfoCard(
           key: const Key('card-best-day'),
-          icon: Icons.star_outline,
+          emoji: 'trophy',
+          tint: colors.fat,
           title: l10n.bestDayTitle,
           body: l10n.bestDayBody(
             formatWeekday(context, dateFromIso(best.day.date)),
             formatWhole(context, best.percentOfTarget),
           ),
-          colors: colors,
         ),
       if (missed != null)
         _InfoCard(
           key: const Key('card-most-missed'),
-          icon: Icons.trending_down,
+          emoji: 'leafy-green',
+          tint: colors.fiber,
           title: l10n.mostMissedTitle,
           body: l10n.mostMissedBody(
             formatWhole(context, missed.days),
@@ -397,15 +387,14 @@ class _Cards extends StatelessWidget {
             nutrientName(l10n, missed.nutrient),
             formatWhole(context, missed.averageTotal),
           ),
-          colors: colors,
         ),
       if (water != null)
         _InfoCard(
           key: const Key('card-water'),
-          icon: Icons.water_drop_outlined,
+          emoji: 'droplet',
+          tint: colors.water,
           title: l10n.waterAvgTitle,
           body: l10n.waterAvgBody(formatWhole(context, water)),
-          colors: colors,
         ),
     ];
     return Column(
@@ -419,37 +408,34 @@ class _Cards extends StatelessWidget {
 
 class _InfoCard extends StatelessWidget {
   const _InfoCard({
-    required this.icon,
+    required this.emoji,
+    required this.tint,
     required this.title,
     required this.body,
-    required this.colors,
     super.key,
   });
 
-  final IconData icon;
+  final String emoji;
+  final Color tint;
   final String title;
   final String body;
-  final AppColors colors;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final colors = context.appColors;
+    return AppCard(
+      tint: tint,
       padding: const EdgeInsets.all(14),
-      decoration: _card(colors),
       child: Row(
         children: <Widget>[
-          Icon(icon, color: colors.brand),
+          EmojiTile(emoji, size: 46, emojiSize: 28, tint: tint),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                Text(body),
+                Text(title, style: TextStyle(fontSize: 13, color: colors.fg3)),
+                Text(body, style: const TextStyle(fontWeight: FontWeight.w700)),
               ],
             ),
           ),
