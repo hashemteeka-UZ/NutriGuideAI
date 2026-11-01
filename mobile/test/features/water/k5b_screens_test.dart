@@ -185,7 +185,7 @@ void main() {
     await tester.tap(find.byKey(const Key('water-chip-750')));
     await tester.pumpAndSettle();
     expect(
-      find.text('كمية كبيرة لمرة واحدة، يمكنك تقسيمها على مرتين.'),
+      find.text('هذه كمية كبيرة دفعة واحدة. الأريح أن تقسمها على مرتين.'),
       findsOneWidget,
     );
     await tester.tap(find.byKey(const Key('water-custom-add')));

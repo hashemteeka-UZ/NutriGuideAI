@@ -172,7 +172,7 @@ void main() {
     await reveal(tester, find.byKey(const Key('missed-1')));
     expect(find.text('فاتك موعد فطور'), findsOneWidget);
     expect(
-      find.text('هل أكلتها؟ سجلها الآن حتى يبقى يومك دقيقًا'),
+      find.text('هل أكلتها؟ سجّلها الآن ليبقى يومك صحيحًا'),
       findsOneWidget,
     );
     await tester.tap(
