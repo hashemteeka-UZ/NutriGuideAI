@@ -230,6 +230,9 @@ def test_day_view_plans_swap_and_shopping_list(
     assert shop["date_from"] == TODAY
     assert shop["items"]
     assert all(round(item["grams"], 1) == item["grams"] for item in shop["items"])
+    assert all(item["category_code"] and item["category"] for item in shop["items"])
+    order = [item["category_code"] for item in shop["items"]]
+    assert order == sorted(order)
 
     fiber = api_session.scalar(select(Nutrient.nutrient_id).where(Nutrient.code == "fiber"))
     meal_id = second.json()["items"][0]["meal"]["meal_id"]

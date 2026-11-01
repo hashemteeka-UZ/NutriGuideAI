@@ -109,8 +109,22 @@ SHOPPING_LIST_EXAMPLE = {
     "date_from": "2026-10-20",
     "date_to": "2026-10-20",
     "items": [
-        {"ingredient_id": 18, "name": "طماطم", "grams": 120, "meals": 1},
-        {"ingredient_id": 19, "name": "بيض", "grams": 100, "meals": 1},
+        {
+            "ingredient_id": 19,
+            "name": "بيض",
+            "grams": 100,
+            "meals": 1,
+            "category_code": "0100",
+            "category": "الألبان والبيض",
+        },
+        {
+            "ingredient_id": 18,
+            "name": "طماطم",
+            "grams": 120,
+            "meals": 1,
+            "category_code": "1100",
+            "category": "الخضروات",
+        },
     ],
 }
 
@@ -227,6 +241,20 @@ class ShoppingItem(BaseModel):
     name: str
     grams: float
     meals: int
+    category_code: str = Field(
+        default="",
+        description=(
+            "USDA SR Legacy food group code of the ingredient's food, for example 1100 for "
+            "vegetables. Empty when the food has no SR Legacy group. Added in 1.2.0."
+        ),
+    )
+    category: str = Field(
+        default="",
+        description=(
+            "Food group name in the request language (Arabic for lang=ar, English otherwise). "
+            "Empty when the food has no group. Items are sorted by category_code, then name."
+        ),
+    )
 
     model_config = with_example(SHOPPING_LIST_EXAMPLE["items"][0])
 

@@ -17,6 +17,8 @@ from sqlalchemy.orm import Session
 
 from app.core.text import normalize_search_text, pick_name
 from app.db.models import (
+    Category,
+    Food,
     Ingredient,
     Meal,
     MealIngredient,
@@ -35,6 +37,7 @@ from app.services.condition_limits import (
     resolve_condition_limits,
 )
 from app.services.consumption import PlanItemNotFoundError, has_active_log
+from app.services.food_groups import food_group_code
 from app.services.meal_catalog import MealSummaryData, summaries_for
 from app.services.meal_filter import load_meal_facts, load_user_preferences
 from app.services.meal_windows import MealWindow, meal_windows
@@ -94,6 +97,8 @@ class ShoppingLine:
     name: str
     grams: float
     meals: int
+    category_code: str = ""
+    category: str = ""
 
 
 def _profile(session: Session, user_id: int) -> UserProfile:
@@ -316,6 +321,9 @@ def shopping_list(
     """Non-optional ingredient grams of the current plans in the range (#195).
 
     Tap water (ingredient code WATER) is cooking water, not something to buy (#317).
+    Each line carries the USDA food group of the ingredient's default food (P2a); lines are
+    sorted by that group code, then by name. A group outside SR Legacy has code "" and sorts
+    last; an ingredient without a default food has no group at all and sorts last too.
     """
     plan_ids = [plan.plan_id for _day, plan in _current_plans(session, user_id, date_from, date_to)]
     if not plan_ids:
@@ -329,10 +337,14 @@ def shopping_list(
             MealPlanItem.servings_multiplier,
             Ingredient.canonical_name_ar,
             Ingredient.canonical_name,
+            Category.name_en,
+            Category.name_ar,
         )
         .join(Meal, Meal.meal_id == MealPlanItem.meal_id)
         .join(MealIngredient, MealIngredient.meal_id == Meal.meal_id)
         .join(Ingredient, Ingredient.ingredient_id == MealIngredient.ingredient_id)
+        .outerjoin(Food, Food.food_id == Ingredient.default_food_id)
+        .outerjoin(Category, Category.category_id == Food.category_id)
         .where(
             MealPlanItem.plan_id.in_(plan_ids),
             MealIngredient.is_optional.is_(False),
@@ -342,18 +354,46 @@ def shopping_list(
     grams: dict[int, Decimal] = defaultdict(lambda: Decimal(0))
     used: dict[int, set[int]] = defaultdict(set)
     names: dict[int, str] = {}
-    for item_id, ingredient_id, amount, servings, multiplier, name_ar, name_en in rows:
+    groups: dict[int, tuple[str, str]] = {}
+    for (
+        item_id,
+        ingredient_id,
+        amount,
+        servings,
+        multiplier,
+        name_ar,
+        name_en,
+        group_en,
+        group_ar,
+    ) in rows:
         grams[ingredient_id] += to_decimal(amount) / Decimal(servings) * to_decimal(multiplier)
         used[ingredient_id].add(item_id)
         names[ingredient_id] = pick_name(lang, name_ar, name_en)
+        groups[ingredient_id] = (
+            (food_group_code(group_en), pick_name(lang, group_ar, group_en))
+            if group_en is not None
+            else ("", "")
+        )
     lines = [
         ShoppingLine(
             ingredient_id=ingredient_id,
             name=names[ingredient_id],
             grams=float(round_half_up(grams[ingredient_id], _GRAM_PLACES)),
             meals=len(used[ingredient_id]),
+            category_code=groups[ingredient_id][0],
+            category=groups[ingredient_id][1],
         )
         for ingredient_id in names
     ]
-    lines.sort(key=lambda line: (normalize_search_text(line.name), line.ingredient_id))
+    lines.sort(key=shopping_order)
     return lines
+
+
+def shopping_order(line: ShoppingLine) -> tuple[bool, str, str, int]:
+    """Food group code first (empty codes last), then the normalized name, then the id."""
+    return (
+        line.category_code == "",
+        line.category_code,
+        normalize_search_text(line.name),
+        line.ingredient_id,
+    )

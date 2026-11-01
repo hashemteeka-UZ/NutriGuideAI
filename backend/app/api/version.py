@@ -3,4 +3,5 @@
 from typing import Final
 
 # 1.1.0 (Step L.2, #294): additive, the LEARNED_PREFERENCE reason code and cpsat_v2_learned.
-API_VERSION: Final = "1.1.0"
+# 1.2.0 (P2a): additive, ShoppingItem.category_code and ShoppingItem.category.
+API_VERSION: Final = "1.2.0"

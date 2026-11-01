@@ -825,7 +825,7 @@ void main() {
     test('HealthResponse example round-trips', () {
       final example = jsonDecode(r'''
 {
-  "api_version": "1.1.0",
+  "api_version": "1.2.0",
   "database": "ok",
   "dataset_version": "catalog_v3",
   "default_planner": "cpsat",
@@ -1489,10 +1489,12 @@ void main() {
     test('ShoppingItem example round-trips', () {
       final example = jsonDecode(r'''
 {
-  "grams": 120,
-  "ingredient_id": 18,
+  "category": "الألبان والبيض",
+  "category_code": "0100",
+  "grams": 100,
+  "ingredient_id": 19,
   "meals": 1,
-  "name": "طماطم"
+  "name": "بيض"
 }
 ''');
       final model = ShoppingItem.fromJson(
@@ -1509,16 +1511,20 @@ void main() {
   "date_to": "2026-10-20",
   "items": [
     {
-      "grams": 120,
-      "ingredient_id": 18,
-      "meals": 1,
-      "name": "طماطم"
-    },
-    {
+      "category": "الألبان والبيض",
+      "category_code": "0100",
       "grams": 100,
       "ingredient_id": 19,
       "meals": 1,
       "name": "بيض"
+    },
+    {
+      "category": "الخضروات",
+      "category_code": "1100",
+      "grams": 120,
+      "ingredient_id": 18,
+      "meals": 1,
+      "name": "طماطم"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # NutriGuide API guide
 
-For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `1.1.0`). If this guide and that file disagree, the file wins. Every route in this version is implemented. Screen work can use the mock server below; the examples in the file are what it returns.
+For the Flutter app. The only contract is [`openapi.json`](openapi.json) in this folder (API `1.2.0`). If this guide and that file disagree, the file wins. Every route in this version is implemented. Screen work can use the mock server below; the examples in the file are what it returns.
 
 Base URL path prefix: `/api/v1`.
 
@@ -217,6 +217,15 @@ Paths are under `/api/v1`. This is the plan’s screen table, with food search r
 | Delete account | `DELETE /me` |
 | Offline | `POST /sync/batch`, `GET /sync/changes?since=`, `GET /catalog/snapshot` |
 
+### Shopping list
+
+`GET /shopping-list?from=&to=` sums the non-optional ingredient grams of the current plans in the inclusive range (at most 31 days). Tap water (ingredient code `WATER`) is cooking water and is left out. Each item has `ingredient_id`, `name`, `grams`, `meals` (how many plan items use it), and, from `1.2.0`:
+
+- `category_code`: the USDA SR Legacy food group code of the ingredient's food, for example `0100` dairy and eggs, `1100` vegetables, `2000` cereal grains and pasta. Empty when the food has no SR Legacy group.
+- `category`: that group's name in the request language (`name_ar` for `ar`, `name_en` otherwise).
+
+Items are sorted by `category_code`, then by name, so the app can draw one header per group. For one day send the same date as `from` and `to`. An older cached response has neither field: show it as one group.
+
 `DIABETES_INSULIN` is in `GET /reference` with `is_supported: false`. Ask it only as the insulin question. The supported conditions are `DIABETES_T2`, `HYPERTENSION`, and `HEART_DISEASE`. There is no pregnancy, lactation, or kidney-disease field.
 
 ## 8. Contract stability
@@ -226,3 +235,4 @@ From `1.0.0` the contract is stable for the Flutter app. Changes are additive on
 Changes:
 
 - `1.1.0` (Step L.2): the reason code `LEARNED_PREFERENCE` and the plan version `cpsat_v2_learned`. Additive; no field, route, or error code changed.
+- `1.2.0` (P2a): `ShoppingItem.category_code` and `ShoppingItem.category`, and the shopping list is sorted by food group, then name. Additive; no route or error code changed.

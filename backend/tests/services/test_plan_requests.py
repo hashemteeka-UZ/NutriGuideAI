@@ -12,6 +12,8 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from app.core.text import normalize_search_text
 from app.db.models import (
+    Category,
+    Food,
     Ingredient,
     Meal,
     MealIngredient,
@@ -22,6 +24,7 @@ from app.db.models import (
     UserInteraction,
 )
 from app.services.common import round_half_up, to_decimal
+from app.services.food_groups import USDA_FOOD_GROUP_CODES, food_group_code
 from app.services.plan_requests import (
     PlanDateOutOfRangeError,
     generate_day,
@@ -230,7 +233,7 @@ def test_shopping_list_sums_two_days_and_skips_optional_ingredients(
     lines = shopping_list(slice_session, user, PLAN_DATE, PLAN_DATE + timedelta(days=1), "ar")
     assert ingredient_id not in {line.ingredient_id for line in lines}
     assert lines
-    ordered = [normalize_search_text(line.name) for line in lines]
+    ordered = [(line.category_code, normalize_search_text(line.name)) for line in lines]
     assert ordered == sorted(ordered)
     sample = lines[0]
     rows = slice_session.execute(
@@ -306,3 +309,55 @@ def test_shopping_list_leaves_out_tap_water(
     assert used not in after
     # The old tap water is now an ordinary ingredient again, so it may come back.
     assert after - {water} == before - {used}
+
+
+def test_shopping_list_groups_every_item_by_usda_food_group(
+    slice_session: Session, integrity_conn: Connection
+) -> None:
+    user = case_1_user(integrity_conn)
+    plan_target(slice_session, user)
+    create_day_plan(slice_session, user, PLAN_DATE, NOW)
+    create_day_plan(slice_session, user, PLAN_DATE + timedelta(days=1), NOW + timedelta(days=1))
+    end = PLAN_DATE + timedelta(days=1)
+    arabic = shopping_list(slice_session, user, PLAN_DATE, end, "ar")
+    english = shopping_list(slice_session, user, PLAN_DATE, end, "en")
+    assert arabic
+    expected = dict(
+        slice_session.execute(
+            select(Ingredient.ingredient_id, Category.name_en)
+            .join(Food, Food.food_id == Ingredient.default_food_id)
+            .join(Category, Category.category_id == Food.category_id)
+            .where(Ingredient.ingredient_id.in_([line.ingredient_id for line in arabic]))
+        ).all()
+    )
+    names_ar = dict(slice_session.execute(select(Category.name_en, Category.name_ar)).all())
+    for line in arabic:
+        group_en = expected[line.ingredient_id]
+        assert line.category_code == USDA_FOOD_GROUP_CODES[group_en]
+        assert len(line.category_code) == 4 and line.category_code.isdigit()
+        assert line.category == names_ar[group_en]
+    assert {line.ingredient_id: line.category for line in english} == expected
+    assert [line.category_code for line in english] == [line.category_code for line in arabic]
+    # Category order first, then the name, in each language.
+    for lines in (arabic, english):
+        keys = [(line.category_code, normalize_search_text(line.name)) for line in lines]
+        assert keys == sorted(keys)
+    # Tap water stays out with the new join.
+    assert "WATER" not in {
+        slice_session.get(Ingredient, line.ingredient_id).code  # type: ignore[union-attr]
+        for line in arabic
+    }
+
+
+def test_shopping_order_puts_unknown_groups_last() -> None:
+    from app.services.plan_requests import ShoppingLine, shopping_order
+
+    lines = [
+        ShoppingLine(ingredient_id=1, name="b", grams=1.0, meals=1),
+        ShoppingLine(ingredient_id=2, name="z", grams=1.0, meals=1, category_code="1100"),
+        ShoppingLine(ingredient_id=3, name="a", grams=1.0, meals=1, category_code="0100"),
+        ShoppingLine(ingredient_id=4, name="a", grams=1.0, meals=1, category_code="1100"),
+    ]
+    assert [line.ingredient_id for line in sorted(lines, key=shopping_order)] == [3, 4, 2, 1]
+    assert food_group_code("Vegetables and Vegetable Products") == "1100"
+    assert food_group_code("Not a USDA group") == ""
