@@ -9,6 +9,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/ui/emoji.dart';
 import '../../../core/ui/kit.dart';
+import '../../../core/ui/motion.dart';
+import '../../../core/ui/rise_in.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/user_context.dart';
 import '../../plan/presentation/plan_format.dart';
@@ -65,7 +67,7 @@ class _WaterScreenState extends ConsumerState<WaterScreen> {
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
-            children: <Widget>[
+            children: staggered(<Widget>[
               Text(
                 l10n.tabWater,
                 style: TextStyle(
@@ -145,7 +147,7 @@ class _WaterScreenState extends ConsumerState<WaterScreen> {
                   ],
                 ),
               ),
-            ],
+            ]),
           ),
         ),
       ),
@@ -570,7 +572,7 @@ class _EntryRow extends ConsumerWidget {
 
 /// «مخصص»: 50-1000 ml in steps of 50, with chips.
 Future<void> showWaterCustomSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) => const _CustomSheet(),
@@ -663,7 +665,7 @@ class _CustomSheetState extends ConsumerState<_CustomSheet> {
 
 /// The amount the doctor set: 500-5000 ml, saved with `PUT /me/profile`.
 Future<void> showWaterGoalSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) => const _GoalSheet(),

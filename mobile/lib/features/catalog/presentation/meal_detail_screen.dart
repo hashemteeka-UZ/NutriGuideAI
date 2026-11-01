@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/ui/emoji.dart';
+import '../../../core/ui/motion.dart';
 import '../data/catalog_providers.dart';
 import '../data/meal_pref_writer.dart';
 import '../domain/meal.dart';
@@ -105,7 +106,10 @@ class _Detail extends ConsumerWidget {
               colors: <Color>[colors.heroStart, colors.surface],
             ),
           ),
-          child: Emoji(meal.iconName, size: 88),
+          child: Hero(
+            tag: catalogMealHeroTag(meal.mealId),
+            child: Emoji(meal.iconName, size: 88),
+          ),
         ),
         const SizedBox(height: 16),
         Text(

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/ui/emoji.dart';
+import '../../../core/ui/motion.dart';
 import '../data/display_name.dart';
 
 /// «ماذا نناديك؟»: the optional first page of onboarding (prototype step
@@ -149,7 +150,7 @@ Future<void> showNameSheet(BuildContext context, WidgetRef ref) {
   final controller = TextEditingController(
     text: ref.read(displayNameProvider) ?? '',
   );
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/ui/motion.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/user_context.dart';
 import '../../plan/presentation/showcase_controller.dart';
@@ -16,7 +17,7 @@ import '../domain/weight.dart';
 
 /// «سجّل وزنك»: today's weight on a 30.0-250.0 wheel (Decision #271).
 Future<void> showWeightSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) => const _WeightSheet(),
@@ -149,7 +150,7 @@ Future<void> showGoalReachedSheet(
   required bool animate,
 }) {
   final l10n = AppLocalizations.of(context);
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     builder: (BuildContext context) {
       final colors = context.appColors;

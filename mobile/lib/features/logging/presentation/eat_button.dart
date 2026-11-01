@@ -8,6 +8,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/ui/kit.dart';
+import '../../../core/ui/motion.dart';
 import '../../plan/domain/plan.dart';
 import '../data/logging_providers.dart';
 import '../domain/logging.dart';
@@ -165,7 +166,7 @@ Future<double?> showEatAmountSheet(BuildContext context) {
     1: l10n.eatAmountFull,
     1.5: l10n.eatAmountOneHalf,
   };
-  return showModalBottomSheet<double>(
+  return showAppSheet<double>(
     context: context,
     builder: (BuildContext context) {
       return SafeArea(

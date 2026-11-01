@@ -11,6 +11,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/ui/emoji.dart';
 import '../../../core/ui/kit.dart';
+import '../../../core/ui/rise_in.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/user_context.dart';
 import '../../plan/domain/plan_dates.dart';
@@ -95,7 +96,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                  children: <Widget>[
+                  children: staggered(<Widget>[
                     Text(
                       l10n.tabProgress,
                       style: Theme.of(context).textTheme.headlineSmall
@@ -133,7 +134,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                       _Segment.weight => const _WeightSection(),
                       _Segment.badges => const BadgesSection(),
                     },
-                  ],
+                  ]),
                 ),
               ),
             ),

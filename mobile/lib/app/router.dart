@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/ui/motion.dart';
 import '../features/auth/domain/session.dart';
 import '../features/auth/presentation/auth_form_screen.dart';
 import '../features/auth/presentation/session_controller.dart';
@@ -153,7 +154,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           return const OnboardingScreen();
         },
       ),
-      StatefulShellRoute.indexedStack(
+      StatefulShellRoute(
+        navigatorContainerBuilder:
+            (
+              BuildContext context,
+              StatefulNavigationShell navigationShell,
+              List<Widget> children,
+            ) {
+              return FadeThroughBranches(
+                currentIndex: navigationShell.currentIndex,
+                children: children,
+              );
+            },
         builder:
             (
               BuildContext context,
@@ -183,17 +195,25 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: <RouteBase>[
                   GoRoute(
                     path: 'shopping',
-                    builder: (BuildContext context, GoRouterState state) {
-                      return const ShoppingScreen();
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      return sharedAxisPage(
+                        context,
+                        state,
+                        const ShoppingScreen(),
+                      );
                     },
                   ),
                   GoRoute(
                     path: 'item/:planItemId',
                     parentNavigatorKey: rootNavigatorKey,
-                    builder: (BuildContext context, GoRouterState state) {
-                      return PlanItemScreen(
-                        planItemId: int.tryParse(
-                          state.pathParameters['planItemId'] ?? '',
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      return sharedAxisPage(
+                        context,
+                        state,
+                        PlanItemScreen(
+                          planItemId: int.tryParse(
+                            state.pathParameters['planItemId'] ?? '',
+                          ),
                         ),
                       );
                     },
@@ -236,32 +256,32 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/me/edit',
-        builder: (BuildContext context, GoRouterState state) {
-          return const EditProfileScreen();
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return sharedAxisPage(context, state, const EditProfileScreen());
         },
       ),
       GoRoute(
         path: '/me/delete',
-        builder: (BuildContext context, GoRouterState state) {
-          return const DeleteAccountScreen();
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return sharedAxisPage(context, state, const DeleteAccountScreen());
         },
       ),
       GoRoute(
         path: '/me/reminders',
-        builder: (BuildContext context, GoRouterState state) {
-          return const RemindersScreen();
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return sharedAxisPage(context, state, const RemindersScreen());
         },
       ),
       GoRoute(
         path: '/me/about',
-        builder: (BuildContext context, GoRouterState state) {
-          return const AboutScreen();
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return sharedAxisPage(context, state, const AboutScreen());
         },
       ),
       GoRoute(
         path: '/log/meal',
-        builder: (BuildContext context, GoRouterState state) {
-          return const OtherMealScreen();
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return sharedAxisPage(context, state, const OtherMealScreen());
         },
       ),
       GoRoute(
@@ -272,23 +292,27 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/meals',
-        builder: (BuildContext context, GoRouterState state) {
-          return const MealsScreen();
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return sharedAxisPage(context, state, const MealsScreen());
         },
         routes: <RouteBase>[
           GoRoute(
             path: 'favourites',
-            builder: (BuildContext context, GoRouterState state) {
-              return const FavouritesScreen();
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return sharedAxisPage(context, state, const FavouritesScreen());
             },
           ),
           GoRoute(
             path: ':mealId',
-            builder: (BuildContext context, GoRouterState state) {
+            pageBuilder: (BuildContext context, GoRouterState state) {
               final mealId = int.tryParse(state.pathParameters['mealId'] ?? '');
-              return ViewEvent(
-                mealId: mealId,
-                child: MealDetailScreen(mealId: mealId),
+              return sharedAxisPage(
+                context,
+                state,
+                ViewEvent(
+                  mealId: mealId,
+                  child: MealDetailScreen(mealId: mealId),
+                ),
               );
             },
           ),

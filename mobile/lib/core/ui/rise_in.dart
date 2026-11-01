@@ -4,6 +4,16 @@ import 'package:flutter/widgets.dart';
 
 import '../theme/motion.dart';
 
+/// Staggered rise-in for the cards of a tab (P2d): each child rises 60 ms
+/// after the previous one on its first build; the delay stops growing after
+/// [max] children. No motion with reduced motion.
+List<Widget> staggered(List<Widget> children, {int max = 8}) {
+  return <Widget>[
+    for (final (index, child) in children.indexed)
+      RiseIn(index: index < max ? index : max, child: child),
+  ];
+}
+
 class RiseIn extends StatefulWidget {
   const RiseIn({required this.index, required this.child, super.key});
 

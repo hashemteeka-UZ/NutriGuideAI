@@ -373,6 +373,46 @@ void main() {
     expect(find.textContaining('+'), findsWidgets);
   });
 
+  testNutriguide('the meal icon flies from the plan row to the item screen', (
+    tester,
+  ) async {
+    final database = await seeded();
+    addTearDown(database.close);
+    await pumpNutriguide(
+      tester,
+      auth: _signedIn(),
+      database: database,
+      extra: clockOverride(),
+    );
+    await tester.tap(find.byKey(const Key('tab-plan')));
+    await tester.pumpAndSettle();
+    final row = find.byKey(const Key('plan-row-1'));
+    expect(
+      find.descendant(of: row, matching: find.byType(Hero)),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widget<Hero>(find.descendant(of: row, matching: find.byType(Hero)))
+          .tag,
+      'meal-item-1',
+    );
+    await tester.ensureVisible(row);
+    await tester.pumpAndSettle();
+    await tester.tap(row);
+    await tester.pumpAndSettle();
+    // The item screen carries the same tag, so the icon flies between them
+    // (the harness runs with reduced motion, so there is no flight here).
+    final image = find.byKey(const Key('plan-item-image'));
+    expect(image, findsOneWidget);
+    expect(
+      tester
+          .widget<Hero>(find.descendant(of: image, matching: find.byType(Hero)))
+          .tag,
+      'meal-item-1',
+    );
+  });
+
   testNutriguide('shopping scopes share ticks, group by food and undo', (
     tester,
   ) async {

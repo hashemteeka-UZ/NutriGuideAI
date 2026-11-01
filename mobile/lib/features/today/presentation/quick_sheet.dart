@@ -5,12 +5,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ui/motion.dart';
 import '../../weight/presentation/weight_sheet.dart';
 
 /// «ماذا تريد أن تضيف؟» from the Today FAB (Decision #273). The shopping
 /// tile shows only when a plan exists.
 Future<void> showQuickSheet(BuildContext context, {required bool hasPlan}) {
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext sheetContext) {

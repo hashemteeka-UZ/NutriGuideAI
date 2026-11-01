@@ -8,6 +8,8 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/ui/emoji.dart';
 import '../../../core/ui/kit.dart';
+import '../../../core/ui/motion.dart';
+import '../../../core/ui/rise_in.dart';
 import '../../catalog/data/healthy_meals.dart';
 import '../../today/presentation/today_look.dart';
 import '../../today/presentation/today_screen.dart';
@@ -55,7 +57,7 @@ class PlanScreen extends ConsumerWidget {
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
-                  children: <Widget>[
+                  children: staggered(<Widget>[
                     Row(
                       children: <Widget>[
                         Expanded(
@@ -210,7 +212,7 @@ class PlanScreen extends ConsumerWidget {
                       _EmptyDay(onBuild: () => openGeneration(context, ref))
                     else
                       _DayBody(day: day, windows: windows),
-                  ],
+                  ]),
                 ),
               ),
             ),
@@ -500,12 +502,15 @@ class _DayBody extends StatelessWidget {
               onTap: () => context.push('/plan/item/${item.planItemId}'),
               child: Row(
                 children: <Widget>[
-                  EmojiTile(
-                    mealEmoji(item),
-                    size: 54,
-                    emojiSize: 36,
-                    radius: 18,
-                    tint: slotTint(colors, item.slot),
+                  Hero(
+                    tag: mealHeroTag(item.planItemId),
+                    child: EmojiTile(
+                      mealEmoji(item),
+                      size: 54,
+                      emojiSize: 36,
+                      radius: 18,
+                      tint: slotTint(colors, item.slot),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(

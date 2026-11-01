@@ -9,6 +9,8 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/ui/emoji.dart';
 import '../../../core/ui/kit.dart';
+import '../../../core/ui/motion.dart';
+import '../../../core/ui/rise_in.dart';
 import '../../catalog/data/healthy_meals.dart';
 import '../../catalog/domain/meal.dart';
 import '../../logging/data/logging_providers.dart';
@@ -91,7 +93,7 @@ class TodayScreen extends ConsumerWidget {
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(18, 14, 18, 24),
-                  children: <Widget>[
+                  children: staggered(<Widget>[
                     _Header(today: today, now: now, sex: user?.sex),
                     const Align(
                       alignment: AlignmentDirectional.centerStart,
@@ -153,7 +155,7 @@ class TodayScreen extends ConsumerWidget {
                       // Room so the FAB does not cover the last row.
                       const SizedBox(height: 72),
                     ],
-                  ],
+                  ]),
                 ),
               ),
             ),
@@ -1198,12 +1200,15 @@ class _TimelineRow extends StatelessWidget {
             onTap: onOpen,
             child: Row(
               children: <Widget>[
-                EmojiTile(
-                  mealEmoji(item),
-                  size: 60,
-                  emojiSize: 40,
-                  radius: 20,
-                  tint: slotTint(colors, item.slot),
+                Hero(
+                  tag: mealHeroTag(item.planItemId),
+                  child: EmojiTile(
+                    mealEmoji(item),
+                    size: 60,
+                    emojiSize: 40,
+                    radius: 20,
+                    tint: slotTint(colors, item.slot),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

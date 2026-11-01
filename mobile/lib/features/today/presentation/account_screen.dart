@@ -11,6 +11,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_mode_controller.dart';
 import '../../../core/ui/emoji.dart';
 import '../../../core/ui/kit.dart';
+import '../../../core/ui/motion.dart';
+import '../../../core/ui/rise_in.dart';
 import '../../auth/domain/session.dart';
 import '../../auth/presentation/session_controller.dart';
 import '../../catalog/data/healthy_meals.dart';
@@ -52,7 +54,7 @@ class AccountScreen extends ConsumerWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
-          children: <Widget>[
+          children: staggered(<Widget>[
             Text(
               l10n.tabMe,
               style: TextStyle(
@@ -293,7 +295,7 @@ class AccountScreen extends ConsumerWidget {
                 ),
               ],
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -511,7 +513,7 @@ Future<void> confirmLogout(BuildContext context, WidgetRef ref) async {
 /// «المظهر»: device, light or dark (#310), and the app colour (V5).
 Future<void> showAppearanceSheet(BuildContext context, WidgetRef ref) {
   final l10n = AppLocalizations.of(context);
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
