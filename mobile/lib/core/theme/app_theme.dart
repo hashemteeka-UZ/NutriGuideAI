@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 
+import 'accent.dart';
 import 'app_colors.dart';
 
 abstract final class AppTheme {
   static const String fontFamily = 'IBM Plex Sans Arabic';
 
-  static ThemeData light() => _theme(Brightness.light, AppColors.light);
+  /// [accent] null keeps the default identity (before sign-in).
+  static ThemeData light({AccentPalette? accent}) => _theme(
+    Brightness.light,
+    accent?.apply(AppColors.light, dark: false) ?? AppColors.light,
+  );
 
-  static ThemeData dark() => _theme(Brightness.dark, AppColors.dark);
+  static ThemeData dark({AccentPalette? accent}) => _theme(
+    Brightness.dark,
+    accent?.apply(AppColors.dark, dark: true) ?? AppColors.dark,
+  );
 
   static ThemeData _theme(Brightness brightness, AppColors colors) {
     final scheme =

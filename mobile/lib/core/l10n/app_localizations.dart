@@ -3618,6 +3618,84 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'أيام الأسبوع'**
   String get genWeekDays;
+
+  /// No description provided for @onbNameTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا نناديك؟'**
+  String get onbNameTitle;
+
+  /// No description provided for @onbNameSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنستخدم اسمك لنحدثك بشكل شخصي'**
+  String get onbNameSubtitle;
+
+  /// No description provided for @onbNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسمك'**
+  String get onbNameHint;
+
+  /// No description provided for @onbNameSkip.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخطي'**
+  String get onbNameSkip;
+
+  /// No description provided for @onbNamePrivacy.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختياري، ويبقى على هاتفك فقط ولا يُرسل إلى الخادم.'**
+  String get onbNamePrivacy;
+
+  /// No description provided for @greetName.
+  ///
+  /// In ar, this message translates to:
+  /// **'نهارك سعيد، {name}'**
+  String greetName(String name);
+
+  /// No description provided for @accentTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لون التطبيق'**
+  String get accentTitle;
+
+  /// No description provided for @accentAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب هدفي'**
+  String get accentAuto;
+
+  /// No description provided for @accentEmerald.
+  ///
+  /// In ar, this message translates to:
+  /// **'أخضر منعش'**
+  String get accentEmerald;
+
+  /// No description provided for @accentTeal.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيروزي هادئ'**
+  String get accentTeal;
+
+  /// No description provided for @accentPlum.
+  ///
+  /// In ar, this message translates to:
+  /// **'برقوقي دافئ'**
+  String get accentPlum;
+
+  /// No description provided for @accentNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللون يتبع هدفك تلقائيًا، وألوان البروتين والسعرات والماء ثابتة دائمًا حتى لا تختلط المعاني.'**
+  String get accentNote;
+
+  /// No description provided for @themeTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'المظهر'**
+  String get themeTitle;
 }
 
 class _AppLocalizationsDelegate

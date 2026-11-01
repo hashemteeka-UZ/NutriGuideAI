@@ -696,5 +696,19 @@
   "accountWakeSleep": "أستيقظ {wake} · أنام {sleep}",
   "@accountWakeSleep": {"placeholders": {"sleep": {"type": "String"}, "wake": {"type": "String"}}},
   "accountDisclaimer": "NutriGuide يساعدك على الأكل الصحي ولا يغني عن استشارة طبيبك أو أخصائي التغذية.",
-  "genWeekDays": "أيام الأسبوع"
+  "genWeekDays": "أيام الأسبوع",
+  "onbNameTitle": "ماذا نناديك؟",
+  "onbNameSubtitle": "سنستخدم اسمك لنحدثك بشكل شخصي",
+  "onbNameHint": "اسمك",
+  "onbNameSkip": "تخطي",
+  "onbNamePrivacy": "اختياري، ويبقى على هاتفك فقط ولا يُرسل إلى الخادم.",
+  "greetName": "نهارك سعيد، {name}",
+  "@greetName": {"placeholders": {"name": {"type": "String"}}},
+  "accentTitle": "لون التطبيق",
+  "accentAuto": "حسب هدفي",
+  "accentEmerald": "أخضر منعش",
+  "accentTeal": "فيروزي هادئ",
+  "accentPlum": "برقوقي دافئ",
+  "accentNote": "اللون يتبع هدفك تلقائيًا، وألوان البروتين والسعرات والماء ثابتة دائمًا حتى لا تختلط المعاني.",
+  "themeTitle": "المظهر"
 }

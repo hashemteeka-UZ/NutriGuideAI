@@ -2063,4 +2063,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genWeekDays => 'Days of the week';
+
+  @override
+  String get onbNameTitle => 'What should we call you?';
+
+  @override
+  String get onbNameSubtitle => 'We use it to talk to you personally';
+
+  @override
+  String get onbNameHint => 'Your name';
+
+  @override
+  String get onbNameSkip => 'Skip';
+
+  @override
+  String get onbNamePrivacy =>
+      'Optional. It stays on this phone and is never sent to the server.';
+
+  @override
+  String greetName(String name) {
+    return 'Have a good day, $name';
+  }
+
+  @override
+  String get accentTitle => 'App colour';
+
+  @override
+  String get accentAuto => 'From my goal';
+
+  @override
+  String get accentEmerald => 'Fresh green';
+
+  @override
+  String get accentTeal => 'Calm teal';
+
+  @override
+  String get accentPlum => 'Warm plum';
+
+  @override
+  String get accentNote =>
+      'The colour follows your goal by default; protein, calorie and water colours never change so their meaning stays clear.';
+
+  @override
+  String get themeTitle => 'Appearance';
 }

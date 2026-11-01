@@ -9,7 +9,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/ui/emoji.dart';
 import '../../auth/presentation/session_controller.dart';
+import '../data/display_name.dart';
 import '../domain/onboarding_steps.dart';
+import 'name_page.dart';
 import 'onboarding_controller.dart';
 import 'result_screen.dart';
 import 'steps/about_step.dart';
@@ -31,6 +33,9 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
+  /// The name page was answered or skipped in this visit.
+  var _nameDone = false;
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +51,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final state = ref.watch(onboardingControllerProvider);
     final colors = context.appColors;
     final notifier = ref.read(onboardingControllerProvider.notifier);
+    final askName =
+        ref.watch(askNameProvider) &&
+        !_nameDone &&
+        ref.watch(displayNameProvider) == null &&
+        state.phase == OnboardingPhase.ready &&
+        state.stepIndex == 0;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) {
@@ -64,6 +75,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             OnboardingPhase.saving => const _SavingView(),
             _ when state.loadError != null && state.reference == null =>
               _LoadError(onRetry: notifier.reloadReference),
+            _ when askName => NamePage(
+              onDone: () => setState(() => _nameDone = true),
+            ),
             OnboardingPhase.result => _QuestionFrame(
               state: state,
               child: const ResultView(),

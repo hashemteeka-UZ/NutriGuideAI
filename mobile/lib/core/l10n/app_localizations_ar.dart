@@ -2053,4 +2053,47 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get genWeekDays => 'أيام الأسبوع';
+
+  @override
+  String get onbNameTitle => 'ماذا نناديك؟';
+
+  @override
+  String get onbNameSubtitle => 'سنستخدم اسمك لنحدثك بشكل شخصي';
+
+  @override
+  String get onbNameHint => 'اسمك';
+
+  @override
+  String get onbNameSkip => 'تخطي';
+
+  @override
+  String get onbNamePrivacy =>
+      'اختياري، ويبقى على هاتفك فقط ولا يُرسل إلى الخادم.';
+
+  @override
+  String greetName(String name) {
+    return 'نهارك سعيد، $name';
+  }
+
+  @override
+  String get accentTitle => 'لون التطبيق';
+
+  @override
+  String get accentAuto => 'حسب هدفي';
+
+  @override
+  String get accentEmerald => 'أخضر منعش';
+
+  @override
+  String get accentTeal => 'فيروزي هادئ';
+
+  @override
+  String get accentPlum => 'برقوقي دافئ';
+
+  @override
+  String get accentNote =>
+      'اللون يتبع هدفك تلقائيًا، وألوان البروتين والسعرات والماء ثابتة دائمًا حتى لا تختلط المعاني.';
+
+  @override
+  String get themeTitle => 'المظهر';
 }

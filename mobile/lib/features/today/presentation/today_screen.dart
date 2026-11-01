@@ -27,6 +27,7 @@ import '../../plan/presentation/offline_bar.dart';
 import '../../plan/presentation/plan_format.dart';
 import '../../plan/presentation/reason_chips.dart';
 import '../../plan/presentation/showcase_controller.dart';
+import '../../profile/data/display_name.dart';
 import '../../progress/data/progress_providers.dart';
 import '../../water/data/water_providers.dart';
 import '../../water/domain/water.dart';
@@ -225,7 +226,12 @@ class _Header extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
     final streak = ref.watch(streakProvider).asData?.value ?? 0;
-    final greeting = now.hour < 12 ? l10n.greetMorning : l10n.greetEvening;
+    final name = ref.watch(displayNameProvider);
+    final greeting = name != null
+        ? l10n.greetName(name)
+        : now.hour < 12
+        ? l10n.greetMorning
+        : l10n.greetEvening;
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(

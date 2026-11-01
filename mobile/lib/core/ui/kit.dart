@@ -158,9 +158,7 @@ class GradientHero extends StatelessWidget {
         borderRadius: BorderRadius.circular(cardRadius),
         color: Colors.transparent,
         child: Ink(
-          decoration: BoxDecoration(
-            gradient: gradient ?? colors.heroGradient,
-          ),
+          decoration: BoxDecoration(gradient: gradient ?? colors.heroGradient),
           child: onTap == null ? body : InkWell(onTap: onTap, child: body),
         ),
       ),

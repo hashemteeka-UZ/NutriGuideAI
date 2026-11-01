@@ -586,5 +586,18 @@
   "accountEditShort": "Edit",
   "accountWakeSleep": "Wake {wake} · Sleep {sleep}",
   "accountDisclaimer": "NutriGuide helps you eat well and does not replace your doctor or dietitian.",
-  "genWeekDays": "Days of the week"
+  "genWeekDays": "Days of the week",
+  "onbNameTitle": "What should we call you?",
+  "onbNameSubtitle": "We use it to talk to you personally",
+  "onbNameHint": "Your name",
+  "onbNameSkip": "Skip",
+  "onbNamePrivacy": "Optional. It stays on this phone and is never sent to the server.",
+  "greetName": "Have a good day, {name}",
+  "accentTitle": "App colour",
+  "accentAuto": "From my goal",
+  "accentEmerald": "Fresh green",
+  "accentTeal": "Calm teal",
+  "accentPlum": "Warm plum",
+  "accentNote": "The colour follows your goal by default; protein, calorie and water colours never change so their meaning stays clear.",
+  "themeTitle": "Appearance"
 }

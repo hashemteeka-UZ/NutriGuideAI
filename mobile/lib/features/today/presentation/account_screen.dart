@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/locale/locale_controller.dart';
+import '../../../core/theme/accent.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_mode_controller.dart';
 import '../../../core/ui/emoji.dart';
@@ -18,6 +19,8 @@ import '../../plan/data/plan_providers.dart';
 import '../../plan/data/user_context.dart';
 import '../../plan/domain/plan.dart';
 import '../../plan/presentation/plan_format.dart';
+import '../../profile/data/display_name.dart';
+import '../../profile/presentation/name_page.dart';
 import '../../progress/data/progress_providers.dart';
 import '../../weight/data/weight_providers.dart';
 import '../../weight/presentation/weight_sheet.dart';
@@ -41,6 +44,7 @@ class AccountScreen extends ConsumerWidget {
         ref.watch(todayWindowsProvider).asData?.value ??
         const <MealWindowSpan>[];
     final weightKg = latest?.weightKg ?? user?.latestWeightKg;
+    final name = ref.watch(displayNameProvider);
     void edit() => context.push('/me/edit');
     return Scaffold(
       key: const Key('account-screen'),
@@ -61,6 +65,7 @@ class AccountScreen extends ConsumerWidget {
             const SizedBox(height: 14),
             GradientHero(
               key: const Key('account-header'),
+              onTap: () => unawaited(showNameSheet(context, ref)),
               child: Row(
                 children: <Widget>[
                   EmojiTile(
@@ -76,7 +81,8 @@ class AccountScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          l10n.accountHello,
+                          name ?? l10n.accountHello,
+                          key: const Key('account-name'),
                           style: const TextStyle(
                             fontSize: 19,
                             fontWeight: FontWeight.w700,
@@ -502,39 +508,118 @@ Future<void> confirmLogout(BuildContext context, WidgetRef ref) async {
   await ref.read(sessionControllerProvider.notifier).logout();
 }
 
-/// «المظهر»: device, light or dark (#310).
+/// «المظهر»: device, light or dark (#310), and the app colour (V5).
 Future<void> showAppearanceSheet(BuildContext context, WidgetRef ref) {
   final l10n = AppLocalizations.of(context);
   return showModalBottomSheet<void>(
     context: context,
+    isScrollControlled: true,
     builder: (BuildContext context) {
       return Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? _) {
+          final colors = context.appColors;
           final current = ref.watch(themeModeProvider);
+          final accent = ref.watch(accentChoiceProvider);
+          final dark = Theme.of(context).brightness == Brightness.dark;
           final labels = <ThemeMode, String>{
             ThemeMode.system: l10n.themeSystem,
             ThemeMode.light: l10n.themeLight,
             ThemeMode.dark: l10n.themeDark,
           };
+          final swatches = <AccentChoice, (AccentPalette, String)>{
+            AccentChoice.emerald: (AccentPalette.emerald, l10n.accentEmerald),
+            AccentChoice.teal: (AccentPalette.teal, l10n.accentTeal),
+            AccentChoice.plum: (AccentPalette.plum, l10n.accentPlum),
+          };
           return SafeArea(
-            child: RadioGroup<ThemeMode>(
-              groupValue: current,
-              onChanged: (ThemeMode? mode) {
-                if (mode != null) {
-                  unawaited(ref.read(themeModeProvider.notifier).select(mode));
-                }
-              },
-              child: Column(
-                key: const Key('appearance-sheet'),
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  for (final entry in labels.entries)
-                    RadioListTile<ThemeMode>(
-                      key: Key('theme-${entry.key.name}'),
-                      value: entry.key,
-                      title: Text(entry.value),
+            child: SingleChildScrollView(
+              child: RadioGroup<ThemeMode>(
+                groupValue: current,
+                onChanged: (ThemeMode? mode) {
+                  if (mode != null) {
+                    unawaited(
+                      ref.read(themeModeProvider.notifier).select(mode),
+                    );
+                  }
+                },
+                child: Column(
+                  key: const Key('appearance-sheet'),
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    for (final entry in labels.entries)
+                      RadioListTile<ThemeMode>(
+                        key: Key('theme-${entry.key.name}'),
+                        value: entry.key,
+                        title: Text(entry.value),
+                      ),
+                    Divider(height: 1, color: colors.line),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+                      child: Row(
+                        children: <Widget>[
+                          const Emoji('artist-palette', size: 22),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.accentTitle,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: <Widget>[
+                          ChoiceChip(
+                            key: const Key('accent-auto'),
+                            avatar: const Emoji('sparkles', size: 16),
+                            label: Text(l10n.accentAuto),
+                            selected: accent == AccentChoice.auto,
+                            onSelected: (_) => unawaited(
+                              ref
+                                  .read(accentChoiceProvider.notifier)
+                                  .select(AccentChoice.auto),
+                            ),
+                          ),
+                          for (final entry in swatches.entries)
+                            _Swatch(
+                              key: Key('accent-${entry.key.name}'),
+                              color: dark
+                                  ? entry.value.$1.dark.$1
+                                  : entry.value.$1.light.$1,
+                              check: dark
+                                  ? entry.value.$1.dark.$3
+                                  : entry.value.$1.light.$3,
+                              label: entry.value.$2,
+                              selected: accent == entry.key,
+                              onTap: () => unawaited(
+                                ref
+                                    .read(accentChoiceProvider.notifier)
+                                    .select(entry.key),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+                      child: Text(
+                        l10n.accentNote,
+                        style: TextStyle(fontSize: 12.5, color: colors.fg3),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -542,6 +627,65 @@ Future<void> showAppearanceSheet(BuildContext context, WidgetRef ref) {
       );
     },
   );
+}
+
+class _Swatch extends StatelessWidget {
+  const _Swatch({
+    required this.color,
+    required this.check,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    super.key,
+  });
+
+  final Color color;
+  final Color check;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      excludeSemantics: true,
+      child: Tooltip(
+        message: label,
+        child: InkResponse(
+          onTap: onTap,
+          radius: 28,
+          child: Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected ? color : Colors.transparent,
+                width: 2,
+              ),
+            ),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.surface, width: 2),
+              ),
+              child: selected
+                  ? Icon(Icons.check_rounded, size: 20, color: check)
+                  : null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _Row extends StatelessWidget {

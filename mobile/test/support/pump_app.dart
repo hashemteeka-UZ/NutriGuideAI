@@ -26,6 +26,7 @@ import 'package:nutriguide/features/plan/data/plan_providers.dart';
 import 'package:nutriguide/features/plan/data/plan_sync.dart';
 import 'package:nutriguide/features/plan/domain/plan.dart';
 import 'package:nutriguide/features/profile/data/device_timezone.dart';
+import 'package:nutriguide/features/profile/data/display_name.dart';
 import 'package:nutriguide/features/profile/data/profile_repository.dart';
 import 'package:nutriguide/features/profile/domain/profile_repository.dart';
 import 'package:nutriguide/features/profile/presentation/onboarding_controller.dart';
@@ -98,6 +99,8 @@ Future<void> pumpNutriguide(
   ProgressApi? progressApi,
   NotificationsGateway? notifications,
   List<Override> extra = const <Override>[],
+  bool askName = false,
+  MemorySecure? nameStore,
 }) async {
   SharedPreferences.setMockInitialValues(
     storedLocale == null
@@ -151,6 +154,8 @@ Future<void> pumpNutriguide(
         notificationsGatewayProvider.overrideWithValue(
           notifications ?? FakeNotificationsGateway(),
         ),
+        askNameProvider.overrideWithValue(askName),
+        displayNameStoreProvider.overrideWithValue(nameStore ?? MemorySecure()),
         ...extra,
       ],
       child: const App(),
