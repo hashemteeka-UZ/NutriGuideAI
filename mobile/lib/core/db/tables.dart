@@ -541,8 +541,29 @@ class ShoppingItems extends Table {
 
   IntColumn get meals => integer()();
 
+  /// Unused from version 8: ticks live in [ShoppingChecks] so the plan,
+  /// today and current-meal lists share them.
   BoolColumn get checked => boolean()();
+
+  /// USDA food group code from API 1.2.0 (version 8). Empty in older caches.
+  TextColumn get categoryCode => text().withDefault(const Constant(''))();
+
+  /// Food group name in the list's language (version 8).
+  TextColumn get category => text().withDefault(const Constant(''))();
 
   @override
   Set<Column<Object>> get primaryKey => {rangeKey, ingredientId};
+}
+
+/// Personal (version 8). Ingredients ticked as bought within one week range
+/// (`shoppingRangeKey` of the plan week), shared by every shopping scope.
+class ShoppingChecks extends Table {
+  TextColumn get weekKey => text()();
+
+  IntColumn get ingredientId => integer()();
+
+  DateTimeColumn get checkedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {weekKey, ingredientId};
 }

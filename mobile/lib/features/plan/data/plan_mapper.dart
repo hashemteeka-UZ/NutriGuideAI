@@ -114,6 +114,8 @@ ShoppingRow shoppingRowFromApi(api_shop.ShoppingItem item) {
     grams: _d(item.grams),
     meals: item.meals,
     checked: false,
+    categoryCode: item.categoryCode,
+    category: item.category,
   );
 }
 

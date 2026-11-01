@@ -373,6 +373,143 @@ void main() {
     expect(find.textContaining('+'), findsWidgets);
   });
 
+  testNutriguide('shopping scopes share ticks, group by food and undo', (
+    tester,
+  ) async {
+    final database = await seeded();
+    addTearDown(database.close);
+    final now = DateTime.utc(2026, 10, 24);
+    for (final key in <String>[
+      '2026-10-24_2026-10-30',
+      '2026-10-24_2026-10-24',
+    ]) {
+      await database
+          .into(database.shoppingLists)
+          .insert(ShoppingListsCompanion.insert(rangeKey: key, fetchedAt: now));
+      await database
+          .into(database.shoppingItems)
+          .insert(
+            ShoppingItemsCompanion.insert(
+              rangeKey: key,
+              ingredientId: 21,
+              name: 'فول مدمس',
+              grams: 200,
+              meals: 1,
+              checked: false,
+              categoryCode: const Value('1600'),
+              category: const Value('البقوليات'),
+            ),
+          );
+    }
+    await database
+        .into(database.shoppingItems)
+        .insert(
+          ShoppingItemsCompanion.insert(
+            rangeKey: '2026-10-24_2026-10-30',
+            ingredientId: 5,
+            name: 'حليب',
+            grams: 500,
+            meals: 2,
+            checked: false,
+            categoryCode: const Value('0100'),
+            category: const Value('الألبان والبيض'),
+          ),
+        );
+    for (final (position, id, name, grams, optional)
+        in <(int, int, String, double, bool)>[
+          (1, 21, 'فول مدمس', 200, false),
+          (2, 7, 'ماء', 100, false),
+          (3, 8, 'زيت زيتون', 10, true),
+        ]) {
+      await database
+          .into(database.mealIngredients)
+          .insert(
+            MealIngredientsCompanion.insert(
+              lang: 'ar',
+              mealId: 10,
+              position: position,
+              ingredientId: id,
+              name: name,
+              gramsPerServing: grams,
+              isOptional: optional,
+            ),
+          );
+    }
+    await pumpNutriguide(
+      tester,
+      auth: _signedIn(),
+      database: database,
+      extra: clockOverride(),
+    );
+    await tester.tap(find.byKey(const Key('tab-plan')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('plan-shopping')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-group-0100')), findsOneWidget);
+    expect(find.byKey(const Key('shop-group-1600')), findsOneWidget);
+    expect(find.text('البقوليات'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.byKey(const Key('shop-group-0100'))).dy,
+      lessThan(tester.getTopLeft(find.byKey(const Key('shop-group-1600'))).dy),
+    );
+
+    await tester.tap(find.byKey(const Key('shop-item-21')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-item-21')), findsNothing);
+    expect(find.byKey(const Key('shop-undo-bar')), findsOneWidget);
+    await tester.tap(find.text('تراجع'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-item-21')), findsOneWidget);
+    expect(find.byKey(const Key('shop-bought')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('shop-item-21')));
+    await tester.pumpAndSettle();
+    Finder scope(String label) => find.descendant(
+      of: find.byKey(const Key('shop-scope')),
+      matching: find.text(label),
+    );
+    await tester.tap(scope('اليوم'));
+    await tester.pumpAndSettle();
+    // Today's list has only the beans, already ticked in the week list.
+    expect(find.byKey(const Key('shop-item-21')), findsNothing);
+    expect(find.byKey(const Key('shop-item-5')), findsNothing);
+    expect(find.byKey(const Key('shop-all-bought')), findsOneWidget);
+    expect(find.byKey(const Key('shop-bought')), findsOneWidget);
+
+    await tester.tap(scope('الوجبة الحالية'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-meal')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('shop-meal')),
+        matching: find.text('فول'),
+      ),
+      findsOneWidget,
+    );
+    ScaffoldMessenger.of(
+      tester.element(find.byKey(const Key('shopping-screen'))),
+    ).removeCurrentSnackBar();
+    await tester.ensureVisible(find.byKey(const Key('shop-bought-toggle')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('shop-bought-toggle')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('shop-bought-21')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-bought-21')), findsOneWidget);
+    // Tap water and optional ingredients are not on the meal list.
+    expect(find.byKey(const Key('shop-item-7')), findsNothing);
+    expect(find.byKey(const Key('shop-bought-7')), findsNothing);
+    expect(find.byKey(const Key('shop-item-8')), findsNothing);
+    // Unticking from the meal list unticks it everywhere.
+    await tester.tap(find.byKey(const Key('shop-bought-21')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-item-21')), findsOneWidget);
+    await tester.tap(scope('الخطة كاملة'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-item-21')), findsOneWidget);
+    expect(find.byKey(const Key('shop-bought')), findsNothing);
+  });
+
   testNutriguide('shopping check survives leaving and share skips it', (
     tester,
   ) async {
@@ -454,10 +591,21 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('plan-shopping')));
     await tester.pumpAndSettle();
-    final tile = tester.widget<CheckboxListTile>(
-      find.byKey(const Key('shop-item-1')),
+    // The ticked item stays ticked: it left the open list for «bought».
+    expect(find.byKey(const Key('shop-item-1')), findsNothing);
+    expect(find.byKey(const Key('shop-bought')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('shop-bought-toggle')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shop-bought-1')), findsOneWidget);
+    expect(
+      tester.getSemantics(find.byKey(const Key('shop-bought-1'))),
+      matchesSemantics(
+        isChecked: true,
+        hasCheckedState: true,
+        hasTapAction: true,
+        label: 'طماطم، ≈ $grams غ',
+      ),
     );
-    expect(tile.value, isTrue);
     await tester.tap(find.byKey(const Key('shop-share')));
     await tester.pump();
     expect(share.last, isNotNull);

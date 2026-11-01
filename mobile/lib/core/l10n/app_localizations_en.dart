@@ -1281,6 +1281,64 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopShare => 'Share';
 
   @override
+  String get shopSubtitle => 'Calculated from your plan\'s meals';
+
+  @override
+  String get shopScopePlan => 'Whole plan';
+
+  @override
+  String get shopScopeToday => 'Today';
+
+  @override
+  String get shopScopeMeal => 'Current meal';
+
+  @override
+  String get shopMealNow => 'Your meal now';
+
+  @override
+  String get shopMealNext => 'Your next meal';
+
+  @override
+  String get shopAllItems => 'Items';
+
+  @override
+  String shopGroupCount(int count) {
+    return '($count)';
+  }
+
+  @override
+  String shopBought(int count) {
+    return 'Bought ($count)';
+  }
+
+  @override
+  String get shopMarked => 'Moved to «Bought»';
+
+  @override
+  String get shopUndo => 'Undo';
+
+  @override
+  String get shopEmptyTitle => 'Nothing to buy here';
+
+  @override
+  String get shopEmptyPlan =>
+      'Once your plan is built, its ingredients show up here.';
+
+  @override
+  String get shopEmptyToday => 'Today\'s plan has no meals yet.';
+
+  @override
+  String get shopEmptyMeal => 'No meal now and none coming up today.';
+
+  @override
+  String get shopAllBought => 'You\'ve bought everything here. Nice!';
+
+  @override
+  String shopItemSemantics(String name, String quantity) {
+    return '$name, $quantity';
+  }
+
+  @override
   String get chartNoPlan => 'No plan';
 
   @override

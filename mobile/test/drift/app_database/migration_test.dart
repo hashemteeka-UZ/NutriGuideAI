@@ -11,6 +11,7 @@ import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v6.dart' as v6;
 import 'generated/schema_v7.dart' as v7;
+import 'generated/schema_v8.dart' as v8;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -64,6 +65,51 @@ void main() {
         final rows = await newDb.select(newDb.progressMeta).get();
         expect(rows.single.value, '4');
         expect(await newDb.select(newDb.earnedBadges).get(), isEmpty);
+      },
+    );
+  });
+
+  test('v7 to v8 moves shopping ticks to shopping_checks', () async {
+    await verifier.testWithDataIntegrity(
+      oldVersion: 7,
+      newVersion: 8,
+      createOld: v7.DatabaseAtV7.new,
+      createNew: v8.DatabaseAtV8.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insert(
+          oldDb.shoppingLists,
+          v7.ShoppingListsCompanion.insert(
+            rangeKey: '2026-10-24_2026-10-30',
+            fetchedAt: 1761264000,
+          ),
+        );
+        batch.insertAll(oldDb.shoppingItems, [
+          v7.ShoppingItemsCompanion.insert(
+            rangeKey: '2026-10-24_2026-10-30',
+            ingredientId: 1,
+            name: 'tomato',
+            grams: 350,
+            meals: 2,
+            checked: 1,
+          ),
+          v7.ShoppingItemsCompanion.insert(
+            rangeKey: '2026-10-24_2026-10-30',
+            ingredientId: 2,
+            name: 'onion',
+            grams: 1200,
+            meals: 1,
+            checked: 0,
+          ),
+        ]);
+      },
+      validateItems: (newDb) async {
+        final items = await newDb.select(newDb.shoppingItems).get();
+        expect(items, hasLength(2));
+        expect(items.every((row) => row.categoryCode == ''), isTrue);
+        final checks = await newDb.select(newDb.shoppingChecks).get();
+        expect(checks.single.weekKey, '2026-10-24_2026-10-30');
+        expect(checks.single.ingredientId, 1);
       },
     );
   });

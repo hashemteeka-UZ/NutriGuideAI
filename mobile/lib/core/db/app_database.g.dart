@@ -7581,6 +7581,30 @@ class $ShoppingItemsTable extends ShoppingItems
       'CHECK ("checked" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _categoryCodeMeta = const VerificationMeta(
+    'categoryCode',
+  );
+  @override
+  late final GeneratedColumn<String> categoryCode = GeneratedColumn<String>(
+    'category_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     rangeKey,
@@ -7589,6 +7613,8 @@ class $ShoppingItemsTable extends ShoppingItems
     grams,
     meals,
     checked,
+    categoryCode,
+    category,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7653,6 +7679,21 @@ class $ShoppingItemsTable extends ShoppingItems
     } else if (isInserting) {
       context.missing(_checkedMeta);
     }
+    if (data.containsKey('category_code')) {
+      context.handle(
+        _categoryCodeMeta,
+        categoryCode.isAcceptableOrUnknown(
+          data['category_code']!,
+          _categoryCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
     return context;
   }
 
@@ -7686,6 +7727,14 @@ class $ShoppingItemsTable extends ShoppingItems
         DriftSqlType.bool,
         data['${effectivePrefix}checked'],
       )!,
+      categoryCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_code'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
     );
   }
 
@@ -7701,7 +7750,16 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
   final String name;
   final double grams;
   final int meals;
+
+  /// Unused from version 8: ticks live in [ShoppingChecks] so the plan,
+  /// today and current-meal lists share them.
   final bool checked;
+
+  /// USDA food group code from API 1.2.0 (version 8). Empty in older caches.
+  final String categoryCode;
+
+  /// Food group name in the list's language (version 8).
+  final String category;
   const ShoppingItem({
     required this.rangeKey,
     required this.ingredientId,
@@ -7709,6 +7767,8 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
     required this.grams,
     required this.meals,
     required this.checked,
+    required this.categoryCode,
+    required this.category,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7719,6 +7779,8 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
     map['grams'] = Variable<double>(grams);
     map['meals'] = Variable<int>(meals);
     map['checked'] = Variable<bool>(checked);
+    map['category_code'] = Variable<String>(categoryCode);
+    map['category'] = Variable<String>(category);
     return map;
   }
 
@@ -7730,6 +7792,8 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
       grams: Value(grams),
       meals: Value(meals),
       checked: Value(checked),
+      categoryCode: Value(categoryCode),
+      category: Value(category),
     );
   }
 
@@ -7745,6 +7809,8 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
       grams: serializer.fromJson<double>(json['grams']),
       meals: serializer.fromJson<int>(json['meals']),
       checked: serializer.fromJson<bool>(json['checked']),
+      categoryCode: serializer.fromJson<String>(json['categoryCode']),
+      category: serializer.fromJson<String>(json['category']),
     );
   }
   @override
@@ -7757,6 +7823,8 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
       'grams': serializer.toJson<double>(grams),
       'meals': serializer.toJson<int>(meals),
       'checked': serializer.toJson<bool>(checked),
+      'categoryCode': serializer.toJson<String>(categoryCode),
+      'category': serializer.toJson<String>(category),
     };
   }
 
@@ -7767,6 +7835,8 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
     double? grams,
     int? meals,
     bool? checked,
+    String? categoryCode,
+    String? category,
   }) => ShoppingItem(
     rangeKey: rangeKey ?? this.rangeKey,
     ingredientId: ingredientId ?? this.ingredientId,
@@ -7774,6 +7844,8 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
     grams: grams ?? this.grams,
     meals: meals ?? this.meals,
     checked: checked ?? this.checked,
+    categoryCode: categoryCode ?? this.categoryCode,
+    category: category ?? this.category,
   );
   ShoppingItem copyWithCompanion(ShoppingItemsCompanion data) {
     return ShoppingItem(
@@ -7785,6 +7857,10 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
       grams: data.grams.present ? data.grams.value : this.grams,
       meals: data.meals.present ? data.meals.value : this.meals,
       checked: data.checked.present ? data.checked.value : this.checked,
+      categoryCode: data.categoryCode.present
+          ? data.categoryCode.value
+          : this.categoryCode,
+      category: data.category.present ? data.category.value : this.category,
     );
   }
 
@@ -7796,14 +7872,24 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
           ..write('name: $name, ')
           ..write('grams: $grams, ')
           ..write('meals: $meals, ')
-          ..write('checked: $checked')
+          ..write('checked: $checked, ')
+          ..write('categoryCode: $categoryCode, ')
+          ..write('category: $category')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(rangeKey, ingredientId, name, grams, meals, checked);
+  int get hashCode => Object.hash(
+    rangeKey,
+    ingredientId,
+    name,
+    grams,
+    meals,
+    checked,
+    categoryCode,
+    category,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -7813,7 +7899,9 @@ class ShoppingItem extends DataClass implements Insertable<ShoppingItem> {
           other.name == this.name &&
           other.grams == this.grams &&
           other.meals == this.meals &&
-          other.checked == this.checked);
+          other.checked == this.checked &&
+          other.categoryCode == this.categoryCode &&
+          other.category == this.category);
 }
 
 class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
@@ -7823,6 +7911,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
   final Value<double> grams;
   final Value<int> meals;
   final Value<bool> checked;
+  final Value<String> categoryCode;
+  final Value<String> category;
   final Value<int> rowid;
   const ShoppingItemsCompanion({
     this.rangeKey = const Value.absent(),
@@ -7831,6 +7921,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
     this.grams = const Value.absent(),
     this.meals = const Value.absent(),
     this.checked = const Value.absent(),
+    this.categoryCode = const Value.absent(),
+    this.category = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ShoppingItemsCompanion.insert({
@@ -7840,6 +7932,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
     required double grams,
     required int meals,
     required bool checked,
+    this.categoryCode = const Value.absent(),
+    this.category = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : rangeKey = Value(rangeKey),
        ingredientId = Value(ingredientId),
@@ -7854,6 +7948,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
     Expression<double>? grams,
     Expression<int>? meals,
     Expression<bool>? checked,
+    Expression<String>? categoryCode,
+    Expression<String>? category,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -7863,6 +7959,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
       if (grams != null) 'grams': grams,
       if (meals != null) 'meals': meals,
       if (checked != null) 'checked': checked,
+      if (categoryCode != null) 'category_code': categoryCode,
+      if (category != null) 'category': category,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -7874,6 +7972,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
     Value<double>? grams,
     Value<int>? meals,
     Value<bool>? checked,
+    Value<String>? categoryCode,
+    Value<String>? category,
     Value<int>? rowid,
   }) {
     return ShoppingItemsCompanion(
@@ -7883,6 +7983,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
       grams: grams ?? this.grams,
       meals: meals ?? this.meals,
       checked: checked ?? this.checked,
+      categoryCode: categoryCode ?? this.categoryCode,
+      category: category ?? this.category,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -7908,6 +8010,12 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
     if (checked.present) {
       map['checked'] = Variable<bool>(checked.value);
     }
+    if (categoryCode.present) {
+      map['category_code'] = Variable<String>(categoryCode.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -7923,6 +8031,8 @@ class ShoppingItemsCompanion extends UpdateCompanion<ShoppingItem> {
           ..write('grams: $grams, ')
           ..write('meals: $meals, ')
           ..write('checked: $checked, ')
+          ..write('categoryCode: $categoryCode, ')
+          ..write('category: $category, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -11708,6 +11818,280 @@ class EarnedBadgesCompanion extends UpdateCompanion<EarnedBadge> {
   }
 }
 
+class $ShoppingChecksTable extends ShoppingChecks
+    with TableInfo<$ShoppingChecksTable, ShoppingCheck> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ShoppingChecksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _weekKeyMeta = const VerificationMeta(
+    'weekKey',
+  );
+  @override
+  late final GeneratedColumn<String> weekKey = GeneratedColumn<String>(
+    'week_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ingredientIdMeta = const VerificationMeta(
+    'ingredientId',
+  );
+  @override
+  late final GeneratedColumn<int> ingredientId = GeneratedColumn<int>(
+    'ingredient_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _checkedAtMeta = const VerificationMeta(
+    'checkedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> checkedAt = GeneratedColumn<DateTime>(
+    'checked_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [weekKey, ingredientId, checkedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'shopping_checks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ShoppingCheck> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('week_key')) {
+      context.handle(
+        _weekKeyMeta,
+        weekKey.isAcceptableOrUnknown(data['week_key']!, _weekKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekKeyMeta);
+    }
+    if (data.containsKey('ingredient_id')) {
+      context.handle(
+        _ingredientIdMeta,
+        ingredientId.isAcceptableOrUnknown(
+          data['ingredient_id']!,
+          _ingredientIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_ingredientIdMeta);
+    }
+    if (data.containsKey('checked_at')) {
+      context.handle(
+        _checkedAtMeta,
+        checkedAt.isAcceptableOrUnknown(data['checked_at']!, _checkedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_checkedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {weekKey, ingredientId};
+  @override
+  ShoppingCheck map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ShoppingCheck(
+      weekKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}week_key'],
+      )!,
+      ingredientId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ingredient_id'],
+      )!,
+      checkedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}checked_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ShoppingChecksTable createAlias(String alias) {
+    return $ShoppingChecksTable(attachedDatabase, alias);
+  }
+}
+
+class ShoppingCheck extends DataClass implements Insertable<ShoppingCheck> {
+  final String weekKey;
+  final int ingredientId;
+  final DateTime checkedAt;
+  const ShoppingCheck({
+    required this.weekKey,
+    required this.ingredientId,
+    required this.checkedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['week_key'] = Variable<String>(weekKey);
+    map['ingredient_id'] = Variable<int>(ingredientId);
+    map['checked_at'] = Variable<DateTime>(checkedAt);
+    return map;
+  }
+
+  ShoppingChecksCompanion toCompanion(bool nullToAbsent) {
+    return ShoppingChecksCompanion(
+      weekKey: Value(weekKey),
+      ingredientId: Value(ingredientId),
+      checkedAt: Value(checkedAt),
+    );
+  }
+
+  factory ShoppingCheck.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ShoppingCheck(
+      weekKey: serializer.fromJson<String>(json['weekKey']),
+      ingredientId: serializer.fromJson<int>(json['ingredientId']),
+      checkedAt: serializer.fromJson<DateTime>(json['checkedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'weekKey': serializer.toJson<String>(weekKey),
+      'ingredientId': serializer.toJson<int>(ingredientId),
+      'checkedAt': serializer.toJson<DateTime>(checkedAt),
+    };
+  }
+
+  ShoppingCheck copyWith({
+    String? weekKey,
+    int? ingredientId,
+    DateTime? checkedAt,
+  }) => ShoppingCheck(
+    weekKey: weekKey ?? this.weekKey,
+    ingredientId: ingredientId ?? this.ingredientId,
+    checkedAt: checkedAt ?? this.checkedAt,
+  );
+  ShoppingCheck copyWithCompanion(ShoppingChecksCompanion data) {
+    return ShoppingCheck(
+      weekKey: data.weekKey.present ? data.weekKey.value : this.weekKey,
+      ingredientId: data.ingredientId.present
+          ? data.ingredientId.value
+          : this.ingredientId,
+      checkedAt: data.checkedAt.present ? data.checkedAt.value : this.checkedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ShoppingCheck(')
+          ..write('weekKey: $weekKey, ')
+          ..write('ingredientId: $ingredientId, ')
+          ..write('checkedAt: $checkedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(weekKey, ingredientId, checkedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ShoppingCheck &&
+          other.weekKey == this.weekKey &&
+          other.ingredientId == this.ingredientId &&
+          other.checkedAt == this.checkedAt);
+}
+
+class ShoppingChecksCompanion extends UpdateCompanion<ShoppingCheck> {
+  final Value<String> weekKey;
+  final Value<int> ingredientId;
+  final Value<DateTime> checkedAt;
+  final Value<int> rowid;
+  const ShoppingChecksCompanion({
+    this.weekKey = const Value.absent(),
+    this.ingredientId = const Value.absent(),
+    this.checkedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ShoppingChecksCompanion.insert({
+    required String weekKey,
+    required int ingredientId,
+    required DateTime checkedAt,
+    this.rowid = const Value.absent(),
+  }) : weekKey = Value(weekKey),
+       ingredientId = Value(ingredientId),
+       checkedAt = Value(checkedAt);
+  static Insertable<ShoppingCheck> custom({
+    Expression<String>? weekKey,
+    Expression<int>? ingredientId,
+    Expression<DateTime>? checkedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (weekKey != null) 'week_key': weekKey,
+      if (ingredientId != null) 'ingredient_id': ingredientId,
+      if (checkedAt != null) 'checked_at': checkedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ShoppingChecksCompanion copyWith({
+    Value<String>? weekKey,
+    Value<int>? ingredientId,
+    Value<DateTime>? checkedAt,
+    Value<int>? rowid,
+  }) {
+    return ShoppingChecksCompanion(
+      weekKey: weekKey ?? this.weekKey,
+      ingredientId: ingredientId ?? this.ingredientId,
+      checkedAt: checkedAt ?? this.checkedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (weekKey.present) {
+      map['week_key'] = Variable<String>(weekKey.value);
+    }
+    if (ingredientId.present) {
+      map['ingredient_id'] = Variable<int>(ingredientId.value);
+    }
+    if (checkedAt.present) {
+      map['checked_at'] = Variable<DateTime>(checkedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ShoppingChecksCompanion(')
+          ..write('weekKey: $weekKey, ')
+          ..write('ingredientId: $ingredientId, ')
+          ..write('checkedAt: $checkedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11740,6 +12124,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AdherenceDaysTable adherenceDays = $AdherenceDaysTable(this);
   late final $ProgressMetaTable progressMeta = $ProgressMetaTable(this);
   late final $EarnedBadgesTable earnedBadges = $EarnedBadgesTable(this);
+  late final $ShoppingChecksTable shoppingChecks = $ShoppingChecksTable(this);
   late final Index mealsLangSearchKey = Index(
     'meals_lang_search_key',
     'CREATE INDEX meals_lang_search_key ON meals (lang, search_key)',
@@ -11773,6 +12158,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     adherenceDays,
     progressMeta,
     earnedBadges,
+    shoppingChecks,
     mealsLangSearchKey,
   ];
   @override
@@ -16324,6 +16710,8 @@ typedef $$ShoppingItemsTableCreateCompanionBuilder =
       required double grams,
       required int meals,
       required bool checked,
+      Value<String> categoryCode,
+      Value<String> category,
       Value<int> rowid,
     });
 typedef $$ShoppingItemsTableUpdateCompanionBuilder =
@@ -16334,6 +16722,8 @@ typedef $$ShoppingItemsTableUpdateCompanionBuilder =
       Value<double> grams,
       Value<int> meals,
       Value<bool> checked,
+      Value<String> categoryCode,
+      Value<String> category,
       Value<int> rowid,
     });
 
@@ -16398,6 +16788,16 @@ class $$ShoppingItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get categoryCode => $composableBuilder(
+    column: $table.categoryCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$ShoppingListsTableFilterComposer get rangeKey {
     final $$ShoppingListsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -16456,6 +16856,16 @@ class $$ShoppingItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get categoryCode => $composableBuilder(
+    column: $table.categoryCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ShoppingListsTableOrderingComposer get rangeKey {
     final $$ShoppingListsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -16505,6 +16915,14 @@ class $$ShoppingItemsTableAnnotationComposer
 
   GeneratedColumn<bool> get checked =>
       $composableBuilder(column: $table.checked, builder: (column) => column);
+
+  GeneratedColumn<String> get categoryCode => $composableBuilder(
+    column: $table.categoryCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
 
   $$ShoppingListsTableAnnotationComposer get rangeKey {
     final $$ShoppingListsTableAnnotationComposer composer = $composerBuilder(
@@ -16564,6 +16982,8 @@ class $$ShoppingItemsTableTableManager
                 Value<double> grams = const Value.absent(),
                 Value<int> meals = const Value.absent(),
                 Value<bool> checked = const Value.absent(),
+                Value<String> categoryCode = const Value.absent(),
+                Value<String> category = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ShoppingItemsCompanion(
                 rangeKey: rangeKey,
@@ -16572,6 +16992,8 @@ class $$ShoppingItemsTableTableManager
                 grams: grams,
                 meals: meals,
                 checked: checked,
+                categoryCode: categoryCode,
+                category: category,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -16582,6 +17004,8 @@ class $$ShoppingItemsTableTableManager
                 required double grams,
                 required int meals,
                 required bool checked,
+                Value<String> categoryCode = const Value.absent(),
+                Value<String> category = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ShoppingItemsCompanion.insert(
                 rangeKey: rangeKey,
@@ -16590,6 +17014,8 @@ class $$ShoppingItemsTableTableManager
                 grams: grams,
                 meals: meals,
                 checked: checked,
+                categoryCode: categoryCode,
+                category: category,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -18589,6 +19015,181 @@ typedef $$EarnedBadgesTableProcessedTableManager =
       EarnedBadge,
       PrefetchHooks Function()
     >;
+typedef $$ShoppingChecksTableCreateCompanionBuilder =
+    ShoppingChecksCompanion Function({
+      required String weekKey,
+      required int ingredientId,
+      required DateTime checkedAt,
+      Value<int> rowid,
+    });
+typedef $$ShoppingChecksTableUpdateCompanionBuilder =
+    ShoppingChecksCompanion Function({
+      Value<String> weekKey,
+      Value<int> ingredientId,
+      Value<DateTime> checkedAt,
+      Value<int> rowid,
+    });
+
+class $$ShoppingChecksTableFilterComposer
+    extends Composer<_$AppDatabase, $ShoppingChecksTable> {
+  $$ShoppingChecksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get weekKey => $composableBuilder(
+    column: $table.weekKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get ingredientId => $composableBuilder(
+    column: $table.ingredientId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get checkedAt => $composableBuilder(
+    column: $table.checkedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ShoppingChecksTableOrderingComposer
+    extends Composer<_$AppDatabase, $ShoppingChecksTable> {
+  $$ShoppingChecksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get weekKey => $composableBuilder(
+    column: $table.weekKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get ingredientId => $composableBuilder(
+    column: $table.ingredientId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get checkedAt => $composableBuilder(
+    column: $table.checkedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ShoppingChecksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ShoppingChecksTable> {
+  $$ShoppingChecksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get weekKey =>
+      $composableBuilder(column: $table.weekKey, builder: (column) => column);
+
+  GeneratedColumn<int> get ingredientId => $composableBuilder(
+    column: $table.ingredientId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get checkedAt =>
+      $composableBuilder(column: $table.checkedAt, builder: (column) => column);
+}
+
+class $$ShoppingChecksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ShoppingChecksTable,
+          ShoppingCheck,
+          $$ShoppingChecksTableFilterComposer,
+          $$ShoppingChecksTableOrderingComposer,
+          $$ShoppingChecksTableAnnotationComposer,
+          $$ShoppingChecksTableCreateCompanionBuilder,
+          $$ShoppingChecksTableUpdateCompanionBuilder,
+          (
+            ShoppingCheck,
+            BaseReferences<_$AppDatabase, $ShoppingChecksTable, ShoppingCheck>,
+          ),
+          ShoppingCheck,
+          PrefetchHooks Function()
+        > {
+  $$ShoppingChecksTableTableManager(
+    _$AppDatabase db,
+    $ShoppingChecksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ShoppingChecksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ShoppingChecksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ShoppingChecksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> weekKey = const Value.absent(),
+                Value<int> ingredientId = const Value.absent(),
+                Value<DateTime> checkedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ShoppingChecksCompanion(
+                weekKey: weekKey,
+                ingredientId: ingredientId,
+                checkedAt: checkedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String weekKey,
+                required int ingredientId,
+                required DateTime checkedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ShoppingChecksCompanion.insert(
+                weekKey: weekKey,
+                ingredientId: ingredientId,
+                checkedAt: checkedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ShoppingChecksTable, ShoppingCheck>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ShoppingChecksTable,
+                    ShoppingCheck
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ShoppingChecksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ShoppingChecksTable,
+      ShoppingCheck,
+      $$ShoppingChecksTableFilterComposer,
+      $$ShoppingChecksTableOrderingComposer,
+      $$ShoppingChecksTableAnnotationComposer,
+      $$ShoppingChecksTableCreateCompanionBuilder,
+      $$ShoppingChecksTableUpdateCompanionBuilder,
+      (
+        ShoppingCheck,
+        BaseReferences<_$AppDatabase, $ShoppingChecksTable, ShoppingCheck>,
+      ),
+      ShoppingCheck,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -18641,4 +19242,6 @@ class $AppDatabaseManager {
       $$ProgressMetaTableTableManager(_db, _db.progressMeta);
   $$EarnedBadgesTableTableManager get earnedBadges =>
       $$EarnedBadgesTableTableManager(_db, _db.earnedBadges);
+  $$ShoppingChecksTableTableManager get shoppingChecks =>
+      $$ShoppingChecksTableTableManager(_db, _db.shoppingChecks);
 }

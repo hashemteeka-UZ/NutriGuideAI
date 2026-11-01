@@ -2252,6 +2252,108 @@ abstract class AppLocalizations {
   /// **'مشاركة'**
   String get shopShare;
 
+  /// No description provided for @shopSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'محسوبة من وجبات خطتك'**
+  String get shopSubtitle;
+
+  /// No description provided for @shopScopePlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة كاملة'**
+  String get shopScopePlan;
+
+  /// No description provided for @shopScopeToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم'**
+  String get shopScopeToday;
+
+  /// No description provided for @shopScopeMeal.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوجبة الحالية'**
+  String get shopScopeMeal;
+
+  /// No description provided for @shopMealNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبتك الآن'**
+  String get shopMealNow;
+
+  /// No description provided for @shopMealNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبتك القادمة'**
+  String get shopMealNext;
+
+  /// No description provided for @shopAllItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'المشتريات'**
+  String get shopAllItems;
+
+  /// No description provided for @shopGroupCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'({count})'**
+  String shopGroupCount(int count);
+
+  /// No description provided for @shopBought.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشتريتها ({count})'**
+  String shopBought(int count);
+
+  /// No description provided for @shopMarked.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقلناها إلى «اشتريتها»'**
+  String get shopMarked;
+
+  /// No description provided for @shopUndo.
+  ///
+  /// In ar, this message translates to:
+  /// **'تراجع'**
+  String get shopUndo;
+
+  /// No description provided for @shopEmptyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا مشتريات هنا'**
+  String get shopEmptyTitle;
+
+  /// No description provided for @shopEmptyPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'حين تُبنى خطتك ستظهر مكوناتها هنا.'**
+  String get shopEmptyPlan;
+
+  /// No description provided for @shopEmptyToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا وجبات في خطة اليوم بعد.'**
+  String get shopEmptyToday;
+
+  /// No description provided for @shopEmptyMeal.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا وجبة الآن ولا وجبة قادمة اليوم.'**
+  String get shopEmptyMeal;
+
+  /// No description provided for @shopAllBought.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشتريت كل شيء هنا. أحسنت!'**
+  String get shopAllBought;
+
+  /// No description provided for @shopItemSemantics.
+  ///
+  /// In ar, this message translates to:
+  /// **'{name}، {quantity}'**
+  String shopItemSemantics(String name, String quantity);
+
   /// No description provided for @chartNoPlan.
   ///
   /// In ar, this message translates to:

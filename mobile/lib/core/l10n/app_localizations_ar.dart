@@ -1274,6 +1274,63 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shopShare => 'مشاركة';
 
   @override
+  String get shopSubtitle => 'محسوبة من وجبات خطتك';
+
+  @override
+  String get shopScopePlan => 'الخطة كاملة';
+
+  @override
+  String get shopScopeToday => 'اليوم';
+
+  @override
+  String get shopScopeMeal => 'الوجبة الحالية';
+
+  @override
+  String get shopMealNow => 'وجبتك الآن';
+
+  @override
+  String get shopMealNext => 'وجبتك القادمة';
+
+  @override
+  String get shopAllItems => 'المشتريات';
+
+  @override
+  String shopGroupCount(int count) {
+    return '($count)';
+  }
+
+  @override
+  String shopBought(int count) {
+    return 'اشتريتها ($count)';
+  }
+
+  @override
+  String get shopMarked => 'نقلناها إلى «اشتريتها»';
+
+  @override
+  String get shopUndo => 'تراجع';
+
+  @override
+  String get shopEmptyTitle => 'لا مشتريات هنا';
+
+  @override
+  String get shopEmptyPlan => 'حين تُبنى خطتك ستظهر مكوناتها هنا.';
+
+  @override
+  String get shopEmptyToday => 'لا وجبات في خطة اليوم بعد.';
+
+  @override
+  String get shopEmptyMeal => 'لا وجبة الآن ولا وجبة قادمة اليوم.';
+
+  @override
+  String get shopAllBought => 'اشتريت كل شيء هنا. أحسنت!';
+
+  @override
+  String shopItemSemantics(String name, String quantity) {
+    return '$name، $quantity';
+  }
+
+  @override
   String get chartNoPlan => 'لا توجد خطة';
 
   @override
