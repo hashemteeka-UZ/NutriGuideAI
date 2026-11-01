@@ -2885,7 +2885,7 @@ abstract class AppLocalizations {
   /// No description provided for @mostMissedTitle.
   ///
   /// In ar, this message translates to:
-  /// **'أكثر ما نقصك'**
+  /// **'أكثر ما ينقصك'**
   String get mostMissedTitle;
 
   /// No description provided for @mostMissedBody.
@@ -2898,6 +2898,78 @@ abstract class AppLocalizations {
     Object nutrient,
     Object total,
   );
+
+  /// No description provided for @mostMissedNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا شيء ناقص هذا الأسبوع. أحسنت!'**
+  String get mostMissedNone;
+
+  /// No description provided for @bestDayPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل أول وجبة لنعرف أفضل أيامك'**
+  String get bestDayPlaceholder;
+
+  /// No description provided for @mostMissedPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنعرض هنا ما ينقص أكلك'**
+  String get mostMissedPlaceholder;
+
+  /// No description provided for @energyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'توزيع طاقتك'**
+  String get energyTitle;
+
+  /// No description provided for @energyEaten.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما أكلته'**
+  String get energyEaten;
+
+  /// No description provided for @energyTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدفك'**
+  String get energyTarget;
+
+  /// No description provided for @energyShare.
+  ///
+  /// In ar, this message translates to:
+  /// **'{name} {percent}%'**
+  String energyShare(String name, String percent);
+
+  /// No description provided for @mealsWeekTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجباتك هذا الأسبوع'**
+  String get mealsWeekTitle;
+
+  /// No description provided for @mealsEaten.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكلتها'**
+  String get mealsEaten;
+
+  /// No description provided for @mealsSkipped.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تأكلها'**
+  String get mealsSkipped;
+
+  /// No description provided for @mealsNotLogged.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تُسجَّل'**
+  String get mealsNotLogged;
+
+  /// No description provided for @withinLimitsDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'أيام ضمن حدودك الصحية: {days} من {total}'**
+  String withinLimitsDays(String days, String total);
 
   /// No description provided for @waterAvgTitle.
   ///

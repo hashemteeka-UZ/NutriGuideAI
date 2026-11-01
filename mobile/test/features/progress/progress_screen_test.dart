@@ -63,6 +63,12 @@ void main() {
     await database
         .into(database.progressMeta)
         .insert(ProgressMetaCompanion.insert(key: 'streak', value: '2'));
+    // One «لم آكلها» tap this week and one outside it (P2e).
+    for (final key in <String>['skip:2026-10-24:9', 'skip:2026-10-12:4']) {
+      await database
+          .into(database.progressMeta)
+          .insert(ProgressMetaCompanion.insert(key: key, value: '1'));
+    }
     for (final (date, kg) in <(String, double)>[
       ('2026-10-01', 80.0),
       ('2026-10-12', 79.2),
@@ -121,6 +127,35 @@ void main() {
           .first,
     );
     expect(find.byKey(const Key('progress-exceeded')), findsOneWidget);
+    // P2e: energy split and the meals of the week.
+    expect(find.byKey(const Key('progress-energy')), findsOneWidget);
+    expect(find.byKey(const Key('energy-eaten')), findsOneWidget);
+    // Each share is drawn: three segments of the bar's full height.
+    final segments = find.descendant(
+      of: find.byKey(const Key('energy-eaten')),
+      matching: find.byType(ColoredBox),
+    );
+    expect(segments, findsNWidgets(3));
+    for (final element in segments.evaluate()) {
+      expect(tester.getSize(find.byWidget(element.widget)).height, 14);
+    }
+    // 100 g protein, 150 g carbs, 50 g fat: 400 + 600 + 450 kcal.
+    expect(find.textContaining('بروتين 28%'), findsOneWidget);
+    String stat(String key) => tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.byKey(Key(key)),
+            matching: find.byType(Text),
+          ),
+        )
+        .first
+        .data!;
+    // 7 days x 4 planned, 6 logged days x 3 eaten, 1 skip this week.
+    expect(stat('meals-eaten'), '18');
+    expect(stat('meals-skipped'), '1');
+    expect(stat('meals-not-logged'), '9');
+    // 6 logged days, one over the sodium limit.
+    expect(find.text('أيام ضمن حدودك الصحية: 5 من 6'), findsOneWidget);
     expect(find.text('🔥 2 أيام متتالية'), findsOneWidget);
     // The offline fake failed the refresh: the cache shows with the bar.
     expect(find.text('دون اتصال · تعرض آخر نسخة محفوظة'), findsOneWidget);
@@ -144,6 +179,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('12 أكتوبر – 18 أكتوبر'), findsOneWidget);
     expect(find.byKey(const Key('progress-empty-week')), findsOneWidget);
+    // Friendly placeholders instead of the two insight cards (P2e).
+    expect(find.byKey(const Key('card-best-day-empty')), findsOneWidget);
+    expect(find.byKey(const Key('card-most-missed-empty')), findsOneWidget);
+    expect(find.text('سجّل أول وجبة لنعرف أفضل أيامك'), findsOneWidget);
     expect(
       find.text('سجّل وجباتك هذا الأسبوع لترى تقريرك هنا'),
       findsOneWidget,
@@ -251,6 +290,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('weight-few-points')), findsOneWidget);
     expect(find.byKey(const Key('weight-change')), findsNothing);
+    // One weight: its point and the goal line are already drawn (P2e).
+    expect(find.byKey(const Key('weight-chart-static')), findsOneWidget);
   });
 
   testNutriguide('english at 1.3: both segments without overflow', (

@@ -4,6 +4,10 @@ import '../../../core/api/manual/sync_models.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/sync/outbox_store.dart';
 
+/// `progress_meta` key of one «لم آكلها» tap: sorts by date, so a week is a
+/// key range.
+String skipMetaKey(String date, int planItemId) => 'skip:$date:$planItemId';
+
 /// Learning events go through the outbox only (Decision #267).
 class InteractionQueue {
   InteractionQueue(this._database, this._outbox, {Uuid? uuid})
@@ -96,6 +100,16 @@ class InteractionQueue {
     if (!_skips.add(key)) {
       return;
     }
+    // Kept on the phone for the weekly report (P2e): the server has no read
+    // route for learning events. Cleared with the other personal rows.
+    await _database
+        .into(_database.progressMeta)
+        .insertOnConflictUpdate(
+          ProgressMetaCompanion.insert(
+            key: skipMetaKey(date, planItemId),
+            value: '1',
+          ),
+        );
     final queued = await _outbox.forEntity('skip:$key');
     if (queued.isNotEmpty) {
       return;

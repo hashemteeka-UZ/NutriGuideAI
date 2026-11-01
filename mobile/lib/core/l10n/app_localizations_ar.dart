@@ -1652,7 +1652,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get mostMissedTitle => 'أكثر ما نقصك';
+  String get mostMissedTitle => 'أكثر ما ينقصك';
 
   @override
   String mostMissedBody(
@@ -1662,6 +1662,46 @@ class AppLocalizationsAr extends AppLocalizations {
     Object total,
   ) {
     return '$nutrient: $total من $minimum في المتوسط، في $days أيام';
+  }
+
+  @override
+  String get mostMissedNone => 'لا شيء ناقص هذا الأسبوع. أحسنت!';
+
+  @override
+  String get bestDayPlaceholder => 'سجّل أول وجبة لنعرف أفضل أيامك';
+
+  @override
+  String get mostMissedPlaceholder => 'سنعرض هنا ما ينقص أكلك';
+
+  @override
+  String get energyTitle => 'توزيع طاقتك';
+
+  @override
+  String get energyEaten => 'ما أكلته';
+
+  @override
+  String get energyTarget => 'هدفك';
+
+  @override
+  String energyShare(String name, String percent) {
+    return '$name $percent%';
+  }
+
+  @override
+  String get mealsWeekTitle => 'وجباتك هذا الأسبوع';
+
+  @override
+  String get mealsEaten => 'أكلتها';
+
+  @override
+  String get mealsSkipped => 'لم تأكلها';
+
+  @override
+  String get mealsNotLogged => 'لم تُسجَّل';
+
+  @override
+  String withinLimitsDays(String days, String total) {
+    return 'أيام ضمن حدودك الصحية: $days من $total';
   }
 
   @override

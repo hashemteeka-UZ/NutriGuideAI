@@ -201,9 +201,11 @@ class _ReportSection extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 8),
-        if (report.empty)
-          _EmptyWeek(colors: colors)
-        else ...<Widget>[
+        if (report.empty) ...<Widget>[
+          _EmptyWeek(colors: colors),
+          const SizedBox(height: 12),
+          _Cards(report: report),
+        ] else ...<Widget>[
           if (!general && report.ratio != null)
             _HeroRing(report: report, sex: user?.sex),
           const SizedBox(height: 12),
@@ -212,8 +214,12 @@ class _ReportSection extends ConsumerWidget {
           _CaloriesCard(report: report, general: general),
           if (report.macros != null) ...<Widget>[
             const SizedBox(height: 12),
+            _EnergyCard(macros: report.macros!),
+            const SizedBox(height: 12),
             _MacrosCard(macros: report.macros!),
           ],
+          const SizedBox(height: 12),
+          _MealsWeekCard(report: report, general: general),
           if (report.exceeded != null) ...<Widget>[
             const SizedBox(height: 12),
             _ExceededCard(summary: report.exceeded!),
@@ -364,31 +370,43 @@ class _Cards extends StatelessWidget {
     final best = report.bestDay;
     final missed = report.mostMissed;
     final water = report.waterAverageMl;
+    // Both cards show as soon as one day is logged; before that they hold
+    // a friendly placeholder (P2e).
     final cards = <Widget>[
-      if (best != null)
-        _InfoCard(
-          key: const Key('card-best-day'),
-          emoji: 'trophy',
-          tint: colors.fat,
-          title: l10n.bestDayTitle,
-          body: l10n.bestDayBody(
-            formatWeekday(context, dateFromIso(best.day.date)),
-            formatWhole(context, best.percentOfTarget),
-          ),
+      _InfoCard(
+        key: Key(best == null ? 'card-best-day-empty' : 'card-best-day'),
+        emoji: 'trophy',
+        tint: colors.fat,
+        title: l10n.bestDayTitle,
+        muted: best == null,
+        body: best == null
+            ? l10n.bestDayPlaceholder
+            : l10n.bestDayBody(
+                formatWeekday(context, dateFromIso(best.day.date)),
+                formatWhole(context, best.percentOfTarget),
+              ),
+      ),
+      _InfoCard(
+        key: Key(
+          missed != null
+              ? 'card-most-missed'
+              : (report.empty
+                    ? 'card-most-missed-empty'
+                    : 'card-most-missed-none'),
         ),
-      if (missed != null)
-        _InfoCard(
-          key: const Key('card-most-missed'),
-          emoji: 'leafy-green',
-          tint: colors.fiber,
-          title: l10n.mostMissedTitle,
-          body: l10n.mostMissedBody(
-            formatWhole(context, missed.days),
-            formatWhole(context, missed.averageMinimum),
-            nutrientName(l10n, missed.nutrient),
-            formatWhole(context, missed.averageTotal),
-          ),
-        ),
+        emoji: 'leafy-green',
+        tint: colors.fiber,
+        title: l10n.mostMissedTitle,
+        muted: missed == null && report.empty,
+        body: missed != null
+            ? l10n.mostMissedBody(
+                formatWhole(context, missed.days),
+                formatWhole(context, missed.averageMinimum),
+                nutrientName(l10n, missed.nutrient),
+                formatWhole(context, missed.averageTotal),
+              )
+            : (report.empty ? l10n.mostMissedPlaceholder : l10n.mostMissedNone),
+      ),
       if (water != null)
         _InfoCard(
           key: const Key('card-water'),
@@ -413,6 +431,7 @@ class _InfoCard extends StatelessWidget {
     required this.tint,
     required this.title,
     required this.body,
+    this.muted = false,
     super.key,
   });
 
@@ -420,6 +439,9 @@ class _InfoCard extends StatelessWidget {
   final Color tint;
   final String title;
   final String body;
+
+  /// A placeholder: lighter text, no bold figure.
+  final bool muted;
 
   @override
   Widget build(BuildContext context) {
@@ -436,7 +458,12 @@ class _InfoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(title, style: TextStyle(fontSize: 13, color: colors.fg3)),
-                Text(body, style: const TextStyle(fontWeight: FontWeight.w700)),
+                Text(
+                  body,
+                  style: muted
+                      ? TextStyle(color: colors.fg2)
+                      : const TextStyle(fontWeight: FontWeight.w700),
+                ),
               ],
             ),
           ),
@@ -694,6 +721,207 @@ class _MacrosCard extends ConsumerWidget {
   }
 }
 
+/// «توزيع طاقتك»: the share of eaten energy from protein, carbohydrate and
+/// fat (week averages from the server) against the same shares of the
+/// target grams.
+class _EnergyCard extends ConsumerWidget {
+  const _EnergyCard({required this.macros});
+
+  final MacroAverages macros;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.appColors;
+    final eaten = energySplit(
+      proteinG: macros.proteinG,
+      carbG: macros.carbG,
+      fatG: macros.fatG,
+    );
+    final target = ref.watch(userContextProvider)?.target;
+    final protein = target?.proteinG;
+    final carb = target?.carbG;
+    final fat = target?.fatG;
+    final goal = protein == null || carb == null || fat == null
+        ? null
+        : energySplit(proteinG: protein, carbG: carb, fatG: fat);
+    if (eaten == null) {
+      return const SizedBox.shrink();
+    }
+    String pct(double share) => formatWhole(context, share * 100);
+    String describe(EnergySplit split) {
+      return <String>[
+        l10n.energyShare(l10n.nutrientProtein, pct(split.protein)),
+        l10n.energyShare(l10n.nutrientCarbs, pct(split.carb)),
+        l10n.energyShare(l10n.nutrientFat, pct(split.fat)),
+      ].join(' · ');
+    }
+
+    Widget bar(String label, EnergySplit split, Key key) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(label, style: TextStyle(fontSize: 12.5, color: colors.fg3)),
+            const SizedBox(height: 6),
+            Semantics(
+              label: '$label: ${describe(split)}',
+              child: ClipRRect(
+                key: key,
+                borderRadius: BorderRadius.circular(9),
+                child: SizedBox(
+                  height: 14,
+                  child: Row(
+                    children: <Widget>[
+                      for (final (share, color) in <(double, Color)>[
+                        (split.protein, colors.protein),
+                        (split.carb, colors.carb),
+                        (split.fat, colors.fat),
+                      ])
+                        Expanded(
+                          flex: math.max(1, (share * 1000).round()),
+                          // A child so the box fills the bar's height.
+                          child: ColoredBox(
+                            color: color,
+                            child: const SizedBox.expand(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              describe(split),
+              style: TextStyle(fontSize: 12, color: colors.fg2),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      key: const Key('progress-energy'),
+      padding: const EdgeInsets.all(16),
+      decoration: _card(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            l10n.energyTitle,
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          bar(l10n.energyEaten, eaten, const Key('energy-eaten')),
+          if (goal != null)
+            bar(l10n.energyTarget, goal, const Key('energy-target')),
+        ],
+      ),
+    );
+  }
+}
+
+/// Plan meals eaten, skipped («لم آكلها») and not logged this week, and the
+/// logged days that stayed within every health limit.
+class _MealsWeekCard extends StatelessWidget {
+  const _MealsWeekCard({required this.report, required this.general});
+
+  final WeekReport report;
+  final bool general;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.appColors;
+    final meals = report.meals;
+    Widget stat(String key, String label, int value, Color color) {
+      return Expanded(
+        child: Container(
+          key: Key(key),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+          decoration: BoxDecoration(
+            color: mixColor(color, 0.12, colors.surface),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            children: <Widget>[
+              Text(
+                formatWhole(context, value),
+                style: colors.numeric.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: colors.fg,
+                ),
+              ),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: colors.fg2),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      key: const Key('progress-meals-week'),
+      padding: const EdgeInsets.all(16),
+      decoration: _card(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            l10n.mealsWeekTitle,
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          if (!general && meals.planned > 0) ...<Widget>[
+            const SizedBox(height: 10),
+            Row(
+              children: <Widget>[
+                stat('meals-eaten', l10n.mealsEaten, meals.eaten, colors.ok),
+                const SizedBox(width: 8),
+                stat(
+                  'meals-skipped',
+                  l10n.mealsSkipped,
+                  meals.skipped,
+                  colors.part,
+                ),
+                const SizedBox(width: 8),
+                stat(
+                  'meals-not-logged',
+                  l10n.mealsNotLogged,
+                  meals.notLogged,
+                  colors.miss,
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 10),
+          Row(
+            children: <Widget>[
+              const Emoji('check-mark-button', size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.withinLimitsDays(
+                    formatWhole(context, report.withinLimitsDays),
+                    formatWhole(context, report.loggedDays),
+                  ),
+                  key: const Key('within-limits'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ExceededCard extends StatelessWidget {
   const _ExceededCard({required this.summary});
 
@@ -935,16 +1163,25 @@ class _WeightSection extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: _card(colors),
-          child: summary.enough
-              ? _WeightChart(summary: summary)
-              : Padding(
+          // From the first weight the chart shows the point and the goal
+          // line (P2e); the hint stays until there is a trend to draw.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              if (summary.points.isNotEmpty) _WeightChart(summary: summary),
+              if (!summary.enough)
+                Padding(
                   key: const Key('weight-few-points'),
-                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  padding: EdgeInsets.symmetric(
+                    vertical: summary.points.isEmpty ? 24 : 8,
+                  ),
                   child: Text(
                     l10n.weightFewPoints,
                     textAlign: TextAlign.center,
                   ),
                 ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         FilledButton(

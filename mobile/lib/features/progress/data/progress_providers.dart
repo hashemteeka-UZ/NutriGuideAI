@@ -61,6 +61,13 @@ final _weekWaterProvider = StreamProvider<Map<String, int>>((ref) {
       .watchWater(isoDate(dates.first), isoDate(dates.last));
 });
 
+final _weekSkipsProvider = StreamProvider<int>((ref) {
+  final dates = ref.watch(weekDatesProvider);
+  return ref
+      .watch(progressRepositoryProvider)
+      .watchSkips(isoDate(dates.first), isoDate(dates.last));
+});
+
 final weekReportProvider = Provider<WeekReport>((ref) {
   final dates = ref.watch(weekDatesProvider);
   return weekReport(
@@ -70,6 +77,7 @@ final weekReportProvider = Provider<WeekReport>((ref) {
         const <String, AdherenceDay>{},
     waterByDate:
         ref.watch(_weekWaterProvider).asData?.value ?? const <String, int>{},
+    skippedMeals: ref.watch(_weekSkipsProvider).asData?.value ?? 0,
   );
 });
 
