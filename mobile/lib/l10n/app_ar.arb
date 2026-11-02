@@ -575,6 +575,7 @@
   "mostMissedNone": "لا شيء ناقص هذا الأسبوع. أحسنت!",
   "bestDayPlaceholder": "سجّل أول وجبة لنعرف أفضل أيامك",
   "mostMissedPlaceholder": "سنعرض هنا ما ينقص أكلك",
+  "mostMissedPartial": "لم يظهر نقص بعد. سجّل يومًا كاملًا لتتضح الصورة",
   "energyTitle": "توزيع طاقتك",
   "energyEaten": "ما أكلته",
   "energyTarget": "هدفك",

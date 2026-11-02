@@ -1674,6 +1674,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mostMissedPlaceholder => 'سنعرض هنا ما ينقص أكلك';
 
   @override
+  String get mostMissedPartial =>
+      'لم يظهر نقص بعد. سجّل يومًا كاملًا لتتضح الصورة';
+
+  @override
   String get energyTitle => 'توزيع طاقتك';
 
   @override

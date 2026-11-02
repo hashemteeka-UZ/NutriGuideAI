@@ -469,6 +469,7 @@
   "mostMissedNone": "Nothing missing this week. Nice!",
   "bestDayPlaceholder": "Log your first meal to see your best day",
   "mostMissedPlaceholder": "We'll show here what your meals are short of",
+  "mostMissedPartial": "No gaps so far. Log a full day for a clear picture",
   "energyTitle": "Where your energy came from",
   "energyEaten": "What you ate",
   "energyTarget": "Your target",

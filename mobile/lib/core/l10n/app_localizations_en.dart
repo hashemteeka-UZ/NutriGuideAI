@@ -1682,6 +1682,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'We\'ll show here what your meals are short of';
 
   @override
+  String get mostMissedPartial =>
+      'No gaps so far. Log a full day for a clear picture';
+
+  @override
   String get energyTitle => 'Where your energy came from';
 
   @override

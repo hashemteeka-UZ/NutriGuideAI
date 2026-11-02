@@ -2917,6 +2917,12 @@ abstract class AppLocalizations {
   /// **'سنعرض هنا ما ينقص أكلك'**
   String get mostMissedPlaceholder;
 
+  /// No description provided for @mostMissedPartial.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يظهر نقص بعد. سجّل يومًا كاملًا لتتضح الصورة'**
+  String get mostMissedPartial;
+
   /// No description provided for @energyTitle.
   ///
   /// In ar, this message translates to:

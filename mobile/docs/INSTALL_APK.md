@@ -43,8 +43,12 @@ local Wi-Fi. There is no hosted server yet.
 The server address is fixed at build time. From `mobile/` on Windows:
 
 ```powershell
-flutter build apk --release --dart-define=API_BASE_URL=http://<PC Wi-Fi IP>:8000
+flutter build apk --release --dart-define=API_BASE_URL=http://<PC Wi-Fi IP>:8000 --dart-define=ALLOW_HTTP_IN_RELEASE=true
 ```
+
+- A release build refuses to start with a non-HTTPS address unless
+  `ALLOW_HTTP_IN_RELEASE=true` is passed. Use that flag only for this local
+  Wi-Fi demo, never for the hosted build.
 
 - A new Wi-Fi address also needs to be added to
   `android/app/src/main/res/xml/network_security_config.xml` (plain HTTP is

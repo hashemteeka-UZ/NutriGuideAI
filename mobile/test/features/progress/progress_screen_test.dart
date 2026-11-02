@@ -189,6 +189,45 @@ void main() {
     );
   });
 
+  testNutriguide('a partly logged week does not praise «nothing missing»', (
+    tester,
+  ) async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    await database
+        .into(database.adherenceDays)
+        .insert(
+          AdherenceDaysCompanion.insert(
+            date: '2026-10-24',
+            status: const Value('NOT_ACHIEVED'),
+            targetKcal: const Value(2292),
+            kcal: const Value(457),
+            proteinG: const Value(37),
+            carbG: const Value(29),
+            fatG: const Value(23),
+            unmetJson: '[]',
+            exceededJson: '[]',
+            planItemsTotal: 5,
+            planItemsConsumed: 1,
+            logCount: 1,
+            fetchedAt: DateTime.utc(2026, 10, 25),
+          ),
+        );
+    await pumpNutriguide(
+      tester,
+      auth: _signedIn(),
+      database: database,
+      extra: at(),
+    );
+    await openProgress(tester);
+    expect(find.byKey(const Key('card-most-missed-partial')), findsOneWidget);
+    expect(find.byKey(const Key('card-most-missed-none')), findsNothing);
+    expect(
+      find.text('لم يظهر نقص بعد. سجّل يومًا كاملًا لتتضح الصورة'),
+      findsOneWidget,
+    );
+  });
+
   testNutriguide('general mode hides the ring', (tester) async {
     final database = await seeded();
     addTearDown(database.close);
@@ -292,6 +331,8 @@ void main() {
     expect(find.byKey(const Key('weight-change')), findsNothing);
     // One weight: its point and the goal line are already drawn (P2e).
     expect(find.byKey(const Key('weight-chart-static')), findsOneWidget);
+    // Its date shows once on the axis, not three times (P2z).
+    expect(find.text('25 أكتوبر'), findsOneWidget);
   });
 
   testNutriguide('english at 1.3: both segments without overflow', (

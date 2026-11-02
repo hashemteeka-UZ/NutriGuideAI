@@ -392,7 +392,9 @@ class _Cards extends StatelessWidget {
               ? 'card-most-missed'
               : (report.empty
                     ? 'card-most-missed-empty'
-                    : 'card-most-missed-none'),
+                    : (report.achieved > 0
+                          ? 'card-most-missed-none'
+                          : 'card-most-missed-partial')),
         ),
         emoji: 'leafy-green',
         tint: colors.fiber,
@@ -405,7 +407,13 @@ class _Cards extends StatelessWidget {
                 nutrientName(l10n, missed.nutrient),
                 formatWhole(context, missed.averageTotal),
               )
-            : (report.empty ? l10n.mostMissedPlaceholder : l10n.mostMissedNone),
+            // «Nothing missing, nice!» only after a full day: a partly
+            // logged day has no gaps to judge yet, so it must not praise.
+            : (report.empty
+                  ? l10n.mostMissedPlaceholder
+                  : (report.achieved > 0
+                        ? l10n.mostMissedNone
+                        : l10n.mostMissedPartial)),
       ),
       if (water != null)
         _InfoCard(
@@ -1254,9 +1262,14 @@ class _WeightChart extends StatelessWidget {
     final ticks = axisTicks(low, high);
     final first = points.first.date;
     final last = points.last.date;
-    final middle = first.add(
-      Duration(days: last.difference(first).inDays ~/ 2),
-    );
+    final span = last.difference(first).inDays;
+    // One label per distinct date: a single weigh-in shows its date once,
+    // not «1 Nov» three times (P2z).
+    final axisDates = <DateTime>[
+      first,
+      if (span >= 2) first.add(Duration(days: span ~/ 2)),
+      if (span >= 1) last,
+    ];
     final chart = SizedBox(
       key: Key(animate ? 'weight-chart-animated' : 'weight-chart-static'),
       height: 180,
@@ -1308,9 +1321,10 @@ class _WeightChart extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            for (final date in <DateTime>[first, middle, last])
+            for (final date in axisDates)
               Text(
                 formatMonthDay(context, date),
+                key: Key('weight-axis-${date.toIso8601String()}'),
                 style: Theme.of(context).textTheme.labelSmall,
               ),
           ],
