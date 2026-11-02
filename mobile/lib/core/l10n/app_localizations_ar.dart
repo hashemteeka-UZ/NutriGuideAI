@@ -2186,6 +2186,24 @@ class AppLocalizationsAr extends AppLocalizations {
       'اختياري، ويبقى على هاتفك فقط ولا يُرسل إلى الخادم.';
 
   @override
+  String get photoSheetTitle => 'صورتك';
+
+  @override
+  String get photoGallery => 'اختر صورة';
+
+  @override
+  String get photoCamera => 'التقط صورة';
+
+  @override
+  String get photoReset => 'استخدم الرسمة';
+
+  @override
+  String get photoPrivacy => 'تبقى صورتك على هاتفك فقط ولا تُرفع إلى الخادم.';
+
+  @override
+  String get photoChange => 'تغيير صورتك';
+
+  @override
   String greetName(String name) {
     return 'نهارك سعيد، $name';
   }

@@ -23,6 +23,7 @@ import '../../plan/domain/plan.dart';
 import '../../plan/presentation/plan_format.dart';
 import '../../profile/data/display_name.dart';
 import '../../profile/presentation/name_page.dart';
+import '../../profile/presentation/profile_avatar.dart';
 import '../../progress/data/progress_providers.dart';
 import '../../weight/data/weight_providers.dart';
 import '../../weight/presentation/weight_sheet.dart';
@@ -70,12 +71,13 @@ class AccountScreen extends ConsumerWidget {
               onTap: () => unawaited(showNameSheet(context, ref)),
               child: Row(
                 children: <Widget>[
-                  EmojiTile(
-                    avatarEmoji(user?.sex),
+                  ProfileAvatar(
+                    emoji: avatarEmoji(user?.sex),
                     size: 64,
                     emojiSize: 46,
                     radius: 20,
                     background: const Color(0x33FFFFFF),
+                    onTap: () => unawaited(showPhotoSheet(context, ref)),
                   ),
                   const SizedBox(width: 14),
                   Expanded(

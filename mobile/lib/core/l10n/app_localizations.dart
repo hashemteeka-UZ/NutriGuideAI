@@ -3823,6 +3823,42 @@ abstract class AppLocalizations {
   /// **'اختياري، ويبقى على هاتفك فقط ولا يُرسل إلى الخادم.'**
   String get onbNamePrivacy;
 
+  /// No description provided for @photoSheetTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورتك'**
+  String get photoSheetTitle;
+
+  /// No description provided for @photoGallery.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر صورة'**
+  String get photoGallery;
+
+  /// No description provided for @photoCamera.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقط صورة'**
+  String get photoCamera;
+
+  /// No description provided for @photoReset.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم الرسمة'**
+  String get photoReset;
+
+  /// No description provided for @photoPrivacy.
+  ///
+  /// In ar, this message translates to:
+  /// **'تبقى صورتك على هاتفك فقط ولا تُرفع إلى الخادم.'**
+  String get photoPrivacy;
+
+  /// No description provided for @photoChange.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير صورتك'**
+  String get photoChange;
+
   /// No description provided for @greetName.
   ///
   /// In ar, this message translates to:

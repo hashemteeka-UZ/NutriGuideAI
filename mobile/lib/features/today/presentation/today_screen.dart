@@ -30,6 +30,7 @@ import '../../plan/presentation/plan_format.dart';
 import '../../plan/presentation/reason_chips.dart';
 import '../../plan/presentation/showcase_controller.dart';
 import '../../profile/data/display_name.dart';
+import '../../profile/presentation/profile_avatar.dart';
 import '../../progress/data/progress_providers.dart';
 import '../../water/data/water_providers.dart';
 import '../../water/domain/water.dart';
@@ -238,8 +239,8 @@ class _Header extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: <Widget>[
-          EmojiTile(
-            avatarEmoji(sex),
+          ProfileAvatar(
+            emoji: avatarEmoji(sex),
             size: 46,
             emojiSize: 32,
             radius: 16,

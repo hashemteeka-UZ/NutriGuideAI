@@ -2195,6 +2195,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Optional. It stays on this phone and is never sent to the server.';
 
   @override
+  String get photoSheetTitle => 'Your photo';
+
+  @override
+  String get photoGallery => 'Choose a photo';
+
+  @override
+  String get photoCamera => 'Take a photo';
+
+  @override
+  String get photoReset => 'Use the drawing';
+
+  @override
+  String get photoPrivacy =>
+      'Your photo stays on this phone and is never uploaded.';
+
+  @override
+  String get photoChange => 'Change your photo';
+
+  @override
   String greetName(String name) {
     return 'Have a good day, $name';
   }
