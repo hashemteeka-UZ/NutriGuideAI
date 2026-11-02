@@ -13,10 +13,9 @@ class ValidationIssue {
     required this.msg,
     required this.type,
   });
-
-  factory ValidationIssue.fromJson(Map<String, Object?> json) =>
-      _$ValidationIssueFromJson(json);
-
+  
+  factory ValidationIssue.fromJson(Map<String, Object?> json) => _$ValidationIssueFromJson(json);
+  
   final List<dynamic> loc;
   final String msg;
   final String type;

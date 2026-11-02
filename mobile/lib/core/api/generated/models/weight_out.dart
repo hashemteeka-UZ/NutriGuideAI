@@ -19,10 +19,9 @@ class WeightOut {
     required this.weightKg,
     this.newTargetId,
   });
-
-  factory WeightOut.fromJson(Map<String, Object?> json) =>
-      _$WeightOutFromJson(json);
-
+  
+  factory WeightOut.fromJson(Map<String, Object?> json) => _$WeightOutFromJson(json);
+  
   @JsonKey(name: 'goal_reached')
   final bool goalReached;
   @JsonKey(name: 'measured_on')

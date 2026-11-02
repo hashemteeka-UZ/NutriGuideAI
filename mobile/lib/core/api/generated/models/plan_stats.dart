@@ -14,10 +14,9 @@ class PlanStats {
     required this.solveSeconds,
     required this.solverStatus,
   });
-
-  factory PlanStats.fromJson(Map<String, Object?> json) =>
-      _$PlanStatsFromJson(json);
-
+  
+  factory PlanStats.fromJson(Map<String, Object?> json) => _$PlanStatsFromJson(json);
+  
   /// Distinct meals that passed Layer 1 for at least one position.
   @JsonKey(name: 'candidate_meals')
   final int candidateMeals;

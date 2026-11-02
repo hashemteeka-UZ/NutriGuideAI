@@ -17,10 +17,9 @@ class TargetsView {
     required this.water,
     this.target,
   });
-
-  factory TargetsView.fromJson(Map<String, Object?> json) =>
-      _$TargetsViewFromJson(json);
-
+  
+  factory TargetsView.fromJson(Map<String, Object?> json) => _$TargetsViewFromJson(json);
+  
   final Screening screening;
   final Target? target;
   final WaterGoal water;

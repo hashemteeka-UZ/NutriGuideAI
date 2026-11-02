@@ -25,10 +25,9 @@ class SyncChanges {
     required this.waterLogs,
     required this.weights,
   });
-
-  factory SyncChanges.fromJson(Map<String, Object?> json) =>
-      _$SyncChangesFromJson(json);
-
+  
+  factory SyncChanges.fromJson(Map<String, Object?> json) => _$SyncChangesFromJson(json);
+  
   @JsonKey(name: 'consumption_logs')
   final List<ConsumptionLogOut> consumptionLogs;
   @JsonKey(name: 'deleted_consumption_log_ids')

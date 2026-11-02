@@ -10,11 +10,13 @@ part 'interaction_out.g.dart';
 
 @JsonSerializable()
 class InteractionOut {
-  const InteractionOut({required this.interactionId, required this.status});
-
-  factory InteractionOut.fromJson(Map<String, Object?> json) =>
-      _$InteractionOutFromJson(json);
-
+  const InteractionOut({
+    required this.interactionId,
+    required this.status,
+  });
+  
+  factory InteractionOut.fromJson(Map<String, Object?> json) => _$InteractionOutFromJson(json);
+  
   @JsonKey(name: 'interaction_id')
   final int interactionId;
   final InteractionOutStatus status;

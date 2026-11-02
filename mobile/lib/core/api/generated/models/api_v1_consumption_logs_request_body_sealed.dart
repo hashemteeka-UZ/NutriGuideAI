@@ -9,21 +9,20 @@ import 'meal_log.dart';
 import 'meal_slot.dart';
 import 'plan_item_log.dart';
 
+
 part 'api_v1_consumption_logs_request_body_sealed.g.dart';
 
 @JsonSerializable(createFactory: false)
 sealed class ApiV1ConsumptionLogsRequestBodySealed {
   const ApiV1ConsumptionLogsRequestBodySealed();
-
-  factory ApiV1ConsumptionLogsRequestBodySealed.fromJson(
-    Map<String, dynamic> json,
-  ) => ApiV1ConsumptionLogsRequestBodySealedDeserializer.tryDeserialize(json);
-
+  
+  factory ApiV1ConsumptionLogsRequestBodySealed.fromJson(Map<String, dynamic> json) =>
+      ApiV1ConsumptionLogsRequestBodySealedDeserializer.tryDeserialize(json);
+  
   Map<String, dynamic> toJson();
 }
 
-extension ApiV1ConsumptionLogsRequestBodySealedDeserializer
-    on ApiV1ConsumptionLogsRequestBodySealed {
+extension ApiV1ConsumptionLogsRequestBodySealedDeserializer on ApiV1ConsumptionLogsRequestBodySealed {
   static ApiV1ConsumptionLogsRequestBodySealed tryDeserialize(
     Map<String, dynamic> json, {
     String key = 'kind',
@@ -37,25 +36,16 @@ extension ApiV1ConsumptionLogsRequestBodySealedDeserializer
     final value = json[key];
     final effective = mapping ?? mappingFallback;
     return switch (value) {
-      _ when value == effective[ApiV1ConsumptionLogsRequestBodySealedFoodLog] =>
-        ApiV1ConsumptionLogsRequestBodySealedFoodLog.fromJson(json),
-      _ when value == effective[ApiV1ConsumptionLogsRequestBodySealedMealLog] =>
-        ApiV1ConsumptionLogsRequestBodySealedMealLog.fromJson(json),
-      _
-          when value ==
-              effective[ApiV1ConsumptionLogsRequestBodySealedPlanItemLog] =>
-        ApiV1ConsumptionLogsRequestBodySealedPlanItemLog.fromJson(json),
-      _ => throw FormatException(
-        'Unknown discriminator value "${json[key]}" for ApiV1ConsumptionLogsRequestBodySealed',
-      ),
+      _ when value == effective[ApiV1ConsumptionLogsRequestBodySealedFoodLog] => ApiV1ConsumptionLogsRequestBodySealedFoodLog.fromJson(json),
+      _ when value == effective[ApiV1ConsumptionLogsRequestBodySealedMealLog] => ApiV1ConsumptionLogsRequestBodySealedMealLog.fromJson(json),
+      _ when value == effective[ApiV1ConsumptionLogsRequestBodySealedPlanItemLog] => ApiV1ConsumptionLogsRequestBodySealedPlanItemLog.fromJson(json),
+      _ => throw FormatException('Unknown discriminator value "${json[key]}" for ApiV1ConsumptionLogsRequestBodySealed'),
     };
   }
 }
 
 @JsonSerializable()
-class ApiV1ConsumptionLogsRequestBodySealedFoodLog
-    extends ApiV1ConsumptionLogsRequestBodySealed
-    implements FoodLog {
+class ApiV1ConsumptionLogsRequestBodySealedFoodLog extends ApiV1ConsumptionLogsRequestBodySealed implements FoodLog {
   @override
   final String clientUuid;
   @override
@@ -77,20 +67,15 @@ class ApiV1ConsumptionLogsRequestBodySealedFoodLog
     required this.kind,
     required this.slot,
   });
-
-  factory ApiV1ConsumptionLogsRequestBodySealedFoodLog.fromJson(
-    Map<String, dynamic> json,
-  ) => _$ApiV1ConsumptionLogsRequestBodySealedFoodLogFromJson(json);
-
+  
+  factory ApiV1ConsumptionLogsRequestBodySealedFoodLog.fromJson(Map<String, dynamic> json) =>
+      _$ApiV1ConsumptionLogsRequestBodySealedFoodLogFromJson(json);
+      
   @override
-  Map<String, dynamic> toJson() =>
-      _$ApiV1ConsumptionLogsRequestBodySealedFoodLogToJson(this);
+  Map<String, dynamic> toJson() => _$ApiV1ConsumptionLogsRequestBodySealedFoodLogToJson(this);
 }
-
 @JsonSerializable()
-class ApiV1ConsumptionLogsRequestBodySealedMealLog
-    extends ApiV1ConsumptionLogsRequestBodySealed
-    implements MealLog {
+class ApiV1ConsumptionLogsRequestBodySealedMealLog extends ApiV1ConsumptionLogsRequestBodySealed implements MealLog {
   @override
   final String clientUuid;
   @override
@@ -112,20 +97,15 @@ class ApiV1ConsumptionLogsRequestBodySealedMealLog
     required this.servingsConsumed,
     required this.slot,
   });
-
-  factory ApiV1ConsumptionLogsRequestBodySealedMealLog.fromJson(
-    Map<String, dynamic> json,
-  ) => _$ApiV1ConsumptionLogsRequestBodySealedMealLogFromJson(json);
-
+  
+  factory ApiV1ConsumptionLogsRequestBodySealedMealLog.fromJson(Map<String, dynamic> json) =>
+      _$ApiV1ConsumptionLogsRequestBodySealedMealLogFromJson(json);
+      
   @override
-  Map<String, dynamic> toJson() =>
-      _$ApiV1ConsumptionLogsRequestBodySealedMealLogToJson(this);
+  Map<String, dynamic> toJson() => _$ApiV1ConsumptionLogsRequestBodySealedMealLogToJson(this);
 }
-
 @JsonSerializable()
-class ApiV1ConsumptionLogsRequestBodySealedPlanItemLog
-    extends ApiV1ConsumptionLogsRequestBodySealed
-    implements PlanItemLog {
+class ApiV1ConsumptionLogsRequestBodySealedPlanItemLog extends ApiV1ConsumptionLogsRequestBodySealed implements PlanItemLog {
   @override
   final String clientUuid;
   @override
@@ -144,12 +124,10 @@ class ApiV1ConsumptionLogsRequestBodySealedPlanItemLog
     required this.planItemId,
     required this.servingsConsumed,
   });
-
-  factory ApiV1ConsumptionLogsRequestBodySealedPlanItemLog.fromJson(
-    Map<String, dynamic> json,
-  ) => _$ApiV1ConsumptionLogsRequestBodySealedPlanItemLogFromJson(json);
-
+  
+  factory ApiV1ConsumptionLogsRequestBodySealedPlanItemLog.fromJson(Map<String, dynamic> json) =>
+      _$ApiV1ConsumptionLogsRequestBodySealedPlanItemLogFromJson(json);
+      
   @override
-  Map<String, dynamic> toJson() =>
-      _$ApiV1ConsumptionLogsRequestBodySealedPlanItemLogToJson(this);
+  Map<String, dynamic> toJson() => _$ApiV1ConsumptionLogsRequestBodySealedPlanItemLogToJson(this);
 }

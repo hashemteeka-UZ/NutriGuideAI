@@ -10,11 +10,13 @@ part 'meal_page.g.dart';
 
 @JsonSerializable()
 class MealPage {
-  const MealPage({required this.items, required this.total});
-
-  factory MealPage.fromJson(Map<String, Object?> json) =>
-      _$MealPageFromJson(json);
-
+  const MealPage({
+    required this.items,
+    required this.total,
+  });
+  
+  factory MealPage.fromJson(Map<String, Object?> json) => _$MealPageFromJson(json);
+  
   final List<MealSummary> items;
   final int total;
 

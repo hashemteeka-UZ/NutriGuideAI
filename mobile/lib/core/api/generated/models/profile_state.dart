@@ -17,10 +17,9 @@ class ProfileState {
     required this.screening,
     this.target,
   });
-
-  factory ProfileState.fromJson(Map<String, Object?> json) =>
-      _$ProfileStateFromJson(json);
-
+  
+  factory ProfileState.fromJson(Map<String, Object?> json) => _$ProfileStateFromJson(json);
+  
   final Profile profile;
   final Screening screening;
   final Target? target;

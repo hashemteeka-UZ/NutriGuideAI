@@ -15,10 +15,9 @@ class CatalogSnapshot {
     required this.generatedAt,
     required this.meals,
   });
-
-  factory CatalogSnapshot.fromJson(Map<String, Object?> json) =>
-      _$CatalogSnapshotFromJson(json);
-
+  
+  factory CatalogSnapshot.fromJson(Map<String, Object?> json) => _$CatalogSnapshotFromJson(json);
+  
   @JsonKey(name: 'dataset_version')
   final String datasetVersion;
   @JsonKey(name: 'generated_at')

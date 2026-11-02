@@ -16,10 +16,9 @@ class WaterGoal {
     required this.source,
     this.goalMl,
   });
-
-  factory WaterGoal.fromJson(Map<String, Object?> json) =>
-      _$WaterGoalFromJson(json);
-
+  
+  factory WaterGoal.fromJson(Map<String, Object?> json) => _$WaterGoalFromJson(json);
+  
   @JsonKey(name: 'goal_ml')
   final int? goalMl;
   @JsonKey(name: 'reminders_default_off')

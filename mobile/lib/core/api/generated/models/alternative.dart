@@ -16,10 +16,9 @@ class Alternative {
     required this.meal,
     required this.servingsMultiplier,
   });
-
-  factory Alternative.fromJson(Map<String, Object?> json) =>
-      _$AlternativeFromJson(json);
-
+  
+  factory Alternative.fromJson(Map<String, Object?> json) => _$AlternativeFromJson(json);
+  
   final num kcal;
   @JsonKey(name: 'kcal_delta')
   final num kcalDelta;

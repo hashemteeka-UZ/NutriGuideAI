@@ -9,20 +9,20 @@ import 'meal_log.dart';
 import 'meal_slot.dart';
 import 'plan_item_log.dart';
 
+
 part 'sync_consumption_create_log_sealed.g.dart';
 
 @JsonSerializable(createFactory: false)
 sealed class SyncConsumptionCreateLogSealed {
   const SyncConsumptionCreateLogSealed();
-
+  
   factory SyncConsumptionCreateLogSealed.fromJson(Map<String, dynamic> json) =>
       SyncConsumptionCreateLogSealedDeserializer.tryDeserialize(json);
-
+  
   Map<String, dynamic> toJson();
 }
 
-extension SyncConsumptionCreateLogSealedDeserializer
-    on SyncConsumptionCreateLogSealed {
+extension SyncConsumptionCreateLogSealedDeserializer on SyncConsumptionCreateLogSealed {
   static SyncConsumptionCreateLogSealed tryDeserialize(
     Map<String, dynamic> json, {
     String key = 'kind',
@@ -36,23 +36,16 @@ extension SyncConsumptionCreateLogSealedDeserializer
     final value = json[key];
     final effective = mapping ?? mappingFallback;
     return switch (value) {
-      _ when value == effective[SyncConsumptionCreateLogSealedFoodLog] =>
-        SyncConsumptionCreateLogSealedFoodLog.fromJson(json),
-      _ when value == effective[SyncConsumptionCreateLogSealedMealLog] =>
-        SyncConsumptionCreateLogSealedMealLog.fromJson(json),
-      _ when value == effective[SyncConsumptionCreateLogSealedPlanItemLog] =>
-        SyncConsumptionCreateLogSealedPlanItemLog.fromJson(json),
-      _ => throw FormatException(
-        'Unknown discriminator value "${json[key]}" for SyncConsumptionCreateLogSealed',
-      ),
+      _ when value == effective[SyncConsumptionCreateLogSealedFoodLog] => SyncConsumptionCreateLogSealedFoodLog.fromJson(json),
+      _ when value == effective[SyncConsumptionCreateLogSealedMealLog] => SyncConsumptionCreateLogSealedMealLog.fromJson(json),
+      _ when value == effective[SyncConsumptionCreateLogSealedPlanItemLog] => SyncConsumptionCreateLogSealedPlanItemLog.fromJson(json),
+      _ => throw FormatException('Unknown discriminator value "${json[key]}" for SyncConsumptionCreateLogSealed'),
     };
   }
 }
 
 @JsonSerializable()
-class SyncConsumptionCreateLogSealedFoodLog
-    extends SyncConsumptionCreateLogSealed
-    implements FoodLog {
+class SyncConsumptionCreateLogSealedFoodLog extends SyncConsumptionCreateLogSealed implements FoodLog {
   @override
   final String clientUuid;
   @override
@@ -74,20 +67,15 @@ class SyncConsumptionCreateLogSealedFoodLog
     required this.kind,
     required this.slot,
   });
-
-  factory SyncConsumptionCreateLogSealedFoodLog.fromJson(
-    Map<String, dynamic> json,
-  ) => _$SyncConsumptionCreateLogSealedFoodLogFromJson(json);
-
+  
+  factory SyncConsumptionCreateLogSealedFoodLog.fromJson(Map<String, dynamic> json) =>
+      _$SyncConsumptionCreateLogSealedFoodLogFromJson(json);
+      
   @override
-  Map<String, dynamic> toJson() =>
-      _$SyncConsumptionCreateLogSealedFoodLogToJson(this);
+  Map<String, dynamic> toJson() => _$SyncConsumptionCreateLogSealedFoodLogToJson(this);
 }
-
 @JsonSerializable()
-class SyncConsumptionCreateLogSealedMealLog
-    extends SyncConsumptionCreateLogSealed
-    implements MealLog {
+class SyncConsumptionCreateLogSealedMealLog extends SyncConsumptionCreateLogSealed implements MealLog {
   @override
   final String clientUuid;
   @override
@@ -109,20 +97,15 @@ class SyncConsumptionCreateLogSealedMealLog
     required this.servingsConsumed,
     required this.slot,
   });
-
-  factory SyncConsumptionCreateLogSealedMealLog.fromJson(
-    Map<String, dynamic> json,
-  ) => _$SyncConsumptionCreateLogSealedMealLogFromJson(json);
-
+  
+  factory SyncConsumptionCreateLogSealedMealLog.fromJson(Map<String, dynamic> json) =>
+      _$SyncConsumptionCreateLogSealedMealLogFromJson(json);
+      
   @override
-  Map<String, dynamic> toJson() =>
-      _$SyncConsumptionCreateLogSealedMealLogToJson(this);
+  Map<String, dynamic> toJson() => _$SyncConsumptionCreateLogSealedMealLogToJson(this);
 }
-
 @JsonSerializable()
-class SyncConsumptionCreateLogSealedPlanItemLog
-    extends SyncConsumptionCreateLogSealed
-    implements PlanItemLog {
+class SyncConsumptionCreateLogSealedPlanItemLog extends SyncConsumptionCreateLogSealed implements PlanItemLog {
   @override
   final String clientUuid;
   @override
@@ -141,12 +124,10 @@ class SyncConsumptionCreateLogSealedPlanItemLog
     required this.planItemId,
     required this.servingsConsumed,
   });
-
-  factory SyncConsumptionCreateLogSealedPlanItemLog.fromJson(
-    Map<String, dynamic> json,
-  ) => _$SyncConsumptionCreateLogSealedPlanItemLogFromJson(json);
-
+  
+  factory SyncConsumptionCreateLogSealedPlanItemLog.fromJson(Map<String, dynamic> json) =>
+      _$SyncConsumptionCreateLogSealedPlanItemLogFromJson(json);
+      
   @override
-  Map<String, dynamic> toJson() =>
-      _$SyncConsumptionCreateLogSealedPlanItemLogToJson(this);
+  Map<String, dynamic> toJson() => _$SyncConsumptionCreateLogSealedPlanItemLogToJson(this);
 }

@@ -33,10 +33,9 @@ class ProfileUpdate {
     this.waterGoalMl,
     this.weeklyRateKg,
   });
-
-  factory ProfileUpdate.fromJson(Map<String, Object?> json) =>
-      _$ProfileUpdateFromJson(json);
-
+  
+  factory ProfileUpdate.fromJson(Map<String, Object?> json) => _$ProfileUpdateFromJson(json);
+  
   @JsonKey(name: 'activity_level')
   final ActivityLevel activityLevel;
   final List<AllergenChoice> allergens;

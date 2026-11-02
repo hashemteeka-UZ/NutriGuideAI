@@ -13,10 +13,9 @@ class WaterLogCreate {
     required this.clientUuid,
     required this.consumedAt,
   });
-
-  factory WaterLogCreate.fromJson(Map<String, Object?> json) =>
-      _$WaterLogCreateFromJson(json);
-
+  
+  factory WaterLogCreate.fromJson(Map<String, Object?> json) => _$WaterLogCreateFromJson(json);
+  
   @JsonKey(name: 'amount_ml')
   final int amountMl;
   @JsonKey(name: 'client_uuid')

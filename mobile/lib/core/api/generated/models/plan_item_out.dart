@@ -25,10 +25,9 @@ class PlanItemOut {
     required this.slot,
     required this.wasSwapped,
   });
-
-  factory PlanItemOut.fromJson(Map<String, Object?> json) =>
-      _$PlanItemOutFromJson(json);
-
+  
+  factory PlanItemOut.fromJson(Map<String, Object?> json) => _$PlanItemOutFromJson(json);
+  
   @JsonKey(name: 'carb_g')
   final num carbG;
   @JsonKey(name: 'fat_g')

@@ -14,10 +14,9 @@ class ConditionRef {
     required this.isSupported,
     required this.name,
   });
-
-  factory ConditionRef.fromJson(Map<String, Object?> json) =>
-      _$ConditionRefFromJson(json);
-
+  
+  factory ConditionRef.fromJson(Map<String, Object?> json) => _$ConditionRefFromJson(json);
+  
   final String code;
   @JsonKey(name: 'fluid_goal_requires_clinician')
   final bool fluidGoalRequiresClinician;

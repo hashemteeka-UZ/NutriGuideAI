@@ -15,10 +15,9 @@ class ShoppingList {
     required this.dateTo,
     required this.items,
   });
-
-  factory ShoppingList.fromJson(Map<String, Object?> json) =>
-      _$ShoppingListFromJson(json);
-
+  
+  factory ShoppingList.fromJson(Map<String, Object?> json) => _$ShoppingListFromJson(json);
+  
   @JsonKey(name: 'date_from')
   final DateTime dateFrom;
   @JsonKey(name: 'date_to')

@@ -13,10 +13,9 @@ class ExceededLimitOut {
     required this.nutrient,
     this.total,
   });
-
-  factory ExceededLimitOut.fromJson(Map<String, Object?> json) =>
-      _$ExceededLimitOutFromJson(json);
-
+  
+  factory ExceededLimitOut.fromJson(Map<String, Object?> json) => _$ExceededLimitOutFromJson(json);
+  
   final num limit;
   final String nutrient;
   final num? total;

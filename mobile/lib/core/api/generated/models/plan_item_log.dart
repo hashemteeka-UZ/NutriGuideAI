@@ -15,10 +15,9 @@ class PlanItemLog {
     required this.planItemId,
     required this.servingsConsumed,
   });
-
-  factory PlanItemLog.fromJson(Map<String, Object?> json) =>
-      _$PlanItemLogFromJson(json);
-
+  
+  factory PlanItemLog.fromJson(Map<String, Object?> json) => _$PlanItemLogFromJson(json);
+  
   @JsonKey(name: 'client_uuid')
   final String clientUuid;
   @JsonKey(name: 'consumed_at')

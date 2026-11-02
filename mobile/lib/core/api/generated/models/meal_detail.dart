@@ -34,10 +34,9 @@ class MealDetail {
     this.dishForm,
     this.myStance,
   });
-
-  factory MealDetail.fromJson(Map<String, Object?> json) =>
-      _$MealDetailFromJson(json);
-
+  
+  factory MealDetail.fromJson(Map<String, Object?> json) => _$MealDetailFromJson(json);
+  
   final List<String> allergens;
   @JsonKey(name: 'carb_g')
   final num carbG;

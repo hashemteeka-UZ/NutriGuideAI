@@ -15,10 +15,9 @@ class PlanTargetOut {
     required this.kcal,
     required this.proteinG,
   });
-
-  factory PlanTargetOut.fromJson(Map<String, Object?> json) =>
-      _$PlanTargetOutFromJson(json);
-
+  
+  factory PlanTargetOut.fromJson(Map<String, Object?> json) => _$PlanTargetOutFromJson(json);
+  
   @JsonKey(name: 'carb_g')
   final num carbG;
   @JsonKey(name: 'fat_g')

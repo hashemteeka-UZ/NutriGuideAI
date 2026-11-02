@@ -25,10 +25,9 @@ class Reference {
     required this.sexes,
     required this.slots,
   });
-
-  factory Reference.fromJson(Map<String, Object?> json) =>
-      _$ReferenceFromJson(json);
-
+  
+  factory Reference.fromJson(Map<String, Object?> json) => _$ReferenceFromJson(json);
+  
   @JsonKey(name: 'activity_levels')
   final List<ActivityLevel> activityLevels;
   final List<CodeName> allergens;

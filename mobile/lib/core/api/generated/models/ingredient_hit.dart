@@ -14,10 +14,9 @@ class IngredientHit {
     required this.name,
     this.foodId,
   });
-
-  factory IngredientHit.fromJson(Map<String, Object?> json) =>
-      _$IngredientHitFromJson(json);
-
+  
+  factory IngredientHit.fromJson(Map<String, Object?> json) => _$IngredientHitFromJson(json);
+  
   final String code;
   @JsonKey(name: 'food_id')
   final int? foodId;

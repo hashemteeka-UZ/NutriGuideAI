@@ -8,11 +8,13 @@ part 'screening.g.dart';
 
 @JsonSerializable()
 class Screening {
-  const Screening({required this.eligible, required this.reasons});
-
-  factory Screening.fromJson(Map<String, Object?> json) =>
-      _$ScreeningFromJson(json);
-
+  const Screening({
+    required this.eligible,
+    required this.reasons,
+  });
+  
+  factory Screening.fromJson(Map<String, Object?> json) => _$ScreeningFromJson(json);
+  
   final bool eligible;
   final List<String> reasons;
 

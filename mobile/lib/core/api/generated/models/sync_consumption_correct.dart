@@ -20,10 +20,9 @@ class SyncConsumptionCorrect {
     this.servingsConsumed,
     this.slot,
   });
-
-  factory SyncConsumptionCorrect.fromJson(Map<String, Object?> json) =>
-      _$SyncConsumptionCorrectFromJson(json);
-
+  
+  factory SyncConsumptionCorrect.fromJson(Map<String, Object?> json) => _$SyncConsumptionCorrectFromJson(json);
+  
   @JsonKey(name: 'consumed_at')
   final DateTime? consumedAt;
   @JsonKey(name: 'grams_consumed')

@@ -18,10 +18,9 @@ class InteractionCreate {
     this.screen,
     this.value,
   });
-
-  factory InteractionCreate.fromJson(Map<String, Object?> json) =>
-      _$InteractionCreateFromJson(json);
-
+  
+  factory InteractionCreate.fromJson(Map<String, Object?> json) => _$InteractionCreateFromJson(json);
+  
   @JsonKey(name: 'client_uuid')
   final String clientUuid;
   @JsonKey(name: 'event_type')

@@ -18,10 +18,9 @@ class NutrientTotals {
     this.sodiumMg,
     this.sugarsG,
   });
-
-  factory NutrientTotals.fromJson(Map<String, Object?> json) =>
-      _$NutrientTotalsFromJson(json);
-
+  
+  factory NutrientTotals.fromJson(Map<String, Object?> json) => _$NutrientTotalsFromJson(json);
+  
   @JsonKey(name: 'carb_g')
   final num? carbG;
   @JsonKey(name: 'fat_g')

@@ -15,10 +15,9 @@ class MealWindow {
     required this.slot,
     required this.start,
   });
-
-  factory MealWindow.fromJson(Map<String, Object?> json) =>
-      _$MealWindowFromJson(json);
-
+  
+  factory MealWindow.fromJson(Map<String, Object?> json) => _$MealWindowFromJson(json);
+  
   final String end;
   final MealSlot slot;
   final String start;

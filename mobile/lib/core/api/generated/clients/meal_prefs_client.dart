@@ -26,7 +26,9 @@ abstract class MealPrefsClient {
   /// Clear the stance. Also writes PREF_CLEAR.
   /// Error codes: UNAUTHORIZED, MEAL_NOT_FOUND.
   @DELETE('/api/v1/me/meal-prefs/{meal_id}')
-  Future<void> deleteMealPref({@Path('meal_id') required int mealId});
+  Future<void> deleteMealPref({
+    @Path('meal_id') required int mealId,
+  });
 
   /// Set Meal Pref.
   ///

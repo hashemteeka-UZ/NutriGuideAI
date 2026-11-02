@@ -17,10 +17,9 @@ class LogCorrection {
     this.servingsConsumed,
     this.slot,
   });
-
-  factory LogCorrection.fromJson(Map<String, Object?> json) =>
-      _$LogCorrectionFromJson(json);
-
+  
+  factory LogCorrection.fromJson(Map<String, Object?> json) => _$LogCorrectionFromJson(json);
+  
   @JsonKey(name: 'consumed_at')
   final DateTime? consumedAt;
   @JsonKey(name: 'grams_consumed')

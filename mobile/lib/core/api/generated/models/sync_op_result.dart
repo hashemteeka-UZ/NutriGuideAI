@@ -16,10 +16,9 @@ class SyncOpResult {
     this.code,
     this.entityId,
   });
-
-  factory SyncOpResult.fromJson(Map<String, Object?> json) =>
-      _$SyncOpResultFromJson(json);
-
+  
+  factory SyncOpResult.fromJson(Map<String, Object?> json) => _$SyncOpResultFromJson(json);
+  
   final String? code;
   @JsonKey(name: 'entity_id')
   final int? entityId;

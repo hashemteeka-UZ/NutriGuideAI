@@ -27,10 +27,9 @@ class DayAdherenceOut {
     this.status,
     this.targetKcal,
   });
-
-  factory DayAdherenceOut.fromJson(Map<String, Object?> json) =>
-      _$DayAdherenceOutFromJson(json);
-
+  
+  factory DayAdherenceOut.fromJson(Map<String, Object?> json) => _$DayAdherenceOutFromJson(json);
+  
   final num? completion;
   final DateTime date;
   @JsonKey(name: 'exceeded_limits')

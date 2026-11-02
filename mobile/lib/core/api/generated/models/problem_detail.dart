@@ -20,10 +20,9 @@ class ProblemDetail {
     this.reasons,
     this.requestId,
   });
-
-  factory ProblemDetail.fromJson(Map<String, Object?> json) =>
-      _$ProblemDetailFromJson(json);
-
+  
+  factory ProblemDetail.fromJson(Map<String, Object?> json) => _$ProblemDetailFromJson(json);
+  
   final String code;
   final String? detail;
   final List<ValidationIssue>? errors;

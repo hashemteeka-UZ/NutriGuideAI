@@ -16,10 +16,9 @@ class ShoppingItem {
     this.category = '',
     this.categoryCode = '',
   });
-
-  factory ShoppingItem.fromJson(Map<String, Object?> json) =>
-      _$ShoppingItemFromJson(json);
-
+  
+  factory ShoppingItem.fromJson(Map<String, Object?> json) => _$ShoppingItemFromJson(json);
+  
   /// Food group name in the request language (Arabic for lang=ar, English otherwise). Empty when the food has no group. Items are sorted by category_code, then name.
   final String category;
 
