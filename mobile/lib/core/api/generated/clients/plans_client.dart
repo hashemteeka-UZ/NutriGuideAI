@@ -68,7 +68,7 @@ abstract class PlansClient {
 
   /// Get Shopping List.
   ///
-  /// Ingredient grams summed from the current plans in the inclusive range. Optional ingredients are excluded; the meal page lists them. Maximum 31 days.
+  /// Ingredient grams summed from the current plans in the inclusive range. Optional ingredients are excluded; the meal page lists them. Tap water is excluded. Each item carries its USDA food group (category_code, category); items are sorted by category_code, then name. Maximum 31 days.
   /// Error codes: UNAUTHORIZED, VALIDATION_ERROR.
   @GET('/api/v1/shopping-list')
   Future<ShoppingList> getShoppingList({

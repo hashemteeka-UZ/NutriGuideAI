@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ui/emoji.dart';
+import '../../../core/ui/kit.dart';
 import '../../plan/domain/meal_timing.dart';
 import '../../plan/domain/plan.dart';
 import '../../plan/domain/plan_dates.dart';
@@ -37,47 +39,56 @@ class MissedMealCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
     final item = missed.item;
-    return Container(
-      key: Key('missed-${item.planItemId}'),
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.line),
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: AppCard(
+        key: Key('missed-${item.planItemId}'),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        background: mixColor(colors.warn, 0.08, colors.surface),
+        borderColor: mixColor(colors.warn, 0.4, colors.line),
+        child: Row(
+          children: <Widget>[
+            const Emoji('alarm-clock', size: 30),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    l10n.missedTitle(slotLabel(l10n, item.slot)),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.missedBody,
+                    style: TextStyle(fontSize: 13, color: colors.fg3),
+                  ),
+                  Text(
+                    item.mealName,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.fg2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
               children: <Widget>[
+                EatButton(item: item, consumedAt: missed.windowEnd),
                 Text(
-                  l10n.missedTitle(slotLabel(l10n, item.slot)),
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 4),
-                Text(l10n.missedBody),
-                Text(
-                  item.mealName,
-                  style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: colors.fg2),
+                  l10n.missedAction,
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],
             ),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            children: <Widget>[
-              EatButton(item: item, consumedAt: missed.windowEnd),
-              Text(
-                l10n.missedAction,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

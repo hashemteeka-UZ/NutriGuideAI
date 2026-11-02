@@ -135,7 +135,8 @@ class PaceStep extends ConsumerWidget {
 String _when(BuildContext context, DateTime date) {
   final locale = localeNameOf(context);
   final month = DateFormat.MMMM(locale).format(date);
-  final year = DateFormat.y(locale).format(date);
+  // Western digits, as everywhere else in the app (P2z).
+  final year = (DateFormat.y(locale)..useNativeDigits = false).format(date);
   return '$month $year';
 }
 

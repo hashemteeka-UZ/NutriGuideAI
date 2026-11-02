@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ui/motion.dart';
 import '../../plan/domain/plan.dart';
 import '../data/logging_providers.dart';
 
@@ -107,7 +108,7 @@ Future<void> showRatingSheet(
   final messenger = ScaffoldMessenger.maybeOf(context);
   // «سجلتها» would sit over the sheet's buttons; the sheet confirms the log.
   messenger?.hideCurrentSnackBar();
-  final value = await showModalBottomSheet<int>(
+  final value = await showAppSheet<int>(
     context: context,
     builder: (BuildContext context) {
       return SafeArea(

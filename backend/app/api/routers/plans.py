@@ -237,6 +237,8 @@ def _shopping_item(line: ShoppingLine) -> ShoppingItem:
         name=line.name,
         grams=line.grams,
         meals=line.meals,
+        category_code=line.category_code,
+        category=line.category,
     )
 
 
@@ -359,7 +361,9 @@ def swap_plan_item(
     responses=PROBLEM_RESPONSES,
     description=(
         "Ingredient grams summed from the current plans in the inclusive range. "
-        "Optional ingredients are excluded; the meal page lists them. Maximum 31 days.\n"
+        "Optional ingredients are excluded; the meal page lists them. Tap water is excluded. "
+        "Each item carries its USDA food group (category_code, category); items are sorted by "
+        "category_code, then name. Maximum 31 days.\n"
         + error_codes("UNAUTHORIZED", "VALIDATION_ERROR")
     ),
 )

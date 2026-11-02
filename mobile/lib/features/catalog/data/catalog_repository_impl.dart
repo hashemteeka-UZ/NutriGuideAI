@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/db/app_database.dart';
 import '../domain/catalog_repository.dart';
+import '../domain/dish_icon.dart';
 import '../domain/meal.dart';
 import '../domain/search_normalizer.dart';
 
@@ -57,7 +58,6 @@ WHERE m.lang = ? AND m.meal_id = ?
     if (row == null) {
       return null;
     }
-    final tags = await _tags(lang, mealId);
     final nutrients = await _nutrients(lang, mealId);
     final ingredients = await _ingredients(lang, mealId);
     final steps = await _steps(lang, mealId);
@@ -85,7 +85,15 @@ WHERE m.lang = ? AND m.meal_id = ?
       nutrients: nutrients,
       ingredients: ingredients,
       steps: steps,
-      iconName: iconForOccasionTags(tags),
+      iconName: dishIcon(
+        row.read<String>('name'),
+        ingredients: <String>[
+          for (final line in (<IngredientLine>[
+            ...ingredients,
+          ]..sort((a, b) => b.gramsPerServing.compareTo(a.gramsPerServing))))
+            if (!line.isOptional) line.name,
+        ],
+      ),
       stance: row.readNullable<String>('stance'),
       warningAllergenCodes: warnings,
     );
@@ -235,23 +243,6 @@ ORDER BY c.name, c.code
     ];
   }
 
-  Future<List<String>> _tags(String lang, int mealId) async {
-    final rows = await _database
-        .customSelect(
-          '''
-SELECT tag FROM meal_tags
-WHERE lang = ? AND meal_id = ?
-ORDER BY rowid
-''',
-          variables: <Variable<Object>>[
-            Variable<String>(lang),
-            Variable<int>(mealId),
-          ],
-        )
-        .get();
-    return <String>[for (final row in rows) row.read<String>('tag')];
-  }
-
   Future<List<NutrientLine>> _nutrients(String lang, int mealId) async {
     final rows = await _database
         .customSelect(
@@ -374,7 +365,7 @@ MealSummary _summary(QueryRow row, Map<int, List<String>> tags) {
     cuisineCode: row.readNullable<String>('cuisine'),
     cuisineName: row.readNullable<String>('cuisine_name'),
     tags: mealTags,
-    iconName: iconForOccasionTags(mealTags),
+    iconName: dishIcon(row.read<String>('name')),
     liked: row.read<int>('liked') == 1,
     allergenWarning: row.read<int>('allergen_hit') == 1,
   );

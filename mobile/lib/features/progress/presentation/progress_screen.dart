@@ -9,6 +9,9 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/ui/emoji.dart';
+import '../../../core/ui/kit.dart';
+import '../../../core/ui/rise_in.dart';
 import '../../plan/data/plan_providers.dart';
 import '../../plan/data/user_context.dart';
 import '../../plan/domain/plan_dates.dart';
@@ -93,7 +96,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                  children: <Widget>[
+                  children: staggered(<Widget>[
                     Text(
                       l10n.tabProgress,
                       style: Theme.of(context).textTheme.headlineSmall
@@ -131,7 +134,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                       _Segment.weight => const _WeightSection(),
                       _Segment.badges => const BadgesSection(),
                     },
-                  ],
+                  ]),
                 ),
               ),
             ),
@@ -198,9 +201,11 @@ class _ReportSection extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 8),
-        if (report.empty)
-          _EmptyWeek(colors: colors)
-        else ...<Widget>[
+        if (report.empty) ...<Widget>[
+          _EmptyWeek(colors: colors),
+          const SizedBox(height: 12),
+          _Cards(report: report),
+        ] else ...<Widget>[
           if (!general && report.ratio != null)
             _HeroRing(report: report, sex: user?.sex),
           const SizedBox(height: 12),
@@ -209,8 +214,12 @@ class _ReportSection extends ConsumerWidget {
           _CaloriesCard(report: report, general: general),
           if (report.macros != null) ...<Widget>[
             const SizedBox(height: 12),
+            _EnergyCard(macros: report.macros!),
+            const SizedBox(height: 12),
             _MacrosCard(macros: report.macros!),
           ],
+          const SizedBox(height: 12),
+          _MealsWeekCard(report: report, general: general),
           if (report.exceeded != null) ...<Widget>[
             const SizedBox(height: 12),
             _ExceededCard(summary: report.exceeded!),
@@ -226,8 +235,9 @@ class _ReportSection extends ConsumerWidget {
 BoxDecoration _card(AppColors colors) {
   return BoxDecoration(
     color: colors.surface,
-    borderRadius: BorderRadius.circular(20),
+    borderRadius: BorderRadius.circular(cardRadius),
     border: Border.all(color: colors.line),
+    boxShadow: softShadow(colors),
   );
 }
 
@@ -270,38 +280,34 @@ class _HeroRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colors = context.appColors;
     final ratio = report.ratio ?? 0;
     final percent = (ratio * 100).round();
-    final headline = switch (report.headline) {
-      WeekHeadline.excellent => l10n.headlineExcellent,
-      WeekHeadline.good => l10n.headlineGood,
-      _ => l10n.headlineFresh,
+    final (String headline, String emoji) = switch (report.headline) {
+      WeekHeadline.excellent => (l10n.headlineExcellent, 'star-struck'),
+      WeekHeadline.good => (l10n.headlineGood, 'sparkles'),
+      _ => (l10n.headlineFresh, 'seedling'),
     };
-    return Container(
+    return GradientHero(
       key: const Key('progress-ring'),
-      padding: const EdgeInsets.all(16),
-      decoration: _card(colors),
+      padding: const EdgeInsets.all(18),
       child: Row(
         children: <Widget>[
           Semantics(
             label: l10n.adherenceRing(formatWhole(context, percent)),
-            child: SizedBox(
-              width: 96,
-              height: 96,
-              child: CustomPaint(
-                painter: _RingPainter(
-                  ratio: ratio,
-                  color: colors.ok,
-                  track: colors.line,
-                ),
-                child: Center(
-                  child: Text(
-                    '${formatWhole(context, percent)}%',
-                    key: const Key('progress-ring-value'),
-                    style: Theme.of(context).textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.w700),
-                  ),
+            child: RingPercent(
+              value: ratio,
+              color: Colors.white,
+              track: const Color(0x40FFFFFF),
+              size: 100,
+              stroke: 11,
+              center: Text(
+                '${formatWhole(context, percent)}%',
+                key: const Key('progress-ring-value'),
+                style: const TextStyle(
+                  fontFamily: 'Readex Pro',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -312,16 +318,35 @@ class _HeroRing extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  headline,
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  l10n.adherenceThisWeek,
+                  style: const TextStyle(color: Color(0xE6FFFFFF)),
                 ),
-                const SizedBox(height: 4),
+                Row(
+                  children: <Widget>[
+                    Flexible(
+                      child: Text(
+                        headline,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          height: 1.3,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Emoji(emoji, size: 24),
+                  ],
+                ),
                 Text(
                   l10n.weekAchievedOf(
                     formatWhole(context, report.achieved),
                     formatWhole(context, report.counted),
                     sex == 'FEMALE' ? 'female' : 'other',
+                  ),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xE6FFFFFF),
                   ),
                 ),
               ],
@@ -331,35 +356,6 @@ class _HeroRing extends StatelessWidget {
       ),
     );
   }
-}
-
-class _RingPainter extends CustomPainter {
-  _RingPainter({required this.ratio, required this.color, required this.track});
-
-  final double ratio;
-  final Color color;
-  final Color track;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    final radius = size.shortestSide / 2 - 6;
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 9
-      ..strokeCap = StrokeCap.round;
-    canvas.drawCircle(center, radius, paint..color = track);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -math.pi / 2,
-      math.pi * 2 * ratio.clamp(0, 1),
-      false,
-      paint..color = color,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_RingPainter oldDelegate) => oldDelegate.ratio != ratio;
 }
 
 class _Cards extends StatelessWidget {
@@ -374,38 +370,58 @@ class _Cards extends StatelessWidget {
     final best = report.bestDay;
     final missed = report.mostMissed;
     final water = report.waterAverageMl;
+    // Both cards show as soon as one day is logged; before that they hold
+    // a friendly placeholder (P2e).
     final cards = <Widget>[
-      if (best != null)
-        _InfoCard(
-          key: const Key('card-best-day'),
-          icon: Icons.star_outline,
-          title: l10n.bestDayTitle,
-          body: l10n.bestDayBody(
-            formatWeekday(context, dateFromIso(best.day.date)),
-            formatWhole(context, best.percentOfTarget),
-          ),
-          colors: colors,
+      _InfoCard(
+        key: Key(best == null ? 'card-best-day-empty' : 'card-best-day'),
+        emoji: 'trophy',
+        tint: colors.fat,
+        title: l10n.bestDayTitle,
+        muted: best == null,
+        body: best == null
+            ? l10n.bestDayPlaceholder
+            : l10n.bestDayBody(
+                formatWeekday(context, dateFromIso(best.day.date)),
+                formatWhole(context, best.percentOfTarget),
+              ),
+      ),
+      _InfoCard(
+        key: Key(
+          missed != null
+              ? 'card-most-missed'
+              : (report.empty
+                    ? 'card-most-missed-empty'
+                    : (report.achieved > 0
+                          ? 'card-most-missed-none'
+                          : 'card-most-missed-partial')),
         ),
-      if (missed != null)
-        _InfoCard(
-          key: const Key('card-most-missed'),
-          icon: Icons.trending_down,
-          title: l10n.mostMissedTitle,
-          body: l10n.mostMissedBody(
-            formatWhole(context, missed.days),
-            formatWhole(context, missed.averageMinimum),
-            nutrientName(l10n, missed.nutrient),
-            formatWhole(context, missed.averageTotal),
-          ),
-          colors: colors,
-        ),
+        emoji: 'leafy-green',
+        tint: colors.fiber,
+        title: l10n.mostMissedTitle,
+        muted: missed == null && report.empty,
+        body: missed != null
+            ? l10n.mostMissedBody(
+                formatWhole(context, missed.days),
+                formatWhole(context, missed.averageMinimum),
+                nutrientName(l10n, missed.nutrient),
+                formatWhole(context, missed.averageTotal),
+              )
+            // «Nothing missing, nice!» only after a full day: a partly
+            // logged day has no gaps to judge yet, so it must not praise.
+            : (report.empty
+                  ? l10n.mostMissedPlaceholder
+                  : (report.achieved > 0
+                        ? l10n.mostMissedNone
+                        : l10n.mostMissedPartial)),
+      ),
       if (water != null)
         _InfoCard(
           key: const Key('card-water'),
-          icon: Icons.water_drop_outlined,
+          emoji: 'droplet',
+          tint: colors.water,
           title: l10n.waterAvgTitle,
           body: l10n.waterAvgBody(formatWhole(context, water)),
-          colors: colors,
         ),
     ];
     return Column(
@@ -419,37 +435,43 @@ class _Cards extends StatelessWidget {
 
 class _InfoCard extends StatelessWidget {
   const _InfoCard({
-    required this.icon,
+    required this.emoji,
+    required this.tint,
     required this.title,
     required this.body,
-    required this.colors,
+    this.muted = false,
     super.key,
   });
 
-  final IconData icon;
+  final String emoji;
+  final Color tint;
   final String title;
   final String body;
-  final AppColors colors;
+
+  /// A placeholder: lighter text, no bold figure.
+  final bool muted;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final colors = context.appColors;
+    return AppCard(
+      tint: tint,
       padding: const EdgeInsets.all(14),
-      decoration: _card(colors),
       child: Row(
         children: <Widget>[
-          Icon(icon, color: colors.brand),
+          EmojiTile(emoji, size: 46, emojiSize: 28, tint: tint),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Text(title, style: TextStyle(fontSize: 13, color: colors.fg3)),
                 Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  body,
+                  style: muted
+                      ? TextStyle(color: colors.fg2)
+                      : const TextStyle(fontWeight: FontWeight.w700),
                 ),
-                Text(body),
               ],
             ),
           ),
@@ -707,6 +729,207 @@ class _MacrosCard extends ConsumerWidget {
   }
 }
 
+/// «توزيع طاقتك»: the share of eaten energy from protein, carbohydrate and
+/// fat (week averages from the server) against the same shares of the
+/// target grams.
+class _EnergyCard extends ConsumerWidget {
+  const _EnergyCard({required this.macros});
+
+  final MacroAverages macros;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.appColors;
+    final eaten = energySplit(
+      proteinG: macros.proteinG,
+      carbG: macros.carbG,
+      fatG: macros.fatG,
+    );
+    final target = ref.watch(userContextProvider)?.target;
+    final protein = target?.proteinG;
+    final carb = target?.carbG;
+    final fat = target?.fatG;
+    final goal = protein == null || carb == null || fat == null
+        ? null
+        : energySplit(proteinG: protein, carbG: carb, fatG: fat);
+    if (eaten == null) {
+      return const SizedBox.shrink();
+    }
+    String pct(double share) => formatWhole(context, share * 100);
+    String describe(EnergySplit split) {
+      return <String>[
+        l10n.energyShare(l10n.nutrientProtein, pct(split.protein)),
+        l10n.energyShare(l10n.nutrientCarbs, pct(split.carb)),
+        l10n.energyShare(l10n.nutrientFat, pct(split.fat)),
+      ].join(' · ');
+    }
+
+    Widget bar(String label, EnergySplit split, Key key) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(label, style: TextStyle(fontSize: 12.5, color: colors.fg3)),
+            const SizedBox(height: 6),
+            Semantics(
+              label: '$label: ${describe(split)}',
+              child: ClipRRect(
+                key: key,
+                borderRadius: BorderRadius.circular(9),
+                child: SizedBox(
+                  height: 14,
+                  child: Row(
+                    children: <Widget>[
+                      for (final (share, color) in <(double, Color)>[
+                        (split.protein, colors.protein),
+                        (split.carb, colors.carb),
+                        (split.fat, colors.fat),
+                      ])
+                        Expanded(
+                          flex: math.max(1, (share * 1000).round()),
+                          // A child so the box fills the bar's height.
+                          child: ColoredBox(
+                            color: color,
+                            child: const SizedBox.expand(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              describe(split),
+              style: TextStyle(fontSize: 12, color: colors.fg2),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      key: const Key('progress-energy'),
+      padding: const EdgeInsets.all(16),
+      decoration: _card(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            l10n.energyTitle,
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          bar(l10n.energyEaten, eaten, const Key('energy-eaten')),
+          if (goal != null)
+            bar(l10n.energyTarget, goal, const Key('energy-target')),
+        ],
+      ),
+    );
+  }
+}
+
+/// Plan meals eaten, skipped («لم آكلها») and not logged this week, and the
+/// logged days that stayed within every health limit.
+class _MealsWeekCard extends StatelessWidget {
+  const _MealsWeekCard({required this.report, required this.general});
+
+  final WeekReport report;
+  final bool general;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.appColors;
+    final meals = report.meals;
+    Widget stat(String key, String label, int value, Color color) {
+      return Expanded(
+        child: Container(
+          key: Key(key),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+          decoration: BoxDecoration(
+            color: mixColor(color, 0.12, colors.surface),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            children: <Widget>[
+              Text(
+                formatWhole(context, value),
+                style: colors.numeric.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: colors.fg,
+                ),
+              ),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: colors.fg2),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      key: const Key('progress-meals-week'),
+      padding: const EdgeInsets.all(16),
+      decoration: _card(colors),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            l10n.mealsWeekTitle,
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          if (!general && meals.planned > 0) ...<Widget>[
+            const SizedBox(height: 10),
+            Row(
+              children: <Widget>[
+                stat('meals-eaten', l10n.mealsEaten, meals.eaten, colors.ok),
+                const SizedBox(width: 8),
+                stat(
+                  'meals-skipped',
+                  l10n.mealsSkipped,
+                  meals.skipped,
+                  colors.part,
+                ),
+                const SizedBox(width: 8),
+                stat(
+                  'meals-not-logged',
+                  l10n.mealsNotLogged,
+                  meals.notLogged,
+                  colors.miss,
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 10),
+          Row(
+            children: <Widget>[
+              const Emoji('check-mark-button', size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.withinLimitsDays(
+                    formatWhole(context, report.withinLimitsDays),
+                    formatWhole(context, report.loggedDays),
+                  ),
+                  key: const Key('within-limits'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ExceededCard extends StatelessWidget {
   const _ExceededCard({required this.summary});
 
@@ -948,16 +1171,25 @@ class _WeightSection extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: _card(colors),
-          child: summary.enough
-              ? _WeightChart(summary: summary)
-              : Padding(
+          // From the first weight the chart shows the point and the goal
+          // line (P2e); the hint stays until there is a trend to draw.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              if (summary.points.isNotEmpty) _WeightChart(summary: summary),
+              if (!summary.enough)
+                Padding(
                   key: const Key('weight-few-points'),
-                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  padding: EdgeInsets.symmetric(
+                    vertical: summary.points.isEmpty ? 24 : 8,
+                  ),
                   child: Text(
                     l10n.weightFewPoints,
                     textAlign: TextAlign.center,
                   ),
                 ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         FilledButton(
@@ -1030,9 +1262,14 @@ class _WeightChart extends StatelessWidget {
     final ticks = axisTicks(low, high);
     final first = points.first.date;
     final last = points.last.date;
-    final middle = first.add(
-      Duration(days: last.difference(first).inDays ~/ 2),
-    );
+    final span = last.difference(first).inDays;
+    // One label per distinct date: a single weigh-in shows its date once,
+    // not «1 Nov» three times (P2z).
+    final axisDates = <DateTime>[
+      first,
+      if (span >= 2) first.add(Duration(days: span ~/ 2)),
+      if (span >= 1) last,
+    ];
     final chart = SizedBox(
       key: Key(animate ? 'weight-chart-animated' : 'weight-chart-static'),
       height: 180,
@@ -1084,9 +1321,10 @@ class _WeightChart extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            for (final date in <DateTime>[first, middle, last])
+            for (final date in axisDates)
               Text(
                 formatMonthDay(context, date),
+                key: Key('weight-axis-${date.toIso8601String()}'),
                 style: Theme.of(context).textTheme.labelSmall,
               ),
           ],

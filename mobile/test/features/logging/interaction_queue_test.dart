@@ -88,6 +88,9 @@ void main() {
         outbox,
       ).skip(planItemId: 5, mealId: 42, date: '2026-10-24');
       expect((await outbox.pending(10)).single.clientUuid, sentId);
+      // The tap is also kept on the phone, once, for the weekly report (P2e).
+      final kept = await database.select(database.progressMeta).get();
+      expect(kept.map((row) => row.key), <String>['skip:2026-10-24:5']);
     },
   );
 

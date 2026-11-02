@@ -6,7 +6,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ui/emoji.dart';
+import '../../../core/ui/kit.dart';
+import '../../../core/ui/motion.dart';
+import '../../../core/ui/rise_in.dart';
 import '../../catalog/data/healthy_meals.dart';
+import '../../today/presentation/today_look.dart';
 import '../../today/presentation/today_screen.dart';
 import '../data/plan_providers.dart';
 import '../data/plan_sync.dart';
@@ -51,61 +56,133 @@ class PlanScreen extends ConsumerWidget {
                 onRefresh: () => ref.read(planSyncProvider).refresh(),
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                  children: <Widget>[
+                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+                  children: staggered(<Widget>[
                     Row(
                       children: <Widget>[
                         Expanded(
-                          child: Text(
-                            l10n.planTitle,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.w700),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                l10n.planTitle,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  height: 1.25,
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.fg,
+                                ),
+                              ),
+                              Text(
+                                l10n.planRange(
+                                  formatMonthDay(context, dates.first),
+                                  formatMonthDay(context, dates.last),
+                                ),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: colors.fg3,
+                                ),
+                              ),
+                              Text(
+                                l10n.planOptimizer,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: colors.fg3,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         if (!general)
-                          IconButton(
-                            key: const Key('plan-rebuild'),
-                            tooltip: l10n.planRebuild,
-                            onPressed: () => _confirmRebuild(context, ref),
-                            icon: const Icon(Icons.refresh),
-                            style: IconButton.styleFrom(
-                              minimumSize: const Size(48, 48),
+                          Material(
+                            color: colors.surface,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              side: BorderSide(color: colors.line),
+                            ),
+                            child: IconButton(
+                              key: const Key('plan-rebuild'),
+                              tooltip: l10n.planRebuild,
+                              onPressed: () => _confirmRebuild(context, ref),
+                              icon: Icon(Icons.refresh, color: colors.fg2),
+                              style: IconButton.styleFrom(
+                                minimumSize: const Size(48, 48),
+                              ),
                             ),
                           ),
                       ],
                     ),
-                    Text(
-                      l10n.planRange(
-                        formatMonthDay(context, dates.first),
-                        formatMonthDay(context, dates.last),
+                    const SizedBox(height: 14),
+                    _DaySelector(dates: dates, selected: selected),
+                    const SizedBox(height: 14),
+                    AppCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  l10n.planChartTitle,
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              if (target != null)
+                                Text(
+                                  l10n.planChartTarget(
+                                    formatWhole(context, target),
+                                  ),
+                                  style: colors.numeric.copyWith(
+                                    fontSize: 13,
+                                    color: colors.fg3,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          PlanChart(
+                            days: <ChartDay>[
+                              for (final date in dates)
+                                ChartDay(
+                                  label: formatShortDay(context, date),
+                                  kcal: byDate[isoDate(date)]?.totals.kcal
+                                      ?.round(),
+                                  selected: isoDate(date) == selected,
+                                ),
+                            ],
+                            targetKcal: target,
+                            summary: _chartSummary(context, dates, byDate),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: <Widget>[
+                              for (final date in dates)
+                                Expanded(
+                                  child: Text(
+                                    formatWhole(context, date.day),
+                                    textAlign: TextAlign.center,
+                                    style: colors.numeric.copyWith(
+                                      fontSize: 11,
+                                      color: colors.fg3,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      l10n.planOptimizer,
-                      style: Theme.of(context).textTheme.bodyMedium
-                          ?.copyWith(color: colors.fg2),
-                    ),
-                    const SizedBox(height: 12),
-                    _DaySelector(dates: dates, selected: selected),
-                    const SizedBox(height: 12),
-                    PlanChart(
-                      days: <ChartDay>[
-                        for (final date in dates)
-                          ChartDay(
-                            label: formatShortDay(context, date),
-                            kcal: byDate[isoDate(date)]?.totals.kcal?.round(),
-                            selected: isoDate(date) == selected,
-                          ),
-                      ],
-                      targetKcal: target,
-                      summary: _chartSummary(context, dates, byDate),
-                    ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     Row(
                       children: <Widget>[
                         Expanded(
                           child: _LinkCard(
                             key: const Key('plan-shopping'),
+                            emoji: 'shopping-cart',
+                            tint: colors.kcal,
                             title: l10n.shopTitle,
                             subtitle: l10n.shopFromPlan,
                             onTap: () => context.push('/plan/shopping'),
@@ -115,6 +192,8 @@ class PlanScreen extends ConsumerWidget {
                         Expanded(
                           child: _LinkCard(
                             key: const Key('plan-favourites'),
+                            emoji: 'red-heart',
+                            tint: colors.protein,
                             title: l10n.favouritesCard,
                             subtitle: l10n.favouritesCount(likes),
                             onTap: () => context.push('/meals/favourites'),
@@ -133,7 +212,7 @@ class PlanScreen extends ConsumerWidget {
                       _EmptyDay(onBuild: () => openGeneration(context, ref))
                     else
                       _DayBody(day: day, windows: windows),
-                  ],
+                  ]),
                 ),
               ),
             ),
@@ -199,28 +278,91 @@ class _DaySelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.appColors;
-    return SizedBox(
-      height: 80,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: dates.length,
-        separatorBuilder: (BuildContext context, int index) =>
-            const SizedBox(width: 8),
-        itemBuilder: (BuildContext context, int index) {
-          final date = dates[index];
-          final iso = isoDate(date);
-          final on = iso == selected;
-          return ChoiceChip(
-            key: Key('plan-day-$iso'),
-            label: Text(formatShortDay(context, date)),
-            selected: on,
-            onSelected: (_) {
-              ref.read(selectedPlanDateProvider.notifier).select(iso);
-              unawaited(_quiet(ref, date));
-            },
-            selectedColor: colors.brandSoft,
-          );
-        },
+    return Row(
+      children: <Widget>[
+        for (final date in dates)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: _DayButton(
+                key: Key('plan-day-${isoDate(date)}'),
+                label: formatShortDay(context, date),
+                day: formatWhole(context, date.day),
+                on: isoDate(date) == selected,
+                colors: colors,
+                onTap: () {
+                  ref
+                      .read(selectedPlanDateProvider.notifier)
+                      .select(isoDate(date));
+                  unawaited(_quiet(ref, date));
+                },
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _DayButton extends StatelessWidget {
+  const _DayButton({
+    required this.label,
+    required this.day,
+    required this.on,
+    required this.colors,
+    required this.onTap,
+    super.key,
+  });
+
+  final String label;
+  final String day;
+  final bool on;
+  final AppColors colors;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      selected: on,
+      button: true,
+      child: Material(
+        color: on ? colors.brand : colors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: on ? BorderSide.none : BorderSide(color: colors.line),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              children: <Widget>[
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: on ? colors.onBrand : colors.fg2,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  day,
+                  style: colors.numeric.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: on ? colors.onBrand : colors.fg,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -239,37 +381,44 @@ class _LinkCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    required this.emoji,
+    required this.tint,
     super.key,
   });
 
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final String emoji;
+  final Color tint;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Material(
-      color: colors.surface,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 4),
-              Text(subtitle),
-            ],
+    return AppCard(
+      tint: tint,
+      padding: const EdgeInsets.all(14),
+      onTap: onTap,
+      child: Row(
+        children: <Widget>[
+          Emoji(emoji, size: 32),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 13, color: colors.fg3),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -318,8 +467,7 @@ class _DayBody extends StatelessWidget {
             formatWeekday(context, dateFromIso(day.planDate)),
             kcal == null ? '—' : formatWhole(context, kcal),
           ),
-          style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -327,31 +475,129 @@ class _DayBody extends StatelessWidget {
           runSpacing: 6,
           children: <Widget>[
             if (day.kcalWithin10pct)
-              Chip(key: const Key('within-band'), label: Text(l10n.withinBand)),
+              _Pill(
+                key: const Key('within-band'),
+                emoji: 'check-mark-button',
+                label: l10n.withinBand,
+                color: colors.brand2,
+                background: colors.brand.withValues(alpha: 0.14),
+              ),
             for (final unmet in day.unmetMinimums)
-              Chip(
-                label: Text(
-                  l10n.belowMinimum(nutrientName(l10n, unmet.nutrient)),
-                ),
+              _Pill(
+                emoji: 'warning',
+                label: l10n.belowMinimum(nutrientName(l10n, unmet.nutrient)),
+                color: colors.fg,
+                background: colors.part.withValues(alpha: 0.18),
               ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         for (final item in displayItems(day.items))
-          ListTile(
-            key: Key('plan-row-${item.planItemId}'),
-            contentPadding: EdgeInsets.zero,
-            minVerticalPadding: 12,
-            title: Text(item.mealName),
-            subtitle: Text(
-              '${slotLabel(l10n, item.slot)} · ${_start(context, windows, item.slot)}',
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: AppCard(
+              key: Key('plan-row-${item.planItemId}'),
+              radius: 22,
+              padding: const EdgeInsets.all(12),
+              onTap: () => context.push('/plan/item/${item.planItemId}'),
+              child: Row(
+                children: <Widget>[
+                  Hero(
+                    tag: mealHeroTag(item.planItemId),
+                    child: EmojiTile(
+                      mealEmoji(item),
+                      size: 54,
+                      emojiSize: 36,
+                      radius: 18,
+                      tint: slotTint(colors, item.slot),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          '${slotLabel(l10n, item.slot)} · ${_start(context, windows, item.slot)}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: colors.fg3,
+                          ),
+                        ),
+                        Text(
+                          item.mealName,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            height: 1.35,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          l10n.mealKcal(formatWhole(context, item.kcal)),
+                          style: colors.numeric.copyWith(
+                            fontSize: 12.5,
+                            color: colors.fg3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: colors.fg3,
+                  ),
+                ],
+              ),
             ),
-            trailing: Text(formatWhole(context, item.kcal)),
-            onTap: () => context.push('/plan/item/${item.planItemId}'),
           ),
         if (day.items.isEmpty)
           Text(l10n.planEmpty, style: TextStyle(color: colors.fg2)),
       ],
+    );
+  }
+}
+
+class _Pill extends StatelessWidget {
+  const _Pill({
+    required this.emoji,
+    required this.label,
+    required this.color,
+    required this.background,
+    super.key,
+  });
+
+  final String emoji;
+  final String label;
+  final Color color;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Emoji(emoji, size: 14),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -31,13 +31,14 @@ part 'app_database.g.dart';
     AdherenceDays,
     ProgressMeta,
     EarnedBadges,
+    ShoppingChecks,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -84,6 +85,22 @@ class AppDatabase extends _$AppDatabase {
       },
       from6To7: (Migrator m, Schema7 schema) async {
         await m.createTable(schema.earnedBadges);
+      },
+      from7To8: (Migrator m, Schema8 schema) async {
+        await m.addColumn(
+          schema.shoppingItems,
+          schema.shoppingItems.categoryCode,
+        );
+        await m.addColumn(schema.shoppingItems, schema.shoppingItems.category);
+        await m.createTable(schema.shoppingChecks);
+        // Ticks so far were stored per week list; keep them.
+        await customStatement(
+          'INSERT OR IGNORE INTO shopping_checks '
+          '(week_key, ingredient_id, checked_at) '
+          'SELECT range_key, ingredient_id, '
+          "CAST(strftime('%s', 'now') AS INTEGER) "
+          'FROM shopping_items WHERE checked = 1',
+        );
       },
     ),
     beforeOpen: (OpeningDetails details) async {

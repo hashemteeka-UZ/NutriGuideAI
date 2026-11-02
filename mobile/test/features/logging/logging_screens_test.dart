@@ -172,7 +172,7 @@ void main() {
     await reveal(tester, find.byKey(const Key('missed-1')));
     expect(find.text('فاتك موعد فطور'), findsOneWidget);
     expect(
-      find.text('هل أكلتها؟ سجلها الآن حتى يبقى يومك دقيقًا'),
+      find.text('هل أكلتها؟ سجّلها الآن ليبقى يومك صحيحًا'),
       findsOneWidget,
     );
     await tester.tap(
@@ -248,6 +248,18 @@ void main() {
 
     await tester.tap(find.byKey(const Key('tab-me')));
     await tester.pumpAndSettle();
+    // V4: the account screen is longer; scroll to the row.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('account-logout')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('account-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('account-logout')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('logout-pending-dialog')), findsOneWidget);
@@ -285,6 +297,18 @@ void main() {
     await tester.tap(find.byKey(const Key('eat-1')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('tab-me')));
+    await tester.pumpAndSettle();
+    // V4: the account screen is longer; scroll to the row.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('account-logout')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('account-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('account-logout')));
     await tester.pumpAndSettle();

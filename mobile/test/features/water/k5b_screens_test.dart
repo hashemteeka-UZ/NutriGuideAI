@@ -106,6 +106,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('750 / 2,000 مل'), findsOneWidget);
     expect(find.text('هدف اليوم'), findsOneWidget);
+    // V2: the quick buttons sit below the drinking sessions.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('water-add-250')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('water-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('water-add-250')));
     await tester.pumpAndSettle();
     expect(find.text('1,000 / 2,000 مل'), findsOneWidget);
@@ -133,6 +145,14 @@ void main() {
       ),
       findsOneWidget,
     );
+    // Total first, then the goal (V2: the arguments were swapped in V1).
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('water-card')),
+        matching: find.text('1,000 / 2,000 مل'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testNutriguide('custom amount above 500 shows the neutral tip', (
@@ -148,13 +168,24 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('tab-water')));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('water-custom')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('water-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('water-custom')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('water-large-tip')), findsNothing);
     await tester.tap(find.byKey(const Key('water-chip-750')));
     await tester.pumpAndSettle();
     expect(
-      find.text('كمية كبيرة لمرة واحدة، يمكنك تقسيمها على مرتين.'),
+      find.text('هذه كمية كبيرة دفعة واحدة. الأريح أن تقسمها على مرتين.'),
       findsOneWidget,
     );
     await tester.tap(find.byKey(const Key('water-custom-add')));
@@ -212,6 +243,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('750 / 2,000 ml'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('water-custom')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('water-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('water-custom')));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
@@ -307,6 +349,18 @@ void main() {
       extra: at(),
     );
     await tester.tap(find.byKey(const Key('tab-me')));
+    await tester.pumpAndSettle();
+    // V4: the account screen is longer; scroll to the row.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('account-weight')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('account-screen')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
     await tester.pumpAndSettle();
     expect(find.text('لم تسجل وزنًا بعد'), findsOneWidget);
     await tester.tap(find.byKey(const Key('account-weight')));

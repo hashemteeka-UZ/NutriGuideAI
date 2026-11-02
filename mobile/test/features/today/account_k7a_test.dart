@@ -86,6 +86,7 @@ void main() {
   testNutriguide('appearance sheet applies dark mode', (tester) async {
     await pumpNutriguide(tester, auth: _signedIn());
     await openMe(tester);
+    await reveal(tester, const Key('account-appearance'));
     await tester.tap(find.byKey(const Key('account-appearance')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('theme-dark')));

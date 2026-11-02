@@ -8,6 +8,7 @@ class AuthTokens {
     required this.refreshToken,
     required this.accessExpiry,
     required this.hasProfile,
+    this.email,
   });
 
   final String accessToken;
@@ -15,17 +16,23 @@ class AuthTokens {
   final DateTime accessExpiry;
   final bool hasProfile;
 
+  /// Kept beside the tokens so the account page can show it after a restart
+  /// even when the server is slow or unreachable.
+  final String? email;
+
   AuthTokens copyWith({
     String? accessToken,
     String? refreshToken,
     DateTime? accessExpiry,
     bool? hasProfile,
+    String? email,
   }) {
     return AuthTokens(
       accessToken: accessToken ?? this.accessToken,
       refreshToken: refreshToken ?? this.refreshToken,
       accessExpiry: accessExpiry ?? this.accessExpiry,
       hasProfile: hasProfile ?? this.hasProfile,
+      email: email ?? this.email,
     );
   }
 }
@@ -41,6 +48,8 @@ abstract interface class TokenStore {
 
   Future<void> updateHasProfile(bool hasProfile);
 
+  Future<void> updateEmail(String email);
+
   Future<void> clear();
 }
 
@@ -51,8 +60,15 @@ final class SecureTokenStore implements TokenStore {
   static const refreshKey = 'ng.auth.refresh';
   static const expiryKey = 'ng.auth.access_expiry';
   static const profileKey = 'ng.auth.has_profile';
+  static const emailKey = 'ng.auth.email';
 
-  static const keys = <String>[accessKey, refreshKey, expiryKey, profileKey];
+  static const keys = <String>[
+    accessKey,
+    refreshKey,
+    expiryKey,
+    profileKey,
+    emailKey,
+  ];
 
   final SecureKeyValue _storage;
   AuthTokens? _memory;
@@ -82,6 +98,7 @@ final class SecureTokenStore implements TokenStore {
       final access = await _storage.read(accessKey);
       final expiryRaw = await _storage.read(expiryKey);
       final profileRaw = await _storage.read(profileKey);
+      final emailRaw = await _storage.read(emailKey);
       final expiry = DateTime.tryParse(expiryRaw ?? '')?.toUtc();
       _memory = AuthTokens(
         accessToken: access ?? '',
@@ -89,6 +106,7 @@ final class SecureTokenStore implements TokenStore {
         accessExpiry:
             expiry ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
         hasProfile: profileRaw == 'true',
+        email: emailRaw == null || emailRaw.isEmpty ? null : emailRaw,
       );
       _loaded = true;
       return _memory;
@@ -109,6 +127,12 @@ final class SecureTokenStore implements TokenStore {
       tokens.accessExpiry.toUtc().toIso8601String(),
     );
     await _storage.write(profileKey, tokens.hasProfile ? 'true' : 'false');
+    final email = tokens.email;
+    if (email == null || email.isEmpty) {
+      await _storage.delete(emailKey);
+    } else {
+      await _storage.write(emailKey, email);
+    }
     _memory = tokens;
     _loaded = true;
   }
@@ -121,6 +145,16 @@ final class SecureTokenStore implements TokenStore {
     }
     await _storage.write(profileKey, hasProfile ? 'true' : 'false');
     _memory = current.copyWith(hasProfile: hasProfile);
+  }
+
+  @override
+  Future<void> updateEmail(String email) async {
+    final current = _memory;
+    if (current == null || email.isEmpty || current.email == email) {
+      return;
+    }
+    await _storage.write(emailKey, email);
+    _memory = current.copyWith(email: email);
   }
 
   @override

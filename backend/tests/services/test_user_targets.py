@@ -202,7 +202,9 @@ def test_same_instant_opens_the_next_target_one_microsecond_later(
     advanced = [r for r in caplog.records if "advanced" in r.getMessage()]
     assert len(advanced) == 1
     assert advanced[0].args == (user,)
-    assert "90" not in advanced[0].getMessage()
+    # Only the user id is logged, never the target values (exact text, so an id
+    # such as 490 cannot be mistaken for a leaked number).
+    assert advanced[0].getMessage() == f"user_id={user} target instant was advanced"
 
 
 def test_earlier_now_still_opens_after_the_current_target(

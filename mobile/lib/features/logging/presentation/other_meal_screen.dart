@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ui/motion.dart';
 import '../../catalog/data/catalog_providers.dart';
 import '../../catalog/data/meal_pref_writer.dart';
 import '../../catalog/domain/meal.dart';
@@ -166,7 +167,7 @@ Future<({double servings, String slot})?> showOtherMealSheet(
   BuildContext context, {
   required String defaultSlot,
 }) {
-  return showModalBottomSheet<({double servings, String slot})>(
+  return showAppSheet<({double servings, String slot})>(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) => _OtherMealSheet(slot: defaultSlot),

@@ -101,6 +101,39 @@ void main() {
     expect(best.percentOfTarget, closeTo(1530 / 1540 * 100, 1e-9));
   });
 
+  test('without an ACHIEVED day the closest logged day is the best', () {
+    final best = weekReport(
+      dates: _dates,
+      days: <String, AdherenceDay>{
+        '2026-10-21': _day('2026-10-21', status: 'PARTIAL', kcal: 1200),
+        '2026-10-22': _day('2026-10-22', status: 'NOT_ACHIEVED', kcal: 1800),
+      },
+    ).bestDay!;
+    expect(best.day.date, '2026-10-22');
+  });
+
+  test('meals of the week, skipped taps and days within limits', () {
+    final report = weekReport(dates: _dates, days: days, skippedMeals: 2);
+    // 5 cached days x 4 planned; consumed = logs (3 + 3 + 3 + 3 + 0).
+    expect(report.meals.planned, 20);
+    expect(report.meals.eaten, 12);
+    expect(report.meals.skipped, 2);
+    expect(report.meals.notLogged, 6);
+    expect(report.loggedDays, 4);
+    expect(report.withinLimitsDays, 2);
+    const over = MealCounts(planned: 4, eaten: 3, skipped: 3);
+    expect(over.notLogged, 0);
+  });
+
+  test('energy split uses 4, 4 and 9 kcal per gram', () {
+    final split = energySplit(proteinG: 100, carbG: 150, fatG: 50)!;
+    expect(split.protein, closeTo(400 / 1450, 1e-9));
+    expect(split.carb, closeTo(600 / 1450, 1e-9));
+    expect(split.fat, closeTo(450 / 1450, 1e-9));
+    expect(split.protein + split.carb + split.fat, closeTo(1, 1e-9));
+    expect(energySplit(proteinG: 0, carbG: 0, fatG: 0), isNull);
+  });
+
   test('most missed nutrient with its average total and minimum', () {
     final missed = weekReport(dates: _dates, days: days).mostMissed!;
     expect(missed.nutrient, 'fiber');

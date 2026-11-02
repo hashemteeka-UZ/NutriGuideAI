@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ui/kit.dart';
+import '../../../core/ui/motion.dart';
 import '../../catalog/data/catalog_sync.dart';
 import '../../catalog/data/meal_pref_writer.dart';
 import '../../catalog/presentation/format_amount.dart';
@@ -15,6 +17,7 @@ import '../../logging/data/logging_providers.dart';
 import '../../logging/domain/logging.dart';
 import '../../logging/presentation/eat_button.dart';
 import '../../logging/presentation/meal_feedback.dart';
+import '../../today/presentation/today_look.dart';
 import '../data/plan_providers.dart';
 import '../data/plan_sync.dart';
 import '../domain/plan.dart';
@@ -159,7 +162,7 @@ class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
                           ? null
                           : () {
                               unawaited(
-                                showModalBottomSheet<void>(
+                                showAppSheet<void>(
                                   context: context,
                                   isScrollControlled: true,
                                   builder: (BuildContext context) {
@@ -183,6 +186,30 @@ class _PlanItemScreenState extends ConsumerState<PlanItemScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
+                  Container(
+                    key: const Key('plan-item-image'),
+                    height: 150,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(26),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: <Color>[colors.heroStart, colors.surface],
+                      ),
+                    ),
+                    child: Hero(
+                      tag: mealHeroTag(item.planItemId),
+                      child: EmojiTile(
+                        mealEmoji(item),
+                        size: 112,
+                        emojiSize: 84,
+                        radius: 32,
+                        tint: slotTint(colors, item.slot),
+                      ),
+                    ),
+                  ),
                   Text(
                     key: const Key('plan-item-header'),
                     '${slotLabel(l10n, item.slot)} · ${_window(context, windows, item.slot)}',
@@ -347,7 +374,8 @@ String _window(
 ) {
   for (final window in windows) {
     if (window.slot == slot) {
-      return '${formatHm(context, window.start)}–${formatHm(context, window.end)}';
+      // Isolated left-to-right so «07:30–09:30» keeps its order in Arabic.
+      return '${String.fromCharCode(0x2066)}${formatHm(context, window.start)}–${formatHm(context, window.end)}${String.fromCharCode(0x2069)}';
     }
   }
   return '';

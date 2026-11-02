@@ -349,19 +349,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbGoalLose => 'Lose weight';
 
   @override
-  String get onbGoalLoseBody => 'A moderate, safe calorie deficit';
+  String get onbGoalLoseBody => 'A little under your needs, at a moderate pace';
 
   @override
   String get onbGoalMaintain => 'Keep my weight';
 
   @override
-  String get onbGoalMaintainBody => 'Balanced eating to keep your energy';
+  String get onbGoalMaintainBody =>
+      'Calories that match your needs, to keep your weight';
 
   @override
   String get onbGoalGain => 'Gain weight';
 
   @override
-  String get onbGoalGainBody => 'A planned calorie surplus';
+  String get onbGoalGainBody => 'A little over your needs, at a gentle pace';
 
   @override
   String get onbLoseUnavailable =>
@@ -426,10 +427,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbRateUnavailable =>
-      'Not available for your weight (over 1% a week)';
+      'Not available for your weight now: faster than 1% of your weight a week';
 
   @override
-  String get onbGainCap => 'Safe gain is up to 0.5 kg a week';
+  String get onbGainCap => 'We keep gain to at most 0.5 kg a week';
 
   @override
   String onbArrival(String sex, String weight, String weeks, String when) {
@@ -529,14 +530,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbCarePressureBody => 'Less salt in your daily meals';
 
   @override
-  String get onbCareHeartBody => 'Healthy fats and less salt';
+  String get onbCareHeartBody => 'Less saturated fat and less salt';
 
   @override
   String get onbCareExplainTitle => 'How do we handle this?';
 
   @override
   String get onbCareExplainBody =>
-      'NutriGuide does not treat any condition and does not replace your doctor. It only avoids what may not suit you, like extra salt or sugar, following WHO and health association guidance.';
+      'NutriGuide does not treat any condition and does not replace your doctor. It only keeps out of your plan what may not suit you, like extra salt or sugar, following WHO and medical association guidance.';
 
   @override
   String onbAllergyTitle(String sex) {
@@ -598,7 +599,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbWhyAskBody =>
-      'Insulin use needs carbohydrate planning tied to doses, which this app does not cover, so the general mode is used.';
+      'With insulin, each meal\'s carbohydrate is matched to the dose. The app does not do that, so it uses the general mode.';
 
   @override
   String onbRhythmTitle(String sex) {
@@ -731,21 +732,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbHowDeficitBody =>
-      'This is what we subtract so your weight falls at the pace you chose.';
+      'This is what we take off your needs so your weight goes down at the pace you chose.';
 
   @override
   String get onbHowSurplusTitle => '+ gain surplus';
 
   @override
   String get onbHowSurplusBody =>
-      'This is what we add so your weight rises at the pace you chose.';
+      'This is what we add to your needs so your weight goes up at the pace you chose.';
 
   @override
   String get onbHowFloorTitle => 'Calories were raised to the safe minimum';
 
   @override
   String get onbHowFloorBody =>
-      'The plan never goes below a safe minimum, so the calories were raised to it.';
+      'Your plan never goes below a minimum number of calories, so we raised it to that.';
 
   @override
   String get onbHowDailyTitle => 'Your daily target';
@@ -770,7 +771,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbReasonGeneric =>
-      'Your situation needs an estimate the personal plan does not cover.';
+      'Your situation needs a calculation the personal plan does not cover.';
 
   @override
   String get onbCanDo => 'What you can do';
@@ -900,7 +901,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mealFavouritesTitle => 'Favourite meals';
 
   @override
-  String get mealFavouritesHint => 'The engine suggests these more often';
+  String get mealFavouritesHint => 'We suggest these more often in your plan';
 
   @override
   String get mealDislikesTitle => 'I don’t like';
@@ -909,7 +910,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mealDislikesHint => 'They won’t appear in your plan';
 
   @override
-  String get mealFavouritesEmpty => 'None yet. Tap the heart on any meal.';
+  String get mealFavouritesEmpty =>
+      'No favourites yet. Tap the heart on any meal you like.';
 
   @override
   String get mealDislikesEmpty => 'None.';
@@ -1251,12 +1253,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String favouritesCount(int count) {
-    return '$count meals';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count meals',
+      one: '1 meal',
+    );
+    return '$_temp0';
   }
 
   @override
   String shopInMeals(int count) {
-    return 'In $count meals';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'In $count meals',
+      one: 'In 1 meal',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1279,6 +1293,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopShare => 'Share';
+
+  @override
+  String get shopSubtitle => 'Calculated from your plan\'s meals';
+
+  @override
+  String get shopScopePlan => 'Whole plan';
+
+  @override
+  String get shopScopeToday => 'Today';
+
+  @override
+  String get shopScopeMeal => 'Current meal';
+
+  @override
+  String get shopMealNow => 'Your meal now';
+
+  @override
+  String get shopMealNext => 'Your next meal';
+
+  @override
+  String get shopAllItems => 'Items';
+
+  @override
+  String shopGroupCount(int count) {
+    return '($count)';
+  }
+
+  @override
+  String shopBought(int count) {
+    return 'Bought ($count)';
+  }
+
+  @override
+  String get shopMarked => 'Moved to «Bought»';
+
+  @override
+  String get shopUndo => 'Undo';
+
+  @override
+  String get shopEmptyTitle => 'Nothing to buy here';
+
+  @override
+  String get shopEmptyPlan =>
+      'Once your plan is built, its ingredients show up here.';
+
+  @override
+  String get shopEmptyToday => 'Today\'s plan has no meals yet.';
+
+  @override
+  String get shopEmptyMeal => 'No meal now and none coming up today.';
+
+  @override
+  String get shopAllBought => 'You\'ve bought everything here. Nice!';
+
+  @override
+  String shopItemSemantics(String name, String quantity) {
+    return '$name, $quantity';
+  }
 
   @override
   String get chartNoPlan => 'No plan';
@@ -1413,7 +1485,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waterAdd => 'Add';
 
   @override
-  String get waterLargeTip => 'That\'s a lot at once; you can split it in two.';
+  String get waterLargeTip =>
+      'That is a lot at once. It is easier to split it in two.';
 
   @override
   String get waterTodayList => 'Today\'s drinks';
@@ -1586,7 +1659,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get mostMissedTitle => 'Most often short';
+  String get mostMissedTitle => 'What you miss most';
 
   @override
   String mostMissedBody(
@@ -1596,6 +1669,51 @@ class AppLocalizationsEn extends AppLocalizations {
     Object total,
   ) {
     return '$nutrient: $total of $minimum on average, on $days days';
+  }
+
+  @override
+  String get mostMissedNone => 'Nothing missing this week. Nice!';
+
+  @override
+  String get bestDayPlaceholder => 'Log your first meal to see your best day';
+
+  @override
+  String get mostMissedPlaceholder =>
+      'We\'ll show here what your meals are short of';
+
+  @override
+  String get mostMissedPartial =>
+      'No gaps so far. Log a full day for a clear picture';
+
+  @override
+  String get energyTitle => 'Where your energy came from';
+
+  @override
+  String get energyEaten => 'What you ate';
+
+  @override
+  String get energyTarget => 'Your target';
+
+  @override
+  String energyShare(String name, String percent) {
+    return '$name $percent%';
+  }
+
+  @override
+  String get mealsWeekTitle => 'Your meals this week';
+
+  @override
+  String get mealsEaten => 'Eaten';
+
+  @override
+  String get mealsSkipped => 'Skipped';
+
+  @override
+  String get mealsNotLogged => 'Not logged';
+
+  @override
+  String withinLimitsDays(String days, String total) {
+    return 'Days within your health limits: $days of $total';
   }
 
   @override
@@ -1920,7 +2038,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remindersIntro =>
-      'All reminders stay off until you turn them on. They arrive at about the set time.';
+      'All reminders stay off until you turn them on. They may arrive a little before or after the set time.';
 
   @override
   String get remindersMeals => 'Meal reminders';
@@ -1956,8 +2074,173 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reminderWaterBody => 'Have a glass of water';
+  String get reminderWaterBody => 'Time for a glass of water';
 
   @override
   String get reminderWeighInBody => 'Time for your weekly weigh-in';
+
+  @override
+  String get caloriesTitle => 'Calories';
+
+  @override
+  String macroOfTarget(String target) {
+    return ' / $target g';
+  }
+
+  @override
+  String get remindersOpen => 'Reminders';
+
+  @override
+  String streakPill(String count) {
+    return '$count-day streak';
+  }
+
+  @override
+  String mealMetaLine(String kcal, String grams) {
+    return '$kcal kcal · ≈ $grams g';
+  }
+
+  @override
+  String waterRemaining(String ml) {
+    return '$ml ml to go';
+  }
+
+  @override
+  String get waterGoalReached => 'Well done! You reached today’s goal';
+
+  @override
+  String get waterSessions => 'Drinking sessions';
+
+  @override
+  String waterSessionsCount(String done, String total) {
+    return '$done of $total';
+  }
+
+  @override
+  String get waterSessionDone => 'Done';
+
+  @override
+  String get waterSessionLater => 'Later';
+
+  @override
+  String get waterSessionTip =>
+      'One glass (about 250 ml) at a time is enough. Spread the rest over your day; there is no need to drink a lot at once.';
+
+  @override
+  String get waterAnyAmount => 'Any amount';
+
+  @override
+  String get waterMlUnit => 'ml';
+
+  @override
+  String planChartTarget(String kcal) {
+    return 'Target $kcal';
+  }
+
+  @override
+  String get adherenceThisWeek => 'Your adherence this week';
+
+  @override
+  String get accountHello => 'Welcome';
+
+  @override
+  String get accountStreakDays => 'days';
+
+  @override
+  String get accountGoal => 'My goal';
+
+  @override
+  String get accountHeightWeight => 'Height and weight';
+
+  @override
+  String get accountActivity => 'Activity';
+
+  @override
+  String get accountCare => 'What we keep in mind';
+
+  @override
+  String get accountAvoid => 'What I avoid';
+
+  @override
+  String get accountDislikes => 'Meals I don’t like';
+
+  @override
+  String get accountRhythm => 'My daily rhythm';
+
+  @override
+  String get accountEditShort => 'Edit';
+
+  @override
+  String accountWakeSleep(String sleep, String wake) {
+    return 'Wake $wake · Sleep $sleep';
+  }
+
+  @override
+  String get accountDisclaimer =>
+      'NutriGuide helps you eat well and does not replace your doctor or dietitian.';
+
+  @override
+  String get genWeekDays => 'Days of the week';
+
+  @override
+  String get onbNameTitle => 'What should we call you?';
+
+  @override
+  String get onbNameSubtitle => 'So we can call you by your name in the app';
+
+  @override
+  String get onbNameHint => 'Your name';
+
+  @override
+  String get onbNameSkip => 'Skip';
+
+  @override
+  String get onbNamePrivacy =>
+      'Optional. It stays on this phone and is never sent to the server.';
+
+  @override
+  String get photoSheetTitle => 'Your photo';
+
+  @override
+  String get photoGallery => 'Choose a photo';
+
+  @override
+  String get photoCamera => 'Take a photo';
+
+  @override
+  String get photoReset => 'Use the drawing';
+
+  @override
+  String get photoPrivacy =>
+      'Your photo stays on this phone and is never uploaded.';
+
+  @override
+  String get photoChange => 'Change your photo';
+
+  @override
+  String greetName(String name) {
+    return 'Have a good day, $name';
+  }
+
+  @override
+  String get accentTitle => 'App colour';
+
+  @override
+  String get accentAuto => 'From my goal';
+
+  @override
+  String get accentEmerald => 'Fresh green';
+
+  @override
+  String get accentTeal => 'Calm teal';
+
+  @override
+  String get accentPlum => 'Warm plum';
+
+  @override
+  String get accentNote =>
+      'The colour follows your goal by default; protein, calorie and water colours never change so their meaning stays clear.';
+
+  @override
+  String get themeTitle => 'Appearance';
 }

@@ -370,7 +370,8 @@ class _MacroCardState extends State<_MacroCard>
                 child: Text(widget.label, style: TextStyle(color: colors.fg2)),
               ),
               Text(
-                '${formatMeasure(context, widget.grams)} ${l10n.onbGrams}',
+                // Whole grams, as on Today and Plan (P2z).
+                '${formatCount(context, widget.grams.round())} ${l10n.onbGrams}',
                 style: colors.numeric.copyWith(
                   fontWeight: FontWeight.w700,
                   fontSize: 18,

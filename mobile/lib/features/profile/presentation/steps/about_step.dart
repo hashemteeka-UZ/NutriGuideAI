@@ -116,7 +116,9 @@ class AboutStep extends ConsumerWidget {
                   selectedIndex: birth.year - firstYear,
                   semanticLabel: l10n.onbAge(age),
                   labelForIndex: (int index) {
-                    return formatCount(context, firstYear + index);
+                    // A year is a label, not a quantity: no grouping
+                    // («1996», never «1,996»).
+                    return formatYear(context, firstYear + index);
                   },
                   onSelected: (int index) {
                     notifier.setBirthDate(

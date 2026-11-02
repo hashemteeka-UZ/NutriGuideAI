@@ -34,6 +34,10 @@ class CachedUser {
     this.sex,
     this.latestWeightKg,
     this.targetWeightKg,
+    this.wakeMinutes,
+    this.sleepMinutes,
+    this.heightCm,
+    this.activityLevel,
   });
 
   /// The goal line of the weight chart (#280).
@@ -52,6 +56,14 @@ class CachedUser {
   /// The default of the weight sheet.
   final double? latestWeightKg;
 
+  /// Wake and sleep times as minutes after midnight (the drinking sessions).
+  final int? wakeMinutes;
+  final int? sleepMinutes;
+
+  /// The account rows (V4).
+  final double? heightCm;
+  final String? activityLevel;
+
   CachedUser copyWith({bool? eligible, bool? hasDislike}) {
     return CachedUser(
       eligible: eligible ?? this.eligible,
@@ -63,6 +75,10 @@ class CachedUser {
       sex: sex,
       latestWeightKg: latestWeightKg,
       targetWeightKg: targetWeightKg,
+      wakeMinutes: wakeMinutes,
+      sleepMinutes: sleepMinutes,
+      heightCm: heightCm,
+      activityLevel: activityLevel,
     );
   }
 }

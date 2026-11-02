@@ -1291,7 +1291,7 @@
       },
       "HealthResponse": {
         "example": {
-          "api_version": "1.1.0",
+          "api_version": "1.2.0",
           "database": "ok",
           "dataset_version": "catalog_v3",
           "default_planner": "cpsat",
@@ -3322,12 +3322,26 @@
       },
       "ShoppingItem": {
         "example": {
-          "grams": 120,
-          "ingredient_id": 18,
+          "category": "الألبان والبيض",
+          "category_code": "0100",
+          "grams": 100,
+          "ingredient_id": 19,
           "meals": 1,
-          "name": "طماطم"
+          "name": "بيض"
         },
         "properties": {
+          "category": {
+            "default": "",
+            "description": "Food group name in the request language (Arabic for lang=ar, English otherwise). Empty when the food has no group. Items are sorted by category_code, then name.",
+            "title": "Category",
+            "type": "string"
+          },
+          "category_code": {
+            "default": "",
+            "description": "USDA SR Legacy food group code of the ingredient's food, for example 1100 for vegetables. Empty when the food has no SR Legacy group. Added in 1.2.0.",
+            "title": "Category Code",
+            "type": "string"
+          },
           "grams": {
             "title": "Grams",
             "type": "number"
@@ -3360,16 +3374,20 @@
           "date_to": "2026-10-20",
           "items": [
             {
-              "grams": 120,
-              "ingredient_id": 18,
-              "meals": 1,
-              "name": "طماطم"
-            },
-            {
+              "category": "الألبان والبيض",
+              "category_code": "0100",
               "grams": 100,
               "ingredient_id": 19,
               "meals": 1,
               "name": "بيض"
+            },
+            {
+              "category": "الخضروات",
+              "category_code": "1100",
+              "grams": 120,
+              "ingredient_id": 18,
+              "meals": 1,
+              "name": "طماطم"
             }
           ]
         },
@@ -4962,7 +4980,7 @@
   },
   "info": {
     "title": "NutriGuideAI API",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -6721,7 +6739,7 @@
     },
     "/api/v1/shopping-list": {
       "get": {
-        "description": "Ingredient grams summed from the current plans in the inclusive range. Optional ingredients are excluded; the meal page lists them. Maximum 31 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
+        "description": "Ingredient grams summed from the current plans in the inclusive range. Optional ingredients are excluded; the meal page lists them. Tap water is excluded. Each item carries its USDA food group (category_code, category); items are sorted by category_code, then name. Maximum 31 days.\nError codes: UNAUTHORIZED, VALIDATION_ERROR",
         "operationId": "get_shopping_list",
         "parameters": [
           {

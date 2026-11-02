@@ -33,6 +33,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.heroMid,
     required this.heroEnd,
     required this.numeric,
+    required this.shadow,
   });
 
   final Color bg;
@@ -66,6 +67,9 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color heroEnd;
   final TextStyle numeric;
 
+  /// Soft card shadow (`--shadow` in the prototype).
+  final Color shadow;
+
   static const light = AppColors(
     bg: Color(0xFFF3F7F5),
     bg2: Color(0xFFE8F1ED),
@@ -97,6 +101,7 @@ class AppColors extends ThemeExtension<AppColors> {
     heroMid: Color(0xFF12B39A),
     heroEnd: Color(0xFF1AA7E0),
     numeric: _numeric,
+    shadow: Color(0x140F281E),
   );
 
   static const dark = AppColors(
@@ -130,6 +135,7 @@ class AppColors extends ThemeExtension<AppColors> {
     heroMid: Color(0xFF0F8C86),
     heroEnd: Color(0xFF1478B8),
     numeric: _numeric,
+    shadow: Color(0x59000000),
   );
 
   static const _numeric = TextStyle(
@@ -176,6 +182,7 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? heroMid,
     Color? heroEnd,
     TextStyle? numeric,
+    Color? shadow,
   }) {
     return AppColors(
       bg: bg ?? this.bg,
@@ -208,6 +215,7 @@ class AppColors extends ThemeExtension<AppColors> {
       heroMid: heroMid ?? this.heroMid,
       heroEnd: heroEnd ?? this.heroEnd,
       numeric: numeric ?? this.numeric,
+      shadow: shadow ?? this.shadow,
     );
   }
 
@@ -247,6 +255,7 @@ class AppColors extends ThemeExtension<AppColors> {
       heroMid: Color.lerp(heroMid, other.heroMid, t)!,
       heroEnd: Color.lerp(heroEnd, other.heroEnd, t)!,
       numeric: TextStyle.lerp(numeric, other.numeric, t)!,
+      shadow: Color.lerp(shadow, other.shadow, t)!,
     );
   }
 }

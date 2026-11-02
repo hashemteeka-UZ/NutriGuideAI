@@ -133,6 +133,56 @@ class WeekBar {
   final DayTone tone;
 }
 
+/// Plan meals of the week (P2e): eaten from the server's consumed count,
+/// skipped from the «لم آكلها» taps kept on the phone, the rest not logged.
+class MealCounts {
+  const MealCounts({
+    required this.planned,
+    required this.eaten,
+    required this.skipped,
+  });
+
+  final int planned;
+  final int eaten;
+  final int skipped;
+
+  int get notLogged => (planned - eaten - skipped).clamp(0, planned);
+}
+
+/// Shares of energy from protein, carbohydrate and fat (0 to 1, summing to
+/// 1), from grams at 4, 4 and 9 kcal per gram.
+class EnergySplit {
+  const EnergySplit({
+    required this.protein,
+    required this.carb,
+    required this.fat,
+  });
+
+  final double protein;
+  final double carb;
+  final double fat;
+}
+
+/// Null when there is no energy at all.
+EnergySplit? energySplit({
+  required double proteinG,
+  required double carbG,
+  required double fatG,
+}) {
+  final protein = proteinG * 4;
+  final carb = carbG * 4;
+  final fat = fatG * 9;
+  final total = protein + carb + fat;
+  if (total <= 0) {
+    return null;
+  }
+  return EnergySplit(
+    protein: protein / total,
+    carb: carb / total,
+    fat: fat / total,
+  );
+}
+
 class WeekReport {
   const WeekReport({
     required this.dates,
@@ -140,6 +190,9 @@ class WeekReport {
     required this.achieved,
     required this.counted,
     required this.empty,
+    this.loggedDays = 0,
+    this.withinLimitsDays = 0,
+    this.meals = const MealCounts(planned: 0, eaten: 0, skipped: 0),
     this.targetKcal,
     this.bestDay,
     this.mostMissed,
@@ -160,6 +213,14 @@ class WeekReport {
 
   /// No day of the week has a log.
   final bool empty;
+
+  /// Days with at least one log.
+  final int loggedDays;
+
+  /// Logged days without an exceeded health limit.
+  final int withinLimitsDays;
+
+  final MealCounts meals;
 
   /// The target line of the chart: the latest server target in the week.
   final double? targetKcal;
@@ -192,6 +253,7 @@ WeekReport weekReport({
   required List<String> dates,
   required Map<String, AdherenceDay> days,
   Map<String, int> waterByDate = const <String, int>{},
+  int skippedMeals = 0,
 }) {
   final week = <AdherenceDay>[
     for (final date in dates)
@@ -215,20 +277,29 @@ WeekReport weekReport({
     target = day.targetKcal ?? target;
   }
 
-  BestDay? best;
-  for (final day in logged) {
-    final kcal = day.kcal;
-    final goal = day.targetKcal;
-    if (day.status != 'ACHIEVED' || kcal == null || goal == null || goal <= 0) {
-      continue;
+  // An ACHIEVED day first; otherwise any logged day, so the card shows as
+  // soon as one day is logged (P2e). Closest to its own target wins.
+  BestDay? closest(bool Function(AdherenceDay day) eligible) {
+    BestDay? best;
+    for (final day in logged) {
+      final kcal = day.kcal;
+      final goal = day.targetKcal;
+      if (!eligible(day) || kcal == null || goal == null || goal <= 0) {
+        continue;
+      }
+      final gap = (kcal - goal).abs();
+      final current = best;
+      if (current == null ||
+          gap < (current.day.kcal! - current.day.targetKcal!).abs()) {
+        best = BestDay(day: day, percentOfTarget: kcal / goal * 100);
+      }
     }
-    final gap = (kcal - goal).abs();
-    final current = best;
-    if (current == null ||
-        gap < (current.day.kcal! - current.day.targetKcal!).abs()) {
-      best = BestDay(day: day, percentOfTarget: kcal / goal * 100);
-    }
+    return best;
   }
+
+  final best =
+      closest((AdherenceDay day) => day.status == 'ACHIEVED') ??
+      closest((AdherenceDay day) => true);
 
   final missedCounts = <String, List<MinimumAmount>>{};
   for (final day in logged) {
@@ -319,6 +390,21 @@ WeekReport weekReport({
     achieved: achieved,
     counted: counted,
     empty: logged.isEmpty,
+    loggedDays: logged.length,
+    withinLimitsDays: logged
+        .where((AdherenceDay day) => day.exceeded.isEmpty)
+        .length,
+    meals: MealCounts(
+      planned: week.fold(
+        0,
+        (int sum, AdherenceDay d) => sum + d.planItemsTotal,
+      ),
+      eaten: week.fold(
+        0,
+        (int sum, AdherenceDay d) => sum + d.planItemsConsumed,
+      ),
+      skipped: skippedMeals,
+    ),
     targetKcal: target,
     bestDay: best,
     mostMissed: missed,

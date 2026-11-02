@@ -235,6 +235,17 @@ class ProgressRepository {
     );
   }
 
+  /// «لم آكلها» taps kept on the phone for dates [from]..[to] (P2e).
+  Stream<int> watchSkips(String from, String to) {
+    final query = _database.select(_database.progressMeta)
+      ..where(
+        (t) =>
+            t.key.isBiggerOrEqualValue('skip:$from') &
+            t.key.isSmallerOrEqualValue('skip:$to:~'),
+      );
+    return query.watch().map((List<db.ProgressMetaData> rows) => rows.length);
+  }
+
   /// Confirmed water per date that has any, from the local glasses.
   Stream<Map<String, int>> watchWater(String from, String to) {
     final query = _database.select(_database.waterLogs)

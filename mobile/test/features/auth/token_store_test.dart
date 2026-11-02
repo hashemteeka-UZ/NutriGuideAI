@@ -12,6 +12,7 @@ void main() {
       refreshToken: 'refresh',
       accessExpiry: expiry,
       hasProfile: true,
+      email: 'ahmed@demo.ly',
     );
     await SecureTokenStore(storage).save(saved);
 
@@ -21,6 +22,7 @@ void main() {
     expect(loaded?.refreshToken, 'refresh');
     expect(loaded?.accessExpiry, expiry);
     expect(loaded?.hasProfile, isTrue);
+    expect(loaded?.email, 'ahmed@demo.ly');
     expect(storage.values.keys, containsAll(SecureTokenStore.keys));
   });
 
@@ -59,5 +61,25 @@ void main() {
 
     expect(store.current, isNull);
     expect(storage.values, <String, String>{'other': 'keep'});
+  });
+
+  test('the account email survives a restart and a token refresh', () async {
+    final storage = MemorySecure();
+    final store = SecureTokenStore(storage);
+    await store.save(
+      AuthTokens(
+        accessToken: 'access',
+        refreshToken: 'refresh',
+        accessExpiry: DateTime.utc(2026, 11, 2),
+        hasProfile: true,
+      ),
+    );
+    await store.updateEmail('sara@demo.ly');
+
+    final restarted = await SecureTokenStore(storage).read();
+    expect(restarted?.email, 'sara@demo.ly');
+
+    await store.save(restarted!.copyWith(accessToken: 'access-2'));
+    expect((await SecureTokenStore(storage).read())?.email, 'sara@demo.ly');
   });
 }

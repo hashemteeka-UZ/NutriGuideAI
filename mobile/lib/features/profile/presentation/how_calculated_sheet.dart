@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/bidi.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ui/motion.dart';
 import '../domain/profile_result.dart';
 import 'format_number.dart';
 
@@ -13,7 +14,7 @@ Future<void> showHowCalculated(
 }) {
   final lines = calculationLines(target: target, goalType: goalType);
   final colors = context.appColors;
-  return showModalBottomSheet<void>(
+  return showAppSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,

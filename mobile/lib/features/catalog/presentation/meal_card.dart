@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/ui/emoji.dart';
+import '../../../core/ui/motion.dart';
 import '../domain/meal.dart';
 import 'format_amount.dart';
 
@@ -22,7 +23,8 @@ class MealCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
-    final kcal = formatAmount(context, meal.kcal);
+    // Whole kcal, as on Today and Plan (P2z).
+    final kcal = formatAmount(context, meal.kcal.round());
     final protein = formatAmount(context, meal.proteinG);
     final label = <String>[
       meal.name,
@@ -58,7 +60,10 @@ class MealCard extends StatelessWidget {
                     color: colors.surface2,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Emoji(meal.iconName, size: 36),
+                  child: Hero(
+                    tag: catalogMealHeroTag(meal.mealId),
+                    child: Emoji(meal.iconName, size: 36),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

@@ -31,6 +31,9 @@ void main() {
       await pumpNutriguide(tester, auth: auth, profile: profile);
 
       expect(find.text('عرّفنا بنفسك'), findsOneWidget);
+      // Years read «1996», never «1,996» (P2z).
+      expect(find.textContaining(RegExp(r'^1[,٬]9')), findsNothing);
+      expect(find.textContaining(RegExp(r'^19\d\d$')), findsWidgets);
       await tester.tap(find.byKey(const Key('onb-sex-FEMALE')));
       await tester.pump();
       await _next(tester);

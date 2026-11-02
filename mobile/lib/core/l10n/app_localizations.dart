@@ -689,7 +689,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbBmiExplainBody.
   ///
   /// In ar, this message translates to:
-  /// **'رقم تقريبي من الوزن والطول (الوزن ÷ مربع الطول بالمتر). نستخدمه كمؤشر عام فقط، ولا يقيس نسبة الدهون أو العضلات.'**
+  /// **'رقم تقريبي من الوزن والطول (الوزن ÷ مربع الطول بالمتر). نستخدمه دليلًا عامًا فقط، فهو لا يقيس الدهون ولا العضلات.'**
   String get onbBmiExplainBody;
 
   /// No description provided for @onbGoalTitle.
@@ -713,7 +713,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbGoalLoseBody.
   ///
   /// In ar, this message translates to:
-  /// **'عجز معتدل وآمن في السعرات'**
+  /// **'سعرات أقل قليلًا من احتياجك، بوتيرة معتدلة'**
   String get onbGoalLoseBody;
 
   /// No description provided for @onbGoalMaintain.
@@ -725,7 +725,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbGoalMaintainBody.
   ///
   /// In ar, this message translates to:
-  /// **'أكل متوازن يحافظ على طاقتك'**
+  /// **'سعرات على قدر احتياجك لتحافظ على وزنك'**
   String get onbGoalMaintainBody;
 
   /// No description provided for @onbGoalGain.
@@ -737,7 +737,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbGoalGainBody.
   ///
   /// In ar, this message translates to:
-  /// **'فائض مدروس في السعرات'**
+  /// **'سعرات أكثر قليلًا من احتياجك، بوتيرة هادئة'**
   String get onbGoalGainBody;
 
   /// No description provided for @onbLoseUnavailable.
@@ -827,13 +827,13 @@ abstract class AppLocalizations {
   /// No description provided for @onbRateUnavailable.
   ///
   /// In ar, this message translates to:
-  /// **'غير متاحة لوزنك الحالي (أكثر من 1% أسبوعيًا)'**
+  /// **'غير متاحة لوزنك الآن: أسرع من 1% من وزنك في الأسبوع'**
   String get onbRateUnavailable;
 
   /// No description provided for @onbGainCap.
   ///
   /// In ar, this message translates to:
-  /// **'الحد الآمن للزيادة نصف كغ أسبوعيًا'**
+  /// **'نجعل الزيادة نصف كغ في الأسبوع على الأكثر'**
   String get onbGainCap;
 
   /// No description provided for @onbArrival.
@@ -917,7 +917,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbActivityTip.
   ///
   /// In ar, this message translates to:
-  /// **'{sex, select, FEMALE{نشاطكِ يحدد كم تحرقين يوميًا. إن ترددتِ بين خيارين، اختاري الأقل لتكون الخطة أدق.} other{نشاطك يحدد كم تحرق يوميًا. إن ترددت بين خيارين، اختر الأقل لتكون الخطة أدق.}}'**
+  /// **'{sex, select, FEMALE{نشاطكِ يحدد كم تحرقين في يومكِ. إن احترتِ بين خيارين، فاختاري الأقل.} other{نشاطك يحدد كم تحرق في يومك. إن احترت بين خيارين، فاختر الأقل.}}'**
   String onbActivityTip(String sex);
 
   /// No description provided for @onbCareTitle.
@@ -959,7 +959,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbCareHeartBody.
   ///
   /// In ar, this message translates to:
-  /// **'دهون صحية وملح أقل'**
+  /// **'دهون مشبعة أقل وملح أقل'**
   String get onbCareHeartBody;
 
   /// No description provided for @onbCareExplainTitle.
@@ -971,7 +971,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbCareExplainBody.
   ///
   /// In ar, this message translates to:
-  /// **'NutriGuide لا يعالج أي حالة، ولا يغني عن طبيبك. هو فقط يتجنب في خطتك ما قد لا يناسبك، مثل الملح الزائد أو السكريات، حسب توصيات منظمة الصحة العالمية وجمعيات الصحة.'**
+  /// **'NutriGuide لا يعالج أي حالة ولا يغني عن طبيبك. كل ما يفعله أنه يُبعد عن خطتك ما قد لا يناسبك، مثل الملح الزائد أو السكر، وفق إرشادات منظمة الصحة العالمية والجمعيات الطبية.'**
   String get onbCareExplainBody;
 
   /// No description provided for @onbAllergyTitle.
@@ -1043,7 +1043,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbWhyAskBody.
   ///
   /// In ar, this message translates to:
-  /// **'استخدام الإنسولين يحتاج تخطيط الكربوهيدرات مرتبطًا بالجرعات، وهذا لا يغطيه التطبيق، فيُستخدم الوضع العام.'**
+  /// **'مع الإنسولين يُطابَق نصيب كل وجبة من الكربوهيدرات مع الجرعة، وهذا لا يقدمه التطبيق، لذلك نستخدم الوضع العام.'**
   String get onbWhyAskBody;
 
   /// No description provided for @onbRhythmTitle.
@@ -1271,7 +1271,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbHowDeficitBody.
   ///
   /// In ar, this message translates to:
-  /// **'هذا الفرق الذي نخصمه من احتياجك حتى ينخفض الوزن بالسرعة التي اخترتها.'**
+  /// **'هذا ما ننقصه من احتياجك لينزل وزنك بالوتيرة التي اخترتها.'**
   String get onbHowDeficitBody;
 
   /// No description provided for @onbHowSurplusTitle.
@@ -1283,7 +1283,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbHowSurplusBody.
   ///
   /// In ar, this message translates to:
-  /// **'هذه الزيادة فوق احتياجك حتى يرتفع الوزن بالسرعة التي اخترتها.'**
+  /// **'هذا ما نزيده على احتياجك ليرتفع وزنك بالوتيرة التي اخترتها.'**
   String get onbHowSurplusBody;
 
   /// No description provided for @onbHowFloorTitle.
@@ -1295,7 +1295,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbHowFloorBody.
   ///
   /// In ar, this message translates to:
-  /// **'الخطة لا تنزل تحت حد أدنى آمن، لذلك رفعنا السعرات إليه.'**
+  /// **'لا تنزل خطتك عن حد أدنى من السعرات، لذلك رفعناها إليه.'**
   String get onbHowFloorBody;
 
   /// No description provided for @onbHowDailyTitle.
@@ -1337,7 +1337,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbReasonGeneric.
   ///
   /// In ar, this message translates to:
-  /// **'وضعك يحتاج تقديرًا لا تغطيه الخطة الشخصية.'**
+  /// **'وضعك يحتاج حسابًا لا تغطيه الخطة الشخصية.'**
   String get onbReasonGeneric;
 
   /// No description provided for @onbCanDo.
@@ -1571,7 +1571,7 @@ abstract class AppLocalizations {
   /// No description provided for @mealFavouritesHint.
   ///
   /// In ar, this message translates to:
-  /// **'يقترحها المحرك أكثر في خطتك'**
+  /// **'نقترحها لك أكثر في خطتك'**
   String get mealFavouritesHint;
 
   /// No description provided for @mealDislikesTitle.
@@ -1589,7 +1589,7 @@ abstract class AppLocalizations {
   /// No description provided for @mealFavouritesEmpty.
   ///
   /// In ar, this message translates to:
-  /// **'لا توجد بعد. اضغط القلب في أي وجبة.'**
+  /// **'لا مفضلات بعد. اضغط القلب على أي وجبة تعجبك.'**
   String get mealFavouritesEmpty;
 
   /// No description provided for @mealDislikesEmpty.
@@ -1871,7 +1871,7 @@ abstract class AppLocalizations {
   /// No description provided for @generalBody.
   ///
   /// In ar, this message translates to:
-  /// **'تسجل أكلك وماءك وترى تقدمك. لا توجد خطة سعرات شخصية.'**
+  /// **'تسجّل أكلك وماءك وترى تقدمك، دون خطة سعرات شخصية.'**
   String get generalBody;
 
   /// No description provided for @healthyTitle.
@@ -2213,13 +2213,13 @@ abstract class AppLocalizations {
   /// No description provided for @favouritesCount.
   ///
   /// In ar, this message translates to:
-  /// **'{count} وجبات'**
+  /// **'{count, plural, =0{لا وجبات} =1{وجبة واحدة} =2{وجبتان} few{{count} وجبات} other{{count} وجبة}}'**
   String favouritesCount(int count);
 
   /// No description provided for @shopInMeals.
   ///
   /// In ar, this message translates to:
-  /// **'في {count} وجبات'**
+  /// **'{count, plural, =1{في وجبة واحدة} =2{في وجبتين} few{في {count} وجبات} other{في {count} وجبة}}'**
   String shopInMeals(int count);
 
   /// No description provided for @shopNeedsNet.
@@ -2251,6 +2251,108 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'مشاركة'**
   String get shopShare;
+
+  /// No description provided for @shopSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'محسوبة من وجبات خطتك'**
+  String get shopSubtitle;
+
+  /// No description provided for @shopScopePlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة كاملة'**
+  String get shopScopePlan;
+
+  /// No description provided for @shopScopeToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم'**
+  String get shopScopeToday;
+
+  /// No description provided for @shopScopeMeal.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوجبة الحالية'**
+  String get shopScopeMeal;
+
+  /// No description provided for @shopMealNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبتك الآن'**
+  String get shopMealNow;
+
+  /// No description provided for @shopMealNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبتك القادمة'**
+  String get shopMealNext;
+
+  /// No description provided for @shopAllItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'المشتريات'**
+  String get shopAllItems;
+
+  /// No description provided for @shopGroupCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'({count})'**
+  String shopGroupCount(int count);
+
+  /// No description provided for @shopBought.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشتريتها ({count})'**
+  String shopBought(int count);
+
+  /// No description provided for @shopMarked.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقلناها إلى «اشتريتها»'**
+  String get shopMarked;
+
+  /// No description provided for @shopUndo.
+  ///
+  /// In ar, this message translates to:
+  /// **'تراجع'**
+  String get shopUndo;
+
+  /// No description provided for @shopEmptyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا مشتريات هنا'**
+  String get shopEmptyTitle;
+
+  /// No description provided for @shopEmptyPlan.
+  ///
+  /// In ar, this message translates to:
+  /// **'حين تُبنى خطتك ستظهر مكوناتها هنا.'**
+  String get shopEmptyPlan;
+
+  /// No description provided for @shopEmptyToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا وجبات في خطة اليوم بعد.'**
+  String get shopEmptyToday;
+
+  /// No description provided for @shopEmptyMeal.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا وجبة الآن ولا وجبة قادمة اليوم.'**
+  String get shopEmptyMeal;
+
+  /// No description provided for @shopAllBought.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشتريت كل شيء هنا. أحسنت!'**
+  String get shopAllBought;
+
+  /// No description provided for @shopItemSemantics.
+  ///
+  /// In ar, this message translates to:
+  /// **'{name}، {quantity}'**
+  String shopItemSemantics(String name, String quantity);
 
   /// No description provided for @chartNoPlan.
   ///
@@ -2339,7 +2441,7 @@ abstract class AppLocalizations {
   /// No description provided for @missedBody.
   ///
   /// In ar, this message translates to:
-  /// **'هل أكلتها؟ سجلها الآن حتى يبقى يومك دقيقًا'**
+  /// **'هل أكلتها؟ سجّلها الآن ليبقى يومك صحيحًا'**
   String get missedBody;
 
   /// No description provided for @missedAction.
@@ -2495,7 +2597,7 @@ abstract class AppLocalizations {
   /// No description provided for @waterLargeTip.
   ///
   /// In ar, this message translates to:
-  /// **'كمية كبيرة لمرة واحدة، يمكنك تقسيمها على مرتين.'**
+  /// **'هذه كمية كبيرة دفعة واحدة. الأريح أن تقسمها على مرتين.'**
   String get waterLargeTip;
 
   /// No description provided for @waterTodayList.
@@ -2783,7 +2885,7 @@ abstract class AppLocalizations {
   /// No description provided for @mostMissedTitle.
   ///
   /// In ar, this message translates to:
-  /// **'أكثر ما نقصك'**
+  /// **'أكثر ما ينقصك'**
   String get mostMissedTitle;
 
   /// No description provided for @mostMissedBody.
@@ -2796,6 +2898,84 @@ abstract class AppLocalizations {
     Object nutrient,
     Object total,
   );
+
+  /// No description provided for @mostMissedNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا شيء ناقص هذا الأسبوع. أحسنت!'**
+  String get mostMissedNone;
+
+  /// No description provided for @bestDayPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل أول وجبة لنعرف أفضل أيامك'**
+  String get bestDayPlaceholder;
+
+  /// No description provided for @mostMissedPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنعرض هنا ما ينقص أكلك'**
+  String get mostMissedPlaceholder;
+
+  /// No description provided for @mostMissedPartial.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يظهر نقص بعد. سجّل يومًا كاملًا لتتضح الصورة'**
+  String get mostMissedPartial;
+
+  /// No description provided for @energyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'توزيع طاقتك'**
+  String get energyTitle;
+
+  /// No description provided for @energyEaten.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما أكلته'**
+  String get energyEaten;
+
+  /// No description provided for @energyTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدفك'**
+  String get energyTarget;
+
+  /// No description provided for @energyShare.
+  ///
+  /// In ar, this message translates to:
+  /// **'{name} {percent}%'**
+  String energyShare(String name, String percent);
+
+  /// No description provided for @mealsWeekTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجباتك هذا الأسبوع'**
+  String get mealsWeekTitle;
+
+  /// No description provided for @mealsEaten.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكلتها'**
+  String get mealsEaten;
+
+  /// No description provided for @mealsSkipped.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تأكلها'**
+  String get mealsSkipped;
+
+  /// No description provided for @mealsNotLogged.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تُسجَّل'**
+  String get mealsNotLogged;
+
+  /// No description provided for @withinLimitsDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'أيام ضمن حدودك الصحية: {days} من {total}'**
+  String withinLimitsDays(String days, String total);
 
   /// No description provided for @waterAvgTitle.
   ///
@@ -3370,7 +3550,7 @@ abstract class AppLocalizations {
   /// No description provided for @remindersIntro.
   ///
   /// In ar, this message translates to:
-  /// **'كل التذكيرات متوقفة حتى تفعّلها. تصل في وقت تقريبي.'**
+  /// **'كل التذكيرات متوقفة حتى تشغّلها، وقد تصل قبل موعدها أو بعده بقليل.'**
   String get remindersIntro;
 
   /// No description provided for @remindersMeals.
@@ -3436,7 +3616,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderWaterBody.
   ///
   /// In ar, this message translates to:
-  /// **'اشرب كوب ماء'**
+  /// **'وقت كوب ماء'**
   String get reminderWaterBody;
 
   /// No description provided for @reminderWeighInBody.
@@ -3444,6 +3624,294 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'وقت وزنك الأسبوعي'**
   String get reminderWeighInBody;
+
+  /// No description provided for @caloriesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعرات'**
+  String get caloriesTitle;
+
+  /// No description provided for @macroOfTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **' / {target} غ'**
+  String macroOfTarget(String target);
+
+  /// No description provided for @remindersOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'التذكيرات'**
+  String get remindersOpen;
+
+  /// No description provided for @streakPill.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} أيام متتالية'**
+  String streakPill(String count);
+
+  /// No description provided for @mealMetaLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'{kcal} سعرة · ≈ {grams} غ'**
+  String mealMetaLine(String kcal, String grams);
+
+  /// No description provided for @waterRemaining.
+  ///
+  /// In ar, this message translates to:
+  /// **'متبقٍ {ml} مل'**
+  String waterRemaining(String ml);
+
+  /// No description provided for @waterGoalReached.
+  ///
+  /// In ar, this message translates to:
+  /// **'أحسنت! وصلت هدفك اليوم'**
+  String get waterGoalReached;
+
+  /// No description provided for @waterSessions.
+  ///
+  /// In ar, this message translates to:
+  /// **'جلسات الشرب'**
+  String get waterSessions;
+
+  /// No description provided for @waterSessionsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{done} من {total}'**
+  String waterSessionsCount(String done, String total);
+
+  /// No description provided for @waterSessionDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت'**
+  String get waterSessionDone;
+
+  /// No description provided for @waterSessionLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقًا'**
+  String get waterSessionLater;
+
+  /// No description provided for @waterSessionTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'كوب واحد (نحو 250 مل) في كل مرة يكفي. وزّع الباقي على يومك، ولا حاجة لشرب كمية كبيرة دفعة واحدة.'**
+  String get waterSessionTip;
+
+  /// No description provided for @waterAnyAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي كمية'**
+  String get waterAnyAmount;
+
+  /// No description provided for @waterMlUnit.
+  ///
+  /// In ar, this message translates to:
+  /// **'مل'**
+  String get waterMlUnit;
+
+  /// No description provided for @planChartTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف {kcal}'**
+  String planChartTarget(String kcal);
+
+  /// No description provided for @adherenceThisWeek.
+  ///
+  /// In ar, this message translates to:
+  /// **'التزامك هذا الأسبوع'**
+  String get adherenceThisWeek;
+
+  /// No description provided for @accountHello.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلًا بك'**
+  String get accountHello;
+
+  /// No description provided for @accountStreakDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'أيام'**
+  String get accountStreakDays;
+
+  /// No description provided for @accountGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدفي'**
+  String get accountGoal;
+
+  /// No description provided for @accountHeightWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول والوزن'**
+  String get accountHeightWeight;
+
+  /// No description provided for @accountActivity.
+  ///
+  /// In ar, this message translates to:
+  /// **'نشاطي'**
+  String get accountActivity;
+
+  /// No description provided for @accountCare.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما نراعيه في أكلي'**
+  String get accountCare;
+
+  /// No description provided for @accountAvoid.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما أتجنبه'**
+  String get accountAvoid;
+
+  /// No description provided for @accountDislikes.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجبات لا أحبها'**
+  String get accountDislikes;
+
+  /// No description provided for @accountRhythm.
+  ///
+  /// In ar, this message translates to:
+  /// **'مواعيد يومي'**
+  String get accountRhythm;
+
+  /// No description provided for @accountEditShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل'**
+  String get accountEditShort;
+
+  /// No description provided for @accountWakeSleep.
+  ///
+  /// In ar, this message translates to:
+  /// **'أستيقظ {wake} · أنام {sleep}'**
+  String accountWakeSleep(String sleep, String wake);
+
+  /// No description provided for @accountDisclaimer.
+  ///
+  /// In ar, this message translates to:
+  /// **'NutriGuide يساعدك على الأكل الصحي ولا يغني عن استشارة طبيبك أو أخصائي التغذية.'**
+  String get accountDisclaimer;
+
+  /// No description provided for @genWeekDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'أيام الأسبوع'**
+  String get genWeekDays;
+
+  /// No description provided for @onbNameTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا نناديك؟'**
+  String get onbNameTitle;
+
+  /// No description provided for @onbNameSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لنناديك باسمك داخل التطبيق'**
+  String get onbNameSubtitle;
+
+  /// No description provided for @onbNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسمك'**
+  String get onbNameHint;
+
+  /// No description provided for @onbNameSkip.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخطي'**
+  String get onbNameSkip;
+
+  /// No description provided for @onbNamePrivacy.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختياري، ويبقى على هاتفك فقط ولا يُرسل إلى الخادم.'**
+  String get onbNamePrivacy;
+
+  /// No description provided for @photoSheetTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورتك'**
+  String get photoSheetTitle;
+
+  /// No description provided for @photoGallery.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر صورة'**
+  String get photoGallery;
+
+  /// No description provided for @photoCamera.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقط صورة'**
+  String get photoCamera;
+
+  /// No description provided for @photoReset.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم الرسمة'**
+  String get photoReset;
+
+  /// No description provided for @photoPrivacy.
+  ///
+  /// In ar, this message translates to:
+  /// **'تبقى صورتك على هاتفك فقط ولا تُرفع إلى الخادم.'**
+  String get photoPrivacy;
+
+  /// No description provided for @photoChange.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير صورتك'**
+  String get photoChange;
+
+  /// No description provided for @greetName.
+  ///
+  /// In ar, this message translates to:
+  /// **'نهارك سعيد، {name}'**
+  String greetName(String name);
+
+  /// No description provided for @accentTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لون التطبيق'**
+  String get accentTitle;
+
+  /// No description provided for @accentAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب هدفي'**
+  String get accentAuto;
+
+  /// No description provided for @accentEmerald.
+  ///
+  /// In ar, this message translates to:
+  /// **'أخضر منعش'**
+  String get accentEmerald;
+
+  /// No description provided for @accentTeal.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيروزي هادئ'**
+  String get accentTeal;
+
+  /// No description provided for @accentPlum.
+  ///
+  /// In ar, this message translates to:
+  /// **'برقوقي دافئ'**
+  String get accentPlum;
+
+  /// No description provided for @accentNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'يتبع اللون هدفك تلقائيًا. أما ألوان السعرات والبروتين والماء فثابتة دائمًا حتى لا تختلط عليك.'**
+  String get accentNote;
+
+  /// No description provided for @themeTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'المظهر'**
+  String get themeTitle;
 }
 
 class _AppLocalizationsDelegate

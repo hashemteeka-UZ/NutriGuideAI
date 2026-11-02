@@ -329,7 +329,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onbBmiExplainBody =>
-      'رقم تقريبي من الوزن والطول (الوزن ÷ مربع الطول بالمتر). نستخدمه كمؤشر عام فقط، ولا يقيس نسبة الدهون أو العضلات.';
+      'رقم تقريبي من الوزن والطول (الوزن ÷ مربع الطول بالمتر). نستخدمه دليلًا عامًا فقط، فهو لا يقيس الدهون ولا العضلات.';
 
   @override
   String onbGoalTitle(String sex) {
@@ -347,19 +347,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onbGoalLose => 'إنقاص الوزن';
 
   @override
-  String get onbGoalLoseBody => 'عجز معتدل وآمن في السعرات';
+  String get onbGoalLoseBody => 'سعرات أقل قليلًا من احتياجك، بوتيرة معتدلة';
 
   @override
   String get onbGoalMaintain => 'المحافظة على وزني';
 
   @override
-  String get onbGoalMaintainBody => 'أكل متوازن يحافظ على طاقتك';
+  String get onbGoalMaintainBody => 'سعرات على قدر احتياجك لتحافظ على وزنك';
 
   @override
   String get onbGoalGain => 'زيادة الوزن';
 
   @override
-  String get onbGoalGainBody => 'فائض مدروس في السعرات';
+  String get onbGoalGainBody => 'سعرات أكثر قليلًا من احتياجك، بوتيرة هادئة';
 
   @override
   String get onbLoseUnavailable => 'لا نقترح هدفًا أقل من الوزن الطبيعي لطولك';
@@ -423,10 +423,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onbRateUnavailable =>
-      'غير متاحة لوزنك الحالي (أكثر من 1% أسبوعيًا)';
+      'غير متاحة لوزنك الآن: أسرع من 1% من وزنك في الأسبوع';
 
   @override
-  String get onbGainCap => 'الحد الآمن للزيادة نصف كغ أسبوعيًا';
+  String get onbGainCap => 'نجعل الزيادة نصف كغ في الأسبوع على الأكثر';
 
   @override
   String onbArrival(String sex, String weight, String weeks, String when) {
@@ -488,8 +488,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String onbActivityTip(String sex) {
     String _temp0 = intl.Intl.selectLogic(sex, {
-      'FEMALE': 'نشاطكِ يحدد كم تحرقين يوميًا. إن ترددتِ بين خيارين، اختاري الأقل لتكون الخطة أدق.',
-      'other': 'نشاطك يحدد كم تحرق يوميًا. إن ترددت بين خيارين، اختر الأقل لتكون الخطة أدق.',
+      'FEMALE': 'نشاطكِ يحدد كم تحرقين في يومكِ. إن احترتِ بين خيارين، فاختاري الأقل.',
+      'other': 'نشاطك يحدد كم تحرق في يومك. إن احترت بين خيارين، فاختر الأقل.',
     });
     return '$_temp0';
   }
@@ -525,14 +525,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onbCarePressureBody => 'ملح أقل في وجباتك اليومية';
 
   @override
-  String get onbCareHeartBody => 'دهون صحية وملح أقل';
+  String get onbCareHeartBody => 'دهون مشبعة أقل وملح أقل';
 
   @override
   String get onbCareExplainTitle => 'كيف نراعي ذلك؟';
 
   @override
   String get onbCareExplainBody =>
-      'NutriGuide لا يعالج أي حالة، ولا يغني عن طبيبك. هو فقط يتجنب في خطتك ما قد لا يناسبك، مثل الملح الزائد أو السكريات، حسب توصيات منظمة الصحة العالمية وجمعيات الصحة.';
+      'NutriGuide لا يعالج أي حالة ولا يغني عن طبيبك. كل ما يفعله أنه يُبعد عن خطتك ما قد لا يناسبك، مثل الملح الزائد أو السكر، وفق إرشادات منظمة الصحة العالمية والجمعيات الطبية.';
 
   @override
   String onbAllergyTitle(String sex) {
@@ -594,7 +594,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onbWhyAskBody =>
-      'استخدام الإنسولين يحتاج تخطيط الكربوهيدرات مرتبطًا بالجرعات، وهذا لا يغطيه التطبيق، فيُستخدم الوضع العام.';
+      'مع الإنسولين يُطابَق نصيب كل وجبة من الكربوهيدرات مع الجرعة، وهذا لا يقدمه التطبيق، لذلك نستخدم الوضع العام.';
 
   @override
   String onbRhythmTitle(String sex) {
@@ -727,21 +727,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onbHowDeficitBody =>
-      'هذا الفرق الذي نخصمه من احتياجك حتى ينخفض الوزن بالسرعة التي اخترتها.';
+      'هذا ما ننقصه من احتياجك لينزل وزنك بالوتيرة التي اخترتها.';
 
   @override
   String get onbHowSurplusTitle => '+ فائض الزيادة';
 
   @override
   String get onbHowSurplusBody =>
-      'هذه الزيادة فوق احتياجك حتى يرتفع الوزن بالسرعة التي اخترتها.';
+      'هذا ما نزيده على احتياجك ليرتفع وزنك بالوتيرة التي اخترتها.';
 
   @override
   String get onbHowFloorTitle => 'رفعنا السعرات إلى الحد الأدنى الآمن';
 
   @override
   String get onbHowFloorBody =>
-      'الخطة لا تنزل تحت حد أدنى آمن، لذلك رفعنا السعرات إليه.';
+      'لا تنزل خطتك عن حد أدنى من السعرات، لذلك رفعناها إليه.';
 
   @override
   String get onbHowDailyTitle => 'هدفك اليومي';
@@ -765,7 +765,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'استخدام الإنسولين يحتاج تخطيطًا مع طبيبك لا يغطيه التطبيق';
 
   @override
-  String get onbReasonGeneric => 'وضعك يحتاج تقديرًا لا تغطيه الخطة الشخصية.';
+  String get onbReasonGeneric => 'وضعك يحتاج حسابًا لا تغطيه الخطة الشخصية.';
 
   @override
   String get onbCanDo => 'ماذا يمكنك أن تفعل؟';
@@ -895,7 +895,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mealFavouritesTitle => 'وجباتي المفضلة';
 
   @override
-  String get mealFavouritesHint => 'يقترحها المحرك أكثر في خطتك';
+  String get mealFavouritesHint => 'نقترحها لك أكثر في خطتك';
 
   @override
   String get mealDislikesTitle => 'لا أحبها';
@@ -904,7 +904,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mealDislikesHint => 'لن تظهر في خطتك';
 
   @override
-  String get mealFavouritesEmpty => 'لا توجد بعد. اضغط القلب في أي وجبة.';
+  String get mealFavouritesEmpty =>
+      'لا مفضلات بعد. اضغط القلب على أي وجبة تعجبك.';
 
   @override
   String get mealDislikesEmpty => 'لا توجد.';
@@ -1050,8 +1051,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get generalTitle => 'الوضع العام';
 
   @override
-  String get generalBody =>
-      'تسجل أكلك وماءك وترى تقدمك. لا توجد خطة سعرات شخصية.';
+  String get generalBody => 'تسجّل أكلك وماءك وترى تقدمك، دون خطة سعرات شخصية.';
 
   @override
   String get healthyTitle => 'وجبات صحية لتجربتها';
@@ -1244,12 +1244,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String favouritesCount(int count) {
-    return '$count وجبات';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count وجبة',
+      few: '$count وجبات',
+      two: 'وجبتان',
+      one: 'وجبة واحدة',
+      zero: 'لا وجبات',
+    );
+    return '$_temp0';
   }
 
   @override
   String shopInMeals(int count) {
-    return 'في $count وجبات';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'في $count وجبة',
+      few: 'في $count وجبات',
+      two: 'في وجبتين',
+      one: 'في وجبة واحدة',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1272,6 +1289,63 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get shopShare => 'مشاركة';
+
+  @override
+  String get shopSubtitle => 'محسوبة من وجبات خطتك';
+
+  @override
+  String get shopScopePlan => 'الخطة كاملة';
+
+  @override
+  String get shopScopeToday => 'اليوم';
+
+  @override
+  String get shopScopeMeal => 'الوجبة الحالية';
+
+  @override
+  String get shopMealNow => 'وجبتك الآن';
+
+  @override
+  String get shopMealNext => 'وجبتك القادمة';
+
+  @override
+  String get shopAllItems => 'المشتريات';
+
+  @override
+  String shopGroupCount(int count) {
+    return '($count)';
+  }
+
+  @override
+  String shopBought(int count) {
+    return 'اشتريتها ($count)';
+  }
+
+  @override
+  String get shopMarked => 'نقلناها إلى «اشتريتها»';
+
+  @override
+  String get shopUndo => 'تراجع';
+
+  @override
+  String get shopEmptyTitle => 'لا مشتريات هنا';
+
+  @override
+  String get shopEmptyPlan => 'حين تُبنى خطتك ستظهر مكوناتها هنا.';
+
+  @override
+  String get shopEmptyToday => 'لا وجبات في خطة اليوم بعد.';
+
+  @override
+  String get shopEmptyMeal => 'لا وجبة الآن ولا وجبة قادمة اليوم.';
+
+  @override
+  String get shopAllBought => 'اشتريت كل شيء هنا. أحسنت!';
+
+  @override
+  String shopItemSemantics(String name, String quantity) {
+    return '$name، $quantity';
+  }
 
   @override
   String get chartNoPlan => 'لا توجد خطة';
@@ -1318,7 +1392,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get missedBody => 'هل أكلتها؟ سجلها الآن حتى يبقى يومك دقيقًا';
+  String get missedBody => 'هل أكلتها؟ سجّلها الآن ليبقى يومك صحيحًا';
 
   @override
   String get missedAction => 'سجّلها';
@@ -1405,7 +1479,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get waterAdd => 'أضف';
 
   @override
-  String get waterLargeTip => 'كمية كبيرة لمرة واحدة، يمكنك تقسيمها على مرتين.';
+  String get waterLargeTip =>
+      'هذه كمية كبيرة دفعة واحدة. الأريح أن تقسمها على مرتين.';
 
   @override
   String get waterTodayList => 'شرب اليوم';
@@ -1577,7 +1652,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get mostMissedTitle => 'أكثر ما نقصك';
+  String get mostMissedTitle => 'أكثر ما ينقصك';
 
   @override
   String mostMissedBody(
@@ -1587,6 +1662,50 @@ class AppLocalizationsAr extends AppLocalizations {
     Object total,
   ) {
     return '$nutrient: $total من $minimum في المتوسط، في $days أيام';
+  }
+
+  @override
+  String get mostMissedNone => 'لا شيء ناقص هذا الأسبوع. أحسنت!';
+
+  @override
+  String get bestDayPlaceholder => 'سجّل أول وجبة لنعرف أفضل أيامك';
+
+  @override
+  String get mostMissedPlaceholder => 'سنعرض هنا ما ينقص أكلك';
+
+  @override
+  String get mostMissedPartial =>
+      'لم يظهر نقص بعد. سجّل يومًا كاملًا لتتضح الصورة';
+
+  @override
+  String get energyTitle => 'توزيع طاقتك';
+
+  @override
+  String get energyEaten => 'ما أكلته';
+
+  @override
+  String get energyTarget => 'هدفك';
+
+  @override
+  String energyShare(String name, String percent) {
+    return '$name $percent%';
+  }
+
+  @override
+  String get mealsWeekTitle => 'وجباتك هذا الأسبوع';
+
+  @override
+  String get mealsEaten => 'أكلتها';
+
+  @override
+  String get mealsSkipped => 'لم تأكلها';
+
+  @override
+  String get mealsNotLogged => 'لم تُسجَّل';
+
+  @override
+  String withinLimitsDays(String days, String total) {
+    return 'أيام ضمن حدودك الصحية: $days من $total';
   }
 
   @override
@@ -1909,7 +2028,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get remindersIntro =>
-      'كل التذكيرات متوقفة حتى تفعّلها. تصل في وقت تقريبي.';
+      'كل التذكيرات متوقفة حتى تشغّلها، وقد تصل قبل موعدها أو بعده بقليل.';
 
   @override
   String get remindersMeals => 'تذكير الوجبات';
@@ -1946,8 +2065,172 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get reminderWaterBody => 'اشرب كوب ماء';
+  String get reminderWaterBody => 'وقت كوب ماء';
 
   @override
   String get reminderWeighInBody => 'وقت وزنك الأسبوعي';
+
+  @override
+  String get caloriesTitle => 'السعرات';
+
+  @override
+  String macroOfTarget(String target) {
+    return ' / $target غ';
+  }
+
+  @override
+  String get remindersOpen => 'التذكيرات';
+
+  @override
+  String streakPill(String count) {
+    return '$count أيام متتالية';
+  }
+
+  @override
+  String mealMetaLine(String kcal, String grams) {
+    return '$kcal سعرة · ≈ $grams غ';
+  }
+
+  @override
+  String waterRemaining(String ml) {
+    return 'متبقٍ $ml مل';
+  }
+
+  @override
+  String get waterGoalReached => 'أحسنت! وصلت هدفك اليوم';
+
+  @override
+  String get waterSessions => 'جلسات الشرب';
+
+  @override
+  String waterSessionsCount(String done, String total) {
+    return '$done من $total';
+  }
+
+  @override
+  String get waterSessionDone => 'تمت';
+
+  @override
+  String get waterSessionLater => 'لاحقًا';
+
+  @override
+  String get waterSessionTip =>
+      'كوب واحد (نحو 250 مل) في كل مرة يكفي. وزّع الباقي على يومك، ولا حاجة لشرب كمية كبيرة دفعة واحدة.';
+
+  @override
+  String get waterAnyAmount => 'أي كمية';
+
+  @override
+  String get waterMlUnit => 'مل';
+
+  @override
+  String planChartTarget(String kcal) {
+    return 'الهدف $kcal';
+  }
+
+  @override
+  String get adherenceThisWeek => 'التزامك هذا الأسبوع';
+
+  @override
+  String get accountHello => 'أهلًا بك';
+
+  @override
+  String get accountStreakDays => 'أيام';
+
+  @override
+  String get accountGoal => 'هدفي';
+
+  @override
+  String get accountHeightWeight => 'الطول والوزن';
+
+  @override
+  String get accountActivity => 'نشاطي';
+
+  @override
+  String get accountCare => 'ما نراعيه في أكلي';
+
+  @override
+  String get accountAvoid => 'ما أتجنبه';
+
+  @override
+  String get accountDislikes => 'وجبات لا أحبها';
+
+  @override
+  String get accountRhythm => 'مواعيد يومي';
+
+  @override
+  String get accountEditShort => 'تعديل';
+
+  @override
+  String accountWakeSleep(String sleep, String wake) {
+    return 'أستيقظ $wake · أنام $sleep';
+  }
+
+  @override
+  String get accountDisclaimer =>
+      'NutriGuide يساعدك على الأكل الصحي ولا يغني عن استشارة طبيبك أو أخصائي التغذية.';
+
+  @override
+  String get genWeekDays => 'أيام الأسبوع';
+
+  @override
+  String get onbNameTitle => 'ماذا نناديك؟';
+
+  @override
+  String get onbNameSubtitle => 'لنناديك باسمك داخل التطبيق';
+
+  @override
+  String get onbNameHint => 'اسمك';
+
+  @override
+  String get onbNameSkip => 'تخطي';
+
+  @override
+  String get onbNamePrivacy =>
+      'اختياري، ويبقى على هاتفك فقط ولا يُرسل إلى الخادم.';
+
+  @override
+  String get photoSheetTitle => 'صورتك';
+
+  @override
+  String get photoGallery => 'اختر صورة';
+
+  @override
+  String get photoCamera => 'التقط صورة';
+
+  @override
+  String get photoReset => 'استخدم الرسمة';
+
+  @override
+  String get photoPrivacy => 'تبقى صورتك على هاتفك فقط ولا تُرفع إلى الخادم.';
+
+  @override
+  String get photoChange => 'تغيير صورتك';
+
+  @override
+  String greetName(String name) {
+    return 'نهارك سعيد، $name';
+  }
+
+  @override
+  String get accentTitle => 'لون التطبيق';
+
+  @override
+  String get accentAuto => 'حسب هدفي';
+
+  @override
+  String get accentEmerald => 'أخضر منعش';
+
+  @override
+  String get accentTeal => 'فيروزي هادئ';
+
+  @override
+  String get accentPlum => 'برقوقي دافئ';
+
+  @override
+  String get accentNote =>
+      'يتبع اللون هدفك تلقائيًا. أما ألوان السعرات والبروتين والماء فثابتة دائمًا حتى لا تختلط عليك.';
+
+  @override
+  String get themeTitle => 'المظهر';
 }
