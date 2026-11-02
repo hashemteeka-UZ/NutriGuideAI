@@ -29,6 +29,11 @@ void main() {
     expect(find.byKey(const Key('meal-card-2')), findsOneWidget);
     expect(find.byKey(const Key('meal-card-3')), findsNothing);
     expect(find.byKey(const Key('meals-footer')), findsOneWidget);
+    // Whole kcal and Western digits, as in the rest of the app (P2z).
+    expect(find.textContaining('482 سعرة'), findsOneWidget);
+    expect(find.textContaining('482.4'), findsNothing);
+    expect(find.textContaining('2026'), findsOneWidget);
+    expect(find.textContaining('٢٠٢٦'), findsNothing);
 
     await tester.tap(find.byKey(const Key('meals-slot-breakfast_suitable')));
     await tester.pumpAndSettle();
@@ -181,7 +186,7 @@ final class _FakeCatalog implements CatalogRepository {
     const MealSummary(
       mealId: 1,
       name: 'شاي',
-      kcal: 10,
+      kcal: 482.4,
       proteinG: 1,
       cuisineCode: 'eg',
       cuisineName: 'مصري',

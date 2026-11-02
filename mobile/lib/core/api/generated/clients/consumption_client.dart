@@ -38,9 +38,7 @@ abstract class ConsumptionClient {
   /// Tombstone the log.
   /// Error codes: UNAUTHORIZED, LOG_NOT_FOUND.
   @DELETE('/api/v1/consumption-logs/{log_id}')
-  Future<void> deleteConsumptionLog({
-    @Path('log_id') required int logId,
-  });
+  Future<void> deleteConsumptionLog({@Path('log_id') required int logId});
 
   /// Correct Consumption Log.
   ///

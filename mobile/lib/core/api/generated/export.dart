@@ -120,4 +120,3 @@ export 'models/weight_out_status.dart';
 export 'models/weight_out_target_status.dart';
 // Root client
 export 'rest_client.dart';
-

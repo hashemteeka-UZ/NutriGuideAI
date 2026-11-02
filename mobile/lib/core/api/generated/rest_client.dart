@@ -23,11 +23,7 @@ import 'clients/weights_client.dart';
 
 /// NutriGuideAI API `v1.2.0`
 class RestClient {
-  RestClient(
-    Dio dio, {
-    String? baseUrl,
-  })  : _dio = dio,
-        _baseUrl = baseUrl;
+  RestClient(Dio dio, {String? baseUrl}) : _dio = dio, _baseUrl = baseUrl;
 
   final Dio _dio;
   final String? _baseUrl;
@@ -51,35 +47,45 @@ class RestClient {
   WaterClient? _water;
   WeightsClient? _weights;
 
-  AdherenceClient get adherence => _adherence ??= AdherenceClient(_dio, baseUrl: _baseUrl);
+  AdherenceClient get adherence =>
+      _adherence ??= AdherenceClient(_dio, baseUrl: _baseUrl);
 
   AuthClient get auth => _auth ??= AuthClient(_dio, baseUrl: _baseUrl);
 
-  CatalogClient get catalog => _catalog ??= CatalogClient(_dio, baseUrl: _baseUrl);
+  CatalogClient get catalog =>
+      _catalog ??= CatalogClient(_dio, baseUrl: _baseUrl);
 
-  ConsumptionClient get consumption => _consumption ??= ConsumptionClient(_dio, baseUrl: _baseUrl);
+  ConsumptionClient get consumption =>
+      _consumption ??= ConsumptionClient(_dio, baseUrl: _baseUrl);
 
   PlansClient get plans => _plans ??= PlansClient(_dio, baseUrl: _baseUrl);
 
   HealthClient get health => _health ??= HealthClient(_dio, baseUrl: _baseUrl);
 
-  IngredientsClient get ingredients => _ingredients ??= IngredientsClient(_dio, baseUrl: _baseUrl);
+  IngredientsClient get ingredients =>
+      _ingredients ??= IngredientsClient(_dio, baseUrl: _baseUrl);
 
-  InteractionsClient get interactions => _interactions ??= InteractionsClient(_dio, baseUrl: _baseUrl);
+  InteractionsClient get interactions =>
+      _interactions ??= InteractionsClient(_dio, baseUrl: _baseUrl);
 
-  AccountClient get account => _account ??= AccountClient(_dio, baseUrl: _baseUrl);
+  AccountClient get account =>
+      _account ??= AccountClient(_dio, baseUrl: _baseUrl);
 
-  MealPrefsClient get mealPrefs => _mealPrefs ??= MealPrefsClient(_dio, baseUrl: _baseUrl);
+  MealPrefsClient get mealPrefs =>
+      _mealPrefs ??= MealPrefsClient(_dio, baseUrl: _baseUrl);
 
-  ProfileClient get profile => _profile ??= ProfileClient(_dio, baseUrl: _baseUrl);
+  ProfileClient get profile =>
+      _profile ??= ProfileClient(_dio, baseUrl: _baseUrl);
 
   MealsClient get meals => _meals ??= MealsClient(_dio, baseUrl: _baseUrl);
 
-  ReferenceClient get reference => _reference ??= ReferenceClient(_dio, baseUrl: _baseUrl);
+  ReferenceClient get reference =>
+      _reference ??= ReferenceClient(_dio, baseUrl: _baseUrl);
 
   SyncClient get sync => _sync ??= SyncClient(_dio, baseUrl: _baseUrl);
 
   WaterClient get water => _water ??= WaterClient(_dio, baseUrl: _baseUrl);
 
-  WeightsClient get weights => _weights ??= WeightsClient(_dio, baseUrl: _baseUrl);
+  WeightsClient get weights =>
+      _weights ??= WeightsClient(_dio, baseUrl: _baseUrl);
 }

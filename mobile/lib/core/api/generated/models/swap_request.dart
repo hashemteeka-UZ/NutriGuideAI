@@ -8,12 +8,11 @@ part 'swap_request.g.dart';
 
 @JsonSerializable()
 class SwapRequest {
-  const SwapRequest({
-    required this.mealId,
-  });
-  
-  factory SwapRequest.fromJson(Map<String, Object?> json) => _$SwapRequestFromJson(json);
-  
+  const SwapRequest({required this.mealId});
+
+  factory SwapRequest.fromJson(Map<String, Object?> json) =>
+      _$SwapRequestFromJson(json);
+
   @JsonKey(name: 'meal_id')
   final int mealId;
 

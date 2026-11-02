@@ -10,13 +10,11 @@ part 'adherence_range_out.g.dart';
 
 @JsonSerializable()
 class AdherenceRangeOut {
-  const AdherenceRangeOut({
-    required this.days,
-    required this.streak,
-  });
-  
-  factory AdherenceRangeOut.fromJson(Map<String, Object?> json) => _$AdherenceRangeOutFromJson(json);
-  
+  const AdherenceRangeOut({required this.days, required this.streak});
+
+  factory AdherenceRangeOut.fromJson(Map<String, Object?> json) =>
+      _$AdherenceRangeOutFromJson(json);
+
   final List<DayAdherenceOut> days;
   final int streak;
 

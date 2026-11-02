@@ -17,9 +17,10 @@ class WaterLogResult {
     required this.logId,
     required this.status,
   });
-  
-  factory WaterLogResult.fromJson(Map<String, Object?> json) => _$WaterLogResultFromJson(json);
-  
+
+  factory WaterLogResult.fromJson(Map<String, Object?> json) =>
+      _$WaterLogResultFromJson(json);
+
   @JsonKey(name: 'amount_ml')
   final int amountMl;
   @JsonKey(name: 'consumed_at')

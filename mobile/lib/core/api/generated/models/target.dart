@@ -25,9 +25,9 @@ class Target {
     required this.validFrom,
     required this.wasFloorApplied,
   });
-  
+
   factory Target.fromJson(Map<String, Object?> json) => _$TargetFromJson(json);
-  
+
   @JsonKey(name: 'based_on_weight_kg')
   final num basedOnWeightKg;
   @JsonKey(name: 'bmr_kcal')

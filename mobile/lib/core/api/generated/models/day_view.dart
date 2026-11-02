@@ -20,9 +20,10 @@ class DayView {
     required this.water,
     this.plan,
   });
-  
-  factory DayView.fromJson(Map<String, Object?> json) => _$DayViewFromJson(json);
-  
+
+  factory DayView.fromJson(Map<String, Object?> json) =>
+      _$DayViewFromJson(json);
+
   final DayAdherenceOut adherence;
   final DateTime date;
   @JsonKey(name: 'meal_windows')

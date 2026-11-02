@@ -23,7 +23,8 @@ class MealCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.appColors;
-    final kcal = formatAmount(context, meal.kcal);
+    // Whole kcal, as on Today and Plan (P2z).
+    final kcal = formatAmount(context, meal.kcal.round());
     final protein = formatAmount(context, meal.proteinG);
     final label = <String>[
       meal.name,

@@ -10,13 +10,11 @@ part 'ingredient_choice.g.dart';
 
 @JsonSerializable()
 class IngredientChoice {
-  const IngredientChoice({
-    required this.ingredientId,
-    required this.stance,
-  });
-  
-  factory IngredientChoice.fromJson(Map<String, Object?> json) => _$IngredientChoiceFromJson(json);
-  
+  const IngredientChoice({required this.ingredientId, required this.stance});
+
+  factory IngredientChoice.fromJson(Map<String, Object?> json) =>
+      _$IngredientChoiceFromJson(json);
+
   @JsonKey(name: 'ingredient_id')
   final int ingredientId;
   final IngredientStance stance;

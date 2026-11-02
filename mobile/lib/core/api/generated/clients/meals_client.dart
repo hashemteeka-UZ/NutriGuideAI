@@ -33,7 +33,5 @@ abstract class MealsClient {
   /// One active meal. The name is the meal name when Accept-Language matches default_lang, otherwise the translation in that language, otherwise the meal name. Steps are in the requested language, then Arabic, or an empty list when the meal has none. kcal is the stored energy_kcal per serving. dataset_version is this meal's batch id. Not filtered by the caller's health conditions or allergies.
   /// Error codes: UNAUTHORIZED, MEAL_NOT_FOUND.
   @GET('/api/v1/meals/{meal_id}')
-  Future<MealDetail> getMeal({
-    @Path('meal_id') required int mealId,
-  });
+  Future<MealDetail> getMeal({@Path('meal_id') required int mealId});
 }

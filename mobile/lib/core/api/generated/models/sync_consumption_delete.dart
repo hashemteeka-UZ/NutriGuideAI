@@ -13,9 +13,10 @@ class SyncConsumptionDelete {
     required this.op,
     required this.opId,
   });
-  
-  factory SyncConsumptionDelete.fromJson(Map<String, Object?> json) => _$SyncConsumptionDeleteFromJson(json);
-  
+
+  factory SyncConsumptionDelete.fromJson(Map<String, Object?> json) =>
+      _$SyncConsumptionDeleteFromJson(json);
+
   @JsonKey(name: 'log_id')
   final int logId;
   final String op;

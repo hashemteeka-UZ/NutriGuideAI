@@ -8,13 +8,11 @@ part 'weight_point.g.dart';
 
 @JsonSerializable()
 class WeightPoint {
-  const WeightPoint({
-    required this.measuredOn,
-    required this.weightKg,
-  });
-  
-  factory WeightPoint.fromJson(Map<String, Object?> json) => _$WeightPointFromJson(json);
-  
+  const WeightPoint({required this.measuredOn, required this.weightKg});
+
+  factory WeightPoint.fromJson(Map<String, Object?> json) =>
+      _$WeightPointFromJson(json);
+
   @JsonKey(name: 'measured_on')
   final DateTime measuredOn;
   @JsonKey(name: 'weight_kg')

@@ -8,13 +8,11 @@ part 'code_name.g.dart';
 
 @JsonSerializable()
 class CodeName {
-  const CodeName({
-    required this.code,
-    required this.name,
-  });
-  
-  factory CodeName.fromJson(Map<String, Object?> json) => _$CodeNameFromJson(json);
-  
+  const CodeName({required this.code, required this.name});
+
+  factory CodeName.fromJson(Map<String, Object?> json) =>
+      _$CodeNameFromJson(json);
+
   final String code;
   final String name;
 

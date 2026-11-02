@@ -34,9 +34,10 @@ class Profile {
     this.waterGoalMl,
     this.weeklyRateKg,
   });
-  
-  factory Profile.fromJson(Map<String, Object?> json) => _$ProfileFromJson(json);
-  
+
+  factory Profile.fromJson(Map<String, Object?> json) =>
+      _$ProfileFromJson(json);
+
   @JsonKey(name: 'activity_level')
   final ActivityLevel activityLevel;
   final List<AllergenChoice> allergens;

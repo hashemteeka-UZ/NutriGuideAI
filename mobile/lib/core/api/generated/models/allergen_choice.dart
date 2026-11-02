@@ -10,13 +10,11 @@ part 'allergen_choice.g.dart';
 
 @JsonSerializable()
 class AllergenChoice {
-  const AllergenChoice({
-    required this.code,
-    required this.severity,
-  });
-  
-  factory AllergenChoice.fromJson(Map<String, Object?> json) => _$AllergenChoiceFromJson(json);
-  
+  const AllergenChoice({required this.code, required this.severity});
+
+  factory AllergenChoice.fromJson(Map<String, Object?> json) =>
+      _$AllergenChoiceFromJson(json);
+
   final String code;
   final AllergenSeverity severity;
 

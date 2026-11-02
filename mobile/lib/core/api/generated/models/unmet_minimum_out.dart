@@ -13,9 +13,10 @@ class UnmetMinimumOut {
     required this.nutrient,
     this.total,
   });
-  
-  factory UnmetMinimumOut.fromJson(Map<String, Object?> json) => _$UnmetMinimumOutFromJson(json);
-  
+
+  factory UnmetMinimumOut.fromJson(Map<String, Object?> json) =>
+      _$UnmetMinimumOutFromJson(json);
+
   final num minimum;
   final String nutrient;
   final num? total;

@@ -10,12 +10,11 @@ part 'sync_batch.g.dart';
 
 @JsonSerializable()
 class SyncBatch {
-  const SyncBatch({
-    required this.operations,
-  });
-  
-  factory SyncBatch.fromJson(Map<String, Object?> json) => _$SyncBatchFromJson(json);
-  
+  const SyncBatch({required this.operations});
+
+  factory SyncBatch.fromJson(Map<String, Object?> json) =>
+      _$SyncBatchFromJson(json);
+
   final List<SyncBatchOperationsSealed> operations;
 
   Map<String, Object?> toJson() => _$SyncBatchToJson(this);

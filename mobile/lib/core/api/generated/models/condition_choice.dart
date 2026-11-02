@@ -10,13 +10,11 @@ part 'condition_choice.g.dart';
 
 @JsonSerializable()
 class ConditionChoice {
-  const ConditionChoice({
-    required this.code,
-    this.severity,
-  });
-  
-  factory ConditionChoice.fromJson(Map<String, Object?> json) => _$ConditionChoiceFromJson(json);
-  
+  const ConditionChoice({required this.code, this.severity});
+
+  factory ConditionChoice.fromJson(Map<String, Object?> json) =>
+      _$ConditionChoiceFromJson(json);
+
   final String code;
   final ConditionSeverity? severity;
 

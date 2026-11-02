@@ -26,9 +26,10 @@ class DayPlanOut {
     required this.unmetMinimums,
     this.stats,
   });
-  
-  factory DayPlanOut.fromJson(Map<String, Object?> json) => _$DayPlanOutFromJson(json);
-  
+
+  factory DayPlanOut.fromJson(Map<String, Object?> json) =>
+      _$DayPlanOutFromJson(json);
+
   @JsonKey(name: 'algorithm_version')
   final String algorithmVersion;
   @JsonKey(name: 'created_at')

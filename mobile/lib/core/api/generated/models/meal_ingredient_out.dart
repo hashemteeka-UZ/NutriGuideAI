@@ -14,9 +14,10 @@ class MealIngredientOut {
     required this.isOptional,
     required this.name,
   });
-  
-  factory MealIngredientOut.fromJson(Map<String, Object?> json) => _$MealIngredientOutFromJson(json);
-  
+
+  factory MealIngredientOut.fromJson(Map<String, Object?> json) =>
+      _$MealIngredientOutFromJson(json);
+
   @JsonKey(name: 'grams_per_serving')
   final num gramsPerServing;
   @JsonKey(name: 'ingredient_id')

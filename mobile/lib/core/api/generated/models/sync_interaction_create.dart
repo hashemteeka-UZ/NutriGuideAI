@@ -20,9 +20,10 @@ class SyncInteractionCreate {
     this.screen,
     this.value,
   });
-  
-  factory SyncInteractionCreate.fromJson(Map<String, Object?> json) => _$SyncInteractionCreateFromJson(json);
-  
+
+  factory SyncInteractionCreate.fromJson(Map<String, Object?> json) =>
+      _$SyncInteractionCreateFromJson(json);
+
   @JsonKey(name: 'client_uuid')
   final String clientUuid;
   @JsonKey(name: 'event_type')

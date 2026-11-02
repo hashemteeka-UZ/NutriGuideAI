@@ -15,9 +15,10 @@ class HealthResponse {
     required this.defaultPlanner,
     required this.status,
   });
-  
-  factory HealthResponse.fromJson(Map<String, Object?> json) => _$HealthResponseFromJson(json);
-  
+
+  factory HealthResponse.fromJson(Map<String, Object?> json) =>
+      _$HealthResponseFromJson(json);
+
   @JsonKey(name: 'api_version')
   final String apiVersion;
   final String database;

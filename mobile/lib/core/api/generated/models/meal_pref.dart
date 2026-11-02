@@ -15,9 +15,10 @@ class MealPref {
     required this.stance,
     required this.updatedAt,
   });
-  
-  factory MealPref.fromJson(Map<String, Object?> json) => _$MealPrefFromJson(json);
-  
+
+  factory MealPref.fromJson(Map<String, Object?> json) =>
+      _$MealPrefFromJson(json);
+
   @JsonKey(name: 'meal_id')
   final int mealId;
   final MealStance stance;

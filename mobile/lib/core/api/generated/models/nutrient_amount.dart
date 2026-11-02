@@ -16,9 +16,10 @@ class NutrientAmount {
     this.per100g,
     this.perServing,
   });
-  
-  factory NutrientAmount.fromJson(Map<String, Object?> json) => _$NutrientAmountFromJson(json);
-  
+
+  factory NutrientAmount.fromJson(Map<String, Object?> json) =>
+      _$NutrientAmountFromJson(json);
+
   final String code;
   @JsonKey(name: 'per_100g')
   final num? per100g;

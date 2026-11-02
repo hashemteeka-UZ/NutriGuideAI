@@ -10,12 +10,11 @@ part 'meal_pref_update.g.dart';
 
 @JsonSerializable()
 class MealPrefUpdate {
-  const MealPrefUpdate({
-    required this.stance,
-  });
-  
-  factory MealPrefUpdate.fromJson(Map<String, Object?> json) => _$MealPrefUpdateFromJson(json);
-  
+  const MealPrefUpdate({required this.stance});
+
+  factory MealPrefUpdate.fromJson(Map<String, Object?> json) =>
+      _$MealPrefUpdateFromJson(json);
+
   final MealStance stance;
 
   Map<String, Object?> toJson() => _$MealPrefUpdateToJson(this);

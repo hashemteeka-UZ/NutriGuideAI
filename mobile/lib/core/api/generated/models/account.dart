@@ -14,9 +14,10 @@ class Account {
     required this.hasProfile,
     required this.userId,
   });
-  
-  factory Account.fromJson(Map<String, Object?> json) => _$AccountFromJson(json);
-  
+
+  factory Account.fromJson(Map<String, Object?> json) =>
+      _$AccountFromJson(json);
+
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
   final String email;

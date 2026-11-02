@@ -15,9 +15,10 @@ class SyncWeightPut {
     required this.updatedAt,
     required this.weightKg,
   });
-  
-  factory SyncWeightPut.fromJson(Map<String, Object?> json) => _$SyncWeightPutFromJson(json);
-  
+
+  factory SyncWeightPut.fromJson(Map<String, Object?> json) =>
+      _$SyncWeightPutFromJson(json);
+
   @JsonKey(name: 'measured_on')
   final DateTime measuredOn;
   final String op;

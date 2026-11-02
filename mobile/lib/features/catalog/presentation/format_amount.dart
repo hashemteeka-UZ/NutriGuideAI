@@ -11,5 +11,8 @@ String formatAmount(BuildContext context, num value) {
 
 String formatUpdated(BuildContext context, DateTime value) {
   final locale = Localizations.localeOf(context).toString();
-  return DateFormat.yMMMd(locale).add_jm().format(value.toLocal());
+  // Western digits, as everywhere else in the app (P2z).
+  return (DateFormat.yMMMd(
+    locale,
+  ).add_jm()..useNativeDigits = false).format(value.toLocal());
 }

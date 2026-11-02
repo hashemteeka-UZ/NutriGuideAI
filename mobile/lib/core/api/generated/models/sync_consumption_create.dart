@@ -13,9 +13,10 @@ class SyncConsumptionCreate {
     required this.op,
     required this.opId,
   });
-  
-  factory SyncConsumptionCreate.fromJson(Map<String, Object?> json) => _$SyncConsumptionCreateFromJson(json);
-  
+
+  factory SyncConsumptionCreate.fromJson(Map<String, Object?> json) =>
+      _$SyncConsumptionCreateFromJson(json);
+
   final SyncConsumptionCreateLogSealed log;
   final String op;
   @JsonKey(name: 'op_id')

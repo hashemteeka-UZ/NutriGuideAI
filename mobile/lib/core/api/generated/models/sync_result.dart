@@ -10,13 +10,11 @@ part 'sync_result.g.dart';
 
 @JsonSerializable()
 class SyncResult {
-  const SyncResult({
-    required this.results,
-    required this.serverTime,
-  });
-  
-  factory SyncResult.fromJson(Map<String, Object?> json) => _$SyncResultFromJson(json);
-  
+  const SyncResult({required this.results, required this.serverTime});
+
+  factory SyncResult.fromJson(Map<String, Object?> json) =>
+      _$SyncResultFromJson(json);
+
   final List<SyncOpResult> results;
   @JsonKey(name: 'server_time')
   final DateTime serverTime;

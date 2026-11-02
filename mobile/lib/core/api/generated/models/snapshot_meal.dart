@@ -33,9 +33,10 @@ class SnapshotMeal {
     this.cuisine,
     this.dishForm,
   });
-  
-  factory SnapshotMeal.fromJson(Map<String, Object?> json) => _$SnapshotMealFromJson(json);
-  
+
+  factory SnapshotMeal.fromJson(Map<String, Object?> json) =>
+      _$SnapshotMealFromJson(json);
+
   final List<String> allergens;
   @JsonKey(name: 'carb_g')
   final num carbG;

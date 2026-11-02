@@ -13,9 +13,10 @@ class SyncWaterDelete {
     required this.op,
     required this.opId,
   });
-  
-  factory SyncWaterDelete.fromJson(Map<String, Object?> json) => _$SyncWaterDeleteFromJson(json);
-  
+
+  factory SyncWaterDelete.fromJson(Map<String, Object?> json) =>
+      _$SyncWaterDeleteFromJson(json);
+
   @JsonKey(name: 'log_id')
   final int logId;
   final String op;

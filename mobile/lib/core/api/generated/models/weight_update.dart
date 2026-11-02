@@ -8,13 +8,11 @@ part 'weight_update.g.dart';
 
 @JsonSerializable()
 class WeightUpdate {
-  const WeightUpdate({
-    required this.updatedAt,
-    required this.weightKg,
-  });
-  
-  factory WeightUpdate.fromJson(Map<String, Object?> json) => _$WeightUpdateFromJson(json);
-  
+  const WeightUpdate({required this.updatedAt, required this.weightKg});
+
+  factory WeightUpdate.fromJson(Map<String, Object?> json) =>
+      _$WeightUpdateFromJson(json);
+
   @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
   @JsonKey(name: 'weight_kg')

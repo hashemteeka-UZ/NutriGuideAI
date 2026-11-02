@@ -28,9 +28,10 @@ class ConsumptionLogOut {
     this.servingsConsumed,
     this.slot,
   });
-  
-  factory ConsumptionLogOut.fromJson(Map<String, Object?> json) => _$ConsumptionLogOutFromJson(json);
-  
+
+  factory ConsumptionLogOut.fromJson(Map<String, Object?> json) =>
+      _$ConsumptionLogOutFromJson(json);
+
   @JsonKey(name: 'consumed_at')
   final DateTime consumedAt;
   @JsonKey(name: 'food_id')

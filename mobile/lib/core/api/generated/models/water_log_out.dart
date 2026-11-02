@@ -13,9 +13,10 @@ class WaterLogOut {
     required this.consumedAt,
     required this.logId,
   });
-  
-  factory WaterLogOut.fromJson(Map<String, Object?> json) => _$WaterLogOutFromJson(json);
-  
+
+  factory WaterLogOut.fromJson(Map<String, Object?> json) =>
+      _$WaterLogOutFromJson(json);
+
   @JsonKey(name: 'amount_ml')
   final int amountMl;
   @JsonKey(name: 'consumed_at')

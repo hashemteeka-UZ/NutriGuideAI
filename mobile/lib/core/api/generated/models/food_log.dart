@@ -18,9 +18,10 @@ class FoodLog {
     required this.kind,
     this.slot,
   });
-  
-  factory FoodLog.fromJson(Map<String, Object?> json) => _$FoodLogFromJson(json);
-  
+
+  factory FoodLog.fromJson(Map<String, Object?> json) =>
+      _$FoodLogFromJson(json);
+
   @JsonKey(name: 'client_uuid')
   final String clientUuid;
   @JsonKey(name: 'consumed_at')

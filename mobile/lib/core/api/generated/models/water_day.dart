@@ -17,9 +17,10 @@ class WaterDay {
     required this.logs,
     required this.totalMl,
   });
-  
-  factory WaterDay.fromJson(Map<String, Object?> json) => _$WaterDayFromJson(json);
-  
+
+  factory WaterDay.fromJson(Map<String, Object?> json) =>
+      _$WaterDayFromJson(json);
+
   final DateTime date;
   final WaterGoal goal;
   final List<WaterLogOut> logs;

@@ -14,16 +14,15 @@ import 'sync_water_create.dart';
 import 'sync_water_delete.dart';
 import 'sync_weight_put.dart';
 
-
 part 'sync_batch_operations_sealed.g.dart';
 
 @JsonSerializable(createFactory: false)
 sealed class SyncBatchOperationsSealed {
   const SyncBatchOperationsSealed();
-  
+
   factory SyncBatchOperationsSealed.fromJson(Map<String, dynamic> json) =>
       SyncBatchOperationsSealedDeserializer.tryDeserialize(json);
-  
+
   Map<String, dynamic> toJson();
 }
 
@@ -45,20 +44,39 @@ extension SyncBatchOperationsSealedDeserializer on SyncBatchOperationsSealed {
     final value = json[key];
     final effective = mapping ?? mappingFallback;
     return switch (value) {
-      _ when value == effective[SyncBatchOperationsSealedSyncConsumptionCorrect] => SyncBatchOperationsSealedSyncConsumptionCorrect.fromJson(json),
-      _ when value == effective[SyncBatchOperationsSealedSyncConsumptionCreate] => SyncBatchOperationsSealedSyncConsumptionCreate.fromJson(json),
-      _ when value == effective[SyncBatchOperationsSealedSyncConsumptionDelete] => SyncBatchOperationsSealedSyncConsumptionDelete.fromJson(json),
-      _ when value == effective[SyncBatchOperationsSealedSyncInteractionCreate] => SyncBatchOperationsSealedSyncInteractionCreate.fromJson(json),
-      _ when value == effective[SyncBatchOperationsSealedSyncWaterCreate] => SyncBatchOperationsSealedSyncWaterCreate.fromJson(json),
-      _ when value == effective[SyncBatchOperationsSealedSyncWaterDelete] => SyncBatchOperationsSealedSyncWaterDelete.fromJson(json),
-      _ when value == effective[SyncBatchOperationsSealedSyncWeightPut] => SyncBatchOperationsSealedSyncWeightPut.fromJson(json),
-      _ => throw FormatException('Unknown discriminator value "${json[key]}" for SyncBatchOperationsSealed'),
+      _
+          when value ==
+              effective[SyncBatchOperationsSealedSyncConsumptionCorrect] =>
+        SyncBatchOperationsSealedSyncConsumptionCorrect.fromJson(json),
+      _
+          when value ==
+              effective[SyncBatchOperationsSealedSyncConsumptionCreate] =>
+        SyncBatchOperationsSealedSyncConsumptionCreate.fromJson(json),
+      _
+          when value ==
+              effective[SyncBatchOperationsSealedSyncConsumptionDelete] =>
+        SyncBatchOperationsSealedSyncConsumptionDelete.fromJson(json),
+      _
+          when value ==
+              effective[SyncBatchOperationsSealedSyncInteractionCreate] =>
+        SyncBatchOperationsSealedSyncInteractionCreate.fromJson(json),
+      _ when value == effective[SyncBatchOperationsSealedSyncWaterCreate] =>
+        SyncBatchOperationsSealedSyncWaterCreate.fromJson(json),
+      _ when value == effective[SyncBatchOperationsSealedSyncWaterDelete] =>
+        SyncBatchOperationsSealedSyncWaterDelete.fromJson(json),
+      _ when value == effective[SyncBatchOperationsSealedSyncWeightPut] =>
+        SyncBatchOperationsSealedSyncWeightPut.fromJson(json),
+      _ => throw FormatException(
+        'Unknown discriminator value "${json[key]}" for SyncBatchOperationsSealed',
+      ),
     };
   }
 }
 
 @JsonSerializable()
-class SyncBatchOperationsSealedSyncConsumptionCorrect extends SyncBatchOperationsSealed implements SyncConsumptionCorrect {
+class SyncBatchOperationsSealedSyncConsumptionCorrect
+    extends SyncBatchOperationsSealed
+    implements SyncConsumptionCorrect {
   @override
   final DateTime? consumedAt;
   @override
@@ -86,15 +104,20 @@ class SyncBatchOperationsSealedSyncConsumptionCorrect extends SyncBatchOperation
     required this.servingsConsumed,
     required this.slot,
   });
-  
-  factory SyncBatchOperationsSealedSyncConsumptionCorrect.fromJson(Map<String, dynamic> json) =>
-      _$SyncBatchOperationsSealedSyncConsumptionCorrectFromJson(json);
-      
+
+  factory SyncBatchOperationsSealedSyncConsumptionCorrect.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SyncBatchOperationsSealedSyncConsumptionCorrectFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() => _$SyncBatchOperationsSealedSyncConsumptionCorrectToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SyncBatchOperationsSealedSyncConsumptionCorrectToJson(this);
 }
+
 @JsonSerializable()
-class SyncBatchOperationsSealedSyncConsumptionCreate extends SyncBatchOperationsSealed implements SyncConsumptionCreate {
+class SyncBatchOperationsSealedSyncConsumptionCreate
+    extends SyncBatchOperationsSealed
+    implements SyncConsumptionCreate {
   @override
   final SyncConsumptionCreateLogSealed log;
   @override
@@ -107,15 +130,20 @@ class SyncBatchOperationsSealedSyncConsumptionCreate extends SyncBatchOperations
     required this.op,
     required this.opId,
   });
-  
-  factory SyncBatchOperationsSealedSyncConsumptionCreate.fromJson(Map<String, dynamic> json) =>
-      _$SyncBatchOperationsSealedSyncConsumptionCreateFromJson(json);
-      
+
+  factory SyncBatchOperationsSealedSyncConsumptionCreate.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SyncBatchOperationsSealedSyncConsumptionCreateFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() => _$SyncBatchOperationsSealedSyncConsumptionCreateToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SyncBatchOperationsSealedSyncConsumptionCreateToJson(this);
 }
+
 @JsonSerializable()
-class SyncBatchOperationsSealedSyncConsumptionDelete extends SyncBatchOperationsSealed implements SyncConsumptionDelete {
+class SyncBatchOperationsSealedSyncConsumptionDelete
+    extends SyncBatchOperationsSealed
+    implements SyncConsumptionDelete {
   @override
   final int logId;
   @override
@@ -128,15 +156,20 @@ class SyncBatchOperationsSealedSyncConsumptionDelete extends SyncBatchOperations
     required this.op,
     required this.opId,
   });
-  
-  factory SyncBatchOperationsSealedSyncConsumptionDelete.fromJson(Map<String, dynamic> json) =>
-      _$SyncBatchOperationsSealedSyncConsumptionDeleteFromJson(json);
-      
+
+  factory SyncBatchOperationsSealedSyncConsumptionDelete.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SyncBatchOperationsSealedSyncConsumptionDeleteFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() => _$SyncBatchOperationsSealedSyncConsumptionDeleteToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SyncBatchOperationsSealedSyncConsumptionDeleteToJson(this);
 }
+
 @JsonSerializable()
-class SyncBatchOperationsSealedSyncInteractionCreate extends SyncBatchOperationsSealed implements SyncInteractionCreate {
+class SyncBatchOperationsSealedSyncInteractionCreate
+    extends SyncBatchOperationsSealed
+    implements SyncInteractionCreate {
   @override
   final String clientUuid;
   @override
@@ -164,15 +197,19 @@ class SyncBatchOperationsSealedSyncInteractionCreate extends SyncBatchOperations
     required this.screen,
     required this.value,
   });
-  
-  factory SyncBatchOperationsSealedSyncInteractionCreate.fromJson(Map<String, dynamic> json) =>
-      _$SyncBatchOperationsSealedSyncInteractionCreateFromJson(json);
-      
+
+  factory SyncBatchOperationsSealedSyncInteractionCreate.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SyncBatchOperationsSealedSyncInteractionCreateFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() => _$SyncBatchOperationsSealedSyncInteractionCreateToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SyncBatchOperationsSealedSyncInteractionCreateToJson(this);
 }
+
 @JsonSerializable()
-class SyncBatchOperationsSealedSyncWaterCreate extends SyncBatchOperationsSealed implements SyncWaterCreate {
+class SyncBatchOperationsSealedSyncWaterCreate extends SyncBatchOperationsSealed
+    implements SyncWaterCreate {
   @override
   final int amountMl;
   @override
@@ -191,15 +228,19 @@ class SyncBatchOperationsSealedSyncWaterCreate extends SyncBatchOperationsSealed
     required this.op,
     required this.opId,
   });
-  
-  factory SyncBatchOperationsSealedSyncWaterCreate.fromJson(Map<String, dynamic> json) =>
-      _$SyncBatchOperationsSealedSyncWaterCreateFromJson(json);
-      
+
+  factory SyncBatchOperationsSealedSyncWaterCreate.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SyncBatchOperationsSealedSyncWaterCreateFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() => _$SyncBatchOperationsSealedSyncWaterCreateToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SyncBatchOperationsSealedSyncWaterCreateToJson(this);
 }
+
 @JsonSerializable()
-class SyncBatchOperationsSealedSyncWaterDelete extends SyncBatchOperationsSealed implements SyncWaterDelete {
+class SyncBatchOperationsSealedSyncWaterDelete extends SyncBatchOperationsSealed
+    implements SyncWaterDelete {
   @override
   final int logId;
   @override
@@ -212,15 +253,19 @@ class SyncBatchOperationsSealedSyncWaterDelete extends SyncBatchOperationsSealed
     required this.op,
     required this.opId,
   });
-  
-  factory SyncBatchOperationsSealedSyncWaterDelete.fromJson(Map<String, dynamic> json) =>
-      _$SyncBatchOperationsSealedSyncWaterDeleteFromJson(json);
-      
+
+  factory SyncBatchOperationsSealedSyncWaterDelete.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SyncBatchOperationsSealedSyncWaterDeleteFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() => _$SyncBatchOperationsSealedSyncWaterDeleteToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SyncBatchOperationsSealedSyncWaterDeleteToJson(this);
 }
+
 @JsonSerializable()
-class SyncBatchOperationsSealedSyncWeightPut extends SyncBatchOperationsSealed implements SyncWeightPut {
+class SyncBatchOperationsSealedSyncWeightPut extends SyncBatchOperationsSealed
+    implements SyncWeightPut {
   @override
   final DateTime measuredOn;
   @override
@@ -239,10 +284,12 @@ class SyncBatchOperationsSealedSyncWeightPut extends SyncBatchOperationsSealed i
     required this.updatedAt,
     required this.weightKg,
   });
-  
-  factory SyncBatchOperationsSealedSyncWeightPut.fromJson(Map<String, dynamic> json) =>
-      _$SyncBatchOperationsSealedSyncWeightPutFromJson(json);
-      
+
+  factory SyncBatchOperationsSealedSyncWeightPut.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SyncBatchOperationsSealedSyncWeightPutFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() => _$SyncBatchOperationsSealedSyncWeightPutToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$SyncBatchOperationsSealedSyncWeightPutToJson(this);
 }

@@ -15,9 +15,10 @@ class SyncWaterCreate {
     required this.op,
     required this.opId,
   });
-  
-  factory SyncWaterCreate.fromJson(Map<String, Object?> json) => _$SyncWaterCreateFromJson(json);
-  
+
+  factory SyncWaterCreate.fromJson(Map<String, Object?> json) =>
+      _$SyncWaterCreateFromJson(json);
+
   @JsonKey(name: 'amount_ml')
   final int amountMl;
   @JsonKey(name: 'client_uuid')

@@ -27,9 +27,7 @@ abstract class ProfileClient {
   /// Replace the profile. The first save requires current_weight_kg; a later value is stored as today's weight. At most one target is created per save. An ineligible screening is returned in the body, not as an error, and closes the current target.
   /// Error codes: UNAUTHORIZED, VALIDATION_ERROR, UNKNOWN_CODE, NO_WEIGHT, TARGET_VALIDATION, INVALID_TIMEZONE.
   @PUT('/api/v1/me/profile')
-  Future<ProfileState> updateProfile({
-    @Body() required ProfileUpdate body,
-  });
+  Future<ProfileState> updateProfile({@Body() required ProfileUpdate body});
 
   /// Get Targets.
   ///
