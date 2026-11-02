@@ -64,6 +64,7 @@ class ProfileAvatar extends ConsumerWidget {
       button: true,
       label: AppLocalizations.of(context).photoChange,
       excludeSemantics: true,
+      onTap: tap,
       child: GestureDetector(
         key: const Key('profile-avatar'),
         behavior: HitTestBehavior.opaque,

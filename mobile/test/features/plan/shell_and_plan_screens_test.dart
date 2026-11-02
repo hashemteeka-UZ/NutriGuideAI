@@ -529,7 +529,12 @@ void main() {
     ScaffoldMessenger.of(
       tester.element(find.byKey(const Key('shopping-screen'))),
     ).removeCurrentSnackBar();
-    await tester.ensureVisible(find.byKey(const Key('shop-bought-toggle')));
+    // The list builds lazily: scroll the toggle into view.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('shop-bought-toggle')),
+      120,
+      scrollable: verticalScroll('shopping-screen'),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('shop-bought-toggle')));
     await tester.pumpAndSettle();

@@ -54,6 +54,15 @@ void main() {
         ),
         findsOneWidget,
       );
+      // Screen readers can open it too.
+      expect(
+        tester.getSemantics(find.byKey(const Key('profile-avatar'))),
+        matchesSemantics(
+          isButton: true,
+          hasTapAction: true,
+          label: 'تغيير صورتك',
+        ),
+      );
       await tester.tap(find.byKey(const Key('profile-avatar')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('photo-sheet')), findsOneWidget);
