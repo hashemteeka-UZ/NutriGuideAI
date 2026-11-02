@@ -47,6 +47,7 @@ final class AuthRepositoryImpl implements AuthRepository {
   }) {
     final trimmed = email.trim();
     return _openSession(
+      trimmed,
       () => _auth.register(
         body: RegisterRequest(email: trimmed, password: password),
       ),
@@ -57,6 +58,7 @@ final class AuthRepositoryImpl implements AuthRepository {
   Future<AccountInfo> login({required String email, required String password}) {
     final trimmed = email.trim();
     return _openSession(
+      trimmed,
       () => _auth.login(
         body: LoginRequest(email: trimmed, password: password),
       ),
@@ -84,6 +86,10 @@ final class AuthRepositoryImpl implements AuthRepository {
     try {
       final account = accountInfoFrom(await _account.getMe());
       await _tokens.updateHasProfile(account.hasProfile);
+      final email = account.email;
+      if (email != null) {
+        await _tokens.updateEmail(email);
+      }
       await _personal?.claim(account.userId);
       return account;
     } on DioException catch (error) {
@@ -97,10 +103,15 @@ final class AuthRepositoryImpl implements AuthRepository {
     if (tokens == null) {
       return const SignedOut();
     }
-    return SignedIn(account: AccountInfo(hasProfile: tokens.hasProfile));
+    return SignedIn(
+      account: AccountInfo(hasProfile: tokens.hasProfile, email: tokens.email),
+    );
   }
 
-  Future<AccountInfo> _openSession(Future<TokenPair> Function() request) async {
+  Future<AccountInfo> _openSession(
+    String email,
+    Future<TokenPair> Function() request,
+  ) async {
     final TokenPair pair;
     try {
       pair = await request();
@@ -113,6 +124,7 @@ final class AuthRepositoryImpl implements AuthRepository {
         refreshToken: pair.refreshToken,
         accessExpiry: _now().toUtc().add(Duration(seconds: pair.expiresIn)),
         hasProfile: false,
+        email: email,
       ),
     );
     try {
@@ -122,7 +134,10 @@ final class AuthRepositoryImpl implements AuthRepository {
         rethrow;
       }
       if (_keepsSession(failure)) {
-        return AccountInfo(hasProfile: _tokens.current?.hasProfile ?? false);
+        return AccountInfo(
+          hasProfile: _tokens.current?.hasProfile ?? false,
+          email: email,
+        );
       }
       rethrow;
     }

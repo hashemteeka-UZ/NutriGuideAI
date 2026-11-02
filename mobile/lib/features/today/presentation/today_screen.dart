@@ -53,7 +53,11 @@ class TodayScreen extends ConsumerWidget {
     final general = user != null && !user.eligible;
     final plans =
         ref.watch(weekPlansProvider).asData?.value ?? const <DayPlan>[];
-    final plan = ref.watch(todayPlanProvider).asData?.value;
+    final planValue = ref.watch(todayPlanProvider);
+    final plan = planValue.asData?.value;
+    // Before the local cache answers, «no plan» is not known yet: show a
+    // quiet loader instead of flashing the build card on a cold start.
+    final planLoading = !planValue.hasValue && !planValue.hasError;
     final summary = ref.watch(todaySummaryProvider).asData?.value;
     final windows =
         ref.watch(todayWindowsProvider).asData?.value ??
@@ -117,6 +121,12 @@ class TodayScreen extends ConsumerWidget {
                       const SizedBox(height: 14),
                       const _HealthyRow(),
                       const ExtrasSection(),
+                    ] else if (planLoading) ...<Widget>[
+                      const Padding(
+                        key: Key('today-loading'),
+                        padding: EdgeInsets.symmetric(vertical: 48),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
                     ] else if (plan == null) ...<Widget>[
                       _BuildCard(
                         title: l10n.todayNoPlan,

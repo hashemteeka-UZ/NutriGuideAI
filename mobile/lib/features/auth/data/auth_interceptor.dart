@@ -184,6 +184,7 @@ final class AuthInterceptor extends QueuedInterceptor {
           refreshToken: pair.refreshToken,
           accessExpiry: _now().toUtc().add(Duration(seconds: pair.expiresIn)),
           hasProfile: hasProfile,
+          email: _tokens.current?.email,
         ),
       );
     } on DioException catch (error) {

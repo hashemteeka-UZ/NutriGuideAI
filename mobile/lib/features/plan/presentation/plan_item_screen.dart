@@ -374,7 +374,8 @@ String _window(
 ) {
   for (final window in windows) {
     if (window.slot == slot) {
-      return '${formatHm(context, window.start)}–${formatHm(context, window.end)}';
+      // Isolated left-to-right so «07:30–09:30» keeps its order in Arabic.
+      return '${String.fromCharCode(0x2066)}${formatHm(context, window.start)}–${formatHm(context, window.end)}${String.fromCharCode(0x2069)}';
     }
   }
   return '';

@@ -51,6 +51,29 @@ void main() {
     expect(session.account?.email, isNull);
   });
 
+  test('a cached email restores with the session, without network', () async {
+    final storage = MemorySecure();
+    await SecureTokenStore(storage).save(
+      AuthTokens(
+        accessToken: 'access',
+        refreshToken: 'refresh',
+        accessExpiry: DateTime.utc(2026, 11, 2, 12),
+        hasProfile: true,
+        email: 'ahmed@demo.ly',
+      ),
+    );
+    final repo = _repo(
+      storage,
+      onFetch: (RequestOptions options) async {
+        return _json(500, <String, Object?>{'code': 'INTERNAL_ERROR'});
+      },
+    );
+
+    final session = await repo.restore();
+
+    expect((session as SignedIn).account?.email, 'ahmed@demo.ly');
+  });
+
   test('offline /me keeps the restored session', () async {
     final auth = FakeAuthRepository(
       restored: const SignedIn(
