@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:drift/drift.dart';
 
 import '../../../core/db/app_database.dart' as db;
-import '../../catalog/domain/meal.dart';
+import '../../catalog/domain/dish_icon.dart';
 import '../domain/plan.dart';
 import '../domain/plan_dates.dart';
 import 'plan_api.dart';
@@ -257,24 +257,17 @@ class PlanRepository {
     final meals = await (_database.select(
       _database.meals,
     )..where((t) => t.lang.equals(lang) & t.mealId.isIn(ids))).get();
-    final tags = await (_database.select(
-      _database.mealTags,
-    )..where((t) => t.lang.equals(lang) & t.mealId.isIn(ids))).get();
     final prefs = await (_database.select(
       _database.localMealPrefs,
     )..where((t) => t.mealId.isIn(ids))).get();
     final liked = <int, bool>{
       for (final pref in prefs) pref.mealId: pref.stance == 'LIKE',
     };
-    final byMeal = <int, List<String>>{};
-    for (final tag in tags) {
-      byMeal.putIfAbsent(tag.mealId, () => <String>[]).add(tag.tag);
-    }
     return <int, ({String name, String icon, bool liked})>{
       for (final meal in meals)
         meal.mealId: (
           name: meal.name,
-          icon: iconForOccasionTags(byMeal[meal.mealId] ?? const <String>[]),
+          icon: dishIcon(meal.name),
           liked: liked[meal.mealId] ?? false,
         ),
     };

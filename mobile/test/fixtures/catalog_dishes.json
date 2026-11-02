@@ -1,0 +1,4586 @@
+[
+ {
+  "id": 1,
+  "ar": {
+   "name": "عجة بالبقدونس",
+   "ingredients": [
+    "بيض",
+    "خبز أسمر",
+    "بصل",
+    "بقدونس",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أسود",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Omelette with parsley",
+   "ingredients": [
+    "Egg",
+    "Whole-wheat bread",
+    "Onion",
+    "Parsley",
+    "Olive oil",
+    "Salt",
+    "Black pepper",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 2,
+  "ar": {
+   "name": "عجة بالبطاطا",
+   "ingredients": [
+    "بطاطا",
+    "بيض",
+    "بصل",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Potato omelette",
+   "ingredients": [
+    "Potato",
+    "Egg",
+    "Onion",
+    "Olive oil",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 3,
+  "ar": {
+   "name": "كبدة ضأن بالثوم والكمون",
+   "ingredients": [
+    "كبدة ضأن",
+    "خبز عربي أسمر",
+    "ثوم",
+    "زيت زيتون",
+    "عصير ليمون",
+    "كمون",
+    "ملح",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Lamb liver with garlic and cumin",
+   "ingredients": [
+    "Lamb liver",
+    "Whole-wheat pita bread",
+    "Garlic",
+    "Olive oil",
+    "Lemon juice",
+    "Cumin",
+    "Salt",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 4,
+  "ar": {
+   "name": "زميطة بزيت الزيتون مع لبن",
+   "ingredients": [
+    "لبن رائب",
+    "دقيق شعير",
+    "ماء",
+    "زيت زيتون"
+   ]
+  },
+  "en": {
+   "name": "Zummita (roasted barley flour) with olive oil and buttermilk",
+   "ingredients": [
+    "Buttermilk, low-fat",
+    "Barley flour",
+    "Water",
+    "Olive oil"
+   ]
+  }
+ },
+ {
+  "id": 5,
+  "ar": {
+   "name": "بسيسة بالتمر",
+   "ingredients": [
+    "دقيق شعير",
+    "تمر",
+    "زيت زيتون"
+   ]
+  },
+  "en": {
+   "name": "Bsisa with dates",
+   "ingredients": [
+    "Barley flour",
+    "Dates",
+    "Olive oil"
+   ]
+  }
+ },
+ {
+  "id": 6,
+  "ar": {
+   "name": "تمر مع لبن",
+   "ingredients": [
+    "لبن رائب",
+    "تمر"
+   ]
+  },
+  "en": {
+   "name": "Dates with buttermilk",
+   "ingredients": [
+    "Buttermilk, low-fat",
+    "Dates"
+   ]
+  }
+ },
+ {
+  "id": 7,
+  "ar": {
+   "name": "جبن أبيض طري بالطماطم والخيار مع خبز أسمر",
+   "ingredients": [
+    "جبن قريش",
+    "طماطم",
+    "خيار",
+    "خبز عربي أسمر",
+    "زيت زيتون"
+   ]
+  },
+  "en": {
+   "name": "Soft white cheese (low-fat cottage cheese) with tomato, cucumber and wholewheat pita",
+   "ingredients": [
+    "Cottage cheese, low-fat (1%)",
+    "Tomato",
+    "Cucumber",
+    "Whole-wheat pita bread",
+    "Olive oil"
+   ]
+  }
+ },
+ {
+  "id": 8,
+  "ar": {
+   "name": "فول بالطحينة",
+   "ingredients": [
+    "فول مطبوخ",
+    "خبز عربي أسمر",
+    "طحينة",
+    "عصير ليمون",
+    "ثوم",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Fava beans with tahini",
+   "ingredients": [
+    "Fava beans, cooked (canned substitute)",
+    "Whole-wheat pita bread",
+    "Tahini",
+    "Lemon juice",
+    "Garlic",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 9,
+  "ar": {
+   "name": "شوفان بالزبادي والتوت",
+   "ingredients": [
+    "زبادي قليل الدسم",
+    "توت أزرق",
+    "شوفان",
+    "بذور الشيا"
+   ]
+  },
+  "en": {
+   "name": "Oats with yogurt and blueberries",
+   "ingredients": [
+    "Plain yogurt, low-fat",
+    "Blueberries",
+    "Rolled oats",
+    "Chia seeds"
+   ]
+  }
+ },
+ {
+  "id": 10,
+  "ar": {
+   "name": "خبز أسمر بزيت الزيتون والزعتر مع طماطم",
+   "ingredients": [
+    "طماطم",
+    "خبز أسمر",
+    "زيت زيتون",
+    "سمسم",
+    "زعتر مجفف"
+   ]
+  },
+  "en": {
+   "name": "Wholewheat bread with olive oil, thyme and tomato",
+   "ingredients": [
+    "Tomato",
+    "Whole-wheat bread",
+    "Olive oil",
+    "Sesame seeds",
+    "Thyme, dried"
+   ]
+  }
+ },
+ {
+  "id": 11,
+  "ar": {
+   "name": "توست أسمر بالموزاريلا والخضار",
+   "ingredients": [
+    "طماطم",
+    "خبز أسمر",
+    "خيار",
+    "جبن موزاريلا"
+   ]
+  },
+  "en": {
+   "name": "Wholewheat toast with mozzarella and vegetables",
+   "ingredients": [
+    "Tomato",
+    "Whole-wheat bread",
+    "Cucumber",
+    "Mozzarella, part-skim"
+   ]
+  }
+ },
+ {
+  "id": 12,
+  "ar": {
+   "name": "سلطة بطاطا بالبيض",
+   "ingredients": [
+    "بطاطا",
+    "بيض",
+    "بصل",
+    "بقدونس",
+    "زيت زيتون",
+    "عصير ليمون",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Potato salad with egg",
+   "ingredients": [
+    "Potato",
+    "Egg",
+    "Onion",
+    "Parsley",
+    "Olive oil",
+    "Lemon juice",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 13,
+  "ar": {
+   "name": "سندويتش تن ليبي بالهريسة والزيتون",
+   "ingredients": [
+    "خبز أسمر",
+    "تونة معلبة بالماء مصفاة",
+    "بيض",
+    "طماطم",
+    "زيتون أسود",
+    "زيت زيتون",
+    "ثوم",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Libyan tuna sandwich with harissa and olives",
+   "ingredients": [
+    "Whole-wheat bread",
+    "Canned tuna in water, drained",
+    "Egg",
+    "Tomato",
+    "Black olives",
+    "Olive oil",
+    "Garlic",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 14,
+  "ar": {
+   "name": "سلطة جزر بالكمون",
+   "ingredients": [
+    "جزر",
+    "عصير ليمون",
+    "زيت زيتون",
+    "بقدونس",
+    "ثوم",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Carrot salad with cumin",
+   "ingredients": [
+    "Carrot",
+    "Lemon juice",
+    "Olive oil",
+    "Parsley",
+    "Garlic",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 15,
+  "ar": {
+   "name": "شوربة خضار بالشعير",
+   "ingredients": [
+    "ماء",
+    "جزر",
+    "كوسا",
+    "بطاطا",
+    "شعير مقشور",
+    "بصل",
+    "كرفس",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "كزبرة خضراء",
+    "ملح",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Vegetable soup with barley",
+   "ingredients": [
+    "Water",
+    "Carrot",
+    "Zucchini",
+    "Potato",
+    "Pearled barley",
+    "Onion",
+    "Celery",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Coriander leaves",
+    "Salt",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 16,
+  "ar": {
+   "name": "سلمون بالفرن مع بروكلي وجزر",
+   "ingredients": [
+    "سلمون",
+    "بروكلي",
+    "جزر",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Baked salmon with broccoli and carrots",
+   "ingredients": [
+    "Atlantic salmon, farmed",
+    "Broccoli",
+    "Carrot",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 17,
+  "ar": {
+   "name": "متبل باذنجان مع خبز أسمر",
+   "ingredients": [
+    "باذنجان",
+    "خبز عربي أسمر",
+    "طحينة",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Mutabbal (eggplant with tahini) with wholewheat pita",
+   "ingredients": [
+    "Eggplant",
+    "Whole-wheat pita bread",
+    "Tahini",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 18,
+  "ar": {
+   "name": "شوربة دجاج بالخضار والشعير",
+   "ingredients": [
+    "ماء",
+    "صدر دجاج بدون جلد",
+    "جزر",
+    "بطاطا",
+    "كرفس",
+    "بصل",
+    "شعير مقشور",
+    "زيت زيتون",
+    "بقدونس",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Chicken soup with vegetables and barley",
+   "ingredients": [
+    "Water",
+    "Chicken breast, skinless",
+    "Carrot",
+    "Potato",
+    "Celery",
+    "Onion",
+    "Pearled barley",
+    "Olive oil",
+    "Parsley",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 19,
+  "ar": {
+   "name": "كسكسي بالحوت",
+   "ingredients": [
+    "كسكسي مطبوخ",
+    "فيليه سمك البلطي",
+    "ماء",
+    "قرع",
+    "بطاطا",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "كركم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Couscous with fish",
+   "ingredients": [
+    "Couscous, cooked",
+    "Tilapia fillet",
+    "Water",
+    "Pumpkin",
+    "Potato",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Paprika",
+    "Turmeric",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 20,
+  "ar": {
+   "name": "كسكسي بالخضار",
+   "ingredients": [
+    "كسكسي مطبوخ",
+    "ماء",
+    "قرع",
+    "حمص معلب مصفى",
+    "جزر",
+    "كوسا",
+    "بطاطا",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Vegetable couscous",
+   "ingredients": [
+    "Couscous, cooked",
+    "Water",
+    "Pumpkin",
+    "Canned chickpeas, drained",
+    "Carrot",
+    "Zucchini",
+    "Potato",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Paprika",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 21,
+  "ar": {
+   "name": "رز بالخضار",
+   "ingredients": [
+    "ماء",
+    "أرز أبيض",
+    "جزر",
+    "بازلاء",
+    "بصل",
+    "زيت زيتون",
+    "ملح",
+    "كركم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Rice with vegetables",
+   "ingredients": [
+    "Water",
+    "White rice",
+    "Carrot",
+    "Green peas",
+    "Onion",
+    "Olive oil",
+    "Salt",
+    "Turmeric",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 22,
+  "ar": {
+   "name": "دجاج مشوي بالثوم والليمون مع بطاطا",
+   "ingredients": [
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "بطاطا",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "كمون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Grilled chicken with garlic and lemon and potatoes",
+   "ingredients": [
+    "Chicken thigh, skinless",
+    "Potato",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Cumin",
+    "Salt",
+    "Paprika",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 23,
+  "ar": {
+   "name": "ملوخية بالدجاج والأرز",
+   "ingredients": [
+    "ماء",
+    "ملوخية مطبوخة",
+    "صدر دجاج بدون جلد",
+    "أرز أبيض",
+    "ثوم",
+    "كزبرة خضراء",
+    "زيت زيتون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Molokhia with chicken and rice",
+   "ingredients": [
+    "Water",
+    "Jute leaves (molokhia), cooked",
+    "Chicken breast, skinless",
+    "White rice",
+    "Garlic",
+    "Coriander leaves",
+    "Olive oil",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 24,
+  "ar": {
+   "name": "مقلوبة بالدجاج والباذنجان",
+   "ingredients": [
+    "ماء",
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "باذنجان",
+    "أرز أبيض",
+    "بصل",
+    "زيت دوار الشمس",
+    "ملح",
+    "كركم",
+    "فلفل أسود",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Maqluba with chicken and eggplant",
+   "ingredients": [
+    "Water",
+    "Chicken thigh, skinless",
+    "Eggplant",
+    "White rice",
+    "Onion",
+    "Sunflower oil",
+    "Salt",
+    "Turmeric",
+    "Black pepper",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 25,
+  "ar": {
+   "name": "سمك قاروص مشوي مع رز بني وسلطة",
+   "ingredients": [
+    "ماء",
+    "قاروص",
+    "رز بني",
+    "خس",
+    "طماطم",
+    "خيار",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Grilled sea bass with brown rice and salad",
+   "ingredients": [
+    "Water",
+    "Sea bass",
+    "Brown rice",
+    "Romaine lettuce",
+    "Tomato",
+    "Cucumber",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 26,
+  "ar": {
+   "name": "لوبيا باللحم",
+   "ingredients": [
+    "ماء",
+    "لوبيا جافة",
+    "لحم ضأن",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Black-eyed peas with lamb",
+   "ingredients": [
+    "Water",
+    "Black-eyed peas, dried",
+    "Lamb shoulder, lean",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Paprika",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 27,
+  "ar": {
+   "name": "محشي كوسا بالأرز واللحم",
+   "ingredients": [
+    "كوسا",
+    "ماء",
+    "لحم بقر مفروم 90% صافٍ",
+    "أرز أبيض",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "بقدونس",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أسود",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Zucchini stuffed with rice and beef",
+   "ingredients": [
+    "Zucchini",
+    "Water",
+    "Ground beef, 90% lean",
+    "White rice",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Parsley",
+    "Olive oil",
+    "Salt",
+    "Black pepper",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 28,
+  "ar": {
+   "name": "فاصوليا خضراء باللحم",
+   "ingredients": [
+    "فاصوليا خضراء",
+    "لحم بقري هبرة",
+    "طماطم",
+    "ماء",
+    "بصل",
+    "زيت زيتون",
+    "معجون طماطم بدون ملح مضاف",
+    "ثوم",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Green beans with beef",
+   "ingredients": [
+    "Green beans",
+    "Beef round, lean",
+    "Tomato",
+    "Water",
+    "Onion",
+    "Olive oil",
+    "Tomato paste, no added salt",
+    "Garlic",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 29,
+  "ar": {
+   "name": "صدر دجاج مشوي مع برغل وخضار",
+   "ingredients": [
+    "صدر دجاج بدون جلد",
+    "ماء",
+    "كوسا",
+    "فلفل أحمر حلو",
+    "برغل",
+    "زيت زيتون",
+    "عصير ليمون",
+    "ثوم",
+    "ملح",
+    "فلفل أسود",
+    "أوريجانو"
+   ]
+  },
+  "en": {
+   "name": "Grilled chicken breast with bulgur and vegetables",
+   "ingredients": [
+    "Chicken breast, skinless",
+    "Water",
+    "Zucchini",
+    "Red bell pepper",
+    "Bulgur",
+    "Olive oil",
+    "Lemon juice",
+    "Garlic",
+    "Salt",
+    "Black pepper",
+    "Oregano, dried"
+   ]
+  }
+ },
+ {
+  "id": 30,
+  "ar": {
+   "name": "لحم بقري مع خضار سوتيه ورز بني",
+   "ingredients": [
+    "ماء",
+    "لحم بقري هبرة",
+    "رز بني",
+    "بروكلي",
+    "جزر",
+    "فطر",
+    "بصل",
+    "زيت دوار الشمس",
+    "ثوم",
+    "ملح",
+    "زنجبيل مطحون",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Beef with sauteed vegetables and brown rice",
+   "ingredients": [
+    "Water",
+    "Beef round, lean",
+    "Brown rice",
+    "Broccoli",
+    "Carrot",
+    "White mushrooms",
+    "Onion",
+    "Sunflower oil",
+    "Garlic",
+    "Salt",
+    "Ginger, ground",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 31,
+  "ar": {
+   "name": "زبادي بالتمر",
+   "ingredients": [
+    "زبادي قليل الدسم",
+    "تمر"
+   ]
+  },
+  "en": {
+   "name": "Yogurt with dates",
+   "ingredients": [
+    "Plain yogurt, low-fat",
+    "Dates"
+   ]
+  }
+ },
+ {
+  "id": 32,
+  "ar": {
+   "name": "قهوة بالحليب بدون سكر",
+   "ingredients": [
+    "قهوة",
+    "حليب قليل الدسم"
+   ]
+  },
+  "en": {
+   "name": "Coffee with milk, no sugar",
+   "ingredients": [
+    "Coffee, brewed",
+    "Low-fat milk (1%)"
+   ]
+  }
+ },
+ {
+  "id": 33,
+  "ar": {
+   "name": "لوز وجوز وزبيب",
+   "ingredients": [
+    "لوز",
+    "زبيب",
+    "جوز"
+   ]
+  },
+  "en": {
+   "name": "Almonds, walnuts and raisins",
+   "ingredients": [
+    "Almonds",
+    "Raisins",
+    "Walnuts"
+   ]
+  }
+ },
+ {
+  "id": 34,
+  "ar": {
+   "name": "تفاح بزبدة الفول السوداني",
+   "ingredients": [
+    "تفاح",
+    "زبدة الفول السوداني بدون ملح"
+   ]
+  },
+  "en": {
+   "name": "Apple with peanut butter",
+   "ingredients": [
+    "Apple",
+    "Peanut butter, unsalted"
+   ]
+  }
+ },
+ {
+  "id": 35,
+  "ar": {
+   "name": "فشار بزيت الزيتون",
+   "ingredients": [
+    "فشار",
+    "زيت زيتون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Air-popped popcorn with olive oil",
+   "ingredients": [
+    "Popcorn, air-popped",
+    "Olive oil",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 36,
+  "ar": {
+   "name": "تين مجفف مع جوز",
+   "ingredients": [
+    "تين مجفف",
+    "جوز"
+   ]
+  },
+  "en": {
+   "name": "Dried figs with walnuts",
+   "ingredients": [
+    "Figs, dried",
+    "Walnuts"
+   ]
+  }
+ },
+ {
+  "id": 37,
+  "ar": {
+   "name": "زبادي يوناني بالفراولة والموز",
+   "ingredients": [
+    "زبادي يوناني خالي الدسم",
+    "فراولة",
+    "موز"
+   ]
+  },
+  "en": {
+   "name": "Greek yogurt with strawberries and banana",
+   "ingredients": [
+    "Greek yogurt, nonfat",
+    "Strawberries",
+    "Banana"
+   ]
+  }
+ },
+ {
+  "id": 38,
+  "ar": {
+   "name": "شكشوكة ليبية بالبيض مع خبز أسمر",
+   "ingredients": [
+    "بيض",
+    "طماطم",
+    "خبز عربي أسمر",
+    "فلفل أخضر حلو",
+    "بصل",
+    "زيت زيتون",
+    "ثوم",
+    "كمون",
+    "فلفل حار مطحون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Libyan shakshuka with eggs and wholewheat bread",
+   "ingredients": [
+    "Egg",
+    "Tomato",
+    "Whole-wheat pita bread",
+    "Green bell pepper",
+    "Onion",
+    "Olive oil",
+    "Garlic",
+    "Cumin",
+    "Chili powder",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 39,
+  "ar": {
+   "name": "فول بالكمون وزيت الزيتون مع بيضتين مسلوقتين",
+   "ingredients": [
+    "فول مطبوخ",
+    "بيض",
+    "خبز عربي أسمر",
+    "زيت زيتون",
+    "عصير ليمون",
+    "ثوم",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Fava beans with cumin and olive oil, with two boiled eggs",
+   "ingredients": [
+    "Fava beans, cooked (canned substitute)",
+    "Egg",
+    "Whole-wheat pita bread",
+    "Olive oil",
+    "Lemon juice",
+    "Garlic",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 40,
+  "ar": {
+   "name": "بيض مخفوق بالسبانخ مع خبز أسمر",
+   "ingredients": [
+    "بيض",
+    "سبانخ",
+    "بياض البيض",
+    "خبز أسمر",
+    "بصل",
+    "زيت زيتون",
+    "فلفل أسود",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Scrambled eggs with spinach and wholewheat bread",
+   "ingredients": [
+    "Egg",
+    "Spinach",
+    "Egg white",
+    "Whole-wheat bread",
+    "Onion",
+    "Olive oil",
+    "Black pepper",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 41,
+  "ar": {
+   "name": "جبن أبيض طري (قريش) مع فواكه وجوز",
+   "ingredients": [
+    "جبن قريش",
+    "فراولة",
+    "موز",
+    "جوز",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Cottage cheese with fruit and walnuts",
+   "ingredients": [
+    "Cottage cheese, low-fat (1%)",
+    "Strawberries",
+    "Banana",
+    "Walnuts",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 42,
+  "ar": {
+   "name": "زبادي يوناني بالمكسرات والعسل",
+   "ingredients": [
+    "زبادي يوناني خالي الدسم",
+    "جوز",
+    "لوز",
+    "عسل"
+   ]
+  },
+  "en": {
+   "name": "Greek yogurt with nuts and honey",
+   "ingredients": [
+    "Greek yogurt, nonfat",
+    "Walnuts",
+    "Almonds",
+    "Honey"
+   ]
+  }
+ },
+ {
+  "id": 43,
+  "ar": {
+   "name": "بان كيك الشوفان والموز",
+   "ingredients": [
+    "موز",
+    "بيض",
+    "بياض البيض",
+    "حليب قليل الدسم",
+    "شوفان",
+    "زيت الكانولا",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Oat and banana pancakes",
+   "ingredients": [
+    "Banana",
+    "Egg",
+    "Egg white",
+    "Low-fat milk (1%)",
+    "Rolled oats",
+    "Canola oil",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 44,
+  "ar": {
+   "name": "شوفان بالحليب والموز مع بيضتين مسلوقتين",
+   "ingredients": [
+    "حليب قليل الدسم",
+    "بيض",
+    "موز",
+    "شوفان",
+    "قرفة",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Oatmeal with milk and banana, with two boiled eggs",
+   "ingredients": [
+    "Low-fat milk (1%)",
+    "Egg",
+    "Banana",
+    "Rolled oats",
+    "Cinnamon",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 45,
+  "ar": {
+   "name": "بيض مسلوق مع توست أسمر وخضار",
+   "ingredients": [
+    "بيض",
+    "طماطم",
+    "خيار",
+    "خبز أسمر",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Boiled eggs with wholewheat toast and vegetables",
+   "ingredients": [
+    "Egg",
+    "Tomato",
+    "Cucumber",
+    "Whole-wheat bread",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 46,
+  "ar": {
+   "name": "لبنة بزيت الزيتون والزعتر مع خبز أسمر وخضار",
+   "ingredients": [
+    "زبادي يوناني كامل الدسم",
+    "خيار",
+    "طماطم",
+    "خبز عربي أسمر",
+    "زيت زيتون",
+    "زعتر مجفف",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Labneh with olive oil and thyme, wholewheat pita and vegetables",
+   "ingredients": [
+    "Greek yogurt, whole milk (labneh base)",
+    "Cucumber",
+    "Tomato",
+    "Whole-wheat pita bread",
+    "Olive oil",
+    "Thyme, dried",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 47,
+  "ar": {
+   "name": "تونة مع خبز أسمر وخيار",
+   "ingredients": [
+    "تونة معلبة بالماء مصفاة",
+    "خيار",
+    "خبز أسمر",
+    "عصير ليمون",
+    "زيت زيتون",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Tuna with wholewheat bread and cucumber",
+   "ingredients": [
+    "Canned tuna in water, drained",
+    "Cucumber",
+    "Whole-wheat bread",
+    "Lemon juice",
+    "Olive oil",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 48,
+  "ar": {
+   "name": "ساندويتش جبن أبيض مالح (فيتا) وخضار",
+   "ingredients": [
+    "طماطم",
+    "خبز عربي أسمر",
+    "خيار",
+    "جبن فيتا",
+    "خس",
+    "زيتون أسود",
+    "أوريجانو"
+   ]
+  },
+  "en": {
+   "name": "Feta and vegetable sandwich",
+   "ingredients": [
+    "Tomato",
+    "Whole-wheat pita bread",
+    "Cucumber",
+    "Feta cheese",
+    "Romaine lettuce",
+    "Black olives",
+    "Oregano, dried"
+   ]
+  }
+ },
+ {
+  "id": 49,
+  "ar": {
+   "name": "مبكبكة بالدجاج",
+   "ingredients": [
+    "ماء",
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "معكرونة",
+    "طماطم معلبة",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل حار مطحون",
+    "فلفل أحمر حلو مطحون",
+    "كركم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Mbakbaka (spicy Libyan pasta) with chicken",
+   "ingredients": [
+    "Water",
+    "Chicken thigh, skinless",
+    "Pasta",
+    "Canned tomatoes",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Chili powder",
+    "Paprika",
+    "Turmeric",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 50,
+  "ar": {
+   "name": "مبكبكة بالحوت",
+   "ingredients": [
+    "ماء",
+    "قاروص",
+    "معكرونة",
+    "طماطم معلبة",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل حار مطحون",
+    "فلفل أحمر حلو مطحون",
+    "كركم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Mbakbaka (spicy Libyan pasta) with fish",
+   "ingredients": [
+    "Water",
+    "Sea bass",
+    "Pasta",
+    "Canned tomatoes",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Chili powder",
+    "Paprika",
+    "Turmeric",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 51,
+  "ar": {
+   "name": "رز ليبي باللحم والبهارات",
+   "ingredients": [
+    "ماء",
+    "لحم ضأن",
+    "أرز أبيض",
+    "بصل",
+    "حمص معلب مصفى",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "كركم",
+    "قرفة",
+    "فلفل أسود",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Libyan spiced rice with lamb",
+   "ingredients": [
+    "Water",
+    "Lamb shoulder, lean",
+    "White rice",
+    "Onion",
+    "Canned chickpeas, drained",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Turmeric",
+    "Cinnamon",
+    "Black pepper",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 52,
+  "ar": {
+   "name": "بازين بالصلصة واللحم",
+   "ingredients": [
+    "ماء",
+    "دقيق شعير",
+    "لحم ضأن",
+    "بطاطا",
+    "بيض",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "فلفل حار مطحون",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Bazeen (barley dough) with lamb sauce",
+   "ingredients": [
+    "Water",
+    "Barley flour",
+    "Lamb shoulder, lean",
+    "Potato",
+    "Egg",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Chili powder",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 53,
+  "ar": {
+   "name": "طبيخة فاصوليا بيضاء باللحم مع خبز",
+   "ingredients": [
+    "ماء",
+    "فاصوليا بيضاء جافة",
+    "لحم ضأن",
+    "خبز عربي أسمر",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل حار مطحون",
+    "فلفل أحمر حلو مطحون",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "White bean stew with lamb, with bread",
+   "ingredients": [
+    "Water",
+    "White beans, dried",
+    "Lamb shoulder, lean",
+    "Whole-wheat pita bread",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Chili powder",
+    "Paprika",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 54,
+  "ar": {
+   "name": "كفتة بالصلصة مع رز أبيض",
+   "ingredients": [
+    "ماء",
+    "لحم بقر مفروم 90% صافٍ",
+    "طماطم معلبة",
+    "أرز أبيض",
+    "بصل",
+    "بيض",
+    "معجون طماطم بدون ملح مضاف",
+    "بقدونس",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Meatballs in tomato sauce with white rice",
+   "ingredients": [
+    "Water",
+    "Ground beef, 90% lean",
+    "Canned tomatoes",
+    "White rice",
+    "Onion",
+    "Egg",
+    "Tomato paste, no added salt",
+    "Parsley",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 55,
+  "ar": {
+   "name": "شربة ليبية",
+   "ingredients": [
+    "ماء",
+    "لحم ضأن",
+    "معكرونة",
+    "حمص معلب مصفى",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "بقدونس",
+    "ملح",
+    "كركم",
+    "فلفل حار مطحون",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Libyan sharba (lamb and orzo soup)",
+   "ingredients": [
+    "Water",
+    "Lamb shoulder, lean",
+    "Pasta",
+    "Canned chickpeas, drained",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Parsley",
+    "Salt",
+    "Turmeric",
+    "Chili powder",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 56,
+  "ar": {
+   "name": "مجدرة مع زبادي",
+   "ingredients": [
+    "ماء",
+    "زبادي قليل الدسم",
+    "بصل",
+    "عدس",
+    "رز بني",
+    "زيت زيتون",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Mujaddara (lentils and rice) with yogurt",
+   "ingredients": [
+    "Water",
+    "Plain yogurt, low-fat",
+    "Onion",
+    "Lentils",
+    "Brown rice",
+    "Olive oil",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 57,
+  "ar": {
+   "name": "فتة حمص",
+   "ingredients": [
+    "حمص معلب مصفى",
+    "زبادي يوناني خالي الدسم",
+    "خبز عربي أسمر",
+    "زبادي قليل الدسم",
+    "طحينة",
+    "عصير ليمون",
+    "صنوبر",
+    "زيت زيتون",
+    "ثوم",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Fatteh hummus (chickpeas, yogurt and toasted bread)",
+   "ingredients": [
+    "Canned chickpeas, drained",
+    "Greek yogurt, nonfat",
+    "Whole-wheat pita bread",
+    "Plain yogurt, low-fat",
+    "Tahini",
+    "Lemon juice",
+    "Pine nuts",
+    "Olive oil",
+    "Garlic",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 58,
+  "ar": {
+   "name": "فاصوليا بيضاء بالصلصة مع خبز (بدون لحم)",
+   "ingredients": [
+    "ماء",
+    "فاصوليا بيضاء جافة",
+    "خبز عربي أسمر",
+    "طماطم معلبة",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "White beans in tomato sauce with bread (no meat)",
+   "ingredients": [
+    "Water",
+    "White beans, dried",
+    "Whole-wheat pita bread",
+    "Canned tomatoes",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 59,
+  "ar": {
+   "name": "دجاج ورز بالخضار",
+   "ingredients": [
+    "ماء",
+    "صدر دجاج بدون جلد",
+    "أرز أبيض",
+    "جزر",
+    "بازلاء",
+    "فلفل أحمر حلو",
+    "بصل",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كركم",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Chicken and rice with vegetables",
+   "ingredients": [
+    "Water",
+    "Chicken breast, skinless",
+    "White rice",
+    "Carrot",
+    "Green peas",
+    "Red bell pepper",
+    "Onion",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Turmeric",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 60,
+  "ar": {
+   "name": "سلطة دجاج بالبرغل",
+   "ingredients": [
+    "صدر دجاج بدون جلد",
+    "ماء",
+    "برغل",
+    "خيار",
+    "طماطم",
+    "بقدونس",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Chicken salad with bulgur",
+   "ingredients": [
+    "Chicken breast, skinless",
+    "Water",
+    "Bulgur",
+    "Cucumber",
+    "Tomato",
+    "Parsley",
+    "Lemon juice",
+    "Olive oil",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 61,
+  "ar": {
+   "name": "كشري",
+   "ingredients": [
+    "ماء",
+    "صلصة طماطم معلبة",
+    "أرز أبيض",
+    "بصل",
+    "عدس",
+    "معكرونة",
+    "حمص معلب مصفى",
+    "زيت زيتون",
+    "عصير ليمون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Koshari (lentils, rice and pasta with tomato sauce)",
+   "ingredients": [
+    "Water",
+    "Tomato sauce, canned",
+    "White rice",
+    "Onion",
+    "Lentils",
+    "Pasta",
+    "Canned chickpeas, drained",
+    "Olive oil",
+    "Lemon juice",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 62,
+  "ar": {
+   "name": "شيش طاووق مع رز",
+   "ingredients": [
+    "صدر دجاج بدون جلد",
+    "ماء",
+    "أرز أبيض",
+    "زبادي قليل الدسم",
+    "عصير ليمون",
+    "زيت زيتون",
+    "معجون طماطم بدون ملح مضاف",
+    "ثوم",
+    "ملح",
+    "فلفل أحمر حلو مطحون"
+   ]
+  },
+  "en": {
+   "name": "Shish tawook (marinated chicken) with rice",
+   "ingredients": [
+    "Chicken breast, skinless",
+    "Water",
+    "White rice",
+    "Plain yogurt, low-fat",
+    "Lemon juice",
+    "Olive oil",
+    "Tomato paste, no added salt",
+    "Garlic",
+    "Salt",
+    "Paprika"
+   ]
+  }
+ },
+ {
+  "id": 63,
+  "ar": {
+   "name": "بلطي مشوي مع رز",
+   "ingredients": [
+    "فيليه سمك البلطي",
+    "ماء",
+    "أرز أبيض",
+    "بصل",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "فلفل أحمر حلو مطحون"
+   ]
+  },
+  "en": {
+   "name": "Grilled tilapia with rice",
+   "ingredients": [
+    "Tilapia fillet",
+    "Water",
+    "White rice",
+    "Onion",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Paprika"
+   ]
+  }
+ },
+ {
+  "id": 64,
+  "ar": {
+   "name": "سردين مع سلطة خضراء وخبز أسمر",
+   "ingredients": [
+    "سردين معلب",
+    "طماطم",
+    "خس",
+    "خيار",
+    "خبز عربي أسمر",
+    "عصير ليمون",
+    "زيت زيتون"
+   ]
+  },
+  "en": {
+   "name": "Sardines with green salad and wholewheat pita",
+   "ingredients": [
+    "Sardines, canned in oil, drained",
+    "Tomato",
+    "Romaine lettuce",
+    "Cucumber",
+    "Whole-wheat pita bread",
+    "Lemon juice",
+    "Olive oil"
+   ]
+  }
+ },
+ {
+  "id": 65,
+  "ar": {
+   "name": "ساندويتش دجاج مشوي بالخبز الأسمر",
+   "ingredients": [
+    "صدر دجاج بدون جلد",
+    "خبز عربي أسمر",
+    "طماطم",
+    "زبادي قليل الدسم",
+    "خس",
+    "زيت زيتون",
+    "ثوم",
+    "فلفل أحمر حلو مطحون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Grilled chicken wholewheat sandwich",
+   "ingredients": [
+    "Chicken breast, skinless",
+    "Whole-wheat pita bread",
+    "Tomato",
+    "Plain yogurt, low-fat",
+    "Romaine lettuce",
+    "Olive oil",
+    "Garlic",
+    "Paprika",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 66,
+  "ar": {
+   "name": "سلطة مشوية بالتن والبيض",
+   "ingredients": [
+    "فلفل أخضر حلو",
+    "طماطم",
+    "تونة معلبة بالماء مصفاة",
+    "بيض",
+    "بصل",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كراوية"
+   ]
+  },
+  "en": {
+   "name": "Libyan grilled pepper and tomato salad with tuna and egg",
+   "ingredients": [
+    "Green bell pepper",
+    "Tomato",
+    "Canned tuna in water, drained",
+    "Egg",
+    "Onion",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Caraway seed"
+   ]
+  }
+ },
+ {
+  "id": 67,
+  "ar": {
+   "name": "بطاطا مسلوقة بالكمون مع بيض",
+   "ingredients": [
+    "بطاطا",
+    "بيض",
+    "زيت زيتون",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Boiled potatoes with cumin and eggs",
+   "ingredients": [
+    "Potato",
+    "Egg",
+    "Olive oil",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 68,
+  "ar": {
+   "name": "شربة عدس",
+   "ingredients": [
+    "ماء",
+    "عدس",
+    "بطاطا",
+    "بصل",
+    "جزر",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Lentil soup",
+   "ingredients": [
+    "Water",
+    "Lentils",
+    "Potato",
+    "Onion",
+    "Carrot",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 69,
+  "ar": {
+   "name": "تبولة",
+   "ingredients": [
+    "طماطم",
+    "بقدونس",
+    "برغل",
+    "عصير ليمون",
+    "بصل",
+    "زيت زيتون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Tabbouleh",
+   "ingredients": [
+    "Tomato",
+    "Parsley",
+    "Bulgur",
+    "Lemon juice",
+    "Onion",
+    "Olive oil",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 70,
+  "ar": {
+   "name": "سمك بالفرن مع خضار",
+   "ingredients": [
+    "سمك القد",
+    "كوسا",
+    "طماطم",
+    "فلفل أحمر حلو",
+    "بصل",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Baked fish with vegetables",
+   "ingredients": [
+    "Atlantic cod",
+    "Zucchini",
+    "Tomato",
+    "Red bell pepper",
+    "Onion",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 71,
+  "ar": {
+   "name": "سموذي موز بالحليب والزبادي",
+   "ingredients": [
+    "حليب قليل الدسم",
+    "موز",
+    "زبادي يوناني خالي الدسم",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Banana smoothie with milk and yogurt",
+   "ingredients": [
+    "Low-fat milk (1%)",
+    "Banana",
+    "Greek yogurt, nonfat",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 72,
+  "ar": {
+   "name": "زبادي يوناني بالخيار والثوم",
+   "ingredients": [
+    "زبادي يوناني خالي الدسم",
+    "خيار",
+    "زيت زيتون",
+    "ثوم",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Greek yogurt with cucumber and garlic",
+   "ingredients": [
+    "Greek yogurt, nonfat",
+    "Cucumber",
+    "Olive oil",
+    "Garlic",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 73,
+  "ar": {
+   "name": "بيضتان مسلوقتان مع شريحة خبز أسمر وخيار",
+   "ingredients": [
+    "بيض",
+    "خيار",
+    "خبز أسمر",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Two boiled eggs with a slice of wholewheat bread and cucumber",
+   "ingredients": [
+    "Egg",
+    "Cucumber",
+    "Whole-wheat bread",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 74,
+  "ar": {
+   "name": "خضار مقطعة مع حمص بالطحينة",
+   "ingredients": [
+    "حمص بالطحينة جاهز",
+    "جزر",
+    "خيار",
+    "فلفل أحمر حلو"
+   ]
+  },
+  "en": {
+   "name": "Vegetable sticks with hummus",
+   "ingredients": [
+    "Hummus, commercial",
+    "Carrot",
+    "Cucumber",
+    "Red bell pepper"
+   ]
+  }
+ },
+ {
+  "id": 75,
+  "ar": {
+   "name": "حفنة لوز",
+   "ingredients": [
+    "لوز"
+   ]
+  },
+  "en": {
+   "name": "Handful of almonds",
+   "ingredients": [
+    "Almonds"
+   ]
+  }
+ },
+ {
+  "id": 76,
+  "ar": {
+   "name": "مبكبكة بالخضار والحمص",
+   "ingredients": [
+    "ماء",
+    "معكرونة",
+    "حمص معلب مصفى",
+    "كوسا",
+    "طماطم معلبة",
+    "بطاطا",
+    "فلفل أخضر حلو",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل حار مطحون",
+    "فلفل أحمر حلو مطحون",
+    "كركم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Vegetable mbakbaka with chickpeas",
+   "ingredients": [
+    "Water",
+    "Pasta",
+    "Canned chickpeas, drained",
+    "Zucchini",
+    "Canned tomatoes",
+    "Potato",
+    "Green bell pepper",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Chili powder",
+    "Paprika",
+    "Turmeric",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 77,
+  "ar": {
+   "name": "مبكبكة باللحم",
+   "ingredients": [
+    "ماء",
+    "لحم ضأن",
+    "معكرونة",
+    "طماطم معلبة",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل حار مطحون",
+    "فلفل أحمر حلو مطحون",
+    "كركم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Mbakbaka (spicy Libyan pasta) with lamb",
+   "ingredients": [
+    "Water",
+    "Lamb shoulder, lean",
+    "Pasta",
+    "Canned tomatoes",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Chili powder",
+    "Paprika",
+    "Turmeric",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 78,
+  "ar": {
+   "name": "دجاج مشوي بالكمون والثوم مع سلطة وخبز أسمر",
+   "ingredients": [
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "طماطم",
+    "خيار",
+    "خبز عربي أسمر",
+    "بصل",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "كمون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Grilled chicken with cumin and garlic, salad and wholewheat bread",
+   "ingredients": [
+    "Chicken thigh, skinless",
+    "Tomato",
+    "Cucumber",
+    "Whole-wheat pita bread",
+    "Onion",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Cumin",
+    "Salt",
+    "Paprika",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 79,
+  "ar": {
+   "name": "طبيخة سلق بالحمص مع خبز",
+   "ingredients": [
+    "سلق",
+    "ماء",
+    "حمص حب جاف",
+    "خبز عربي أسمر",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "فلفل حار مطحون",
+    "فلفل أحمر حلو مطحون",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Swiss chard and chickpea stew, with bread",
+   "ingredients": [
+    "Swiss chard",
+    "Water",
+    "Chickpeas, dried",
+    "Whole-wheat pita bread",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Chili powder",
+    "Paprika",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 80,
+  "ar": {
+   "name": "كسكسي باللحم والخضار",
+   "ingredients": [
+    "ماء",
+    "كسكسي مطبوخ",
+    "لحم ضأن",
+    "قرع",
+    "بطاطا",
+    "جزر",
+    "كوسا",
+    "بصل",
+    "حمص معلب مصفى",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "كركم",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Couscous with lamb and vegetables",
+   "ingredients": [
+    "Water",
+    "Couscous, cooked",
+    "Lamb shoulder, lean",
+    "Pumpkin",
+    "Potato",
+    "Carrot",
+    "Zucchini",
+    "Onion",
+    "Canned chickpeas, drained",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Paprika",
+    "Turmeric",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 81,
+  "ar": {
+   "name": "كسكسي بالدجاج والخضار",
+   "ingredients": [
+    "ماء",
+    "كسكسي مطبوخ",
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "قرع",
+    "بطاطا",
+    "جزر",
+    "كوسا",
+    "بصل",
+    "حمص معلب مصفى",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "كركم",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Couscous with chicken and vegetables",
+   "ingredients": [
+    "Water",
+    "Couscous, cooked",
+    "Chicken thigh, skinless",
+    "Pumpkin",
+    "Potato",
+    "Carrot",
+    "Zucchini",
+    "Onion",
+    "Canned chickpeas, drained",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Paprika",
+    "Turmeric",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 82,
+  "ar": {
+   "name": "رز بالحوت",
+   "ingredients": [
+    "ماء",
+    "فيليه سمك البلطي",
+    "أرز أبيض",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "كركم",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Libyan fish rice",
+   "ingredients": [
+    "Water",
+    "Tilapia fillet",
+    "White rice",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Turmeric",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 83,
+  "ar": {
+   "name": "طبيخة بطاطا باللحم مع خبز",
+   "ingredients": [
+    "بطاطا",
+    "ماء",
+    "لحم ضأن",
+    "خبز عربي أسمر",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "فلفل حار مطحون",
+    "كركم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Potato stew with lamb, with bread",
+   "ingredients": [
+    "Potato",
+    "Water",
+    "Lamb shoulder, lean",
+    "Whole-wheat pita bread",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Paprika",
+    "Chili powder",
+    "Turmeric",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 84,
+  "ar": {
+   "name": "طبيخة بامية باللحم مع خبز",
+   "ingredients": [
+    "بامية",
+    "ماء",
+    "لحم ضأن",
+    "طماطم معلبة",
+    "خبز عربي أسمر",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "كزبرة خضراء",
+    "ثوم",
+    "ملح",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Okra stew with lamb, with bread",
+   "ingredients": [
+    "Okra",
+    "Water",
+    "Lamb shoulder, lean",
+    "Canned tomatoes",
+    "Whole-wheat pita bread",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Coriander leaves",
+    "Garlic",
+    "Salt",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 85,
+  "ar": {
+   "name": "طبيخة كوسا باللحم مع خبز",
+   "ingredients": [
+    "كوسا",
+    "ماء",
+    "لحم ضأن",
+    "خبز عربي أسمر",
+    "بصل",
+    "حمص معلب مصفى",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Zucchini stew with lamb, with bread",
+   "ingredients": [
+    "Zucchini",
+    "Water",
+    "Lamb shoulder, lean",
+    "Whole-wheat pita bread",
+    "Onion",
+    "Canned chickpeas, drained",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Paprika",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 86,
+  "ar": {
+   "name": "طاجين لحم بالبطاطا في الفرن",
+   "ingredients": [
+    "بطاطا",
+    "لحم ضأن",
+    "طماطم",
+    "ماء",
+    "بصل",
+    "فلفل أخضر حلو",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "كمون",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Oven lamb and potato tajine",
+   "ingredients": [
+    "Potato",
+    "Lamb shoulder, lean",
+    "Tomato",
+    "Water",
+    "Onion",
+    "Green bell pepper",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Paprika",
+    "Cumin",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 87,
+  "ar": {
+   "name": "طاجين حوت",
+   "ingredients": [
+    "قاروص",
+    "بطاطا",
+    "طماطم",
+    "ماء",
+    "فلفل أخضر حلو",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "عصير ليمون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "فلفل حار مطحون",
+    "فلفل أحمر حلو مطحون"
+   ]
+  },
+  "en": {
+   "name": "Libyan fish tajine",
+   "ingredients": [
+    "Sea bass",
+    "Potato",
+    "Tomato",
+    "Water",
+    "Green bell pepper",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Lemon juice",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Chili powder",
+    "Paprika"
+   ]
+  }
+ },
+ {
+  "id": 88,
+  "ar": {
+   "name": "رشتة كسكاس بالدجاج والحمص",
+   "ingredients": [
+    "ماء",
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "معكرونة",
+    "حمص معلب مصفى",
+    "بصل",
+    "زيت زيتون",
+    "ملح",
+    "كركم",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Rishta kaskas (steamed noodles) with chicken and chickpeas",
+   "ingredients": [
+    "Water",
+    "Chicken thigh, skinless",
+    "Pasta",
+    "Canned chickpeas, drained",
+    "Onion",
+    "Olive oil",
+    "Salt",
+    "Turmeric",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 89,
+  "ar": {
+   "name": "محشي ليبي (بصل وطماطم وفلفل)",
+   "ingredients": [
+    "بصل",
+    "طماطم",
+    "ماء",
+    "فلفل أخضر حلو",
+    "لحم بقر مفروم 90% صافٍ",
+    "أرز أبيض",
+    "معجون طماطم بدون ملح مضاف",
+    "بقدونس",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Libyan stuffed vegetables (onion, tomato, pepper)",
+   "ingredients": [
+    "Onion",
+    "Tomato",
+    "Water",
+    "Green bell pepper",
+    "Ground beef, 90% lean",
+    "White rice",
+    "Tomato paste, no added salt",
+    "Parsley",
+    "Olive oil",
+    "Salt",
+    "Paprika",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 90,
+  "ar": {
+   "name": "مبطن بطاطا مع سلطة",
+   "ingredients": [
+    "بطاطا",
+    "لحم بقر مفروم 90% صافٍ",
+    "طماطم",
+    "خيار",
+    "بيض",
+    "بصل",
+    "زيت دوار الشمس",
+    "دقيق قمح أبيض",
+    "بقدونس",
+    "عصير ليمون",
+    "ملح",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Mbatan (stuffed fried potato) with salad",
+   "ingredients": [
+    "Potato",
+    "Ground beef, 90% lean",
+    "Tomato",
+    "Cucumber",
+    "Egg",
+    "Onion",
+    "Sunflower oil",
+    "White wheat flour",
+    "Parsley",
+    "Lemon juice",
+    "Salt",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 91,
+  "ar": {
+   "name": "معكرونة إمبوخة",
+   "ingredients": [
+    "ماء",
+    "معكرونة",
+    "لحم ضأن",
+    "حمص معلب مصفى",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أحمر حلو مطحون",
+    "فلفل حار مطحون",
+    "كركم",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Steamed macaroni (imbakhakha) with lamb",
+   "ingredients": [
+    "Water",
+    "Pasta",
+    "Lamb shoulder, lean",
+    "Canned chickpeas, drained",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Paprika",
+    "Chili powder",
+    "Turmeric",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 92,
+  "ar": {
+   "name": "سلطة ليبية بالتن مع خبز أسمر",
+   "ingredients": [
+    "تونة معلبة بالماء مصفاة",
+    "طماطم",
+    "خيار",
+    "خبز عربي أسمر",
+    "فلفل أخضر حلو",
+    "بصل",
+    "زيتون أسود",
+    "عصير ليمون",
+    "زيت زيتون",
+    "بقدونس",
+    "فلفل حار مطحون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Libyan salad with tuna and wholewheat bread",
+   "ingredients": [
+    "Canned tuna in water, drained",
+    "Tomato",
+    "Cucumber",
+    "Whole-wheat pita bread",
+    "Green bell pepper",
+    "Onion",
+    "Black olives",
+    "Lemon juice",
+    "Olive oil",
+    "Parsley",
+    "Chili powder",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 93,
+  "ar": {
+   "name": "عدس بالبطاطا والخضار مع خبز",
+   "ingredients": [
+    "ماء",
+    "بطاطا",
+    "عدس",
+    "خبز عربي أسمر",
+    "جزر",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "فلفل أحمر حلو مطحون",
+    "كركم"
+   ]
+  },
+  "en": {
+   "name": "Lentils with potatoes and vegetables, with bread",
+   "ingredients": [
+    "Water",
+    "Potato",
+    "Lentils",
+    "Whole-wheat pita bread",
+    "Carrot",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Paprika",
+    "Turmeric"
+   ]
+  }
+ },
+ {
+  "id": 94,
+  "ar": {
+   "name": "شاكرية مع رز أبيض",
+   "ingredients": [
+    "ماء",
+    "زبادي كامل الدسم",
+    "لحم ضأن",
+    "أرز أبيض",
+    "بصل",
+    "دقيق قمح أبيض",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Shakriyeh (lamb in yogurt sauce) with white rice",
+   "ingredients": [
+    "Water",
+    "Plain yogurt, whole milk",
+    "Lamb shoulder, lean",
+    "White rice",
+    "Onion",
+    "White wheat flour",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 95,
+  "ar": {
+   "name": "كبة بالصينية مع زبادي",
+   "ingredients": [
+    "لحم بقر مفروم 90% صافٍ",
+    "زبادي قليل الدسم",
+    "برغل",
+    "ماء",
+    "بصل",
+    "زيت زيتون",
+    "صنوبر",
+    "ملح",
+    "قرفة",
+    "فلفل أسود",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Baked kibbeh with yogurt",
+   "ingredients": [
+    "Ground beef, 90% lean",
+    "Plain yogurt, low-fat",
+    "Bulgur",
+    "Water",
+    "Onion",
+    "Olive oil",
+    "Pine nuts",
+    "Salt",
+    "Cinnamon",
+    "Black pepper",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 96,
+  "ar": {
+   "name": "مسخن دجاج",
+   "ingredients": [
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "بصل",
+    "خبز عربي أبيض",
+    "زيت زيتون",
+    "صنوبر",
+    "ملح",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Musakhan (chicken with onions on bread)",
+   "ingredients": [
+    "Chicken thigh, skinless",
+    "Onion",
+    "White pita bread",
+    "Olive oil",
+    "Pine nuts",
+    "Salt",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 97,
+  "ar": {
+   "name": "عدس بحامض مع خبز",
+   "ingredients": [
+    "ماء",
+    "سلق",
+    "عدس",
+    "بطاطا",
+    "خبز عربي أسمر",
+    "بصل",
+    "عصير ليمون",
+    "كزبرة خضراء",
+    "زيت زيتون",
+    "دقيق قمح أبيض",
+    "ثوم",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Lentils with lemon and chard, with bread",
+   "ingredients": [
+    "Water",
+    "Swiss chard",
+    "Lentils",
+    "Potato",
+    "Whole-wheat pita bread",
+    "Onion",
+    "Lemon juice",
+    "Coriander leaves",
+    "Olive oil",
+    "White wheat flour",
+    "Garlic",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 98,
+  "ar": {
+   "name": "فاصوليا خضراء بزيت مع رز",
+   "ingredients": [
+    "فاصوليا خضراء",
+    "طماطم",
+    "ماء",
+    "أرز أبيض",
+    "بصل",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Green beans in olive oil with rice",
+   "ingredients": [
+    "Green beans",
+    "Tomato",
+    "Water",
+    "White rice",
+    "Onion",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 99,
+  "ar": {
+   "name": "كفتة بالطحينة والبطاطا",
+   "ingredients": [
+    "لحم بقر مفروم 90% صافٍ",
+    "بطاطا",
+    "ماء",
+    "بصل",
+    "طحينة",
+    "عصير ليمون",
+    "بقدونس",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Kofta with tahini and potatoes",
+   "ingredients": [
+    "Ground beef, 90% lean",
+    "Potato",
+    "Water",
+    "Onion",
+    "Tahini",
+    "Lemon juice",
+    "Parsley",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 100,
+  "ar": {
+   "name": "صيادية سمك",
+   "ingredients": [
+    "ماء",
+    "سمك القد",
+    "أرز أبيض",
+    "بصل",
+    "زيت زيتون",
+    "عصير ليمون",
+    "صنوبر",
+    "لوز",
+    "ملح",
+    "كمون",
+    "كركم",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Sayadieh (fish with caramelized-onion rice)",
+   "ingredients": [
+    "Water",
+    "Atlantic cod",
+    "White rice",
+    "Onion",
+    "Olive oil",
+    "Lemon juice",
+    "Pine nuts",
+    "Almonds",
+    "Salt",
+    "Cumin",
+    "Turmeric",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 101,
+  "ar": {
+   "name": "برغل بالدجاج",
+   "ingredients": [
+    "ماء",
+    "لحم فخذ الدجاج بدون جلد وعظم",
+    "برغل",
+    "بصل",
+    "زيت زيتون",
+    "لوز",
+    "ملح",
+    "قرفة",
+    "كمون",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Bulgur pilaf with chicken (in place of freekeh)",
+   "ingredients": [
+    "Water",
+    "Chicken thigh, skinless",
+    "Bulgur",
+    "Onion",
+    "Olive oil",
+    "Almonds",
+    "Salt",
+    "Cinnamon",
+    "Cumin",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 102,
+  "ar": {
+   "name": "ورق عنب بالزيت",
+   "ingredients": [
+    "ماء",
+    "طماطم",
+    "أرز أبيض",
+    "ورق عنب",
+    "بصل",
+    "بقدونس",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Stuffed vine leaves in olive oil",
+   "ingredients": [
+    "Water",
+    "Tomato",
+    "White rice",
+    "Grape leaves",
+    "Onion",
+    "Parsley",
+    "Lemon juice",
+    "Olive oil",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 103,
+  "ar": {
+   "name": "يخنة بازلاء باللحم مع رز",
+   "ingredients": [
+    "ماء",
+    "بازلاء",
+    "لحم بقري هبرة",
+    "أرز أبيض",
+    "جزر",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أسود",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Pea and beef stew with rice",
+   "ingredients": [
+    "Water",
+    "Green peas",
+    "Beef round, lean",
+    "White rice",
+    "Carrot",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Black pepper",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 104,
+  "ar": {
+   "name": "مسقعة بالباذنجان مع رز",
+   "ingredients": [
+    "باذنجان",
+    "طماطم معلبة",
+    "ماء",
+    "لحم بقر مفروم 90% صافٍ",
+    "أرز أبيض",
+    "فلفل أخضر حلو",
+    "بصل",
+    "زيت زيتون",
+    "معجون طماطم بدون ملح مضاف",
+    "ثوم",
+    "ملح",
+    "كمون",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Egyptian moussaka (eggplant and minced beef) with rice",
+   "ingredients": [
+    "Eggplant",
+    "Canned tomatoes",
+    "Water",
+    "Ground beef, 90% lean",
+    "White rice",
+    "Green bell pepper",
+    "Onion",
+    "Olive oil",
+    "Tomato paste, no added salt",
+    "Garlic",
+    "Salt",
+    "Cumin",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 105,
+  "ar": {
+   "name": "محشي كرنب",
+   "ingredients": [
+    "ملفوف",
+    "ماء",
+    "أرز أبيض",
+    "طماطم",
+    "لحم بقر مفروم 90% صافٍ",
+    "بصل",
+    "معجون طماطم بدون ملح مضاف",
+    "بقدونس",
+    "كزبرة خضراء",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Egyptian stuffed cabbage",
+   "ingredients": [
+    "Cabbage",
+    "Water",
+    "White rice",
+    "Tomato",
+    "Ground beef, 90% lean",
+    "Onion",
+    "Tomato paste, no added salt",
+    "Parsley",
+    "Coriander leaves",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 106,
+  "ar": {
+   "name": "معكرونة قمح كامل بالدجاج والخضار",
+   "ingredients": [
+    "صدر دجاج بدون جلد",
+    "ماء",
+    "طماطم معلبة",
+    "معكرونة قمح كامل",
+    "فطر",
+    "سبانخ",
+    "بصل",
+    "جبن موزاريلا",
+    "زيت زيتون",
+    "ثوم",
+    "ريحان",
+    "ملح",
+    "أوريجانو",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Whole-wheat pasta with chicken and vegetables",
+   "ingredients": [
+    "Chicken breast, skinless",
+    "Water",
+    "Canned tomatoes",
+    "Whole-wheat pasta",
+    "White mushrooms",
+    "Spinach",
+    "Onion",
+    "Mozzarella, part-skim",
+    "Olive oil",
+    "Garlic",
+    "Basil, fresh",
+    "Salt",
+    "Oregano, dried",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 107,
+  "ar": {
+   "name": "معكرونة بالخضار والجبن",
+   "ingredients": [
+    "ماء",
+    "طماطم معلبة",
+    "معكرونة",
+    "كوسا",
+    "فلفل أحمر حلو",
+    "فطر",
+    "جبن موزاريلا",
+    "بصل",
+    "زيت زيتون",
+    "ثوم",
+    "ريحان",
+    "ملح",
+    "أوريجانو",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Vegetable pasta with cheese",
+   "ingredients": [
+    "Water",
+    "Canned tomatoes",
+    "Pasta",
+    "Zucchini",
+    "Red bell pepper",
+    "White mushrooms",
+    "Mozzarella, part-skim",
+    "Onion",
+    "Olive oil",
+    "Garlic",
+    "Basil, fresh",
+    "Salt",
+    "Oregano, dried",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 108,
+  "ar": {
+   "name": "بيض مقلي بزيت الزيتون مع خبز وطماطم",
+   "ingredients": [
+    "بيض",
+    "طماطم",
+    "خبز عربي أسمر",
+    "زيت زيتون",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Eggs fried in olive oil with bread and tomato",
+   "ingredients": [
+    "Egg",
+    "Tomato",
+    "Whole-wheat pita bread",
+    "Olive oil",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 109,
+  "ar": {
+   "name": "خبز شعير بزيت الزيتون",
+   "ingredients": [
+    "ماء",
+    "دقيق شعير",
+    "دقيق قمح كامل",
+    "زيت زيتون",
+    "خميرة جافة",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Barley bread with olive oil",
+   "ingredients": [
+    "Water",
+    "Barley flour",
+    "Whole-wheat flour",
+    "Olive oil",
+    "Yeast, active dry",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 110,
+  "ar": {
+   "name": "عصيدة بالعسل وزيت الزيتون",
+   "ingredients": [
+    "ماء",
+    "دقيق قمح أبيض",
+    "عسل",
+    "زيت زيتون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Asida with honey and olive oil",
+   "ingredients": [
+    "Water",
+    "White wheat flour",
+    "Honey",
+    "Olive oil",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 111,
+  "ar": {
+   "name": "سفنز بالبيض",
+   "ingredients": [
+    "دقيق قمح أبيض",
+    "ماء",
+    "بيض",
+    "زيت دوار الشمس",
+    "خميرة جافة",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Sfinz (Libyan fried dough) with egg",
+   "ingredients": [
+    "White wheat flour",
+    "Water",
+    "Egg",
+    "Sunflower oil",
+    "Yeast, active dry",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 112,
+  "ar": {
+   "name": "بيض بالطماطم والبصل مع خبز",
+   "ingredients": [
+    "بيض",
+    "طماطم",
+    "بصل",
+    "خبز عربي أسمر",
+    "فلفل حار أخضر",
+    "زيت زيتون",
+    "كركم",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Libyan eggs with tomato and onion, with bread",
+   "ingredients": [
+    "Egg",
+    "Tomato",
+    "Onion",
+    "Whole-wheat pita bread",
+    "Green chili pepper",
+    "Olive oil",
+    "Turmeric",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 113,
+  "ar": {
+   "name": "فطيرة ليبية بالعسل",
+   "ingredients": [
+    "دقيق قمح أبيض",
+    "ماء",
+    "دقيق قمح كامل",
+    "عسل",
+    "زيت زيتون",
+    "زبدة غير مملحة",
+    "خميرة جافة",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Libyan fteera with honey",
+   "ingredients": [
+    "White wheat flour",
+    "Water",
+    "Whole-wheat flour",
+    "Honey",
+    "Olive oil",
+    "Unsalted butter",
+    "Yeast, active dry",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 114,
+  "ar": {
+   "name": "لبن (حليب رائب)",
+   "ingredients": [
+    "لبن رائب"
+   ]
+  },
+  "en": {
+   "name": "Buttermilk (laban) drink",
+   "ingredients": [
+    "Buttermilk, low-fat"
+   ]
+  }
+ },
+ {
+  "id": 115,
+  "ar": {
+   "name": "عصير برتقال طازج",
+   "ingredients": [
+    "عصير برتقال طازج"
+   ]
+  },
+  "en": {
+   "name": "Fresh orange juice",
+   "ingredients": [
+    "Orange juice, fresh"
+   ]
+  }
+ },
+ {
+  "id": 116,
+  "ar": {
+   "name": "فطاير سبانخ",
+   "ingredients": [
+    "سبانخ",
+    "دقيق قمح أبيض",
+    "ماء",
+    "دقيق قمح كامل",
+    "بصل",
+    "زيت زيتون",
+    "عصير ليمون",
+    "خميرة جافة",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Spinach fatayer",
+   "ingredients": [
+    "Spinach",
+    "White wheat flour",
+    "Water",
+    "Whole-wheat flour",
+    "Onion",
+    "Olive oil",
+    "Lemon juice",
+    "Yeast, active dry",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 117,
+  "ar": {
+   "name": "حمص بالطحينة مع خبز وخضار",
+   "ingredients": [
+    "حمص معلب مصفى",
+    "خبز عربي أسمر",
+    "خيار",
+    "طماطم",
+    "طحينة",
+    "ماء",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Hummus with bread and vegetables",
+   "ingredients": [
+    "Canned chickpeas, drained",
+    "Whole-wheat pita bread",
+    "Cucumber",
+    "Tomato",
+    "Tahini",
+    "Water",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 118,
+  "ar": {
+   "name": "مناقيش زعتر",
+   "ingredients": [
+    "دقيق قمح أبيض",
+    "ماء",
+    "دقيق قمح كامل",
+    "زيت زيتون",
+    "زعتر مجفف",
+    "سمسم",
+    "خميرة جافة",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Za'atar manakish",
+   "ingredients": [
+    "White wheat flour",
+    "Water",
+    "Whole-wheat flour",
+    "Olive oil",
+    "Thyme, dried",
+    "Sesame seeds",
+    "Yeast, active dry",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 119,
+  "ar": {
+   "name": "منقوشة جبنة",
+   "ingredients": [
+    "دقيق قمح أبيض",
+    "ماء",
+    "جبن موزاريلا",
+    "دقيق قمح كامل",
+    "جبن فيتا",
+    "زيت زيتون",
+    "خميرة جافة",
+    "سمسم",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Cheese manakish",
+   "ingredients": [
+    "White wheat flour",
+    "Water",
+    "Mozzarella, part-skim",
+    "Whole-wheat flour",
+    "Feta cheese",
+    "Olive oil",
+    "Yeast, active dry",
+    "Sesame seeds",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 120,
+  "ar": {
+   "name": "مسبحة مع خبز",
+   "ingredients": [
+    "حمص معلب مصفى",
+    "خبز عربي أسمر",
+    "ماء",
+    "طحينة",
+    "عصير ليمون",
+    "زيت زيتون",
+    "بقدونس",
+    "ثوم",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Msabbaha (warm chickpeas in tahini) with bread",
+   "ingredients": [
+    "Canned chickpeas, drained",
+    "Whole-wheat pita bread",
+    "Water",
+    "Tahini",
+    "Lemon juice",
+    "Olive oil",
+    "Parsley",
+    "Garlic",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 121,
+  "ar": {
+   "name": "بيض بالبندورة مع خبز",
+   "ingredients": [
+    "طماطم",
+    "بيض",
+    "خبز عربي أسمر",
+    "زيت زيتون",
+    "ثوم",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Levantine eggs with tomatoes, with bread",
+   "ingredients": [
+    "Tomato",
+    "Egg",
+    "Whole-wheat pita bread",
+    "Olive oil",
+    "Garlic",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 122,
+  "ar": {
+   "name": "فلافل بالفرن مع خبز وطحينة",
+   "ingredients": [
+    "حمص حب جاف",
+    "خبز عربي أسمر",
+    "طماطم",
+    "بصل",
+    "طحينة",
+    "بقدونس",
+    "زيت زيتون",
+    "عصير ليمون",
+    "كزبرة خضراء",
+    "ثوم",
+    "كمون",
+    "ملح",
+    "بيكربونات الصوديوم"
+   ]
+  },
+  "en": {
+   "name": "Baked falafel with bread and tahini",
+   "ingredients": [
+    "Chickpeas, dried",
+    "Whole-wheat pita bread",
+    "Tomato",
+    "Onion",
+    "Tahini",
+    "Parsley",
+    "Olive oil",
+    "Lemon juice",
+    "Coriander leaves",
+    "Garlic",
+    "Cumin",
+    "Salt",
+    "Baking soda"
+   ]
+  }
+ },
+ {
+  "id": 123,
+  "ar": {
+   "name": "عيش بلدي بالجبنة والطماطم",
+   "ingredients": [
+    "طماطم",
+    "خبز عربي أسمر",
+    "خيار",
+    "جبن فيتا",
+    "زيت زيتون",
+    "كمون"
+   ]
+  },
+  "en": {
+   "name": "Baladi bread with white cheese and tomato",
+   "ingredients": [
+    "Tomato",
+    "Whole-wheat pita bread",
+    "Cucumber",
+    "Feta cheese",
+    "Olive oil",
+    "Cumin"
+   ]
+  }
+ },
+ {
+  "id": 124,
+  "ar": {
+   "name": "طعمية بالفرن مع عيش وسلطة",
+   "ingredients": [
+    "فول مجفف",
+    "خبز عربي أسمر",
+    "طماطم",
+    "خيار",
+    "بصل",
+    "بقدونس",
+    "كزبرة خضراء",
+    "زيت زيتون",
+    "ثوم",
+    "سمسم",
+    "كمون",
+    "ملح",
+    "بيكربونات الصوديوم"
+   ]
+  },
+  "en": {
+   "name": "Baked ta'meya (fava falafel) with bread and salad",
+   "ingredients": [
+    "Dried fava beans",
+    "Whole-wheat pita bread",
+    "Tomato",
+    "Cucumber",
+    "Onion",
+    "Parsley",
+    "Coriander leaves",
+    "Olive oil",
+    "Garlic",
+    "Sesame seeds",
+    "Cumin",
+    "Salt",
+    "Baking soda"
+   ]
+  }
+ },
+ {
+  "id": 125,
+  "ar": {
+   "name": "توست أسمر بزبدة الفول السوداني والموز",
+   "ingredients": [
+    "موز",
+    "خبز أسمر",
+    "زبدة الفول السوداني بدون ملح",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Whole-wheat toast with peanut butter and banana",
+   "ingredients": [
+    "Banana",
+    "Whole-wheat bread",
+    "Peanut butter, unsalted",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 126,
+  "ar": {
+   "name": "أومليت خضار مع خبز أسمر",
+   "ingredients": [
+    "بيض",
+    "بياض البيض",
+    "خبز أسمر",
+    "فطر",
+    "طماطم",
+    "فلفل أخضر حلو",
+    "بصل",
+    "زيت زيتون",
+    "فلفل أسود",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Vegetable omelette with wholewheat bread",
+   "ingredients": [
+    "Egg",
+    "Egg white",
+    "Whole-wheat bread",
+    "White mushrooms",
+    "Tomato",
+    "Green bell pepper",
+    "Onion",
+    "Olive oil",
+    "Black pepper",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 127,
+  "ar": {
+   "name": "حليب قليل الدسم",
+   "ingredients": [
+    "حليب قليل الدسم"
+   ]
+  },
+  "en": {
+   "name": "Low-fat milk",
+   "ingredients": [
+    "Low-fat milk (1%)"
+   ]
+  }
+ },
+ {
+  "id": 128,
+  "ar": {
+   "name": "بريك بالتن والبيض في الفرن",
+   "ingredients": [
+    "تونة معلبة بالماء مصفاة",
+    "بيض",
+    "دقيق قمح أبيض",
+    "ماء",
+    "بصل",
+    "بقدونس",
+    "زيت زيتون",
+    "فلفل حار مطحون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Oven brik with tuna and egg",
+   "ingredients": [
+    "Canned tuna in water, drained",
+    "Egg",
+    "White wheat flour",
+    "Water",
+    "Onion",
+    "Parsley",
+    "Olive oil",
+    "Chili powder",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 129,
+  "ar": {
+   "name": "سلطة خضراء ليبية",
+   "ingredients": [
+    "طماطم",
+    "خيار",
+    "خس",
+    "بصل",
+    "بقدونس",
+    "زيت زيتون",
+    "عصير ليمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Libyan green salad",
+   "ingredients": [
+    "Tomato",
+    "Cucumber",
+    "Romaine lettuce",
+    "Onion",
+    "Parsley",
+    "Olive oil",
+    "Lemon juice",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 130,
+  "ar": {
+   "name": "سندويتش كبدة",
+   "ingredients": [
+    "كبدة بقري",
+    "خبز فرنسي (خبزة)",
+    "بصل",
+    "طماطم",
+    "زيت زيتون",
+    "ثوم",
+    "كمون",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Libyan liver sandwich",
+   "ingredients": [
+    "Beef liver",
+    "French bread (Libyan khubza)",
+    "Onion",
+    "Tomato",
+    "Olive oil",
+    "Garlic",
+    "Cumin",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 131,
+  "ar": {
+   "name": "بوريك لحم بالفرن",
+   "ingredients": [
+    "لحم بقر مفروم 90% صافٍ",
+    "دقيق قمح أبيض",
+    "بصل",
+    "ماء",
+    "بيض",
+    "زيت زيتون",
+    "بقدونس",
+    "ملح",
+    "قرفة",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Oven-baked meat bourek",
+   "ingredients": [
+    "Ground beef, 90% lean",
+    "White wheat flour",
+    "Onion",
+    "Water",
+    "Egg",
+    "Olive oil",
+    "Parsley",
+    "Salt",
+    "Cinnamon",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 132,
+  "ar": {
+   "name": "سلطة فول",
+   "ingredients": [
+    "فول مطبوخ",
+    "طماطم",
+    "بصل",
+    "عصير ليمون",
+    "بقدونس",
+    "زيت زيتون",
+    "ثوم",
+    "كمون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Fava bean salad",
+   "ingredients": [
+    "Fava beans, cooked (canned substitute)",
+    "Tomato",
+    "Onion",
+    "Lemon juice",
+    "Parsley",
+    "Olive oil",
+    "Garlic",
+    "Cumin",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 133,
+  "ar": {
+   "name": "فتوش",
+   "ingredients": [
+    "طماطم",
+    "خيار",
+    "خس",
+    "خبز عربي أسمر",
+    "فجل",
+    "فلفل أخضر حلو",
+    "عصير ليمون",
+    "زيت زيتون",
+    "بقدونس",
+    "بصل أخضر",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Fattoush",
+   "ingredients": [
+    "Tomato",
+    "Cucumber",
+    "Romaine lettuce",
+    "Whole-wheat pita bread",
+    "Radish",
+    "Green bell pepper",
+    "Lemon juice",
+    "Olive oil",
+    "Parsley",
+    "Scallions",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 134,
+  "ar": {
+   "name": "متبل كوسا مع خبز أسمر",
+   "ingredients": [
+    "كوسا",
+    "خبز عربي أسمر",
+    "زبادي قليل الدسم",
+    "طحينة",
+    "عصير ليمون",
+    "زيت زيتون",
+    "ثوم",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Zucchini mutabbal with wholewheat bread",
+   "ingredients": [
+    "Zucchini",
+    "Whole-wheat pita bread",
+    "Plain yogurt, low-fat",
+    "Tahini",
+    "Lemon juice",
+    "Olive oil",
+    "Garlic",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 135,
+  "ar": {
+   "name": "سلطة عربية",
+   "ingredients": [
+    "طماطم",
+    "خيار",
+    "بصل",
+    "عصير ليمون",
+    "بقدونس",
+    "زيت زيتون",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Arab salad",
+   "ingredients": [
+    "Tomato",
+    "Cucumber",
+    "Onion",
+    "Lemon juice",
+    "Parsley",
+    "Olive oil",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 136,
+  "ar": {
+   "name": "شوربة خضار بالشعرية",
+   "ingredients": [
+    "ماء",
+    "جزر",
+    "بطاطا",
+    "كوسا",
+    "معكرونة",
+    "بصل",
+    "كرفس",
+    "معجون طماطم بدون ملح مضاف",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Egyptian vegetable soup with vermicelli",
+   "ingredients": [
+    "Water",
+    "Carrot",
+    "Potato",
+    "Zucchini",
+    "Pasta",
+    "Onion",
+    "Celery",
+    "Tomato paste, no added salt",
+    "Olive oil",
+    "Salt",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 137,
+  "ar": {
+   "name": "سلطة خضار مشوية مع جبن أبيض مالح (فيتا)",
+   "ingredients": [
+    "باذنجان",
+    "كوسا",
+    "فلفل أحمر حلو",
+    "بصل",
+    "جبن فيتا",
+    "زيت زيتون",
+    "عصير ليمون",
+    "أوريجانو",
+    "فلفل أسود"
+   ]
+  },
+  "en": {
+   "name": "Grilled vegetable salad with feta",
+   "ingredients": [
+    "Eggplant",
+    "Zucchini",
+    "Red bell pepper",
+    "Onion",
+    "Feta cheese",
+    "Olive oil",
+    "Lemon juice",
+    "Oregano, dried",
+    "Black pepper"
+   ]
+  }
+ },
+ {
+  "id": 138,
+  "ar": {
+   "name": "سلطة يونانية",
+   "ingredients": [
+    "طماطم",
+    "خيار",
+    "فلفل أخضر حلو",
+    "جبن فيتا",
+    "بصل",
+    "زيتون أسود",
+    "زيت زيتون",
+    "أوريجانو"
+   ]
+  },
+  "en": {
+   "name": "Greek salad",
+   "ingredients": [
+    "Tomato",
+    "Cucumber",
+    "Green bell pepper",
+    "Feta cheese",
+    "Onion",
+    "Black olives",
+    "Olive oil",
+    "Oregano, dried"
+   ]
+  }
+ },
+ {
+  "id": 139,
+  "ar": {
+   "name": "بطاطا حلوة بالفرن",
+   "ingredients": [
+    "بطاطا حلوة",
+    "زيت زيتون",
+    "ملح",
+    "فلفل أحمر حلو مطحون"
+   ]
+  },
+  "en": {
+   "name": "Oven-baked sweet potato",
+   "ingredients": [
+    "Sweet potato",
+    "Olive oil",
+    "Salt",
+    "Paprika"
+   ]
+  }
+ },
+ {
+  "id": 140,
+  "ar": {
+   "name": "قهوة عربية",
+   "ingredients": [
+    "قهوة"
+   ]
+  },
+  "en": {
+   "name": "Arabic coffee",
+   "ingredients": [
+    "Coffee, brewed"
+   ]
+  }
+ },
+ {
+  "id": 141,
+  "ar": {
+   "name": "عصير ليمون",
+   "ingredients": [
+    "ماء",
+    "عصير ليمون",
+    "سكر"
+   ]
+  },
+  "en": {
+   "name": "Lemonade (lemon juice drink)",
+   "ingredients": [
+    "Water",
+    "Lemon juice",
+    "Sugar, granulated"
+   ]
+  }
+ },
+ {
+  "id": 142,
+  "ar": {
+   "name": "غريبة",
+   "ingredients": [
+    "دقيق قمح أبيض",
+    "زيت دوار الشمس",
+    "سكر"
+   ]
+  },
+  "en": {
+   "name": "Ghraiba (Libyan shortbread)",
+   "ingredients": [
+    "White wheat flour",
+    "Sunflower oil",
+    "Sugar, granulated"
+   ]
+  }
+ },
+ {
+  "id": 143,
+  "ar": {
+   "name": "حمص مسلوق بالكمون",
+   "ingredients": [
+    "ماء",
+    "حمص حب جاف",
+    "عصير ليمون",
+    "كمون",
+    "ملح",
+    "فلفل حار مطحون"
+   ]
+  },
+  "en": {
+   "name": "Boiled chickpeas with cumin",
+   "ingredients": [
+    "Water",
+    "Chickpeas, dried",
+    "Lemon juice",
+    "Cumin",
+    "Salt",
+    "Chili powder"
+   ]
+  }
+ },
+ {
+  "id": 144,
+  "ar": {
+   "name": "زيتون مع خبز",
+   "ingredients": [
+    "خبز عربي أسمر",
+    "زيتون أخضر",
+    "زيت زيتون"
+   ]
+  },
+  "en": {
+   "name": "Olives with bread",
+   "ingredients": [
+    "Whole-wheat pita bread",
+    "Green olives",
+    "Olive oil"
+   ]
+  }
+ },
+ {
+  "id": 145,
+  "ar": {
+   "name": "شاي أخضر",
+   "ingredients": [
+    "شاي أخضر"
+   ]
+  },
+  "en": {
+   "name": "Green tea",
+   "ingredients": [
+    "Green tea, brewed"
+   ]
+  }
+ },
+ {
+  "id": 146,
+  "ar": {
+   "name": "شاي أحمر باللوز",
+   "ingredients": [
+    "شاي أحمر",
+    "لوز",
+    "سكر"
+   ]
+  },
+  "en": {
+   "name": "Libyan black tea with almonds",
+   "ingredients": [
+    "Black tea, brewed",
+    "Almonds",
+    "Sugar, granulated"
+   ]
+  }
+ },
+ {
+  "id": 147,
+  "ar": {
+   "name": "سلطة فواكه موسمية",
+   "ingredients": [
+    "برتقال",
+    "تفاح",
+    "موز",
+    "رمان",
+    "عصير ليمون"
+   ]
+  },
+  "en": {
+   "name": "Seasonal fruit salad",
+   "ingredients": [
+    "Orange",
+    "Apple",
+    "Banana",
+    "Pomegranate",
+    "Lemon juice"
+   ]
+  }
+ },
+ {
+  "id": 148,
+  "ar": {
+   "name": "رز بالحليب",
+   "ingredients": [
+    "حليب قليل الدسم",
+    "ماء",
+    "أرز أبيض",
+    "سكر",
+    "قرفة"
+   ]
+  },
+  "en": {
+   "name": "Rice pudding",
+   "ingredients": [
+    "Low-fat milk (1%)",
+    "Water",
+    "White rice",
+    "Sugar, granulated",
+    "Cinnamon"
+   ]
+  }
+ },
+ {
+  "id": 149,
+  "ar": {
+   "name": "كعك ليبي",
+   "ingredients": [
+    "دقيق قمح أبيض",
+    "ماء",
+    "زيت دوار الشمس",
+    "سمسم",
+    "خميرة جافة",
+    "ملح"
+   ]
+  },
+  "en": {
+   "name": "Libyan kaak (savoury biscuit rings)",
+   "ingredients": [
+    "White wheat flour",
+    "Water",
+    "Sunflower oil",
+    "Sesame seeds",
+    "Yeast, active dry",
+    "Salt"
+   ]
+  }
+ },
+ {
+  "id": 150,
+  "ar": {
+   "name": "مشمش وتين مجفف",
+   "ingredients": [
+    "مشمش مجفف",
+    "تين مجفف"
+   ]
+  },
+  "en": {
+   "name": "Dried apricots and figs",
+   "ingredients": [
+    "Apricots, dried",
+    "Figs, dried"
+   ]
+  }
+ },
+ {
+  "id": 151,
+  "ar": {
+   "name": "كمثرى",
+   "ingredients": [
+    "كمثرى"
+   ]
+  },
+  "en": {
+   "name": "Pear",
+   "ingredients": [
+    "Pear"
+   ]
+  }
+ },
+ {
+  "id": 152,
+  "ar": {
+   "name": "تفاحة",
+   "ingredients": [
+    "تفاح"
+   ]
+  },
+  "en": {
+   "name": "Apple",
+   "ingredients": [
+    "Apple"
+   ]
+  }
+ },
+ {
+  "id": 153,
+  "ar": {
+   "name": "عنب",
+   "ingredients": [
+    "عنب"
+   ]
+  },
+  "en": {
+   "name": "Grapes",
+   "ingredients": [
+    "Grapes"
+   ]
+  }
+ },
+ {
+  "id": 154,
+  "ar": {
+   "name": "بطيخ",
+   "ingredients": [
+    "بطيخ"
+   ]
+  },
+  "en": {
+   "name": "Watermelon",
+   "ingredients": [
+    "Watermelon"
+   ]
+  }
+ },
+ {
+  "id": 155,
+  "ar": {
+   "name": "رمان",
+   "ingredients": [
+    "رمان"
+   ]
+  },
+  "en": {
+   "name": "Pomegranate",
+   "ingredients": [
+    "Pomegranate"
+   ]
+  }
+ },
+ {
+  "id": 156,
+  "ar": {
+   "name": "حفنة جوز",
+   "ingredients": [
+    "جوز"
+   ]
+  },
+  "en": {
+   "name": "Handful of walnuts",
+   "ingredients": [
+    "Walnuts"
+   ]
+  }
+ },
+ {
+  "id": 157,
+  "ar": {
+   "name": "موزة",
+   "ingredients": [
+    "موز"
+   ]
+  },
+  "en": {
+   "name": "Banana",
+   "ingredients": [
+    "Banana"
+   ]
+  }
+ },
+ {
+  "id": 158,
+  "ar": {
+   "name": "بذور اليقطين",
+   "ingredients": [
+    "بذر اليقطين"
+   ]
+  },
+  "en": {
+   "name": "Pumpkin seeds",
+   "ingredients": [
+    "Pumpkin seeds"
+   ]
+  }
+ }
+]

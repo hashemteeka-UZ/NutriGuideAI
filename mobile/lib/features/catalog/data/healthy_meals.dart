@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/db/database_provider.dart';
 import '../../../core/locale/locale_controller.dart';
+import '../domain/dish_icon.dart';
 import '../domain/meal.dart';
 
 /// Five meals with the lowest kcal per serving, skipping drinks (tag
@@ -37,23 +38,13 @@ LIMIT 5
   if (rows.isEmpty) {
     return const <SuggestedMeal>[];
   }
-  final ids = <int>[for (final row in rows) row.read<int>('meal_id')];
-  final tags = await (database.select(
-    database.mealTags,
-  )..where((t) => t.lang.equals(lang) & t.mealId.isIn(ids))).get();
-  final byMeal = <int, List<String>>{};
-  for (final tag in tags) {
-    byMeal.putIfAbsent(tag.mealId, () => <String>[]).add(tag.tag);
-  }
   return <SuggestedMeal>[
     for (final row in rows)
       SuggestedMeal(
         mealId: row.read<int>('meal_id'),
         name: row.read<String>('name'),
         kcal: (row.data['kcal'] as num).toDouble(),
-        iconName: iconForOccasionTags(
-          byMeal[row.read<int>('meal_id')] ?? const <String>[],
-        ),
+        iconName: dishIcon(row.read<String>('name')),
       ),
   ];
 }

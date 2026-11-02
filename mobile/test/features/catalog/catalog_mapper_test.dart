@@ -108,6 +108,8 @@ void main() {
     expect(detail.steps, <String>['اخلط', 'اطبخ']);
     expect(detail.nutrients.map((item) => item.code), <String>['protein']);
     expect(detail.warningAllergenCodes, <String>['MILK']);
-    expect(detail.iconName, 'crescent-moon');
+    // P2g: the dish decides the icon (shakshuka is an egg dish), never the
+    // time of day.
+    expect(detail.iconName, 'cooking');
   });
 }

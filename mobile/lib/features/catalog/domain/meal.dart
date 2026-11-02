@@ -188,19 +188,3 @@ const breakfastTag = 'breakfast_suitable';
 const lunchTag = 'lunch_suitable';
 const dinnerTag = 'dinner_suitable';
 const snackTag = 'snack_suitable';
-
-String iconForOccasionTags(Iterable<String> tagsInOrder) {
-  for (final tag in tagsInOrder) {
-    switch (tag) {
-      case breakfastTag:
-        return 'sunrise';
-      case lunchTag:
-        return 'sun';
-      case dinnerTag:
-        return 'crescent-moon';
-      case snackTag:
-        return 'red-apple';
-    }
-  }
-  return 'fork-and-knife';
-}
