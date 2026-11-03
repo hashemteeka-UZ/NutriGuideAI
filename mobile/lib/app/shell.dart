@@ -5,6 +5,7 @@ import '../core/l10n/app_localizations.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/motion.dart';
 import '../core/ui/kit.dart';
+import 'tab_swipe.dart';
 
 /// The five tabs with the prototype's floating bar (P2h).
 class AppShell extends StatelessWidget {
@@ -61,7 +62,12 @@ class AppShell extends StatelessWidget {
       // last card or a floating button.
       child: Scaffold(
         backgroundColor: colors.bg,
-        body: navigationShell,
+        body: TabSwipe(
+          index: navigationShell.currentIndex,
+          count: items.length,
+          onSwipe: navigationShell.goBranch,
+          child: navigationShell,
+        ),
         bottomNavigationBar: FloatingNavBar(
           tabs: items,
           index: navigationShell.currentIndex,
