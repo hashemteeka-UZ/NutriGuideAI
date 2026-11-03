@@ -6,8 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/domain/session.dart';
 import '../../auth/presentation/session_controller.dart';
 import '../data/plan_sync.dart';
+import 'showcase_controller.dart';
 
 /// Refreshes cached plans when a session is open and when the app resumes.
+/// After the first refresh it finishes a week build the app was closed in.
 final planLifecycleProvider = Provider<void>((ref) {
   final binding = WidgetsBinding.instance;
   final observer = _ResumeObserver(ref);
@@ -19,7 +21,7 @@ final planLifecycleProvider = Provider<void>((ref) {
     if (session is! SignedIn || !session.hasProfile) {
       return;
     }
-    unawaited(ref.read(planSyncProvider).refresh());
+    unawaited(_refreshThenResume(ref));
   }
 
   ref.listen(sessionControllerProvider, (
@@ -32,6 +34,18 @@ final planLifecycleProvider = Provider<void>((ref) {
   });
   Future<void>.microtask(run);
 });
+
+Future<void> _refreshThenResume(Ref ref) async {
+  try {
+    await ref.read(planSyncProvider).refresh();
+  } on Object {
+    // The offline bar covers a failed refresh; resuming still makes sense.
+  }
+  if (!ref.mounted) {
+    return;
+  }
+  await ref.read(showcaseControllerProvider.notifier).resume();
+}
 
 class _ResumeObserver with WidgetsBindingObserver {
   _ResumeObserver(this._ref);

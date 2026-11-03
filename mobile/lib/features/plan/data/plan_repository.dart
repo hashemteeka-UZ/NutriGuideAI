@@ -86,6 +86,17 @@ class PlanRepository {
     });
   }
 
+  /// True when the phone holds a plan for [date].
+  Future<bool> dayHasPlan(DateTime date) async {
+    final iso = isoDate(dateOnly(date));
+    final row =
+        await (_database.select(_database.plans)
+              ..where((t) => t.planDate.equals(iso))
+              ..limit(1))
+            .getSingleOrNull();
+    return row != null;
+  }
+
   /// True when the server marked an item of [date] logged, or the phone holds
   /// a log for that date the server may not have yet.
   Future<bool> dayHasLoggedItem(DateTime date) async {

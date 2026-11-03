@@ -1219,6 +1219,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get genRetryLeft => 'حاول مرة أخرى للأيام الباقية';
 
   @override
+  String get genContinuesInBackground =>
+      'نكمل باقي الأيام في الخلفية، ويمكنك البدء الآن';
+
+  @override
+  String weekBuildingPill(int done, int total) {
+    return 'نبني باقي الأسبوع $done/$total';
+  }
+
+  @override
+  String weekBuildFailed(int count) {
+    return 'لم نتمكن من بناء $count من أيام الأسبوع';
+  }
+
+  @override
+  String get weekBuildRetry => 'إعادة المحاولة';
+
+  @override
   String get genNetwork =>
       'انقطع الاتصال. الأيام التي بُنيت محفوظة. حاول مرة أخرى.';
 

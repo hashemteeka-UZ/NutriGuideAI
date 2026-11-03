@@ -312,6 +312,8 @@ void main() {
       ),
     );
     await tester.pump();
+    // The finished state lands after that frame; one more frame shows it.
+    await tester.pump();
     expect(find.text('بنينا 6 من 7 أيام'), findsOneWidget);
   });
 
@@ -702,7 +704,10 @@ class _Scripted extends WeekGenerator {
   final Stream<WeekEvent> events;
 
   @override
-  Stream<WeekEvent> run({bool fromTomorrow = false}) => events;
+  Stream<WeekEvent> run({
+    bool fromTomorrow = false,
+    bool onlyMissing = false,
+  }) => events;
 }
 
 class _SwapApi extends SilentPlanApi {

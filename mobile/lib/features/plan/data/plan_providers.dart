@@ -43,6 +43,7 @@ final weekGeneratorProvider = Provider<WeekGenerator>((ref) {
     createDay: api.createDay,
     isLogged: plans.dayHasLoggedItem,
     storeDay: plans.storeDay,
+    hasPlan: plans.dayHasPlan,
     now: ref.watch(planClockProvider),
   );
 });

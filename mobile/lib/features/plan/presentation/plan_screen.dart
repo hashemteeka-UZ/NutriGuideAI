@@ -21,6 +21,7 @@ import '../domain/plan_dates.dart';
 import 'offline_bar.dart';
 import 'plan_chart.dart';
 import 'plan_format.dart';
+import 'week_build_pill.dart';
 
 class PlanScreen extends ConsumerWidget {
   const PlanScreen({super.key});
@@ -58,6 +59,7 @@ class PlanScreen extends ConsumerWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
                   children: staggered(<Widget>[
+                    const WeekBuildPill(),
                     Row(
                       children: <Widget>[
                         Expanded(

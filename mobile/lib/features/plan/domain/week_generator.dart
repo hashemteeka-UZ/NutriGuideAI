@@ -46,6 +46,7 @@ class WeekGenerator {
     required this.createDay,
     required this.isLogged,
     required this.storeDay,
+    this.hasPlan,
     DateTime Function()? now,
     this.wait = Future<void>.delayed,
   }) : _now = now ?? DateTime.now;
@@ -53,16 +54,28 @@ class WeekGenerator {
   final Future<DayPlan> Function(DateTime date) createDay;
   final Future<bool> Function(DateTime date) isLogged;
   final Future<void> Function(DayPlan plan) storeDay;
+
+  /// Used by [run] with `onlyMissing` to leave already-built days alone.
+  final Future<bool> Function(DateTime date)? hasPlan;
   final Future<void> Function(Duration duration) wait;
   final DateTime Function() _now;
 
   /// [fromTomorrow] leaves today as it is (a rebuild after a new target).
-  Stream<WeekEvent> run({bool fromTomorrow = false}) async* {
+  /// [onlyMissing] builds only the days that have no plan yet (resuming a
+  /// week build that was interrupted).
+  Stream<WeekEvent> run({
+    bool fromTomorrow = false,
+    bool onlyMissing = false,
+  }) async* {
     final dates = weekDates(_now()).skip(fromTomorrow ? 1 : 0);
     final failed = <DateTime>[];
     var built = 0;
+    final planned = hasPlan;
     for (final date in dates) {
       if (await isLogged(date)) {
+        continue;
+      }
+      if (onlyMissing && planned != null && await planned(date)) {
         continue;
       }
       yield WeekDateStarted(date);

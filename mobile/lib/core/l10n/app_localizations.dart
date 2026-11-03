@@ -2168,6 +2168,30 @@ abstract class AppLocalizations {
   /// **'حاول مرة أخرى للأيام الباقية'**
   String get genRetryLeft;
 
+  /// No description provided for @genContinuesInBackground.
+  ///
+  /// In ar, this message translates to:
+  /// **'نكمل باقي الأيام في الخلفية، ويمكنك البدء الآن'**
+  String get genContinuesInBackground;
+
+  /// No description provided for @weekBuildingPill.
+  ///
+  /// In ar, this message translates to:
+  /// **'نبني باقي الأسبوع {done}/{total}'**
+  String weekBuildingPill(int done, int total);
+
+  /// No description provided for @weekBuildFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم نتمكن من بناء {count} من أيام الأسبوع'**
+  String weekBuildFailed(int count);
+
+  /// No description provided for @weekBuildRetry.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة المحاولة'**
+  String get weekBuildRetry;
+
   /// No description provided for @genNetwork.
   ///
   /// In ar, this message translates to:

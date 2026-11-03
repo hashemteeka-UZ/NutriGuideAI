@@ -1226,6 +1226,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get genRetryLeft => 'Try again for the remaining days';
 
   @override
+  String get genContinuesInBackground =>
+      'The other days keep building in the background. You can start now.';
+
+  @override
+  String weekBuildingPill(int done, int total) {
+    return 'Building the rest of the week $done/$total';
+  }
+
+  @override
+  String weekBuildFailed(int count) {
+    return '$count days of the week could not be built';
+  }
+
+  @override
+  String get weekBuildRetry => 'Try again';
+
+  @override
   String get genNetwork =>
       'The connection failed. Days already built are saved. Try again.';
 

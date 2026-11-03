@@ -157,6 +157,10 @@ class _ShowcaseScreenState extends ConsumerState<ShowcaseScreen> {
                 // remaining days are built.
                 if (state.step == 2 || (state.step == 3 && !state.finished))
                   _Optimizer(plan: state.dayOne),
+                // Day one is enough to start; the rest keeps building in the
+                // background and shows as a pill on Today and Plan.
+                if (state.running && state.dayOne != null)
+                  _EarlyStart(onLeave: () => _leave(context)),
                 if (state.finished)
                   _Summary(state: state, onLeave: () => _leave(context)),
               ],
@@ -170,6 +174,37 @@ class _ShowcaseScreenState extends ConsumerState<ShowcaseScreen> {
   void _leave(BuildContext context) {
     ref.read(launchShowcaseProvider.notifier).close();
     context.go('/today');
+  }
+}
+
+class _EarlyStart extends StatelessWidget {
+  const _EarlyStart({required this.onLeave});
+
+  final VoidCallback onLeave;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          FilledButton(
+            key: const Key('gen-start-early'),
+            style: _buttonStyle,
+            onPressed: onLeave,
+            child: Text(l10n.genStart),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.genContinuesInBackground,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: _muted),
+          ),
+        ],
+      ),
+    );
   }
 }
 

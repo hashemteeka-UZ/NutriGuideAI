@@ -29,6 +29,7 @@ import '../../plan/presentation/offline_bar.dart';
 import '../../plan/presentation/plan_format.dart';
 import '../../plan/presentation/reason_chips.dart';
 import '../../plan/presentation/showcase_controller.dart';
+import '../../plan/presentation/week_build_pill.dart';
 import '../../profile/data/display_name.dart';
 import '../../profile/presentation/profile_avatar.dart';
 import '../../progress/data/progress_providers.dart';
@@ -109,6 +110,7 @@ class TodayScreen extends ConsumerWidget {
                       child: SyncStatusChip(),
                     ),
                     const SizedBox(height: 10),
+                    const WeekBuildPill(),
                     if (notice) ...<Widget>[
                       AppCard(
                         tint: colors.brand,

@@ -175,4 +175,44 @@ void main() {
     expect(finished.stopped, isTrue);
     expect(events.whereType<WeekDateDone>(), isEmpty);
   });
+
+  test('onlyMissing builds just the days that have no plan', () async {
+    final built = <String>{'2026-10-24', '2026-10-26'};
+    final calls = <String>[];
+    final events = await WeekGenerator(
+      createDay: (DateTime date) async {
+        calls.add(isoDate(date));
+        return ok(date);
+      },
+      isLogged: (DateTime date) async => false,
+      storeDay: (DayPlan plan) async {},
+      hasPlan: (DateTime date) async => built.contains(isoDate(date)),
+      now: () => today,
+    ).run(onlyMissing: true).toList();
+
+    expect(calls, <String>[
+      '2026-10-25',
+      '2026-10-27',
+      '2026-10-28',
+      '2026-10-29',
+      '2026-10-30',
+    ]);
+    expect(events.whereType<WeekFinished>().single.built, 5);
+  });
+
+  test('without onlyMissing a planned day is built again', () async {
+    final calls = <String>[];
+    await WeekGenerator(
+      createDay: (DateTime date) async {
+        calls.add(isoDate(date));
+        return ok(date);
+      },
+      isLogged: (DateTime date) async => false,
+      storeDay: (DayPlan plan) async {},
+      hasPlan: (DateTime date) async => true,
+      now: () => today,
+    ).run().toList();
+
+    expect(calls, hasLength(7));
+  });
 }

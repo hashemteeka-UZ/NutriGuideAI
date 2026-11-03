@@ -25,6 +25,7 @@ import 'package:nutriguide/features/logging/presentation/sync_lifecycle.dart';
 import 'package:nutriguide/features/plan/data/plan_api.dart';
 import 'package:nutriguide/features/plan/data/plan_providers.dart';
 import 'package:nutriguide/features/plan/data/plan_sync.dart';
+import 'package:nutriguide/features/plan/data/week_build_marker.dart';
 import 'package:nutriguide/features/plan/domain/plan.dart';
 import 'package:nutriguide/features/profile/data/device_timezone.dart';
 import 'package:nutriguide/features/profile/data/display_name.dart';
@@ -148,6 +149,11 @@ Future<void> pumpNutriguide(
         planApiProvider.overrideWithValue(planApi ?? SilentPlanApi()),
         syncLifecycleProvider.overrideWithValue(null),
         serverWarmUpProvider.overrideWithValue(null),
+        weekBuildMarkerProvider.overrideWithValue(
+          WeekBuildMarker(
+            preferences: () async => throw UnsupportedError('test'),
+          ),
+        ),
         syncApiProvider.overrideWithValue(syncApi ?? OfflineSyncApi()),
         waterApiProvider.overrideWithValue(waterApi ?? OfflineWaterApi()),
         userContextRefreshProvider.overrideWithValue(() async {}),

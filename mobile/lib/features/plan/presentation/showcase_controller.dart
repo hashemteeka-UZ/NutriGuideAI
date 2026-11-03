@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/plan_providers.dart';
 import '../data/plan_sync.dart';
 import '../data/user_context.dart';
+import '../data/week_build_marker.dart';
 import '../domain/plan.dart';
 import '../domain/plan_dates.dart';
 import '../domain/week_generator.dart';
@@ -92,15 +93,36 @@ class ShowcaseController extends Notifier<ShowcaseState> {
     );
   }
 
+  /// Builds the days still missing from an interrupted week build. Does
+  /// nothing while a build runs or when no build was left unfinished.
+  Future<void> resume() async {
+    if (state.running) {
+      return;
+    }
+    if (!await ref.read(weekBuildMarkerProvider).pending()) {
+      return;
+    }
+    if (!ref.mounted || state.running) {
+      return;
+    }
+    await start(force: true, onlyMissing: true);
+  }
+
+  /// Builds the days of this week that have no plan yet, after a failure.
+  Future<void> retryMissing() => start(force: true, onlyMissing: true);
+
   Future<void> start({
     bool force = false,
     bool fromTomorrow = false,
+    bool onlyMissing = false,
     Duration hold = Duration.zero,
   }) async {
     if (_started && (state.running || !force)) {
       return;
     }
     _started = true;
+    final marker = ref.read(weekBuildMarkerProvider);
+    unawaited(marker.mark(true));
     final now = ref.read(planClockProvider)();
     state = ShowcaseState(
       running: true,
@@ -117,11 +139,17 @@ class ShowcaseController extends Notifier<ShowcaseState> {
       }
       final generator = ref.read(weekGeneratorProvider);
       var pausedForOptimizer = false;
-      await for (final event in generator.run(fromTomorrow: fromTomorrow)) {
+      await for (final event in generator.run(
+        fromTomorrow: fromTomorrow,
+        onlyMissing: onlyMissing,
+      )) {
         if (!ref.mounted) {
           return;
         }
         state = _reduce(state, event);
+        if (event is WeekFinished && !_resumable(event)) {
+          unawaited(marker.mark(false));
+        }
         if (event is WeekFinished && event.stopCode == 'NOT_ELIGIBLE') {
           ref.read(userContextProvider.notifier).markIneligible();
         }
@@ -164,6 +192,22 @@ class ShowcaseController extends Notifier<ShowcaseState> {
 }
 
 const _keep = Object();
+
+/// A build stopped by the network or a busy or slow planner is picked up again
+/// on the next app open; any other end is final.
+bool _resumable(WeekFinished event) {
+  if (!event.stopped) {
+    return false;
+  }
+  return switch (event.stopCode) {
+    'NETWORK' ||
+    'PLANNER_TIMEOUT' ||
+    'PLANNER_BUSY' ||
+    'RATE_LIMITED' ||
+    'UNEXPECTED' => true,
+    _ => false,
+  };
+}
 
 ShowcaseState _reduce(ShowcaseState state, WeekEvent event) {
   return switch (event) {
