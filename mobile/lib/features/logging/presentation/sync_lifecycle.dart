@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,8 +8,17 @@ import '../../auth/domain/session.dart';
 import '../../auth/presentation/session_controller.dart';
 import '../data/logging_providers.dart';
 
+/// Reports whether the device has any network. Replaced in tests.
+final networkUpProvider = Provider<Stream<bool>>((ref) {
+  return Connectivity().onConnectivityChanged.map(
+    (List<ConnectivityResult> results) =>
+        results.any((ConnectivityResult r) => r != ConnectivityResult.none),
+  );
+});
+
 /// Runs a sync when a session with a profile opens, when the app resumes,
-/// and every five minutes while the app is in the foreground (#264).
+/// when the network comes back, and every five minutes while the app is in
+/// the foreground (#264).
 final syncLifecycleProvider = Provider<void>((ref) {
   final binding = WidgetsBinding.instance;
   Timer? timer;
@@ -39,9 +49,22 @@ final syncLifecycleProvider = Provider<void>((ref) {
     }
   });
   binding.addObserver(observer);
+
+  // Logs made offline wait in the outbox; send them as soon as the network
+  // is back instead of at the next resume or five-minute tick. The short
+  // debounce gives DNS and routes a moment to settle.
+  bool? wasUp;
+  final network = ref.read(networkUpProvider).listen((bool up) {
+    if (up && wasUp == false && ready()) {
+      ref.read(syncTriggerProvider).soon();
+    }
+    wasUp = up;
+  }, onError: (Object _) {});
+
   ref.onDispose(() {
     binding.removeObserver(observer);
     timer?.cancel();
+    unawaited(network.cancel());
   });
 
   ref.listen(sessionControllerProvider, (
