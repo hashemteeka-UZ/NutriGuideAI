@@ -1226,6 +1226,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get genRetryLeft => 'Try again for the remaining days';
 
   @override
+  String genElapsed(String time) {
+    return '$time elapsed';
+  }
+
+  @override
+  String genBuildingDay(int day, int total) {
+    return 'Building day $day of $total';
+  }
+
+  @override
+  String get genWaitOptimizer =>
+      'The optimizer is trying thousands of combinations to meet all your limits';
+
+  @override
+  String get genWaitLong =>
+      'The first day can take up to a minute on the server. We are still working.';
+
+  @override
   String get genContinuesInBackground =>
       'The other days keep building in the background. You can start now.';
 

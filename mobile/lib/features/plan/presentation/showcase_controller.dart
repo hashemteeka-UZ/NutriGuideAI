@@ -36,6 +36,9 @@ class ShowcaseState {
     this.stopCode,
     this.retryAfterSeconds,
     this.dayOne,
+    this.latest,
+    this.currentDate,
+    this.dayStartedAt,
     this.candidateMeals,
   });
 
@@ -47,6 +50,13 @@ class ShowcaseState {
   final String? stopCode;
   final int? retryAfterSeconds;
   final DayPlan? dayOne;
+
+  /// The day built last; the optimizer view shows its meals.
+  final DayPlan? latest;
+
+  /// The day the server is building now, and when its request started.
+  final DateTime? currentDate;
+  final DateTime? dayStartedAt;
   final int? candidateMeals;
   final List<ShowcaseDay> days;
 
@@ -59,6 +69,9 @@ class ShowcaseState {
     Object? stopCode = _keep,
     int? retryAfterSeconds,
     DayPlan? dayOne,
+    DayPlan? latest,
+    DateTime? currentDate,
+    DateTime? dayStartedAt,
     int? candidateMeals,
     List<ShowcaseDay>? days,
   }) {
@@ -73,6 +86,9 @@ class ShowcaseState {
           : stopCode as String?,
       retryAfterSeconds: retryAfterSeconds ?? this.retryAfterSeconds,
       dayOne: dayOne ?? this.dayOne,
+      latest: latest ?? this.latest,
+      currentDate: currentDate ?? this.currentDate,
+      dayStartedAt: dayStartedAt ?? this.dayStartedAt,
       candidateMeals: candidateMeals ?? this.candidateMeals,
       days: days ?? this.days,
     );
@@ -147,6 +163,12 @@ class ShowcaseController extends Notifier<ShowcaseState> {
           return;
         }
         state = _reduce(state, event);
+        if (event is WeekDateStarted) {
+          state = state.copyWith(
+            currentDate: event.date,
+            dayStartedAt: DateTime.now(),
+          );
+        }
         if (event is WeekFinished && !_resumable(event)) {
           unawaited(marker.mark(false));
         }
@@ -215,6 +237,7 @@ ShowcaseState _reduce(ShowcaseState state, WeekEvent event) {
     WeekDateDone(:final plan) => state.copyWith(
       step: state.step >= 2 ? 3 : 2,
       dayOne: state.dayOne ?? plan,
+      latest: plan,
       candidateMeals: state.candidateMeals ?? plan.stats?.candidateMeals,
       days: <ShowcaseDay>[
         for (final day in state.days)

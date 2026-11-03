@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:nutriguide/core/db/app_database.dart' hide PlanItem;
+import 'package:nutriguide/core/ui/emoji.dart';
 import 'package:nutriguide/features/auth/domain/account_info.dart';
 import 'package:nutriguide/features/auth/domain/session.dart';
 import 'package:nutriguide/features/plan/data/plan_providers.dart';
@@ -271,6 +272,60 @@ void main() {
     await tester.tap(find.byKey(const Key('tab-plan')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('general-plan-tip')), findsOneWidget);
+  });
+
+  testNutriguide('showcase follows the real build: live day, wait, dishes', (
+    tester,
+  ) async {
+    final events = StreamController<WeekEvent>();
+    addTearDown(events.close);
+    await pumpNutriguide(
+      tester,
+      auth: _signedIn(),
+      extra: <Override>[
+        ...clockOverride(),
+        weekGeneratorProvider.overrideWith((ref) => _Scripted(events.stream)),
+      ],
+    );
+    await tester.tap(find.byKey(const Key('build-week')));
+    await tester.pump();
+
+    events.add(WeekDateStarted(clock));
+    await tester.pump();
+    expect(find.text('نبني اليوم 1 من 7'), findsOneWidget);
+    // The wait line counts the real request from its start.
+    expect(find.byKey(const Key('gen-wait')), findsOneWidget);
+    expect(
+      find.text('المحسّن يجرب آلاف التركيبات حتى تتحقق كل حدودك'),
+      findsNothing,
+    );
+
+    await tester.pump(const Duration(seconds: 7));
+    expect(
+      find.text('المحسّن يجرب آلاف التركيبات حتى تتحقق كل حدودك'),
+      findsOneWidget,
+    );
+
+    events.add(
+      WeekDateDone(
+        sampleDay(
+          planDate: '2026-10-24',
+          stats: sampleStats(),
+          items: <PlanItem>[
+            sampleItem(mealName: 'صدر دجاج مشوي مع برغل', slot: 'LUNCH'),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    // A day fresh from the server has no catalog icon: the dish name gives
+    // the emoji, not a plain plate.
+    expect(
+      find.byWidgetPredicate((w) => w is Emoji && w.name == 'poultry-leg'),
+      findsWidgets,
+    );
+    expect(find.byKey(const Key('gen-start-early')), findsOneWidget);
   });
 
   testNutriguide('showcase steps and a partial week', (tester) async {

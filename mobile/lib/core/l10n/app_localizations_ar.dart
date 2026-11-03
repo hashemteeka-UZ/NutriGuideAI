@@ -1219,6 +1219,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get genRetryLeft => 'حاول مرة أخرى للأيام الباقية';
 
   @override
+  String genElapsed(String time) {
+    return 'مضى $time';
+  }
+
+  @override
+  String genBuildingDay(int day, int total) {
+    return 'نبني اليوم $day من $total';
+  }
+
+  @override
+  String get genWaitOptimizer =>
+      'المحسّن يجرب آلاف التركيبات حتى تتحقق كل حدودك';
+
+  @override
+  String get genWaitLong =>
+      'قد يستغرق اليوم الأول حتى دقيقة على الخادم، وما زلنا نعمل';
+
+  @override
   String get genContinuesInBackground =>
       'نكمل باقي الأيام في الخلفية، ويمكنك البدء الآن';
 

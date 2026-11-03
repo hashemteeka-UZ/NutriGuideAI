@@ -2168,6 +2168,30 @@ abstract class AppLocalizations {
   /// **'حاول مرة أخرى للأيام الباقية'**
   String get genRetryLeft;
 
+  /// No description provided for @genElapsed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مضى {time}'**
+  String genElapsed(String time);
+
+  /// No description provided for @genBuildingDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'نبني اليوم {day} من {total}'**
+  String genBuildingDay(int day, int total);
+
+  /// No description provided for @genWaitOptimizer.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحسّن يجرب آلاف التركيبات حتى تتحقق كل حدودك'**
+  String get genWaitOptimizer;
+
+  /// No description provided for @genWaitLong.
+  ///
+  /// In ar, this message translates to:
+  /// **'قد يستغرق اليوم الأول حتى دقيقة على الخادم، وما زلنا نعمل'**
+  String get genWaitLong;
+
   /// No description provided for @genContinuesInBackground.
   ///
   /// In ar, this message translates to:

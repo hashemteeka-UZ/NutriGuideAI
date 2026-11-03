@@ -1,20 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/network/server_wake.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/ui/emoji.dart';
 import '../../../core/ui/kit.dart';
 import '../../catalog/data/healthy_meals.dart';
+import '../../catalog/domain/dish_icon.dart';
 import '../../catalog/presentation/nutrient_labels.dart';
 import '../data/plan_providers.dart';
 import '../data/user_context.dart';
 import '../domain/plan.dart';
 import 'plan_format.dart';
 import 'showcase_controller.dart';
+import 'showcase_motion.dart';
 
 /// Colours of the prototype gen screen (always dark, like the prototype).
 const _ink = Color(0xFFEAF4F8);
@@ -80,92 +84,109 @@ class _ShowcaseScreenState extends ConsumerState<ShowcaseScreen> {
             stops: <double>[0, 0.55, 1],
           ),
         ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Row(
+        child: Stack(
+          children: <Widget>[
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Row(
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Emoji('sparkles', size: 16),
-                              SizedBox(width: 6),
+                              const Row(
+                                children: <Widget>[
+                                  Emoji('sparkles', size: 16),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'NutriGuide Engine',
+                                    textDirection: TextDirection.ltr,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF7FD3F5),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Text(
-                                'NutriGuide Engine',
-                                textDirection: TextDirection.ltr,
-                                style: TextStyle(
-                                  fontSize: 13,
+                                l10n.genTitle,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  height: 1.3,
+                                  color: _ink,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFF7FD3F5),
                                 ),
                               ),
                             ],
                           ),
-                          Text(
-                            l10n.genTitle,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              height: 1.3,
-                              color: _ink,
-                              fontWeight: FontWeight.w700,
+                        ),
+                        TextButton(
+                          key: const Key('gen-skip'),
+                          style: TextButton.styleFrom(
+                            minimumSize: const Size(48, 40),
+                            backgroundColor: const Color(0x1AFFFFFF),
+                            shape: const StadiumBorder(
+                              side: BorderSide(color: Color(0x26FFFFFF)),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    TextButton(
-                      key: const Key('gen-skip'),
-                      style: TextButton.styleFrom(
-                        minimumSize: const Size(48, 40),
-                        backgroundColor: const Color(0x1AFFFFFF),
-                        shape: const StadiumBorder(
-                          side: BorderSide(color: Color(0x26FFFFFF)),
+                          onPressed: () => _leave(context),
+                          child: Text(
+                            l10n.genSkip,
+                            style: const TextStyle(color: Color(0xFFCCEEEE)),
+                          ),
                         ),
-                      ),
-                      onPressed: () => _leave(context),
-                      child: Text(
-                        l10n.genSkip,
-                        style: const TextStyle(color: Color(0xFFCCEEEE)),
-                      ),
+                      ],
                     ),
+                    const SizedBox(height: 16),
+                    _Steps(titles: titles, step: state.step),
+                    const SizedBox(height: 16),
+                    if (state.days.isNotEmpty) ...<Widget>[
+                      _Week(
+                        days: state.days,
+                        running: state.running,
+                        current: state.currentDate,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    Semantics(
+                      key: const Key('gen-live'),
+                      liveRegion: true,
+                      label: state.step >= titles.length
+                          ? l10n.genReady
+                          : titles[state.step],
+                      child: const SizedBox(width: 48, height: 8),
+                    ),
+                    if (state.step == 0) const _Needs(),
+                    if (state.step == 1) const _Filter(),
+                    // As the prototype, the optimizer stays on screen while the
+                    // remaining days are built.
+                    if (state.step == 2 || (state.step == 3 && !state.finished))
+                      _Optimizer(
+                        plan: state.latest ?? state.dayOne,
+                        state: state,
+                      ),
+                    // Every day is one real server request; say how long it has
+                    // taken and what is going on.
+                    if (state.running && state.dayStartedAt != null)
+                      _WaitLine(state: state),
+                    // Day one is enough to start; the rest keeps building in the
+                    // background and shows as a pill on Today and Plan.
+                    if (state.running && state.dayOne != null)
+                      _EarlyStart(onLeave: () => _leave(context)),
+                    if (state.finished)
+                      _Summary(state: state, onLeave: () => _leave(context)),
                   ],
                 ),
-                const SizedBox(height: 16),
-                _Steps(titles: titles, step: state.step),
-                const SizedBox(height: 16),
-                if (state.days.isNotEmpty) ...<Widget>[
-                  _Week(days: state.days, running: state.step == 3),
-                  const SizedBox(height: 16),
-                ],
-                Semantics(
-                  key: const Key('gen-live'),
-                  liveRegion: true,
-                  label: state.step >= titles.length
-                      ? l10n.genReady
-                      : titles[state.step],
-                  child: const SizedBox(width: 48, height: 8),
-                ),
-                if (state.step == 0) const _Needs(),
-                if (state.step == 1) const _Filter(),
-                // As the prototype, the optimizer stays on screen while the
-                // remaining days are built.
-                if (state.step == 2 || (state.step == 3 && !state.finished))
-                  _Optimizer(plan: state.dayOne),
-                // Day one is enough to start; the rest keeps building in the
-                // background and shows as a pill on Today and Plan.
-                if (state.running && state.dayOne != null)
-                  _EarlyStart(onLeave: () => _leave(context)),
-                if (state.finished)
-                  _Summary(state: state, onLeave: () => _leave(context)),
-              ],
+              ),
             ),
-          ),
+            if (state.finished && state.failed == 0 && state.stopCode == null)
+              const Positioned.fill(child: ConfettiBurst()),
+          ],
         ),
       ),
     );
@@ -221,35 +242,38 @@ class _Steps extends StatelessWidget {
       final done = step > index;
       final active = step == index;
       final color = done ? const Color(0xFF9BE7C8) : (active ? _ink : _muted);
+      final circle = AnimatedContainer(
+        duration: animationsEnabled(context)
+            ? const Duration(milliseconds: 300)
+            : Duration.zero,
+        width: 26,
+        height: 26,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: done ? _ok : Colors.transparent,
+          border: Border.all(
+            color: done ? _ok : (active ? _accent : _line),
+            width: 1.5,
+          ),
+        ),
+        child: done
+            ? const PopIn(
+                child: Icon(Icons.check_rounded, size: 16, color: _onOk),
+              )
+            : Text(
+                '${index + 1}',
+                style: TextStyle(
+                  fontFamily: 'Readex Pro',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: active ? _accent : _muted,
+                ),
+              ),
+      );
       return Row(
         children: <Widget>[
-          AnimatedContainer(
-            duration: animationsEnabled(context)
-                ? const Duration(milliseconds: 300)
-                : Duration.zero,
-            width: 26,
-            height: 26,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: done ? _ok : Colors.transparent,
-              border: Border.all(
-                color: done ? _ok : (active ? _accent : _line),
-                width: 1.5,
-              ),
-            ),
-            child: done
-                ? const Icon(Icons.check_rounded, size: 16, color: _onOk)
-                : Text(
-                    '${index + 1}',
-                    style: TextStyle(
-                      fontFamily: 'Readex Pro',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: active ? _accent : _muted,
-                    ),
-                  ),
-          ),
+          if (active) Pulse(color: _accent, child: circle) else circle,
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -395,42 +419,90 @@ class _Filter extends ConsumerWidget {
   }
 }
 
-class _Optimizer extends StatelessWidget {
-  const _Optimizer({required this.plan});
+/// The prototype's step 3: four slot reels that spin until the server chose
+/// the meals, then lock one after another, and the checks of that day.
+class _Optimizer extends ConsumerWidget {
+  const _Optimizer({required this.plan, required this.state});
 
   final DayPlan? plan;
+  final ShowcaseState state;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final items = plan == null ? const <PlanItem>[] : displayItems(plan!.items);
+    final shown = plan;
+    final items = shown == null
+        ? const <PlanItem>[]
+        : displayItems(shown.items);
     final unmet = <String>{
-      for (final row in plan?.unmetMinimums ?? const <UnmetMinimum>[])
+      for (final row in shown?.unmetMinimums ?? const <UnmetMinimum>[])
         row.nutrient.toLowerCase(),
     };
-    final stats = plan?.stats;
+    final stats = shown?.stats;
+    final target = shown?.target;
+    // A new day replays the locking: the keys follow the day shown.
+    final dayKey = shown?.planDate ?? 'searching';
+    final searching = shown == null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Row(
           children: <Widget>[
-            for (final slot in slotOrder)
+            for (var index = 0; index < slotOrder.length; index++)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: _Reel(
-                    slot: slotLabel(l10n, slot),
-                    item: _item(items, slot),
+                    key: ValueKey<String>('gen-reel-$dayKey-$index'),
+                    slot: slotLabel(l10n, slotOrder[index]),
+                    item: _item(items, slotOrder[index]),
+                    order: index,
                   ),
                 ),
               ),
           ],
         ),
         const SizedBox(height: 14),
-        _Check('fire', l10n.genWithin, plan?.kcalWithin10pct ?? false),
-        _Check('poultry-leg', l10n.genProtein, !unmet.contains('protein')),
-        _Check('leafy-green', l10n.genFiber, !unmet.contains('fiber')),
-        _Check('sparkles', l10n.genNoRepeat, true),
+        _Check(
+          'fire',
+          l10n.genWithin,
+          shown?.kcalWithin10pct ?? false,
+          key: ValueKey<String>('gen-check-$dayKey-0'),
+          searching: searching,
+          order: 0,
+          value: shown?.totals.kcal,
+          goal: target?.kcal.toDouble(),
+        ),
+        _Check(
+          'poultry-leg',
+          l10n.genProtein,
+          !unmet.contains('protein'),
+          key: ValueKey<String>('gen-check-$dayKey-1'),
+          searching: searching,
+          order: 1,
+          value: shown?.totals.proteinG,
+          goal: target?.proteinG,
+          unit: 'g',
+        ),
+        _Check(
+          'leafy-green',
+          l10n.genFiber,
+          !unmet.contains('fiber'),
+          key: ValueKey<String>('gen-check-$dayKey-2'),
+          searching: searching,
+          order: 2,
+          value: shown?.totals.fiberG,
+          goal: target?.fiberG.toDouble(),
+          unit: 'g',
+        ),
+        _Check(
+          'sparkles',
+          l10n.genNoRepeat,
+          true,
+          key: ValueKey<String>('gen-check-$dayKey-3'),
+          searching: searching,
+          order: 3,
+        ),
         if (stats != null)
           Padding(
             padding: const EdgeInsets.only(top: 10),
@@ -448,27 +520,48 @@ class _Optimizer extends StatelessWidget {
   }
 }
 
-PlanItem? _item(List<PlanItem> items, String slot) {
-  for (final item in items) {
-    if (item.slot == slot) {
-      return item;
-    }
-  }
-  return null;
-}
+/// Dish emoji the reels cycle through while the solver works.
+const _reelPool = <String>[
+  'falafel',
+  'poultry-leg',
+  'fish',
+  'green-salad',
+  'pot-of-food',
+  'cooked-rice',
+  'sandwich',
+  'cut-of-meat',
+  'flatbread',
+  'egg',
+  'avocado',
+  'red-apple',
+  'curry-rice',
+  'pancakes',
+  'banana',
+  'bread',
+];
 
-/// `.slot`: one meal slot, locked in green once the optimizer chose it.
+/// `.slot`: one meal slot, spinning until the optimizer chose it, then
+/// locked in green with the dish's own emoji.
 class _Reel extends StatelessWidget {
-  const _Reel({required this.slot, required this.item});
+  const _Reel({
+    required this.slot,
+    required this.item,
+    required this.order,
+    super.key,
+  });
 
   final String slot;
   final PlanItem? item;
+  final int order;
 
   @override
   Widget build(BuildContext context) {
-    final locked = item != null;
-    final icon = item?.iconName;
-    return Container(
+    final chosen = item;
+    final locked = chosen != null;
+    final card = AnimatedContainer(
+      duration: animationsEnabled(context)
+          ? const Duration(milliseconds: 300)
+          : Duration.zero,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
       decoration: BoxDecoration(
         color: locked ? _ok.withValues(alpha: 0.12) : _glass,
@@ -487,13 +580,17 @@ class _Reel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Emoji(
-            icon == null || icon.isEmpty ? 'fork-and-knife-with-plate' : icon,
-            size: 34,
+          SizedBox(
+            height: 36,
+            child: Reel(
+              pool: _reelPool,
+              settled: chosen == null ? null : dishEmojiOf(chosen),
+              build: (String emoji) => Emoji(emoji, size: 34),
+            ),
           ),
           const SizedBox(height: 6),
           Text(
-            item?.mealName ?? '·',
+            chosen?.mealName ?? '·',
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -502,19 +599,79 @@ class _Reel extends StatelessWidget {
         ],
       ),
     );
+    if (!locked) {
+      return card;
+    }
+    // Meals lock one after another, as the prototype's reels.
+    return Stagger(
+      delay: Duration(milliseconds: 140 * order),
+      child: card,
+    );
   }
 }
 
-/// `.cm`: one check with its emoji and a bar that fills once it is met.
+/// The dish's emoji: the catalog's when the phone has it, otherwise from the
+/// meal name; never a time-of-day emoji. A day fresh from the server has no
+/// catalog icon yet, which used to show a plain plate.
+String dishEmojiOf(PlanItem item) {
+  final cached = item.iconName;
+  if (cached != null && cached.isNotEmpty && !timeOfDayIcons.contains(cached)) {
+    return cached;
+  }
+  return dishIcon(item.mealName);
+}
+
+/// `.cm`: one check with its emoji and a bar. While the solver works the bar
+/// wanders; with the day's result it fills, and the day's amount counts up.
 class _Check extends StatelessWidget {
-  const _Check(this.emoji, this.label, this.on);
+  const _Check(
+    this.emoji,
+    this.label,
+    this.on, {
+    required this.searching,
+    required this.order,
+    this.value,
+    this.goal,
+    this.unit,
+    super.key,
+  });
 
   final String emoji;
   final String label;
   final bool on;
+  final bool searching;
+  final int order;
+  final double? value;
+  final double? goal;
+  final String? unit;
 
   @override
   Widget build(BuildContext context) {
+    final amount = value;
+    final target = goal;
+    final double fill;
+    if (searching) {
+      fill = 0;
+    } else if (on) {
+      fill = 1;
+    } else if (amount != null && target != null && target > 0) {
+      fill = (amount / target).clamp(0.1, 0.95);
+    } else {
+      fill = 0.4;
+    }
+    final met = !searching && on;
+    final Widget bar = searching
+        ? const SearchingBar(
+            color: _accent,
+            track: Color(0x14FFFFFF),
+            height: 7,
+          )
+        : TintBar(
+            value: fill,
+            color: on ? _ok : _amber,
+            track: const Color(0x14FFFFFF),
+            height: 7,
+          );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -528,26 +685,39 @@ class _Check extends StatelessWidget {
               style: const TextStyle(fontSize: 12.5, color: _ink),
             ),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            flex: 2,
-            child: TintBar(
-              value: on ? 1 : 0.1,
-              color: on ? _ok : _accent,
-              track: const Color(0x14FFFFFF),
-              height: 7,
+          if (!searching && amount != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: 8),
+              child: CountUp(
+                value: amount,
+                format: (double number) {
+                  final text = formatWhole(context, number);
+                  return unit == null ? text : '$_lrm$text $unit$_lrm';
+                },
+                style: const TextStyle(
+                  fontFamily: 'Readex Pro',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFDFF7EE),
+                ),
+              ),
             ),
-          ),
+          Expanded(flex: 2, child: bar),
           const SizedBox(width: 8),
-          Container(
+          AnimatedContainer(
+            duration: animationsEnabled(context)
+                ? Duration(milliseconds: 300 + 120 * order)
+                : Duration.zero,
             width: 18,
             height: 18,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: on ? _ok : const Color(0x14FFFFFF),
+              color: met ? _ok : const Color(0x14FFFFFF),
             ),
-            child: on
-                ? const Icon(Icons.check_rounded, size: 13, color: _onOk)
+            child: met
+                ? const PopIn(
+                    child: Icon(Icons.check_rounded, size: 13, color: _onOk),
+                  )
                 : null,
           ),
         ],
@@ -556,39 +726,111 @@ class _Check extends StatelessWidget {
   }
 }
 
-/// `.dayc`: the seven days as circles that fill as each day is built.
+/// The long first wait, said honestly: how long this day has taken and what
+/// is happening on the server.
+class _WaitLine extends ConsumerWidget {
+  const _WaitLine({required this.state});
+
+  final ShowcaseState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final waking = ref.watch(serverWakeProvider) == ServerWake.waking;
+    final since = state.dayStartedAt!;
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Elapsed(
+        key: ValueKey<DateTime>(since),
+        since: since,
+        build: (Duration elapsed) {
+          final seconds = elapsed.inSeconds;
+          final clock =
+              '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+          final String? note;
+          if (waking) {
+            note = l10n.serverWaking;
+          } else if (seconds >= 30 && state.latest == null) {
+            note = l10n.genWaitLong;
+          } else if (seconds >= 6) {
+            note = l10n.genWaitOptimizer;
+          } else {
+            note = null;
+          }
+          return Column(
+            key: const Key('gen-wait'),
+            children: <Widget>[
+              Text(
+                l10n.genElapsed('$_lrm$clock$_lrm'),
+                style: const TextStyle(
+                  fontFamily: 'Readex Pro',
+                  fontSize: 12,
+                  color: _muted,
+                ),
+              ),
+              if (note != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    note,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12.5, color: _ink),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// `.dayc`: the seven days, filled from the real build: dashed while waiting,
+/// a spinning ring while the server builds it, a check that pops when done.
 class _Week extends StatelessWidget {
-  const _Week({required this.days, required this.running});
+  const _Week({
+    required this.days,
+    required this.running,
+    required this.current,
+  });
 
   final List<ShowcaseDay> days;
   final bool running;
+  final DateTime? current;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // The day being built follows the last finished one; a day kept because
-    // it has logs stays dashed.
-    var current = -1;
-    if (running) {
-      final last = days.lastIndexWhere((ShowcaseDay d) => d.done || d.failed);
-      current = last + 1 < days.length ? last + 1 : -1;
+    var index = -1;
+    final now = current;
+    if (running && now != null) {
+      index = days.indexWhere(
+        (ShowcaseDay d) =>
+            d.date.year == now.year &&
+            d.date.month == now.month &&
+            d.date.day == now.day &&
+            !d.done &&
+            !d.failed,
+      );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          l10n.genWeekDays,
+          index >= 0
+              ? l10n.genBuildingDay(index + 1, days.length)
+              : l10n.genWeekDays,
           style: const TextStyle(fontSize: 12.5, color: _muted),
         ),
         const SizedBox(height: 8),
         Row(
           children: <Widget>[
-            for (var index = 0; index < days.length; index++)
+            for (var i = 0; i < days.length; i++)
               Expanded(
                 child: _DayCircle(
-                  key: Key('gen-day-${days[index].date.day}'),
-                  day: days[index],
-                  running: index == current,
+                  key: Key('gen-day-${days[i].date.day}'),
+                  day: days[i],
+                  running: i == index,
                 ),
               ),
           ],
@@ -616,42 +858,41 @@ class _DayCircle extends StatelessWidget {
         color: day.done || day.failed ? _onOk : _ink,
       ),
     );
+    final Widget circle;
+    if (day.done || day.failed) {
+      circle = PopIn(
+        key: ValueKey<String>(day.done ? 'done' : 'failed'),
+        child: DecoratedBox(
+          decoration: BoxDecoration(shape: BoxShape.circle, color: fill),
+          child: Center(
+            child: day.done
+                ? const Icon(Icons.check_rounded, size: 18, color: _onOk)
+                : number,
+          ),
+        ),
+      );
+    } else if (running) {
+      circle = SpinRing(color: _accent, size: 34, child: number);
+    } else {
+      circle = CustomPaint(
+        painter: DashedBorderPainter(
+          color: _line,
+          dashed: true,
+          radius: 17,
+          width: 2,
+        ),
+        child: Center(child: number),
+      );
+    }
     return Semantics(
       label: day.kcal == null
           ? formatShortDay(context, day.date)
-          : '${formatShortDay(context, day.date)} ${formatWhole(context, day.kcal!)}',
+          : '${formatShortDay(context, day.date)} '
+                '${formatWhole(context, day.kcal!)}',
       excludeSemantics: true,
       child: Column(
         children: <Widget>[
-          SizedBox(
-            width: 34,
-            height: 34,
-            child: day.done || day.failed
-                ? DecoratedBox(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: fill,
-                    ),
-                    child: Center(
-                      child: day.done
-                          ? const Icon(
-                              Icons.check_rounded,
-                              size: 18,
-                              color: _onOk,
-                            )
-                          : number,
-                    ),
-                  )
-                : CustomPaint(
-                    painter: DashedBorderPainter(
-                      color: running ? _accent : _line,
-                      dashed: !running,
-                      radius: 17,
-                      width: 2,
-                    ),
-                    child: Center(child: number),
-                  ),
-          ),
+          SizedBox(width: 34, height: 34, child: circle),
           const SizedBox(height: 4),
           FittedBox(
             fit: BoxFit.scaleDown,
@@ -670,6 +911,36 @@ class _DayCircle extends StatelessWidget {
   }
 }
 
+PlanItem? _item(List<PlanItem> items, String slot) {
+  for (final item in items) {
+    if (item.slot == slot) {
+      return item;
+    }
+  }
+  return null;
+}
+
+/// The prototype's reveal: the popper pops in, with one light tap.
+class _Celebrate extends StatefulWidget {
+  const _Celebrate({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_Celebrate> createState() => _CelebrateState();
+}
+
+class _CelebrateState extends State<_Celebrate> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(HapticFeedback.mediumImpact());
+  }
+
+  @override
+  Widget build(BuildContext context) => PopIn(child: widget.child);
+}
+
 class _Summary extends ConsumerWidget {
   const _Summary({required this.state, required this.onLeave});
 
@@ -684,7 +955,7 @@ class _Summary extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         const SizedBox(height: 8),
-        const Center(child: Emoji('party-popper', size: 56)),
+        const Center(child: _Celebrate(child: Emoji('party-popper', size: 56))),
         const SizedBox(height: 8),
         Text(
           l10n.genReady,
