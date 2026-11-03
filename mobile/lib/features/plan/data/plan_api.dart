@@ -11,6 +11,13 @@ import '../domain/plan.dart';
 import '../domain/plan_dates.dart';
 import 'plan_mapper.dart';
 
+/// How long one `POST /plans/days` may wait for its response.
+///
+/// The solver runs inside the request. On the hosted server one day took
+/// 31 to 39 seconds (3 Nov 2026), past the 30-second default every other
+/// call uses, so the app gave up on plans the server went on to build.
+const Duration planDayReceiveTimeout = Duration(seconds: 120);
+
 /// Plan calls send a calendar date. The generated client sends a full
 /// timestamp, which this API does not accept for `format: date`.
 class PlanApi {
@@ -23,6 +30,7 @@ class PlanApi {
       final response = await _dio.post<Object>(
         '/api/v1/plans/days',
         data: <String, Object?>{'date': isoDate(dateOnly(date))},
+        options: Options(receiveTimeout: planDayReceiveTimeout),
       );
       return dayPlanFromApi(DayPlanOut.fromJson(_object(response.data)));
     });
