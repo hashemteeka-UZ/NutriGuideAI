@@ -18,6 +18,7 @@ class ProfileDraft {
     this.sleepMinutes = 23 * 60,
     this.doctorSetWater,
     this.waterGoalMl,
+    this.cuisines = const <String>[],
   });
 
   final String? sex;
@@ -39,6 +40,9 @@ class ProfileDraft {
   final bool? doctorSetWater;
   final int? waterGoalMl;
 
+  /// Preferred cuisine codes: a soft bonus in the planner, never a filter.
+  final List<String> cuisines;
+
   bool get hasDiabetes => conditionCodes.contains('DIABETES_T2');
 
   ProfileDraft copyWith({
@@ -58,6 +62,7 @@ class ProfileDraft {
     int? sleepMinutes,
     Object? doctorSetWater = _unset,
     Object? waterGoalMl = _unset,
+    List<String>? cuisines,
   }) {
     return ProfileDraft(
       sex: sex == _unset ? this.sex : sex as String?,
@@ -84,6 +89,7 @@ class ProfileDraft {
       waterGoalMl: waterGoalMl == _unset
           ? this.waterGoalMl
           : waterGoalMl as int?,
+      cuisines: cuisines ?? this.cuisines,
     );
   }
 }

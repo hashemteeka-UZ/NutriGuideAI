@@ -2168,6 +2168,90 @@ abstract class AppLocalizations {
   /// **'حاول مرة أخرى للأيام الباقية'**
   String get genRetryLeft;
 
+  /// No description provided for @onbCuisineTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي المطابخ تحب؟'**
+  String get onbCuisineTitle;
+
+  /// No description provided for @onbCuisineSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر مطبخًا أو أكثر، أو اتركها بدون اختيار'**
+  String get onbCuisineSubtitle;
+
+  /// No description provided for @onbCuisineTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا تفضيل وليس شرطًا: نرجّح أطباق المطابخ التي تختارها في خطتك ولا نستبعد غيرها، لأن عدد الأطباق يختلف من مطبخ لآخر.'**
+  String get onbCuisineTip;
+
+  /// No description provided for @onbCuisineAny.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدون تفضيل'**
+  String get onbCuisineAny;
+
+  /// No description provided for @editStepCuisine.
+  ///
+  /// In ar, this message translates to:
+  /// **'المطبخ المفضل'**
+  String get editStepCuisine;
+
+  /// No description provided for @accountCuisine.
+  ///
+  /// In ar, this message translates to:
+  /// **'مطبخي المفضل'**
+  String get accountCuisine;
+
+  /// No description provided for @cuisineLibyan.
+  ///
+  /// In ar, this message translates to:
+  /// **'ليبي'**
+  String get cuisineLibyan;
+
+  /// No description provided for @cuisineLevantine.
+  ///
+  /// In ar, this message translates to:
+  /// **'شامي'**
+  String get cuisineLevantine;
+
+  /// No description provided for @cuisineEgyptian.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصري'**
+  String get cuisineEgyptian;
+
+  /// No description provided for @cuisineGeneral.
+  ///
+  /// In ar, this message translates to:
+  /// **'عام'**
+  String get cuisineGeneral;
+
+  /// No description provided for @cuisineLibyanHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'كسكسي، بازين، مبكبكة'**
+  String get cuisineLibyanHint;
+
+  /// No description provided for @cuisineLevantineHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقلوبة، كبة، فتوش'**
+  String get cuisineLevantineHint;
+
+  /// No description provided for @cuisineEgyptianHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشري، فول، طعمية'**
+  String get cuisineEgyptianHint;
+
+  /// No description provided for @cuisineGeneralHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'أطباق صحية متنوعة'**
+  String get cuisineGeneralHint;
+
   /// No description provided for @genElapsed.
   ///
   /// In ar, this message translates to:

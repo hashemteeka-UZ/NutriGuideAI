@@ -71,6 +71,10 @@ ReferenceData mapReference(Reference raw) {
       for (final sex in raw.sexes)
         if (sex.json != null) sex.json!,
     ],
+    cuisines: <CuisineInfo>[
+      for (final item in raw.cuisines)
+        CuisineInfo(code: item.code, name: item.name),
+    ],
   );
 }
 

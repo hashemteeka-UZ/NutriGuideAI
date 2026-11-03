@@ -33,7 +33,7 @@ const _profileJson = <String, Object?>{
     <String, Object?>{'code': 'PEANUT', 'severity': 'SEVERE'},
   ],
   'ingredient_prefs': <Object?>[],
-  'cuisines': <Object?>[],
+  'cuisines': <Object?>['LIBYAN'],
   'wake_time': '06:30',
   'sleep_time': '22:45',
   'timezone': 'Africa/Tripoli',

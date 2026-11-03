@@ -28,7 +28,7 @@ Map<String, Object?> profileUpdateBody(
         <String, Object?>{'code': entry.key, 'severity': entry.value},
     ],
     'ingredient_prefs': <Map<String, Object?>>[],
-    'cuisines': <String>[],
+    'cuisines': <String>[...draft.cuisines],
     'wake_time': formatClock(draft.wakeMinutes),
     'sleep_time': formatClock(draft.sleepMinutes),
     'water_goal_ml': draft.doctorSetWater == true ? draft.waterGoalMl : null,

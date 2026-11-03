@@ -294,6 +294,18 @@ class OnboardingController extends Notifier<OnboardingState> {
     _edit(state.draft.copyWith(allergens: next));
   }
 
+  /// Adds or removes a preferred cuisine; the server takes at most ten.
+  void toggleCuisine(String code) {
+    final next = <String>[...state.draft.cuisines];
+    if (!next.remove(code)) {
+      if (next.length >= 10) {
+        return;
+      }
+      next.add(code);
+    }
+    _edit(state.draft.copyWith(cuisines: next));
+  }
+
   void setInsulin(bool usesInsulin) {
     _edit(state.draft.copyWith(insulin: usesInsulin));
   }

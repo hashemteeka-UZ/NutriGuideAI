@@ -56,9 +56,16 @@ void main() {
         findsOneWidget,
       );
       await _next(tester);
+
+      // Cuisine: a preference, optional.
+      expect(find.text('أي المطابخ تحب؟'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('onb-cuisine-LIBYAN')));
+      await tester.pump();
+      await _next(tester);
       await _next(tester);
 
       expect(find.byKey(const Key('onb-kcal')), findsOneWidget);
+      expect(profile.lastDraft?.cuisines, <String>['LIBYAN']);
       await tester.ensureVisible(find.byKey(const Key('onb-how')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('onb-how')));
@@ -147,6 +154,7 @@ void main() {
     await tester.pump();
     await _next(tester);
     await _next(tester);
+    await _next(tester);
 
     expect(find.byKey(const Key('onb-general')), findsOneWidget);
     expect(
@@ -187,6 +195,7 @@ void main() {
     await tester.ensureVisible(find.byKey(const Key('onb-care-NONE')));
     await tester.tap(find.byKey(const Key('onb-care-NONE')));
     await tester.pump();
+    await _next(tester);
     await _next(tester);
     await _next(tester);
     await _next(tester);
@@ -253,6 +262,7 @@ void main() {
     await tester.ensureVisible(find.byKey(const Key('onb-care-NONE')));
     await tester.tap(find.byKey(const Key('onb-care-NONE')));
     await tester.pump();
+    await _next(tester);
     await _next(tester);
     await _next(tester);
     await _next(tester);

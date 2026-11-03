@@ -24,6 +24,7 @@ import '../../plan/presentation/plan_format.dart';
 import '../../profile/data/display_name.dart';
 import '../../profile/presentation/name_page.dart';
 import '../../profile/presentation/profile_avatar.dart';
+import '../../profile/presentation/steps/cuisine_step.dart';
 import '../../progress/data/progress_providers.dart';
 import '../../weight/data/weight_providers.dart';
 import '../../weight/presentation/weight_sheet.dart';
@@ -171,6 +172,19 @@ class AccountScreen extends ConsumerWidget {
                       : user.conditions.isEmpty
                       ? l10n.onbCareNone
                       : formatWhole(context, user.conditions.length),
+                  onTap: edit,
+                ),
+                _Row(
+                  key: const Key('account-cuisine'),
+                  emoji: 'world-map',
+                  label: l10n.accountCuisine,
+                  value: user == null
+                      ? null
+                      : user.cuisines.isEmpty
+                      ? l10n.onbCuisineAny
+                      : user.cuisines
+                            .map((String c) => cuisineLabel(l10n, c))
+                            .join('، '),
                   onTap: edit,
                 ),
                 _Row(

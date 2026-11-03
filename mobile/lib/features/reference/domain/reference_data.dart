@@ -19,6 +19,13 @@ class AllergenInfo {
   final String name;
 }
 
+class CuisineInfo {
+  const CuisineInfo({required this.code, required this.name});
+
+  final String code;
+  final String name;
+}
+
 class ReferenceData {
   const ReferenceData({
     required this.conditions,
@@ -26,6 +33,7 @@ class ReferenceData {
     required this.activityLevels,
     required this.goals,
     required this.sexes,
+    this.cuisines = const <CuisineInfo>[],
   });
 
   final List<ConditionInfo> conditions;
@@ -33,6 +41,9 @@ class ReferenceData {
   final List<String> activityLevels;
   final List<String> goals;
   final List<String> sexes;
+
+  /// The catalog's cuisines; a profile may prefer some of them.
+  final List<CuisineInfo> cuisines;
 
   List<ConditionInfo> get supportedConditions => [
     for (final condition in conditions)

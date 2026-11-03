@@ -18,6 +18,7 @@ import 'steps/about_step.dart';
 import 'steps/activity_step.dart';
 import 'steps/allergy_step.dart';
 import 'steps/care_step.dart';
+import 'steps/cuisine_step.dart';
 import 'steps/fluid_step.dart';
 import 'steps/goal_step.dart';
 import 'steps/measure_step.dart';
@@ -104,6 +105,7 @@ Widget onboardingStepView(OnboardingStep? step) {
     OnboardingStep.care => const CareStep(),
     OnboardingStep.allergy => const AllergyStep(),
     OnboardingStep.safety => const SafetyStep(),
+    OnboardingStep.cuisine => const CuisineStep(),
     OnboardingStep.rhythm => const RhythmStep(),
     OnboardingStep.fluid => const FluidStep(),
     null => const SizedBox.shrink(),

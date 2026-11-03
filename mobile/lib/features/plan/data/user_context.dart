@@ -65,6 +65,7 @@ class UserContextController extends Notifier<CachedUser?> {
         hasDislike: profile.profile.ingredientPrefs.any(
           (pref) => pref.stance == IngredientStance.dislike,
         ),
+        cuisines: <String>[...profile.profile.cuisines],
       );
     } on DioException catch (error) {
       final failure = mapDioException(error);

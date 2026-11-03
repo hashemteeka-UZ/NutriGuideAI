@@ -1226,6 +1226,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get genRetryLeft => 'Try again for the remaining days';
 
   @override
+  String get onbCuisineTitle => 'Which cuisines do you like?';
+
+  @override
+  String get onbCuisineSubtitle => 'Pick one or more, or leave it empty';
+
+  @override
+  String get onbCuisineTip =>
+      'This is a preference, not a rule: your plan favours dishes from the cuisines you pick and never drops the others, because each cuisine has a different number of dishes.';
+
+  @override
+  String get onbCuisineAny => 'No preference';
+
+  @override
+  String get editStepCuisine => 'Favourite cuisine';
+
+  @override
+  String get accountCuisine => 'My cuisines';
+
+  @override
+  String get cuisineLibyan => 'Libyan';
+
+  @override
+  String get cuisineLevantine => 'Levantine';
+
+  @override
+  String get cuisineEgyptian => 'Egyptian';
+
+  @override
+  String get cuisineGeneral => 'General';
+
+  @override
+  String get cuisineLibyanHint => 'Couscous, bazeen, mbakbaka';
+
+  @override
+  String get cuisineLevantineHint => 'Maqluba, kibbeh, fattoush';
+
+  @override
+  String get cuisineEgyptianHint => 'Koshari, ful, ta’meya';
+
+  @override
+  String get cuisineGeneralHint => 'Varied healthy dishes';
+
+  @override
   String genElapsed(String time) {
     return '$time elapsed';
   }

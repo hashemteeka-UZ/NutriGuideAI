@@ -200,6 +200,7 @@ String editStepLabel(AppLocalizations l10n, OnboardingStep step) {
     OnboardingStep.care => l10n.editStepCare,
     OnboardingStep.allergy => l10n.editStepAllergy,
     OnboardingStep.safety => l10n.editStepSafety,
+    OnboardingStep.cuisine => l10n.editStepCuisine,
     OnboardingStep.rhythm => l10n.editStepRhythm,
     OnboardingStep.fluid => l10n.editStepFluid,
   };

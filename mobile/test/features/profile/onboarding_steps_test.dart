@@ -10,6 +10,7 @@ void main() {
     OnboardingStep.activity,
     OnboardingStep.care,
     OnboardingStep.allergy,
+    OnboardingStep.cuisine,
     OnboardingStep.rhythm,
   ];
 

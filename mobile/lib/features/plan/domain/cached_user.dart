@@ -38,6 +38,7 @@ class CachedUser {
     this.sleepMinutes,
     this.heightCm,
     this.activityLevel,
+    this.cuisines = const <String>[],
   });
 
   /// The goal line of the weight chart (#280).
@@ -64,6 +65,9 @@ class CachedUser {
   final double? heightCm;
   final String? activityLevel;
 
+  /// Preferred cuisine codes from the profile.
+  final List<String> cuisines;
+
   CachedUser copyWith({bool? eligible, bool? hasDislike}) {
     return CachedUser(
       eligible: eligible ?? this.eligible,
@@ -79,6 +83,7 @@ class CachedUser {
       sleepMinutes: sleepMinutes,
       heightCm: heightCm,
       activityLevel: activityLevel,
+      cuisines: cuisines,
     );
   }
 }

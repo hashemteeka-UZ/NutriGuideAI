@@ -74,11 +74,13 @@ ProfileDraft draftFromProfile(Profile profile) {
     sleepMinutes: _minutes(profile.sleepTime),
     doctorSetWater: fluid ? profile.waterGoalMl != null : null,
     waterGoalMl: fluid ? profile.waterGoalMl : null,
+    cuisines: <String>[...profile.cuisines],
   );
 }
 
 /// The PUT body of an edit: the onboarding body without the weight, with
-/// the saved ingredient preferences, cuisines and time zone kept.
+/// the saved ingredient preferences and time zone kept. Cuisines are
+/// edited with the other steps.
 Map<String, Object?> editBody(ProfileDraft draft, EditableProfile from) {
   final timezone = from.raw['timezone'];
   final body = profileUpdateBody(
@@ -86,7 +88,6 @@ Map<String, Object?> editBody(ProfileDraft draft, EditableProfile from) {
     timezone: timezone is String ? timezone : 'UTC',
   )..remove('current_weight_kg');
   body['ingredient_prefs'] = from.raw['ingredient_prefs'] ?? <Object?>[];
-  body['cuisines'] = from.raw['cuisines'] ?? <Object?>[];
   if (!draft.conditionCodes.any(defaultClinicianFluidCodes.contains)) {
     // Not a fluid-limited condition: keep the goal the water tab may have set.
     body['water_goal_ml'] = from.raw['water_goal_ml'];

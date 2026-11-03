@@ -10,6 +10,7 @@ enum OnboardingStep {
   care,
   allergy,
   safety,
+  cuisine,
   rhythm,
   fluid,
 }
@@ -34,6 +35,7 @@ List<OnboardingStep> onboardingSteps(
   if (draft.hasDiabetes) {
     steps.add(OnboardingStep.safety);
   }
+  steps.add(OnboardingStep.cuisine);
   steps.add(OnboardingStep.rhythm);
   final needsFluid = draft.conditionCodes.any(clinicianFluidCodes.contains);
   if (needsFluid) {
@@ -116,6 +118,9 @@ bool stepIsValid(OnboardingStep step, ProfileDraft draft) {
       return true;
     case OnboardingStep.safety:
       return draft.insulin != null;
+    case OnboardingStep.cuisine:
+      // Optional: no preference means every cuisine counts the same.
+      return true;
     case OnboardingStep.rhythm:
       return draft.wakeMinutes != draft.sleepMinutes;
     case OnboardingStep.fluid:
