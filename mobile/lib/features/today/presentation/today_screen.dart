@@ -74,6 +74,9 @@ class TodayScreen extends ConsumerWidget {
     return Scaffold(
       key: const Key('today-screen'),
       backgroundColor: colors.bg,
+      // The water +250 button and a logged meal's undo sit on the end side,
+      // so the + button floats on the start side to stay clear of them.
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton(
         key: const Key('today-fab'),
         tooltip: l10n.fabLabel,
@@ -97,7 +100,8 @@ class TodayScreen extends ConsumerWidget {
                 },
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(18, 14, 18, 24),
+                  // Room under the last card for the + button.
+                  padding: const EdgeInsets.fromLTRB(18, 14, 18, 96),
                   children: staggered(<Widget>[
                     _Header(today: today, now: now, sex: user?.sex),
                     const Align(

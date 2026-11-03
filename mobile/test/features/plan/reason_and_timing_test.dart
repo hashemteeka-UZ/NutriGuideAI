@@ -73,7 +73,15 @@ void main() {
         languageCode: 'ar',
         conditionName: 'ارتفاع ضغط الدم',
       ),
-      'مناسبة لـارتفاع ضغط الدم',
+      'مناسبة لحالتك: ارتفاع ضغط الدم',
+    );
+    expect(
+      reasonLabel(
+        'SUITS_CONDITION_DIABETES_T2',
+        languageCode: 'ar',
+        conditionName: 'السكري من النوع الثاني (بدون إنسولين)',
+      ),
+      isNot(contains('لـال')),
     );
     expect(
       reasonLabel(

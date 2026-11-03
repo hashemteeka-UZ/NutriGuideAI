@@ -283,6 +283,30 @@ void main() {
     }
   });
 
+  testNutriguide('the + button never covers the water +250 button', (
+    tester,
+  ) async {
+    final database = await seeded();
+    addTearDown(database.close);
+    await pumpNutriguide(
+      tester,
+      auth: _signedIn(),
+      database: database,
+      extra: at(),
+    );
+    final fab = tester.getRect(find.byKey(const Key('today-fab')));
+    final scrollable = find.byType(Scrollable).first;
+    for (var step = 0; step < 12; step += 1) {
+      final water = find.byKey(const Key('today-water-add'));
+      if (water.evaluate().isNotEmpty) {
+        final rect = tester.getRect(water);
+        expect(rect.overlaps(fab), isFalse, reason: 'scroll step $step');
+      }
+      await tester.drag(scrollable, const Offset(0, -120));
+      await tester.pumpAndSettle();
+    }
+  });
+
   testNutriguide('quick sheet hides the shopping list without a plan', (
     tester,
   ) async {

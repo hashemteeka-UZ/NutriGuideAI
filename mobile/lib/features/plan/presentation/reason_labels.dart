@@ -41,5 +41,6 @@ String? reasonLabel(
   if (name == null || name.isEmpty) {
     return null;
   }
-  return languageCode == 'ar' ? 'مناسبة لـ$name' : 'Suits $name';
+  // "مناسبة لـ" glued to a name that starts with "ال" read as "لـالسكري".
+  return languageCode == 'ar' ? 'مناسبة لحالتك: $name' : 'Suits $name';
 }
