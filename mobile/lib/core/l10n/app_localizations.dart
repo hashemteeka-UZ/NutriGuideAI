@@ -1886,6 +1886,12 @@ abstract class AppLocalizations {
   /// **'دون اتصال · تعرض آخر نسخة محفوظة'**
   String get offlineBar;
 
+  /// No description provided for @serverWaking.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخادم يستيقظ، قد يستغرق دقيقة'**
+  String get serverWaking;
+
   /// No description provided for @planTitle.
   ///
   /// In ar, this message translates to:

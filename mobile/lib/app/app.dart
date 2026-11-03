@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/l10n/app_localizations.dart';
 import '../core/locale/locale_controller.dart';
+import '../core/network/dio_provider.dart';
+import '../core/network/server_wake_banner.dart';
 import '../core/theme/accent.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_mode_controller.dart';
@@ -25,6 +27,7 @@ class App extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
     ref.watch(authInterceptorProvider);
+    ref.watch(serverWarmUpProvider);
     ref.watch(catalogLifecycleProvider);
     ref.watch(planLifecycleProvider);
     ref.watch(syncLifecycleProvider);
@@ -42,6 +45,8 @@ class App extends ConsumerWidget {
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
+      builder: (BuildContext context, Widget? child) =>
+          ServerWakeBanner(child: child ?? const SizedBox.shrink()),
       theme: AppTheme.light(accent: accent),
       darkTheme: AppTheme.dark(accent: accent),
       themeMode: ref.watch(themeModeProvider),

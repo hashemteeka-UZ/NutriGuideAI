@@ -1067,6 +1067,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offlineBar => 'Offline · showing the last saved copy';
 
   @override
+  String get serverWaking => 'The server is waking up. This can take a minute.';
+
+  @override
   String get planTitle => 'Your week';
 
   @override

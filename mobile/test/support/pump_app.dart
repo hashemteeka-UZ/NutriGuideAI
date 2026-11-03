@@ -14,6 +14,7 @@ import 'package:nutriguide/core/api/manual/sync_models.dart';
 import 'package:nutriguide/core/db/app_database.dart' hide PlanItem;
 import 'package:nutriguide/core/db/database_provider.dart';
 import 'package:nutriguide/core/locale/locale_controller.dart';
+import 'package:nutriguide/core/network/dio_provider.dart';
 import 'package:nutriguide/core/sync/sync_api.dart';
 import 'package:nutriguide/features/auth/data/auth_repository_impl.dart';
 import 'package:nutriguide/features/auth/data/token_store.dart';
@@ -146,6 +147,7 @@ Future<void> pumpNutriguide(
         planSyncProvider.overrideWithValue(const NoopPlanSync()),
         planApiProvider.overrideWithValue(planApi ?? SilentPlanApi()),
         syncLifecycleProvider.overrideWithValue(null),
+        serverWarmUpProvider.overrideWithValue(null),
         syncApiProvider.overrideWithValue(syncApi ?? OfflineSyncApi()),
         waterApiProvider.overrideWithValue(waterApi ?? OfflineWaterApi()),
         userContextRefreshProvider.overrideWithValue(() async {}),

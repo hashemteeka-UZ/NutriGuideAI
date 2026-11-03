@@ -11,6 +11,7 @@ import '../../../core/locale/locale_controller.dart';
 import '../../../core/network/app_failure.dart';
 import '../../../core/network/debug_request_log.dart';
 import '../../../core/network/dio_provider.dart';
+import '../../../core/network/server_wake.dart';
 import '../session_signals.dart';
 import 'token_store.dart';
 
@@ -303,6 +304,16 @@ final authInterceptorProvider = Provider<AuthInterceptor>((ref) {
   final appDio = ref.watch(dioProvider);
   final config = ref.watch(appConfigProvider);
   final refreshDio = bareDio(config);
+  // A refresh is often the first call after the hosted server slept. The
+  // wake interceptor gives it the long timeout; it never retries a refresh.
+  final wake = ref.read(serverWakeProvider.notifier);
+  refreshDio.interceptors.add(
+    ServerWakeInterceptor(
+      onSlow: wake.slow,
+      onAnswered: wake.answered,
+      onFailed: wake.failed,
+    ),
+  );
   final retryDio = bareDio(config);
   retryDio.httpClientAdapter = appDio.httpClientAdapter;
   if (kDebugMode) {

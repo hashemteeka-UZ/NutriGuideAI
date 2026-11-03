@@ -387,6 +387,7 @@
   "generalBody": "تسجّل أكلك وماءك وترى تقدمك، دون خطة سعرات شخصية.",
   "healthyTitle": "وجبات صحية لتجربتها",
   "offlineBar": "دون اتصال · تعرض آخر نسخة محفوظة",
+  "serverWaking": "الخادم يستيقظ، قد يستغرق دقيقة",
   "planTitle": "خطتك للأسبوع",
   "planRange": "{from} – {to}",
   "@planRange": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},

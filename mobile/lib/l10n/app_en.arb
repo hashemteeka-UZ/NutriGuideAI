@@ -298,6 +298,7 @@
   "generalBody": "You log food and water and see progress. There is no personal calorie plan.",
   "healthyTitle": "Healthy meals to try",
   "offlineBar": "Offline · showing the last saved copy",
+  "serverWaking": "The server is waking up. This can take a minute.",
   "planTitle": "Your week",
   "planRange": "{from} – {to}",
   "planOptimizer": "Built by the optimizer",

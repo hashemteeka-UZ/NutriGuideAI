@@ -1060,6 +1060,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get offlineBar => 'دون اتصال · تعرض آخر نسخة محفوظة';
 
   @override
+  String get serverWaking => 'الخادم يستيقظ، قد يستغرق دقيقة';
+
+  @override
   String get planTitle => 'خطتك للأسبوع';
 
   @override
